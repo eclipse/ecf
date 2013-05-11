@@ -27,37 +27,23 @@ import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
 public class EndpointDescriptionAdvertiser implements
 		IEndpointDescriptionAdvertiser {
 
-	private static String endpointListenerScope = System
-			.getProperty("org.eclipse.ecf.osgi.services.endpointdescriptionadvertiser.endpointListenerScope"); //$NON-NLS-1$
-
 	private EndpointDescriptionLocator endpointDescriptionLocator;
-
-	/**
-	 * @since 2.2
-	 */
-	public String getEndpointListenerScope() {
-		// If it's set via system property, then simply use it
-		if (endpointListenerScope != null)
-			return endpointListenerScope;
-		// Otherwise create it
-		// if allowLoopbackReference is true, then return a filter to match all
-		// endpoint description ids
-		StringBuffer elScope = new StringBuffer("("); //$NON-NLS-1$
-		elScope.append(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID);
-		elScope.append("=*"); //$NON-NLS-1$
-		elScope.append(")"); //$NON-NLS-1$
-		return elScope.toString();
-	}
 
 	public EndpointDescriptionAdvertiser(
 			EndpointDescriptionLocator endpointDescriptionLocator) {
 		this.endpointDescriptionLocator = endpointDescriptionLocator;
 	}
 
+	/**
+	 * @since 3.0
+	 */
 	public IStatus advertise(EndpointDescription endpointDescription) {
 		return doDiscovery(endpointDescription, true);
 	}
 
+	/**
+	 * @since 3.0
+	 */
 	protected IStatus doDiscovery(IDiscoveryAdvertiser discoveryAdvertiser,
 			IServiceInfo serviceInfo, boolean advertise) {
 		try {
@@ -91,6 +77,9 @@ public class EndpointDescriptionAdvertiser implements
 		return new Status(IStatus.ERROR, Activator.PLUGIN_ID, message, e);
 	}
 
+	/**
+	 * @since 3.0
+	 */
 	protected IStatus doDiscovery(EndpointDescription endpointDescription,
 			boolean advertise) {
 		Assert.isNotNull(endpointDescription);
@@ -136,6 +125,9 @@ public class EndpointDescriptionAdvertiser implements
 				+ ".  Problem in unadvertise"); //$NON-NLS-1$
 	}
 
+	/**
+	 * @since 3.0
+	 */
 	public IStatus unadvertise(EndpointDescription endpointDescription) {
 		return doDiscovery(endpointDescription, false);
 	}
@@ -156,6 +148,62 @@ public class EndpointDescriptionAdvertiser implements
 
 	public void close() {
 		this.endpointDescriptionLocator = null;
+	}
+
+	public IStatus advertise(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
+		return doDiscovery(endpointDescription, true);
+	}
+
+	protected IStatus doDiscovery(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
+			boolean advertise) {
+		Assert.isNotNull(endpointDescription);
+		String messagePrefix = advertise ? "Advertise" : "Unadvertise"; //$NON-NLS-1$ //$NON-NLS-2$
+		List<IStatus> statuses = new ArrayList<IStatus>();
+		// First get serviceInfoFactory
+		IServiceInfoFactory serviceInfoFactory = getServiceInfoFactory();
+		if (serviceInfoFactory == null)
+			return createErrorStatus(messagePrefix
+					+ " endpointDescription=" //$NON-NLS-1$
+					+ endpointDescription
+					+ ".  No IServiceInfoFactory is available.  Cannot unpublish endpointDescription=" //$NON-NLS-1$
+					+ endpointDescription);
+		IDiscoveryAdvertiser[] discoveryAdvertisers = getDiscoveryAdvertisers();
+		if (discoveryAdvertisers == null || discoveryAdvertisers.length == 0)
+			return createErrorStatus(messagePrefix
+					+ " endpointDescription=" //$NON-NLS-1$
+					+ endpointDescription
+					+ ".  No endpointDescriptionLocator advertisers available.  Cannot " //$NON-NLS-1$
+					+ (advertise ? "publish" : "unpublish") //$NON-NLS-1$ //$NON-NLS-2$
+					+ " endpointDescription=" //$NON-NLS-1$ 
+					+ endpointDescription);
+		for (int i = 0; i < discoveryAdvertisers.length; i++) {
+			IServiceInfo serviceInfo = (advertise ? serviceInfoFactory
+					.createServiceInfo(discoveryAdvertisers[i],
+							endpointDescription) : serviceInfoFactory
+					.removeServiceInfo(discoveryAdvertisers[i],
+							endpointDescription));
+			if (serviceInfo == null) {
+				statuses.add(createErrorStatus(messagePrefix
+						+ " endpointDescription=" //$NON-NLS-1$
+						+ endpointDescription
+						+ ".  Service Info is null.  Cannot publish endpointDescription=" //$NON-NLS-1$
+						+ endpointDescription));
+				continue;
+			}
+			// Now actually unregister with advertiser
+			statuses.add(doDiscovery(discoveryAdvertisers[i], serviceInfo,
+					advertise));
+		}
+		return createResultStatus(statuses, messagePrefix
+				+ " endpointDesription=" + endpointDescription //$NON-NLS-1$
+				+ ".  Problem in unadvertise"); //$NON-NLS-1$
+	}
+
+	public IStatus unadvertise(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
+		return doDiscovery(endpointDescription, false);
 	}
 
 }

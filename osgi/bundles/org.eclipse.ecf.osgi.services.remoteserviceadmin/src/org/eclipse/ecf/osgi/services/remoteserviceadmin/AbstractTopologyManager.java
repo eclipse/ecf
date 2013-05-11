@@ -72,8 +72,11 @@ public abstract class AbstractTopologyManager {
 		return a.getFrameworkUUID();
 	}
 
+	/**
+	 * @since 3.0
+	 */
 	protected IEndpointDescriptionAdvertiser getEndpointDescriptionAdvertiser(
-			EndpointDescription endpointDescription) {
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
 		synchronized (endpointDescriptionAdvertiserTrackerLock) {
 			if (endpointDescriptionAdvertiserTracker == null) {
 				endpointDescriptionAdvertiserTracker = new ServiceTracker(
@@ -207,37 +210,67 @@ public abstract class AbstractTopologyManager {
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
 			String matchedFilter) {
 
-		// First, select importing remote service admin
-		org.osgi.service.remoteserviceadmin.RemoteServiceAdmin rsa = getRemoteServiceAdmin();
+		if (!(endpointDescription instanceof org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription))
+			handleOSGiEndpointAdded(endpointDescription, matchedFilter);
+		else {
+			// First, select importing remote service admin
+			org.osgi.service.remoteserviceadmin.RemoteServiceAdmin rsa = getRemoteServiceAdmin();
 
-		if (rsa == null) {
-			logError("handleEndpointAdded", //$NON-NLS-1$
-					"RemoteServiceAdmin not found for importing endpointDescription=" //$NON-NLS-1$
-							+ endpointDescription);
-			return;
-		}
+			if (rsa == null) {
+				logError("handleEndpointAdded", //$NON-NLS-1$
+						"RemoteServiceAdmin not found for importing endpointDescription=" //$NON-NLS-1$
+								+ endpointDescription);
+				return;
+			}
 
-		trace("handleEndpointAdded", "endpointDescription=" //$NON-NLS-1$ //$NON-NLS-2$
-				+ endpointDescription + " rsa=" + rsa); //$NON-NLS-1$
+			trace("handleEndpointAdded", "endpointDescription=" //$NON-NLS-1$ //$NON-NLS-2$
+					+ endpointDescription + " rsa=" + rsa); //$NON-NLS-1$
 
-		// now call rsa.import
-		org.osgi.service.remoteserviceadmin.ImportRegistration importRegistration = rsa
-				.importService(endpointDescription);
+			// now call rsa.import
+			org.osgi.service.remoteserviceadmin.ImportRegistration importRegistration = rsa
+					.importService(endpointDescription);
 
-		if (importRegistration == null) {
-			logError("handleEndpointAdded", //$NON-NLS-1$
-					"Import registration is null for endpointDescription=" //$NON-NLS-1$
-							+ endpointDescription + " and rsa=" + rsa); //$NON-NLS-1$
-		} else {
-			Throwable t = importRegistration.getException();
-			if (t != null)
-				handleInvalidImportRegistration(importRegistration, t);
-			else {
-				synchronized (importedRegistrations) {
-					importedRegistrations.add(importRegistration);
+			if (importRegistration == null) {
+				logError("handleEndpointAdded", //$NON-NLS-1$
+						"Import registration is null for endpointDescription=" //$NON-NLS-1$
+								+ endpointDescription + " and rsa=" + rsa); //$NON-NLS-1$
+			} else {
+				Throwable t = importRegistration.getException();
+				if (t != null)
+					handleInvalidImportRegistration(importRegistration, t);
+				else {
+					synchronized (importedRegistrations) {
+						importedRegistrations.add(importRegistration);
+					}
 				}
 			}
 		}
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	protected void handleOSGiEndpointAdded(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
+			String matchedFilter) {
+
+		IEndpointDescriptionAdvertiser advertiser = getEndpointDescriptionAdvertiser(endpointDescription);
+		if (advertiser == null) {
+			logWarning("handleOSGiEndpointAdded", //$NON-NLS-1$
+					"No endpoint description advertiser available for endpointDescription=" //$NON-NLS-1$
+							+ endpointDescription);
+			return;
+		}
+		// Now advertise endpoint description using endpoint description
+		// advertiser
+		trace("handleOSGiEndpointAdded", //$NON-NLS-1$
+				"advertising endpointDescription=" + endpointDescription //$NON-NLS-1$
+						+ " with advertiser=" + advertiser); //$NON-NLS-1$
+		IStatus result = advertiser.advertise(endpointDescription);
+		if (!result.isOK())
+			logError("handleOSGiEndpointAdded", //$NON-NLS-1$
+					"Advertise of endpointDescription=" + endpointDescription //$NON-NLS-1$
+							+ " FAILED", result); //$NON-NLS-1$
 	}
 
 	protected void handleInvalidImportRegistration(
@@ -267,9 +300,38 @@ public abstract class AbstractTopologyManager {
 	protected void handleEndpointRemoved(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
 			String matchedFilter) {
-		trace("handleEndpointRemoved", "endpointDescription=" //$NON-NLS-1$ //$NON-NLS-2$
-				+ endpointDescription);
-		unimportService(endpointDescription);
+		if (!(endpointDescription instanceof org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription))
+			handleOSGiEndpointRemoved(endpointDescription, matchedFilter);
+		else {
+			trace("handleEndpointRemoved", "endpointDescription=" //$NON-NLS-1$ //$NON-NLS-2$
+					+ endpointDescription);
+			unimportService(endpointDescription);
+		}
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	protected void handleOSGiEndpointRemoved(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
+			String matchedFilter) {
+		IEndpointDescriptionAdvertiser advertiser = getEndpointDescriptionAdvertiser(endpointDescription);
+		if (advertiser == null) {
+			logWarning("handleOSGiEndpointRemoved", //$NON-NLS-1$
+					"No endpoint description advertiser available for endpointDescription=" //$NON-NLS-1$
+							+ endpointDescription);
+			return;
+		}
+		// Now advertise endpoint description using endpoint description
+		// advertiser
+		trace("handleOSGiEndpointRemoved", //$NON-NLS-1$
+				"Unadvertise endpointDescription=" + endpointDescription //$NON-NLS-1$
+						+ " with advertiser=" + advertiser); //$NON-NLS-1$
+		IStatus result = advertiser.unadvertise(endpointDescription);
+		if (!result.isOK())
+			logError("handleOSGiEndpointRemoved", //$NON-NLS-1$
+					"Unadvertise of endpointDescription=" + endpointDescription //$NON-NLS-1$
+							+ " FAILED", result); //$NON-NLS-1$
 	}
 
 	protected void handleServiceRegistering(ServiceReference serviceReference) {

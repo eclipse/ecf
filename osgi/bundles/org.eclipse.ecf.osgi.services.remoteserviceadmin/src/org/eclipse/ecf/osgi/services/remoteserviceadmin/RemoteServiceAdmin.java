@@ -220,11 +220,13 @@ public class RemoteServiceAdmin implements
 		IRemoteServiceContainer[] rsContainers = null;
 		try {
 			rsContainers = hostContainerSelector.selectHostContainers(
-					serviceReference, (Map<String,Object>) overridingProperties, exportedInterfaces,
-					exportedConfigs, serviceIntents);
+					serviceReference,
+					(Map<String, Object>) overridingProperties,
+					exportedInterfaces, exportedConfigs, serviceIntents);
 		} catch (SelectContainerException e) {
 			ExportRegistration errorRegistration = createErrorExportRegistration(
-					serviceReference, (Map<String,Object>) overridingProperties,
+					serviceReference,
+					(Map<String, Object>) overridingProperties,
 					"Error selecting or creating host container for serviceReference=" //$NON-NLS-1$
 							+ serviceReference + " properties=" //$NON-NLS-1$
 							+ overridingProperties, e);
@@ -257,7 +259,8 @@ public class RemoteServiceAdmin implements
 					exportRegistration = new ExportRegistration(exportEndpoint);
 				else {
 					Map endpointDescriptionProperties = createExportEndpointDescriptionProperties(
-							serviceReference, (Map<String,Object>) overridingProperties,
+							serviceReference,
+							(Map<String, Object>) overridingProperties,
 							exportedInterfaces, serviceIntents, rsContainers[i]);
 					// otherwise, actually export the service to create a new
 					// ExportEndpoint and use it to create a new
@@ -591,8 +594,7 @@ public class RemoteServiceAdmin implements
 			return match(serviceReference, null);
 		}
 
-		boolean match(ServiceReference serviceReference,
-				ID containerID) {
+		boolean match(ServiceReference serviceReference, ID containerID) {
 			ServiceReference ourServiceReference = getServiceReference();
 			if (ourServiceReference == null)
 				return false;
@@ -864,11 +866,9 @@ public class RemoteServiceAdmin implements
 			removeImportRegistration(this);
 			Bundle rsaBundle = getRSABundle();
 			if (publish && rsaBundle != null)
-				publishEvent(
-						new RemoteServiceAdminEvent(
-								containerID,
-								RemoteServiceAdminEvent.IMPORT_UNREGISTRATION,
-								rsaBundle, importReference, exception),
+				publishEvent(new RemoteServiceAdminEvent(containerID,
+						RemoteServiceAdminEvent.IMPORT_UNREGISTRATION,
+						rsaBundle, importReference, exception),
 						endpointDescription);
 
 		}
@@ -966,7 +966,7 @@ public class RemoteServiceAdmin implements
 		EventAdmin eventAdmin = getEventAdmin();
 		if (eventAdmin == null) {
 			//logWarning("RemoteServiceAdmin.postEvent", "No event admin service available to post event=" //$NON-NLS-1$ //$NON-NLS-2$
-			//		+ event);
+			// + event);
 			return;
 		}
 		int eventType = event.getType();
@@ -1245,16 +1245,18 @@ public class RemoteServiceAdmin implements
 
 	private ContainerTypeDescription getContainerTypeDescription(
 			IContainer container) {
-		return Activator.getDefault().getContainerManager().getContainerTypeDescription(
-				container.getID());
+		return Activator.getDefault().getContainerManager()
+				.getContainerTypeDescription(container.getID());
 	}
 
 	private boolean isClient(IContainer container) {
 		ContainerTypeDescription ctd = getContainerTypeDescription(container);
-		if (ctd == null) return false;
-		else return !ctd.isServer();
+		if (ctd == null)
+			return false;
+		else
+			return !ctd.isServer();
 	}
-	
+
 	private Version getPackageVersion(ServiceReference serviceReference,
 			String serviceInterface, String packageName) {
 		Object service = getClientBundleContext().getService(serviceReference);
@@ -1264,13 +1266,14 @@ public class RemoteServiceAdmin implements
 		if (interfaceClasses == null)
 			return null;
 		Class interfaceClass = null;
-		for (int i = 0; i < interfaceClasses.length; i++) 
+		for (int i = 0; i < interfaceClasses.length; i++)
 			if (interfaceClasses[i].getName().equals(serviceInterface))
 				interfaceClass = interfaceClasses[i];
 		if (interfaceClass == null)
 			return null;
 		Bundle providingBundle = FrameworkUtil.getBundle(interfaceClass);
-		if (providingBundle == null) return null;
+		if (providingBundle == null)
+			return null;
 		return getVersionForPackage(providingBundle, packageName);
 	}
 
@@ -1734,8 +1737,10 @@ public class RemoteServiceAdmin implements
 						+ remoteVersion + ",localVersion=" + localVersion); //$NON-NLS-1$
 
 		// If no remote version info, then set it to empty
-		if (remoteVersion == null) remoteVersion = Version.emptyVersion;
-		if (localVersion == null) localVersion = Version.emptyVersion;
+		if (remoteVersion == null)
+			remoteVersion = Version.emptyVersion;
+		if (localVersion == null)
+			localVersion = Version.emptyVersion;
 
 		// By default we do strict comparison of remote with local...they must
 		// be exactly the same, or we thrown a runtime exception
@@ -1817,7 +1822,7 @@ public class RemoteServiceAdmin implements
 		}
 		return result;
 	}
-	
+
 	private Version getPackageVersionViaRequestingBundle(String packageName,
 			Bundle requestingBundle) {
 		Version result = null;
@@ -1860,7 +1865,7 @@ public class RemoteServiceAdmin implements
 		}
 		return result;
 	}
-	
+
 	private IRemoteServiceReference selectRemoteServiceReference(
 			Collection<IRemoteServiceReference> rsRefs, ID targetID,
 			ID[] idFilter, Collection<String> interfaces, String rsFilter,
@@ -1885,7 +1890,8 @@ public class RemoteServiceAdmin implements
 		Map resultProperties = new TreeMap<String, Object>(
 				String.CASE_INSENSITIVE_ORDER);
 		PropertiesUtil.copyNonReservedProperties(rsReference, resultProperties);
-		PropertiesUtil.copyNonReservedProperties(endpointDescription.getProperties(), resultProperties);
+		PropertiesUtil.copyNonReservedProperties(
+				endpointDescription.getProperties(), resultProperties);
 		// remove OBJECTCLASS
 		resultProperties
 				.remove(org.eclipse.ecf.remoteservice.Constants.OBJECTCLASS);
@@ -1942,13 +1948,13 @@ public class RemoteServiceAdmin implements
 	}
 
 	private ExportRegistration exportService(ServiceReference serviceReference,
-			Map<String, ?> overridingProperties,
-			String[] exportedInterfaces, IRemoteServiceContainer rsContainer,
+			Map<String, ?> overridingProperties, String[] exportedInterfaces,
+			IRemoteServiceContainer rsContainer,
 			Map<String, Object> endpointDescriptionProperties) throws Exception {
 
 		// Create remote service properties
 		Map remoteServiceProperties = copyNonReservedProperties(
-				serviceReference, (Map<String,Object>) overridingProperties,
+				serviceReference, (Map<String, Object>) overridingProperties,
 				new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER));
 
 		IRemoteServiceContainerAdapter containerAdapter = rsContainer

@@ -62,11 +62,13 @@ public interface IServiceInfoFactory {
 	 *         Otherwise, a new service info will be created and returned. If
 	 *         some error occurs in the creation of the serviceInfo,
 	 *         <code>null</code> will be returned.
+	 * @since 3.0
 	 */
-	public IServiceInfo createServiceInfo(IDiscoveryAdvertiser advertiser,
-			EndpointDescription endpointDescription);
+	public IServiceInfo createServiceInfo(
+			IDiscoveryAdvertiser advertiser,
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription);
 
-	/**
+/**
 	 * Remove any previously created service info that is associated with the
 	 * given endpointDescription (and advertiser).
 	 * 
@@ -81,8 +83,10 @@ public interface IServiceInfoFactory {
 	 *         {@link IDiscoveryAdvertiser#unregisterService(IServiceInfo)). If
 	 *         <code>null</code> no service info exists that had previously been
 	 *         created for the given endpointDescription and advertiser.
+	 * @since 3.0
 	 */
-	public IServiceInfo removeServiceInfo(IDiscoveryAdvertiser advertiser,
-			EndpointDescription endpointDescription);
+	public IServiceInfo removeServiceInfo(
+			IDiscoveryAdvertiser advertiser,
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription);
 
 }

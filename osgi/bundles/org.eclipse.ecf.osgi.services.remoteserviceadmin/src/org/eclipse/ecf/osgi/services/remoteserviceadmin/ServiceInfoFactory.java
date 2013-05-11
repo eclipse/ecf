@@ -36,11 +36,15 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 	protected Map<ServiceInfoKey, IServiceInfo> serviceInfos = new HashMap();
 
 	protected class ServiceInfoKey {
-		private EndpointDescription endpointDescription;
+		private org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription;
 		private Namespace discoveryNamespace;
 		private int hashCode = 7;
 
-		public ServiceInfoKey(EndpointDescription endpointDescription,
+		/**
+		 * @since 3.0
+		 */
+		public ServiceInfoKey(
+				org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
 				Namespace discoveryNamespace) {
 			this.endpointDescription = endpointDescription;
 			this.discoveryNamespace = discoveryNamespace;
@@ -64,8 +68,12 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 		}
 	}
 
-	public IServiceInfo createServiceInfo(IDiscoveryAdvertiser advertiser,
-			EndpointDescription endpointDescription) {
+	/**
+	 * @since 3.0
+	 */
+	public IServiceInfo createServiceInfo(
+			IDiscoveryAdvertiser advertiser,
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
 		try {
 			Namespace advertiserNamespace = advertiser.getServicesNamespace();
 			ServiceInfoKey key = new ServiceInfoKey(endpointDescription,
@@ -93,7 +101,7 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 			}
 		} catch (Exception e) {
 			logError(
-					"createServiceInfoForDiscovery", //$NON-NLS-1$
+					"createServiceInfo", //$NON-NLS-1$
 					"Exception creating service info for endpointDescription=" //$NON-NLS-1$
 							+ endpointDescription + ",advertiser=" + advertiser, //$NON-NLS-1$
 					e);
@@ -107,8 +115,11 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 				serviceProperties);
 	}
 
+	/**
+	 * @since 3.0
+	 */
 	protected IServiceProperties createServiceProperties(
-			EndpointDescription endpointDescription,
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
 			IDiscoveryAdvertiser advertiser, IServiceTypeID serviceTypeID,
 			String serviceName, URI uri) {
 		ServiceProperties result = new ServiceProperties();
@@ -116,7 +127,11 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 		return result;
 	}
 
-	protected URI createURI(EndpointDescription endpointDescription,
+	/**
+	 * @since 3.0
+	 */
+	protected URI createURI(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
 			IDiscoveryAdvertiser advertiser, IServiceTypeID serviceTypeID,
 			String serviceName) throws URISyntaxException {
 		String path = "/" + serviceName; //$NON-NLS-1$
@@ -166,7 +181,11 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 		return new URI(scheme, null, host, port, path, null, null);
 	}
 
-	protected String createServiceName(EndpointDescription endpointDescription,
+	/**
+	 * @since 3.0
+	 */
+	protected String createServiceName(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
 			IDiscoveryAdvertiser advertiser, IServiceTypeID serviceTypeID) {
 		// First create unique default name
 		String defaultServiceName = createDefaultServiceName(
@@ -178,15 +197,21 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 		return serviceName;
 	}
 
+	/**
+	 * @since 3.0
+	 */
 	protected String createDefaultServiceName(
-			EndpointDescription endpointDescription,
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
 			IDiscoveryAdvertiser advertiser, IServiceTypeID serviceTypeID) {
 		return RemoteConstants.DISCOVERY_DEFAULT_SERVICE_NAME_PREFIX
 				+ IDFactory.getDefault().createGUID().getName();
 	}
 
+	/**
+	 * @since 3.0
+	 */
 	protected IServiceTypeID createServiceTypeID(
-			EndpointDescription endpointDescription,
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
 			IDiscoveryAdvertiser advertiser) {
 		Map props = endpointDescription.getProperties();
 		String[] scopes = PropertiesUtil.getStringArrayWithDefault(props,
@@ -203,16 +228,6 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 				scopes, protocols, namingAuthority);
 	}
 
-	public IServiceInfo removeServiceInfo(IDiscoveryAdvertiser advertiser,
-			EndpointDescription endpointDescription) {
-		Namespace advertiserNamespace = advertiser.getServicesNamespace();
-		ServiceInfoKey key = new ServiceInfoKey(endpointDescription,
-				advertiserNamespace);
-		synchronized (serviceInfos) {
-			return serviceInfos.remove(key);
-		}
-	}
-
 	public void close() {
 		removeAllServiceInfos();
 		super.close();
@@ -221,6 +236,20 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 	private void removeAllServiceInfos() {
 		synchronized (serviceInfos) {
 			serviceInfos.clear();
+		}
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	public IServiceInfo removeServiceInfo(
+			IDiscoveryAdvertiser advertiser,
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
+		Namespace advertiserNamespace = advertiser.getServicesNamespace();
+		ServiceInfoKey key = new ServiceInfoKey(endpointDescription,
+				advertiserNamespace);
+		synchronized (serviceInfos) {
+			return serviceInfos.remove(key);
 		}
 	}
 }

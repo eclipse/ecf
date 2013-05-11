@@ -160,7 +160,10 @@ public abstract class AbstractMetadataFactory {
 
 	}
 
-	protected EndpointDescription decodeEndpointDescription(
+	/**
+	 * @since 3.0
+	 */
+	protected org.osgi.service.remoteserviceadmin.EndpointDescription decodeEndpointDescription(
 			IServiceProperties discoveredServiceProperties) {
 
 		Map<String, Object> endpointDescriptionProperties = new TreeMap<String, Object>(
@@ -172,48 +175,58 @@ public abstract class AbstractMetadataFactory {
 		// remote service id
 		Long remoteServiceId = decodeLong(discoveredServiceProperties,
 				org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
-		endpointDescriptionProperties.put(
-				org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,
-				remoteServiceId);
 
-		// container id namespace
-		String containerIDNamespace = decodeString(discoveredServiceProperties,
-				RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
-		if (containerIDNamespace != null)
+		if (remoteServiceId != null) {
 			endpointDescriptionProperties.put(
-					RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE,
-					containerIDNamespace);
+					org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,
+					remoteServiceId);
 
-		// connect target ID
-		String connectTargetIDName = decodeString(discoveredServiceProperties,
-				RemoteConstants.ENDPOINT_CONNECTTARGET_ID);
-		if (connectTargetIDName != null)
-			endpointDescriptionProperties.put(
-					RemoteConstants.ENDPOINT_CONNECTTARGET_ID,
-					connectTargetIDName);
+			// container id namespace
+			String containerIDNamespace = decodeString(
+					discoveredServiceProperties,
+					RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
+			if (containerIDNamespace != null)
+				endpointDescriptionProperties.put(
+						RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE,
+						containerIDNamespace);
 
-		// ID filter
-		List<String> idFilterNames = decodeList(discoveredServiceProperties,
-				RemoteConstants.ENDPOINT_IDFILTER_IDS);
-		Object idFilterNamesval = PropertiesUtil
-				.convertToStringPlusValue(idFilterNames);
-		if (idFilterNamesval != null)
-			endpointDescriptionProperties.put(
-					RemoteConstants.ENDPOINT_IDFILTER_IDS, idFilterNamesval);
+			// connect target ID
+			String connectTargetIDName = decodeString(
+					discoveredServiceProperties,
+					RemoteConstants.ENDPOINT_CONNECTTARGET_ID);
+			if (connectTargetIDName != null)
+				endpointDescriptionProperties.put(
+						RemoteConstants.ENDPOINT_CONNECTTARGET_ID,
+						connectTargetIDName);
 
-		// remote service filter
-		String remoteServiceFilter = decodeString(discoveredServiceProperties,
-				RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER);
-		if (remoteServiceFilter != null)
-			endpointDescriptionProperties.put(
-					RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER,
-					remoteServiceFilter);
+			// ID filter
+			List<String> idFilterNames = decodeList(
+					discoveredServiceProperties,
+					RemoteConstants.ENDPOINT_IDFILTER_IDS);
+			Object idFilterNamesval = PropertiesUtil
+					.convertToStringPlusValue(idFilterNames);
+			if (idFilterNamesval != null)
+				endpointDescriptionProperties
+						.put(RemoteConstants.ENDPOINT_IDFILTER_IDS,
+								idFilterNamesval);
 
+			// remote service filter
+			String remoteServiceFilter = decodeString(
+					discoveredServiceProperties,
+					RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER);
+			if (remoteServiceFilter != null)
+				endpointDescriptionProperties.put(
+						RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER,
+						remoteServiceFilter);
+
+		}
 		// Finally, fill out other properties
 		decodeNonStandardServiceProperties(discoveredServiceProperties,
 				endpointDescriptionProperties);
 
-		return new EndpointDescription(endpointDescriptionProperties);
+		return (remoteServiceId == null) ? new org.osgi.service.remoteserviceadmin.EndpointDescription(
+				endpointDescriptionProperties) : new EndpointDescription(
+				endpointDescriptionProperties);
 	}
 
 	private String getPackageName(String className) {
@@ -223,8 +236,12 @@ public abstract class AbstractMetadataFactory {
 		return className.substring(0, lastDotIndex);
 	}
 
+	/**
+	 * @since 3.0
+	 */
 	protected void encodeOSGiServiceProperties(
-			EndpointDescription endpointDescription, IServiceProperties result) {
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
+			IServiceProperties result) {
 		// org.osgi.framework.Constants.OBJECTCLASS =
 		// endpointDescription.getInterfaces();
 		List<String> interfaces = endpointDescription.getInterfaces();
@@ -306,52 +323,60 @@ public abstract class AbstractMetadataFactory {
 
 	}
 
+	/**
+	 * @since 3.0
+	 */
 	protected void encodeServiceProperties(
-			EndpointDescription endpointDescription, IServiceProperties result) {
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
+			IServiceProperties result) {
 
 		encodeOSGiServiceProperties(endpointDescription, result);
 
-		Long rsId = (Long) endpointDescription.getProperties().get(
-				org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
-		if (rsId != null)
-			encodeLong(result,
-					org.eclipse.ecf.remoteservice.Constants.SERVICE_ID, rsId);
+		if (endpointDescription instanceof org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription) {
 
-		// org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE
-		// = endpointDescription.getIdNamespace()
-		String containerIDNamespace = endpointDescription.getIdNamespace();
-		if (containerIDNamespace != null)
-			encodeString(result,
-					RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE,
-					containerIDNamespace);
+			EndpointDescription ecfEd = (EndpointDescription) endpointDescription;
 
-		// org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants.ENDPOINT_CONNECTTARGET_ID
-		// = endpointDescription.getRemoteServiceId()
-		ID connectTargetID = endpointDescription.getConnectTargetID();
-		if (connectTargetID != null)
-			encodeString(result, RemoteConstants.ENDPOINT_CONNECTTARGET_ID,
-					connectTargetID.getName());
+			Long rsId = (Long) endpointDescription.getProperties().get(
+					org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
+			if (rsId != null)
+				encodeLong(result,
+						org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,
+						rsId);
 
-		// org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants.ENDPOINT_IDFILTER_IDS
-		// = endpointDescription.getIDFilter();
-		ID[] idFilter = endpointDescription.getIDFilter();
-		if (idFilter != null && idFilter.length > 0) {
-			List<String> idNames = new ArrayList<String>();
-			for (int i = 0; i < idFilter.length; i++)
-				idNames.add(idFilter[i].getName());
-			encodeList(result, RemoteConstants.ENDPOINT_IDFILTER_IDS, idNames);
-		}
+			// org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE
+			String containerIDNamespace = ecfEd.getIdNamespace();
+			if (containerIDNamespace != null)
+				encodeString(result,
+						RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE,
+						containerIDNamespace);
 
-		// org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER
-		// = endpointDescription.getRemoteServiceFilter()
-		String remoteFilter = endpointDescription.getRemoteServiceFilter();
-		if (remoteFilter != null) {
-			encodeString(result, RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER,
-					remoteFilter);
+			// org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants.ENDPOINT_CONNECTTARGET_ID
+			ID connectTargetID = ecfEd.getConnectTargetID();
+			if (connectTargetID != null)
+				encodeString(result, RemoteConstants.ENDPOINT_CONNECTTARGET_ID,
+						connectTargetID.getName());
+
+			// org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants.ENDPOINT_IDFILTER_IDS
+			ID[] idFilter = ecfEd.getIDFilter();
+			if (idFilter != null && idFilter.length > 0) {
+				List<String> idNames = new ArrayList<String>();
+				for (int i = 0; i < idFilter.length; i++)
+					idNames.add(idFilter[i].getName());
+				encodeList(result, RemoteConstants.ENDPOINT_IDFILTER_IDS,
+						idNames);
+			}
+
+			// org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER
+			String remoteFilter = ecfEd.getRemoteServiceFilter();
+			if (remoteFilter != null)
+				encodeString(result,
+						RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER,
+						remoteFilter);
 		}
 		// encode non standard properties
 		encodeNonStandardServiceProperties(endpointDescription.getProperties(),
 				result);
+
 	}
 
 	protected void encodeNonStandardServiceProperties(

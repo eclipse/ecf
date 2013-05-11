@@ -58,6 +58,7 @@ public interface IEndpointDescriptionAdvertiser {
 	 *         child statuses.
 	 * 
 	 * @see IStatus
+	 * @since 3.0
 	 */
 	public IStatus advertise(EndpointDescription endpointDescription);
 
@@ -74,7 +75,44 @@ public interface IEndpointDescriptionAdvertiser {
 	 *         child statuses.
 	 * 
 	 * @see IStatus
+	 * @since 3.0
 	 */
 	public IStatus unadvertise(EndpointDescription endpointDescription);
+
+	/**
+	 * Advertise/publish the given endpoint description.
+	 * 
+	 * @param endpointDescription
+	 *            the endpoint description to advertise. Must not be
+	 *            <code>null</code>.
+	 * @return IStatus to indicate the status of the advertisement. If the
+	 *         returned status returns <code>false</code> from
+	 *         {@link IStatus#isOK()}, then the advertisement failed. The
+	 *         IStatus can be further inspected for exception information and/or
+	 *         child statuses.
+	 * 
+	 * @since 3.0
+	 * @see IStatus
+	 */
+	public IStatus advertise(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription);
+
+	/**
+	 * Unadvertise/unpublishe the given endpoint description.
+	 * 
+	 * @param endpointDescription
+	 *            the endpoint description to unadvertise. Must not be
+	 *            <code>null</code>.
+	 * @return IStatus to indicate the status of the unadvertisement. If the
+	 *         returned status returns <code>false</code> from
+	 *         {@link IStatus#isOK()}, then the unadvertisement failed. The
+	 *         IStatus can be further inspected for exception information and/or
+	 *         child statuses.
+	 * 
+	 * @since 3.0
+	 * @see IStatus
+	 */
+	public IStatus unadvertise(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription);
 
 }
