@@ -9,9 +9,11 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.remoteserviceadmin;
 
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -19,7 +21,9 @@ import java.util.UUID;
 
 import javax.xml.parsers.SAXParserFactory;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.core.util.SystemLogService;
@@ -27,6 +31,7 @@ import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionAdver
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionLocator;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionAdvertiser;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin;
+import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -58,7 +63,7 @@ public class Activator implements BundleActivator {
 	private EndpointDescriptionLocator endpointDescriptionLocator;
 	private EndpointDescriptionAdvertiser endpointDescriptionAdvertiser;
 	private ServiceRegistration endpointDescriptionAdvertiserRegistration;
-	
+
 	private ServiceTracker containerManagerTracker;
 	// Logging
 	private ServiceTracker logServiceTracker = null;
@@ -107,7 +112,33 @@ public class Activator implements BundleActivator {
 	private Map<Bundle, RemoteServiceAdmin> remoteServiceAdmins = new HashMap<Bundle, RemoteServiceAdmin>(
 			1);
 
-	
+	private String[][] getSupportedConfigsAndIntents() {
+		IContainerManager containerManager = getContainerManager();
+		Assert.isNotNull(containerManager,
+				"Container manager must be present to start ECF Remote Service Admin"); //$NON-NLS-1$
+		ContainerTypeDescription[] remoteServiceDescriptions = containerManager
+				.getContainerFactory().getDescriptionsForContainerAdapter(
+						IRemoteServiceContainerAdapter.class);
+		List<String> supportedConfigs = new ArrayList<String>();
+		List<String> supportedIntents = new ArrayList<String>();
+		for (int i = 0; i < remoteServiceDescriptions.length; i++) {
+			String[] descSupportedConfigs = remoteServiceDescriptions[i]
+					.getSupportedConfigs();
+			for (int j = 0; j < descSupportedConfigs.length; j++)
+				supportedConfigs.add(descSupportedConfigs[j]);
+			String[] descSupportedIntents = remoteServiceDescriptions[i]
+					.getSupportedIntents();
+			for (int j = 0; j < descSupportedIntents.length; j++)
+				supportedIntents.add(descSupportedIntents[j]);
+		}
+		String[][] result = new String[2][];
+		result[0] = supportedConfigs
+				.toArray(new String[supportedConfigs.size()]);
+		result[1] = supportedIntents
+				.toArray(new String[supportedIntents.size()]);
+		return result;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -129,6 +160,14 @@ public class Activator implements BundleActivator {
 		// make remote service admin available
 		Properties rsaProps = new Properties();
 		rsaProps.put(RemoteServiceAdmin.SERVICE_PROP, new Boolean(true));
+		String[][] supportedConfigsAndIntents = getSupportedConfigsAndIntents();
+		rsaProps.put(
+				org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED,
+				supportedConfigsAndIntents[0]);
+		rsaProps.put(
+				org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_INTENTS_SUPPORTED,
+				supportedConfigsAndIntents[1]);
+
 		remoteServiceAdminRegistration = context.registerService(
 				org.osgi.service.remoteserviceadmin.RemoteServiceAdmin.class
 						.getName(), new ServiceFactory() {
