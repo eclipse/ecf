@@ -3,6 +3,8 @@
    <implementation class="org.eclipse.ecf.internal.osgi.services.distribution.BasicTopologyManagerComponent"/>
    <service>
       <provide interface="org.osgi.framework.hooks.service.EventHook"/>
+      <provide interface="org.osgi.service.event.EventHandler"/>
    </service>
    <reference bind="bindEndpointListener" cardinality="1..n" interface="org.osgi.service.remoteserviceadmin.EndpointListener" name="EndpointListener" policy="static" unbind="unbindEndpointListener"/>
+   <property name="event.topics" type="String" value="org/osgi/service/remoteserviceadmin/*"/>
 </scr:component>

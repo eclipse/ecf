@@ -19,6 +19,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 
 /**
  * Default implementation of {@link IEndpointDescriptionAdvertiser}.
@@ -44,13 +46,23 @@ public class EndpointDescriptionAdvertiser implements
 	/**
 	 * @since 3.0
 	 */
+	protected void trace(String methodName, String message) {
+		LogUtility.trace(methodName, DebugOptions.ENDPOINT_DESCRIPTION_ADVERTISER, this.getClass(), message);
+	}
+	
+	/**
+	 * @since 3.0
+	 */
 	protected IStatus doDiscovery(IDiscoveryAdvertiser discoveryAdvertiser,
 			IServiceInfo serviceInfo, boolean advertise) {
 		try {
-			if (advertise)
+			if (advertise) {
+				trace("doDiscovery","discoveryAdvertiser="+discoveryAdvertiser+" serviceInfo="+serviceInfo); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				discoveryAdvertiser.registerService(serviceInfo);
-			else
+			} else {
+				trace("doUndiscovery","discoveryAdvertiser="+discoveryAdvertiser+" serviceInfo="+serviceInfo); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				discoveryAdvertiser.unregisterService(serviceInfo);
+			}
 			return Status.OK_STATUS;
 		} catch (Exception e) {
 			return createErrorStatus((advertise ? "registerService" //$NON-NLS-1$

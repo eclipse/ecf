@@ -337,6 +337,7 @@ public class EndpointDescriptionLocator {
 				advertiserTracker = null;
 			}
 		}
+		this.serviceIDs.clear();
 		this.executor = null;
 		this.context = null;
 	}
@@ -796,6 +797,8 @@ public class EndpointDescriptionLocator {
 		}
 	}
 
+	private List<IServiceID> serviceIDs = new ArrayList<IServiceID>();
+
 	class LocatorServiceListener implements IServiceListener {
 
 		private Object listenerLock = new Object();
@@ -828,8 +831,19 @@ public class EndpointDescriptionLocator {
 			logInfo("handleService", "serviceInfo=" + serviceInfo //$NON-NLS-1$ //$NON-NLS-2$
 					+ ",discovered=" + discovered); //$NON-NLS-1$
 			IServiceID serviceID = serviceInfo.getServiceID();
-			if (matchServiceID(serviceID))
+			if (matchServiceID(serviceID)) {
+				synchronized (serviceIDs) {
+					if (discovered) {
+						if (serviceIDs.contains(serviceID)) {
+							trace("handleService", "Found serviceInfo with same serviceID=" + serviceID + "...ignoring"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+							return;
+						}
+						serviceIDs.add(serviceID);
+					} else
+						serviceIDs.remove(serviceID);
+				}
 				handleOSGiServiceEndpoint(serviceID, serviceInfo, discovered);
+			}
 		}
 
 		private void handleOSGiServiceEndpoint(IServiceID serviceId,
@@ -842,20 +856,24 @@ public class EndpointDescriptionLocator {
 				handleEndpointDescription(
 						discoveredEndpointDescription.getEndpointDescription(),
 						discovered);
-			} else {
+			} else
 				logWarning("handleOSGiServiceEvent", //$NON-NLS-1$
 						"discoveredEndpointDescription is null for service info=" //$NON-NLS-1$
 								+ serviceInfo + ",discovered=" + discovered); //$NON-NLS-1$
-			}
 		}
 
-		public void handleEndpointDescription(
+		void handleEndpointDescription(
 				org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
 				boolean discovered) {
 			synchronized (listenerLock) {
-				if (discovered)
+				if (discovered) {
+					if (discoveredEndpointDescriptions
+							.contains(endpointDescription)) {
+						trace("handleEndpointDescription", "endpointDescription previously discovered...ignoring"); //$NON-NLS-1$ //$NON-NLS-2$
+						return;
+					}
 					discoveredEndpointDescriptions.add(endpointDescription);
-				else
+				} else
 					discoveredEndpointDescriptions.remove(endpointDescription);
 
 				queueEndpointDescription(endpointDescription, discovered);
@@ -882,10 +900,6 @@ public class EndpointDescriptionLocator {
 					message);
 		}
 
-		private void logError(String methodName, String message) {
-			logError(methodName, message, null);
-		}
-
 		private void logError(String methodName, String message, Throwable t) {
 			LogUtility.logError(methodName,
 					DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, this.getClass(),
@@ -898,14 +912,6 @@ public class EndpointDescriptionLocator {
 			// Get IEndpointDescriptionFactory
 			final String methodName = "getDiscoveredEndpointDescription"; //$NON-NLS-1$
 			IDiscoveredEndpointDescriptionFactory factory = getDiscoveredEndpointDescriptionFactory();
-			if (factory == null) {
-				logError(
-						methodName,
-						"No IEndpointDescriptionFactory found, could not create EndpointDescription for " //$NON-NLS-1$
-								+ (discovered ? "discovered" : "undiscovered") //$NON-NLS-1$ //$NON-NLS-2$
-								+ " serviceInfo=" + serviceInfo); //$NON-NLS-1$
-				return null;
-			}
 			try {
 				// Else get endpoint description factory to create
 				// EndpointDescription

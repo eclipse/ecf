@@ -20,6 +20,8 @@ import org.osgi.framework.Filter;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.hooks.service.EventHook;
+import org.osgi.service.event.EventConstants;
+import org.osgi.service.event.EventHandler;
 import org.osgi.service.log.LogService;
 import org.osgi.service.remoteserviceadmin.EndpointListener;
 import org.osgi.util.tracker.ServiceTracker;
@@ -62,6 +64,7 @@ public class Activator implements BundleActivator {
 	private ServiceRegistration endpointListenerReg;
 	private BasicTopologyManagerComponent basicTopologyManagerComp;
 	private ServiceRegistration eventHookRegistration;
+	private ServiceRegistration eventHandlerRegistration;
 
 	public static Activator getDefault() {
 		return plugin;
@@ -179,6 +182,13 @@ public class Activator implements BundleActivator {
 		basicTopologyManagerComp = new BasicTopologyManagerComponent();
 		// bind the topology manager to it
 		basicTopologyManagerComp.bindEndpointListener(basicTopologyManagerImpl);
+		// Register EventHandler for rsa
+		Properties eventHandlerProps = new Properties();
+		String[] rsaTopics = new String[] { "org/osgi/service/remoteserviceadmin/*" }; //$NON-NLS-1$
+		eventHandlerProps.put(EventConstants.EVENT_TOPIC, rsaTopics);
+		eventHandlerRegistration = this.context.registerService(
+				EventHandler.class, basicTopologyManagerComp,
+				(Dictionary) eventHandlerProps);
 		// register the basic topology manager as EventHook service
 		eventHookRegistration = this.context.registerService(EventHook.class,
 				basicTopologyManagerComp, null);
@@ -205,6 +215,10 @@ public class Activator implements BundleActivator {
 		if (endpointListenerReg != null) {
 			endpointListenerReg.unregister();
 			endpointListenerReg = null;
+		}
+		if (eventHandlerRegistration != null) {
+			eventHandlerRegistration.unregister();
+			eventHandlerRegistration = null;
 		}
 		if (basicTopologyManagerImpl != null) {
 			basicTopologyManagerImpl.close();

@@ -113,6 +113,17 @@ public class RemoteServiceAdmin implements
 	private Collection<ExportRegistration> exportedRegistrations = new ArrayList<ExportRegistration>();
 	private Collection<ImportRegistration> importedRegistrations = new ArrayList<ImportRegistration>();
 
+	List<ExportRegistration> getExportedRegistrations() {
+		synchronized (exportedRegistrations) {
+			return new ArrayList(exportedRegistrations);
+		}
+	}
+	List<ImportRegistration> getImportedRegistrations() {
+		synchronized (importedRegistrations) {
+			return new ArrayList(importedRegistrations);
+		}
+	}
+
 	public RemoteServiceAdmin(Bundle clientBundle) {
 		this.clientBundle = clientBundle;
 		Assert.isNotNull(this.clientBundle);
@@ -224,15 +235,22 @@ public class RemoteServiceAdmin implements
 					(Map<String, Object>) overridingProperties,
 					exportedInterfaces, exportedConfigs, serviceIntents);
 		} catch (SelectContainerException e) {
+			// If exception, create error export registration
 			ExportRegistration errorRegistration = createErrorExportRegistration(
 					serviceReference,
 					(Map<String, Object>) overridingProperties,
 					"Error selecting or creating host container for serviceReference=" //$NON-NLS-1$
 							+ serviceReference + " properties=" //$NON-NLS-1$
 							+ overridingProperties, e);
+			// Add to exportedRegistrations
+			synchronized (exportedRegistrations) {
+				exportedRegistrations.add(errorRegistration);
+			}
+			// Publish export event
+			publishExportEvent(errorRegistration);
+			// Return collection
 			Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> result = new ArrayList<org.osgi.service.remoteserviceadmin.ExportRegistration>();
 			result.add(errorRegistration);
-			publishExportEvent(errorRegistration);
 			return result;
 		}
 		// If none found, log warning and return
@@ -339,7 +357,13 @@ public class RemoteServiceAdmin implements
 		try {
 			rsContainer = consumerContainerSelector.selectConsumerContainer(ed);
 		} catch (SelectContainerException e) {
+			// If failed, create an error ImportRegistration
 			ImportRegistration errorRegistration = new ImportRegistration(ed, e);
+			// Add it to the set of imported registrations
+			synchronized (importedRegistrations) {
+				importedRegistrations.add(errorRegistration);
+			}
+			// publish import event
 			publishImportEvent(errorRegistration);
 			return errorRegistration;
 		}
@@ -431,40 +455,26 @@ public class RemoteServiceAdmin implements
 	private void addImportRegistration(ImportRegistration importRegistration) {
 		synchronized (importedRegistrations) {
 			importedRegistrations.add(importRegistration);
-			trace("addImportRegistration", "importRegistration=" //$NON-NLS-1$ //$NON-NLS-2$
-					+ importRegistration + " importedRegistrations=" //$NON-NLS-1$
-					+ importedRegistrations);
 		}
 	}
 
 	private void addExportRegistration(ExportRegistration exportRegistration) {
 		synchronized (exportedRegistrations) {
 			exportedRegistrations.add(exportRegistration);
-			trace("addExportRegistration", "exportRegistration=" //$NON-NLS-1$ //$NON-NLS-2$
-					+ exportRegistration + " exportedRegistrations=" //$NON-NLS-1$
-					+ exportedRegistrations);
 		}
 	}
 
 	private boolean removeExportRegistration(
 			ExportRegistration exportRegistration) {
 		synchronized (exportedRegistrations) {
-			boolean removed = exportedRegistrations.remove(exportRegistration);
-			trace("removeExportRegistration", "exportRegistration=" //$NON-NLS-1$ //$NON-NLS-2$
-					+ exportRegistration + " exportedRegistrations=" //$NON-NLS-1$
-					+ exportedRegistrations + " removed=" + removed); //$NON-NLS-1$
-			return removed;
+			return exportedRegistrations.remove(exportRegistration);
 		}
 	}
 
 	private boolean removeImportRegistration(
 			ImportRegistration importRegistration) {
 		synchronized (importedRegistrations) {
-			boolean removed = importedRegistrations.remove(importRegistration);
-			trace("removeImportRegistration", "importRegistration=" //$NON-NLS-1$ //$NON-NLS-2$
-					+ importRegistration + " importedRegistrations=" //$NON-NLS-1$
-					+ importedRegistrations + " removed=" + removed); //$NON-NLS-1$
-			return removed;
+			return importedRegistrations.remove(importRegistration);
 		}
 	}
 
@@ -643,7 +653,7 @@ public class RemoteServiceAdmin implements
 			if (publish && rsaBundle != null)
 				publishEvent(new RemoteServiceAdminEvent(containerID,
 						RemoteServiceAdminEvent.EXPORT_UNREGISTRATION,
-						rsaBundle, exportReference, exception),
+						rsaBundle, exportReference, exception, endpointDescription),
 						endpointDescription);
 		}
 
@@ -831,7 +841,11 @@ public class RemoteServiceAdmin implements
 		boolean match(IRemoteServiceID remoteServiceID) {
 			return importReference.match(remoteServiceID);
 		}
-
+		
+		boolean match(EndpointDescription ed) {
+			return (getImportEndpoint(ed) != null);
+		}
+		
 		ImportEndpoint getImportEndpoint(EndpointDescription ed) {
 			return importReference.match(ed);
 		}
@@ -862,7 +876,7 @@ public class RemoteServiceAdmin implements
 			if (publish && rsaBundle != null)
 				publishEvent(new RemoteServiceAdminEvent(containerID,
 						RemoteServiceAdminEvent.IMPORT_UNREGISTRATION,
-						rsaBundle, importReference, exception),
+						rsaBundle, importReference, exception, endpointDescription),
 						endpointDescription);
 
 		}
@@ -1072,24 +1086,26 @@ public class RemoteServiceAdmin implements
 		Throwable exception = exportRegistration.getException();
 		org.osgi.service.remoteserviceadmin.ExportReference exportReference = (exception == null) ? exportRegistration
 				.getExportReference() : null;
+		EndpointDescription endpointDescription = exportRegistration.getEndpointDescription();
 		RemoteServiceAdminEvent rsaEvent = new RemoteServiceAdminEvent(
 				exportRegistration.getContainerID(),
 				(exception == null) ? RemoteServiceAdminEvent.EXPORT_REGISTRATION
 						: RemoteServiceAdminEvent.EXPORT_ERROR, getRSABundle(),
-				exportReference, exception);
-		publishEvent(rsaEvent, exportRegistration.getEndpointDescription());
+				exportReference, exception, endpointDescription);
+		publishEvent(rsaEvent, endpointDescription);
 	}
 
 	private void publishImportEvent(ImportRegistration importRegistration) {
 		Throwable exception = importRegistration.getException();
 		org.osgi.service.remoteserviceadmin.ImportReference importReference = (exception == null) ? importRegistration
 				.getImportReference() : null;
+	    EndpointDescription endpointDescription = importRegistration.getEndpointDescription();
 		RemoteServiceAdminEvent rsaEvent = new RemoteServiceAdminEvent(
 				importRegistration.getContainerID(),
 				(exception == null) ? RemoteServiceAdminEvent.IMPORT_REGISTRATION
 						: RemoteServiceAdminEvent.IMPORT_ERROR, getRSABundle(),
-				importReference, exception);
-		publishEvent(rsaEvent, importRegistration.getEndpointDescription());
+				importReference, exception, endpointDescription);
+		publishEvent(rsaEvent, endpointDescription);
 	}
 
 	private void closeRemoteServiceAdminListenerTracker() {
@@ -2142,15 +2158,17 @@ public class RemoteServiceAdmin implements
 			org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent {
 
 		private ID containerID;
-
+		private EndpointDescription endpointDescription;
+		
 		public RemoteServiceAdminEvent(
 				ID containerID,
 				int type,
 				Bundle source,
 				org.osgi.service.remoteserviceadmin.ExportReference exportReference,
-				Throwable exception) {
+				Throwable exception, EndpointDescription endpointDescription) {
 			super(type, source, exportReference, exception);
 			this.containerID = containerID;
+			this.endpointDescription = endpointDescription;
 		}
 
 		public RemoteServiceAdminEvent(
@@ -2158,11 +2176,19 @@ public class RemoteServiceAdmin implements
 				int type,
 				Bundle source,
 				org.osgi.service.remoteserviceadmin.ImportReference importReference,
-				Throwable exception) {
+				Throwable exception, EndpointDescription endpointDescription) {
 			super(type, source, importReference, exception);
 			this.containerID = containerID;
+			this.endpointDescription = endpointDescription;
 		}
 
+		/**
+		 * @since 3.0
+		 */
+		public EndpointDescription getEndpointDescription() {
+			return endpointDescription;
+		}
+		
 		public ID getContainerID() {
 			return containerID;
 		}

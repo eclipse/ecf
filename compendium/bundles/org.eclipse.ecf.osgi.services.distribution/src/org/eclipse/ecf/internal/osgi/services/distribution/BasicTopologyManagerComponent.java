@@ -3,9 +3,11 @@ package org.eclipse.ecf.internal.osgi.services.distribution;
 import java.util.Collection;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.hooks.service.EventHook;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
 import org.osgi.service.remoteserviceadmin.EndpointListener;
 
-public class BasicTopologyManagerComponent implements EventHook {
+public class BasicTopologyManagerComponent implements EventHook, EventHandler {
 
 	private boolean exportRegisteredSvcs = new Boolean(
 			System.getProperty(
@@ -38,6 +40,10 @@ public class BasicTopologyManagerComponent implements EventHook {
 
 	public void event(ServiceEvent event, Collection contexts) {
 		basicTopologyManagerImpl.event(event, contexts);
+	}
+
+	public void handleEvent(Event event) {
+		basicTopologyManagerImpl.handleEvent(event);
 	}
 
 }

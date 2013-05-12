@@ -10,7 +10,6 @@
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -225,13 +224,6 @@ public class EndpointDescription extends
 						.getFrameworkUUID()));
 	}
 
-	public String toString() {
-		return "EndpointDescription[containerID=" + containerID //$NON-NLS-1$
-				+ ",connectTargetID=" + connectTargetID + ",idFilter=" //$NON-NLS-1$ //$NON-NLS-2$
-				+ Arrays.toString(idFilter) + ",rsFilter=" + rsFilter //$NON-NLS-1$
-				+ ",properties=" + getProperties() + "]"; //$NON-NLS-1$ //$NON-NLS-2$
-	}
-
 	void setPropertiesOverrides(Map propertiesOverrides) {
 		this.overrides = PropertiesUtil.mergeProperties(super.getProperties(),
 				propertiesOverrides);
@@ -248,5 +240,13 @@ public class EndpointDescription extends
 		if (overrides != null)
 			return overrides;
 		return super.getProperties();
+	}
+	
+	public String toString() {
+		StringBuffer sb = new StringBuffer("ECFEndpointDescription["); //$NON-NLS-1$
+		sb.append("id").append(getId()); //$NON-NLS-1$
+		sb.append(";endpoint.service.id=").append(getServiceId()); //$NON-NLS-1$
+		sb.append(";frameworkid=").append(getFrameworkUUID()).append("]");  //$NON-NLS-1$//$NON-NLS-2$
+		return sb.toString();
 	}
 }

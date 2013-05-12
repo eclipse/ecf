@@ -9,10 +9,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -22,13 +19,15 @@ import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.remoteserviceadmin.ExportRegistration;
+import org.osgi.service.event.Event;
 import org.osgi.service.remoteserviceadmin.ImportRegistration;
+import org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
@@ -52,10 +51,6 @@ public abstract class AbstractTopologyManager {
 
 	private ServiceTracker remoteServiceAdminTracker;
 	private Object remoteServiceAdminTrackerLock = new Object();
-
-	protected Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> exportedRegistrations = new ArrayList<org.osgi.service.remoteserviceadmin.ExportRegistration>();
-
-	protected Collection<org.osgi.service.remoteserviceadmin.ImportRegistration> importedRegistrations = new ArrayList<org.osgi.service.remoteserviceadmin.ImportRegistration>();
 
 	public AbstractTopologyManager(BundleContext context) {
 		this.context = context;
@@ -101,12 +96,6 @@ public abstract class AbstractTopologyManager {
 				remoteServiceAdminTracker.close();
 				remoteServiceAdminTracker = null;
 			}
-		}
-		synchronized (exportedRegistrations) {
-			exportedRegistrations.clear();
-		}
-		synchronized (importedRegistrations) {
-			importedRegistrations.clear();
 		}
 		context = null;
 	}
@@ -209,48 +198,20 @@ public abstract class AbstractTopologyManager {
 	protected void handleEndpointAdded(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
 			String matchedFilter) {
-
 		if (!(endpointDescription instanceof org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription))
-			handleOSGiEndpointAdded(endpointDescription, matchedFilter);
+			handleNonECFEndpointAdded(endpointDescription, matchedFilter);
 		else {
 			// First, select importing remote service admin
-			org.osgi.service.remoteserviceadmin.RemoteServiceAdmin rsa = getRemoteServiceAdmin();
-
-			if (rsa == null) {
-				logError("handleEndpointAdded", //$NON-NLS-1$
-						"RemoteServiceAdmin not found for importing endpointDescription=" //$NON-NLS-1$
-								+ endpointDescription);
-				return;
-			}
-
 			trace("handleEndpointAdded", "endpointDescription=" //$NON-NLS-1$ //$NON-NLS-2$
-					+ endpointDescription + " rsa=" + rsa); //$NON-NLS-1$
-
-			// now call rsa.import
-			org.osgi.service.remoteserviceadmin.ImportRegistration importRegistration = rsa
-					.importService(endpointDescription);
-
-			if (importRegistration == null) {
-				logError("handleEndpointAdded", //$NON-NLS-1$
-						"Import registration is null for endpointDescription=" //$NON-NLS-1$
-								+ endpointDescription + " and rsa=" + rsa); //$NON-NLS-1$
-			} else {
-				Throwable t = importRegistration.getException();
-				if (t != null)
-					handleInvalidImportRegistration(importRegistration, t);
-				else {
-					synchronized (importedRegistrations) {
-						importedRegistrations.add(importRegistration);
-					}
-				}
-			}
+					+ endpointDescription);
+			getRemoteServiceAdmin().importService(endpointDescription);
 		}
 	}
 
 	/**
 	 * @since 3.0
 	 */
-	protected void handleOSGiEndpointAdded(
+	protected void handleNonECFEndpointAdded(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
 			String matchedFilter) {
 
@@ -301,18 +262,28 @@ public abstract class AbstractTopologyManager {
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
 			String matchedFilter) {
 		if (!(endpointDescription instanceof org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription))
-			handleOSGiEndpointRemoved(endpointDescription, matchedFilter);
+			handleNonECFEndpointRemoved(endpointDescription, matchedFilter);
 		else {
 			trace("handleEndpointRemoved", "endpointDescription=" //$NON-NLS-1$ //$NON-NLS-2$
 					+ endpointDescription);
-			unimportService(endpointDescription);
+			RemoteServiceAdmin rsa = (RemoteServiceAdmin) getRemoteServiceAdmin();
+			List<RemoteServiceAdmin.ImportRegistration> importedRegistrations = rsa
+					.getImportedRegistrations();
+			org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription ed = (org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription) endpointDescription;
+			for (RemoteServiceAdmin.ImportRegistration importedRegistration : importedRegistrations) {
+				if (importedRegistration.match(ed)) {
+					trace("handleEndpointRemoved", "closing importedRegistration=" //$NON-NLS-1$ //$NON-NLS-2$
+									+ importedRegistration);
+					importedRegistration.close();
+				}
+			}
 		}
 	}
 
 	/**
 	 * @since 3.0
 	 */
-	protected void handleOSGiEndpointRemoved(
+	protected void handleNonECFEndpointRemoved(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
 			String matchedFilter) {
 		IEndpointDescriptionAdvertiser advertiser = getEndpointDescriptionAdvertiser(endpointDescription);
@@ -343,18 +314,6 @@ public abstract class AbstractTopologyManager {
 		if (exportedInterfaces == null)
 			return;
 
-		// Select remote service admin
-		org.osgi.service.remoteserviceadmin.RemoteServiceAdmin rsa = getRemoteServiceAdmin();
-
-		// if no remote service admin available, then log error and return
-		if (rsa == null) {
-			logError("handleServiceRegistered", //$NON-NLS-1$
-					"No RemoteServiceAdmin found for serviceReference=" //$NON-NLS-1$
-							+ serviceReference
-							+ ".  Remote service NOT EXPORTED"); //$NON-NLS-1$
-			return;
-		}
-
 		// prepare export properties
 		Map<String, Object> exportProperties = new TreeMap<String, Object>(
 				String.CASE_INSENSITIVE_ORDER);
@@ -363,135 +322,62 @@ public abstract class AbstractTopologyManager {
 						exportedInterfaces);
 		trace("handleServiceRegistering", "serviceReference=" //$NON-NLS-1$ //$NON-NLS-2$
 				+ serviceReference + " exportProperties=" + exportProperties); //$NON-NLS-1$
-		Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> registrations = rsa
-				.exportService(serviceReference, exportProperties);
-
-		if (registrations == null || registrations.size() == 0) {
-			logError("handleServiceRegistered", //$NON-NLS-1$
-					"No export registrations created by RemoteServiceAdmin=" //$NON-NLS-1$
-							+ rsa + ".  ServiceReference=" + serviceReference //$NON-NLS-1$
-							+ " NOT EXPORTED"); //$NON-NLS-1$
-			return;
-		}
-
-		List<EndpointDescription> endpointDescriptions = new ArrayList<EndpointDescription>();
-
-		for (org.osgi.service.remoteserviceadmin.ExportRegistration exportRegistration : registrations) {
-			// If they are invalid report as such
-			Throwable t = exportRegistration.getException();
-			if (t != null)
-				handleInvalidExportRegistration(exportRegistration, t);
-			else {
-				endpointDescriptions
-						.add((EndpointDescription) exportRegistration
-								.getExportReference().getExportedEndpoint());
-				synchronized (exportedRegistrations) {
-					exportedRegistrations.add(exportRegistration);
-				}
-			}
-		}
-		// advertise valid exported registrations
-		advertiseEndpointDescriptions(endpointDescriptions);
-	}
-
-	protected void advertiseEndpointDescriptions(
-			List<EndpointDescription> endpointDescriptions) {
-		for (EndpointDescription ed : endpointDescriptions)
-			advertiseEndpointDescription(ed);
-	}
-
-	protected void handleInvalidExportRegistration(
-			ExportRegistration exportRegistration, Throwable t) {
-		logError("handleInvalidExportRegistration", "exportRegistration=" //$NON-NLS-1$ //$NON-NLS-2$
-				+ exportRegistration, t);
+		// Do the export with RSA
+		getRemoteServiceAdmin().exportService(serviceReference,
+				exportProperties);
 	}
 
 	protected void handleServiceModifying(ServiceReference serviceReference) {
 	}
 
 	protected void handleServiceUnregistering(ServiceReference serviceReference) {
-		Collection<EndpointDescription> endpointDescriptions = unexportService(serviceReference);
-		if (endpointDescriptions != null)
-			for (EndpointDescription ed : endpointDescriptions)
-				unadvertiseEndpointDescription(ed);
-	}
-
-	protected Collection<EndpointDescription> unexportService(
-			ServiceReference serviceReference) {
-		Map<org.osgi.service.remoteserviceadmin.ExportRegistration, EndpointDescription> matchingExportRegistrations = null;
-		synchronized (exportedRegistrations) {
-			for (Iterator<org.osgi.service.remoteserviceadmin.ExportRegistration> i = exportedRegistrations
-					.iterator(); i.hasNext();) {
-				if (matchingExportRegistrations == null)
-					matchingExportRegistrations = new HashMap<org.osgi.service.remoteserviceadmin.ExportRegistration, EndpointDescription>();
-				org.osgi.service.remoteserviceadmin.ExportRegistration exportRegistration = i
-						.next();
-				// Only check valid registrations (no exceptions)
-				if (exportRegistration.getException() == null) {
-					org.osgi.service.remoteserviceadmin.ExportReference exportRef = exportRegistration
-							.getExportReference();
-					if (exportRef != null) {
-						ServiceReference exportReference = exportRef
-								.getExportedService();
-						if (exportReference != null
-								&& serviceReference.equals(exportReference)) {
-							matchingExportRegistrations.put(exportRegistration,
-									(EndpointDescription) exportRef
-											.getExportedEndpoint());
-							i.remove();
-						}
-					}
-				}
+		List<RemoteServiceAdmin.ExportRegistration> exportedRegistrations = ((RemoteServiceAdmin) getRemoteServiceAdmin())
+				.getExportedRegistrations();
+		for (RemoteServiceAdmin.ExportRegistration exportedRegistration : exportedRegistrations) {
+			if (exportedRegistration.match(serviceReference)) {
+				trace("handleServiceUnregistering", "closing exportRegistration for serviceReference=" //$NON-NLS-1$ //$NON-NLS-2$
+								+ serviceReference);
+				exportedRegistration.close();
 			}
 		}
-		// If no matching export registrations then we return null and are done
-		if (matchingExportRegistrations == null
-				|| matchingExportRegistrations.size() == 0)
-			return null;
-		// We close all matching export registrations
-		for (Iterator<org.osgi.service.remoteserviceadmin.ExportRegistration> i = matchingExportRegistrations
-				.keySet().iterator(); i.hasNext();) {
-			org.osgi.service.remoteserviceadmin.ExportRegistration exportRegistration = i
-					.next();
-			trace("unexportService", "closing exportRegistration=" //$NON-NLS-1$ //$NON-NLS-2$
-					+ exportRegistration);
-			exportRegistration.close();
-		}
-		// And return endpointDescriptions for matching registrations
-		return matchingExportRegistrations.values();
 	}
 
-	protected void unimportService(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
-		List<org.osgi.service.remoteserviceadmin.ImportRegistration> removedRegistrations = null;
-		synchronized (importedRegistrations) {
-			for (Iterator<org.osgi.service.remoteserviceadmin.ImportRegistration> i = importedRegistrations
-					.iterator(); i.hasNext();) {
-				if (removedRegistrations == null)
-					removedRegistrations = new ArrayList<org.osgi.service.remoteserviceadmin.ImportRegistration>();
-				org.osgi.service.remoteserviceadmin.ImportRegistration importRegistration = i
-						.next();
-				if (importRegistration.getException() == null) {
-					org.osgi.service.remoteserviceadmin.ImportReference importRef = importRegistration
-							.getImportReference();
-					if (importRef != null) {
-						org.osgi.service.remoteserviceadmin.EndpointDescription ed = importRef
-								.getImportedEndpoint();
-						if (ed != null && ed.isSameService(endpointDescription)) {
-							removedRegistrations.add(importRegistration);
-							i.remove();
-						}
-					}
-				}
-			}
+	/**
+	 * @since 3.0
+	 */
+	protected void handleRSAEvent(Event event) {
+		Object o = event.getProperty("bundle"); //$NON-NLS-1$
+		if (o == null || !(o instanceof Bundle))
+			return;
+		Bundle b = (Bundle) o;
+		if (b.getSymbolicName().equals(
+				"org.eclipse.ecf.osgi.services.remoteservices"))return; //$NON-NLS-1$
+		RemoteServiceAdmin.RemoteServiceAdminEvent rsaEvent = (RemoteServiceAdmin.RemoteServiceAdminEvent) event
+				.getProperty("event"); //$NON-NLS-1$
+		if (rsaEvent == null)
+			return;
+		int eventType = rsaEvent.getType();
+		RemoteServiceAdmin.RemoteServiceAdminEvent rsaEvent1 = (RemoteServiceAdmin.RemoteServiceAdminEvent) rsaEvent;
+		switch (eventType) {
+		case RemoteServiceAdminEvent.EXPORT_REGISTRATION:
+			advertiseEndpointDescription(rsaEvent1.getEndpointDescription());
+			break;
+		case RemoteServiceAdminEvent.EXPORT_UNREGISTRATION:
+			unadvertiseEndpointDescription(rsaEvent1.getEndpointDescription());
+			break;
+		case RemoteServiceAdminEvent.EXPORT_ERROR:
+			logError(
+					"handleExportError", "Export error with event=" + rsaEvent1); //$NON-NLS-1$ //$NON-NLS-2$
+			break;
+		case RemoteServiceAdminEvent.IMPORT_REGISTRATION:
+			break;
+		case RemoteServiceAdminEvent.IMPORT_UNREGISTRATION:
+			break;
+		case RemoteServiceAdminEvent.IMPORT_ERROR:
+			break;
+		default:
+			logWarning(
+					"handleRemoteAdminEvent", "RemoteServiceAdminEvent=" + rsaEvent + " received with unrecognized type"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
-		// Now close all of them
-		if (removedRegistrations != null)
-			for (org.osgi.service.remoteserviceadmin.ImportRegistration removedReg : removedRegistrations) {
-				trace("unimportService", "closing importRegistration=" //$NON-NLS-1$ //$NON-NLS-2$
-						+ removedReg);
-				removedReg.close();
-			}
 	}
-
 }
