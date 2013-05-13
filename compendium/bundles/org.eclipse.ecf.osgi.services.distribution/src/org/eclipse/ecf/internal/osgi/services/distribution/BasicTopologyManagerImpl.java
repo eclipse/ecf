@@ -6,12 +6,11 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.event.Event;
-import org.osgi.service.event.EventHandler;
 import org.osgi.service.remoteserviceadmin.EndpointListener;
+import org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent;
 
 public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
-		EndpointListener, EventHandler {
+		EndpointListener {
 
 	BasicTopologyManagerImpl(BundleContext context) {
 		super(context);
@@ -90,8 +89,7 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 		handleEvent(event, contexts);
 	}
 
-	public void handleEvent(Event event) {
-		handleRSAEvent(event);
+	void handleRemoteAdminEvent(RemoteServiceAdminEvent event) {
+		handleRemoteServiceAdminEvent(event);
 	}
-
 }

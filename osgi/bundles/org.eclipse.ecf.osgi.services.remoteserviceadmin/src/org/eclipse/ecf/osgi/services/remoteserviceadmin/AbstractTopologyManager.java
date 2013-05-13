@@ -19,13 +19,11 @@ import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.event.Event;
 import org.osgi.service.remoteserviceadmin.ImportRegistration;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent;
 import org.osgi.util.tracker.ServiceTracker;
@@ -345,29 +343,21 @@ public abstract class AbstractTopologyManager {
 	/**
 	 * @since 3.0
 	 */
-	protected void handleRSAEvent(Event event) {
-		Object o = event.getProperty("bundle"); //$NON-NLS-1$
-		if (o == null || !(o instanceof Bundle))
+	protected void handleRemoteServiceAdminEvent(RemoteServiceAdminEvent event) {
+		if (!(event instanceof RemoteServiceAdmin.RemoteServiceAdminEvent))
 			return;
-		Bundle b = (Bundle) o;
-		if (b.getSymbolicName().equals(
-				"org.eclipse.ecf.osgi.services.remoteservices"))return; //$NON-NLS-1$
-		RemoteServiceAdmin.RemoteServiceAdminEvent rsaEvent = (RemoteServiceAdmin.RemoteServiceAdminEvent) event
-				.getProperty("event"); //$NON-NLS-1$
-		if (rsaEvent == null)
-			return;
-		int eventType = rsaEvent.getType();
-		RemoteServiceAdmin.RemoteServiceAdminEvent rsaEvent1 = (RemoteServiceAdmin.RemoteServiceAdminEvent) rsaEvent;
+
+		int eventType = event.getType();
+		RemoteServiceAdmin.RemoteServiceAdminEvent rsaEvent = (RemoteServiceAdmin.RemoteServiceAdminEvent) event;
 		switch (eventType) {
 		case RemoteServiceAdminEvent.EXPORT_REGISTRATION:
-			advertiseEndpointDescription(rsaEvent1.getEndpointDescription());
+			advertiseEndpointDescription(rsaEvent.getEndpointDescription());
 			break;
 		case RemoteServiceAdminEvent.EXPORT_UNREGISTRATION:
-			unadvertiseEndpointDescription(rsaEvent1.getEndpointDescription());
+			unadvertiseEndpointDescription(rsaEvent.getEndpointDescription());
 			break;
 		case RemoteServiceAdminEvent.EXPORT_ERROR:
-			logError(
-					"handleExportError", "Export error with event=" + rsaEvent1); //$NON-NLS-1$ //$NON-NLS-2$
+			logError("handleExportError", "Export error with event=" + rsaEvent); //$NON-NLS-1$ //$NON-NLS-2$
 			break;
 		case RemoteServiceAdminEvent.IMPORT_REGISTRATION:
 			break;
