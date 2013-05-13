@@ -124,12 +124,14 @@ public class Activator implements BundleActivator {
 		for (int i = 0; i < remoteServiceDescriptions.length; i++) {
 			String[] descSupportedConfigs = remoteServiceDescriptions[i]
 					.getSupportedConfigs();
-			for (int j = 0; j < descSupportedConfigs.length; j++)
-				supportedConfigs.add(descSupportedConfigs[j]);
-			String[] descSupportedIntents = remoteServiceDescriptions[i]
-					.getSupportedIntents();
-			for (int j = 0; j < descSupportedIntents.length; j++)
-				supportedIntents.add(descSupportedIntents[j]);
+			if (descSupportedConfigs != null) {
+				for (int j = 0; j < descSupportedConfigs.length; j++)
+					supportedConfigs.add(descSupportedConfigs[j]);
+				String[] descSupportedIntents = remoteServiceDescriptions[i]
+						.getSupportedIntents();
+				for (int j = 0; j < descSupportedIntents.length; j++)
+					supportedIntents.add(descSupportedIntents[j]);
+			}
 		}
 		String[][] result = new String[2][];
 		result[0] = supportedConfigs
