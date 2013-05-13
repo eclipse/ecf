@@ -9,7 +9,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -238,18 +237,16 @@ public abstract class AbstractTopologyManager {
 				+ importRegistration, t);
 	}
 
-	protected void handleEvent(ServiceEvent event, Collection contexts) {
+	/**
+	 * @since 3.0
+	 */
+	protected void handleEvent(ServiceEvent event, Map listeners) {
 		switch (event.getType()) {
 		case ServiceEvent.MODIFIED:
 			handleServiceModifying(event.getServiceReference());
 			break;
-		case ServiceEvent.MODIFIED_ENDMATCH:
-			break;
 		case ServiceEvent.REGISTERED:
 			handleServiceRegistering(event.getServiceReference());
-			break;
-		case ServiceEvent.UNREGISTERING:
-			handleServiceUnregistering(event.getServiceReference());
 			break;
 		default:
 			break;

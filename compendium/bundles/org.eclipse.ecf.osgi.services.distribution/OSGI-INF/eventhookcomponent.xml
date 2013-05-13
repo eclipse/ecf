@@ -2,8 +2,8 @@
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" immediate="false" name="org.eclipse.ecf.osgi.services.distribution.basictopologymanager">
    <implementation class="org.eclipse.ecf.internal.osgi.services.distribution.BasicTopologyManagerComponent"/>
    <service>
-      <provide interface="org.osgi.framework.hooks.service.EventHook"/>
       <provide interface="org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener"/>
+      <provide interface="org.osgi.framework.hooks.service.EventListenerHook"/>
    </service>
    <reference bind="bindEndpointListener" cardinality="1..n" interface="org.osgi.service.remoteserviceadmin.EndpointListener" name="EndpointListener" policy="static" unbind="unbindEndpointListener"/>
    <property name="event.topics" type="String" value="org/osgi/service/remoteserviceadmin/*"/>

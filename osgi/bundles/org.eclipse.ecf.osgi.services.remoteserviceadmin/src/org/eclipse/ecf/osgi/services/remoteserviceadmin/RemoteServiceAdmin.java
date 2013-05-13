@@ -49,11 +49,14 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceException;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
+import org.osgi.framework.hooks.service.EventListenerHook;
+import org.osgi.framework.hooks.service.ListenerHook.ListenerInfo;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWire;
@@ -113,11 +116,14 @@ public class RemoteServiceAdmin implements
 	private Collection<ExportRegistration> exportedRegistrations = new ArrayList<ExportRegistration>();
 	private Collection<ImportRegistration> importedRegistrations = new ArrayList<ImportRegistration>();
 
+	private ServiceRegistration eventListenerHookRegistration;
+
 	List<ExportRegistration> getExportedRegistrations() {
 		synchronized (exportedRegistrations) {
 			return new ArrayList(exportedRegistrations);
 		}
 	}
+
 	List<ImportRegistration> getImportedRegistrations() {
 		synchronized (importedRegistrations) {
 			return new ArrayList(importedRegistrations);
@@ -127,8 +133,6 @@ public class RemoteServiceAdmin implements
 	public RemoteServiceAdmin(Bundle clientBundle) {
 		this.clientBundle = clientBundle;
 		Assert.isNotNull(this.clientBundle);
-		trace("RemoteServiceAdmin<init>", //$NON-NLS-1$
-				"clientBundle=" + clientBundle.getSymbolicName()); //$NON-NLS-1$
 		// Only setup defaults if it hasn't already been done by some other
 		// Remote Service Admin instance
 		Properties props = new Properties();
@@ -171,6 +175,33 @@ public class RemoteServiceAdmin implements
 							IConsumerContainerSelector.class.getName(),
 							defaultConsumerContainerSelector,
 							(Dictionary) props);
+		}
+
+		eventListenerHookRegistration = getRSABundle().getBundleContext()
+				.registerService(EventListenerHook.class.getName(), new RSAEventListenerHook(), null);
+	}
+
+	private void handleServiceUnregistering(ServiceReference serviceReference) {
+		List<ExportRegistration> ers = getExportedRegistrations();
+		for (ExportRegistration exportedRegistration : ers) {
+			if (exportedRegistration.match(serviceReference)) {
+				trace("handleServiceUnregistering", "closing exportRegistration for serviceReference=" //$NON-NLS-1$ //$NON-NLS-2$
+								+ serviceReference);
+				exportedRegistration.close();
+			}
+		}
+	}
+
+	class RSAEventListenerHook implements EventListenerHook {
+		public void event(ServiceEvent event,
+				Map<BundleContext, Collection<ListenerInfo>> listeners) {
+			switch (event.getType()) {
+			case ServiceEvent.UNREGISTERING:
+				handleServiceUnregistering(event.getServiceReference());
+				break;
+			default:
+				break;
+			}
 		}
 	}
 
@@ -593,7 +624,8 @@ public class RemoteServiceAdmin implements
 
 		public org.osgi.service.remoteserviceadmin.ExportReference getExportReference() {
 			Throwable t = getException();
-			if (t != null) return null;
+			if (t != null)
+				return null;
 			return exportReference;
 		}
 
@@ -653,8 +685,8 @@ public class RemoteServiceAdmin implements
 			if (publish && rsaBundle != null)
 				publishEvent(new RemoteServiceAdminEvent(containerID,
 						RemoteServiceAdminEvent.EXPORT_UNREGISTRATION,
-						rsaBundle, exportReference, exception, endpointDescription),
-						endpointDescription);
+						rsaBundle, exportReference, exception,
+						endpointDescription), endpointDescription);
 		}
 
 		public Throwable getException() {
@@ -841,18 +873,19 @@ public class RemoteServiceAdmin implements
 		boolean match(IRemoteServiceID remoteServiceID) {
 			return importReference.match(remoteServiceID);
 		}
-		
+
 		boolean match(EndpointDescription ed) {
 			return (getImportEndpoint(ed) != null);
 		}
-		
+
 		ImportEndpoint getImportEndpoint(EndpointDescription ed) {
 			return importReference.match(ed);
 		}
 
 		public org.osgi.service.remoteserviceadmin.ImportReference getImportReference() {
 			Throwable t = getException();
-			if (t != null) return null;
+			if (t != null)
+				return null;
 			return importReference;
 		}
 
@@ -876,8 +909,8 @@ public class RemoteServiceAdmin implements
 			if (publish && rsaBundle != null)
 				publishEvent(new RemoteServiceAdminEvent(containerID,
 						RemoteServiceAdminEvent.IMPORT_UNREGISTRATION,
-						rsaBundle, importReference, exception, endpointDescription),
-						endpointDescription);
+						rsaBundle, importReference, exception,
+						endpointDescription), endpointDescription);
 
 		}
 
@@ -1086,7 +1119,8 @@ public class RemoteServiceAdmin implements
 		Throwable exception = exportRegistration.getException();
 		org.osgi.service.remoteserviceadmin.ExportReference exportReference = (exception == null) ? exportRegistration
 				.getExportReference() : null;
-		EndpointDescription endpointDescription = exportRegistration.getEndpointDescription();
+		EndpointDescription endpointDescription = exportRegistration
+				.getEndpointDescription();
 		RemoteServiceAdminEvent rsaEvent = new RemoteServiceAdminEvent(
 				exportRegistration.getContainerID(),
 				(exception == null) ? RemoteServiceAdminEvent.EXPORT_REGISTRATION
@@ -1099,7 +1133,8 @@ public class RemoteServiceAdmin implements
 		Throwable exception = importRegistration.getException();
 		org.osgi.service.remoteserviceadmin.ImportReference importReference = (exception == null) ? importRegistration
 				.getImportReference() : null;
-	    EndpointDescription endpointDescription = importRegistration.getEndpointDescription();
+		EndpointDescription endpointDescription = importRegistration
+				.getEndpointDescription();
 		RemoteServiceAdminEvent rsaEvent = new RemoteServiceAdminEvent(
 				importRegistration.getContainerID(),
 				(exception == null) ? RemoteServiceAdminEvent.IMPORT_REGISTRATION
@@ -2086,6 +2121,13 @@ public class RemoteServiceAdmin implements
 			reg.close();
 	}
 
+	private void closeEventListenerHookRegistrations() {
+		if (eventListenerHookRegistration != null) {
+			eventListenerHookRegistration.unregister();
+			eventListenerHookRegistration = null;
+		}
+	}
+
 	public void close() {
 		trace("close", "closing importedRegistrations=" + importedRegistrations //$NON-NLS-1$ //$NON-NLS-2$
 				+ " exportedRegistrations=" + exportedRegistrations); //$NON-NLS-1$
@@ -2098,6 +2140,7 @@ public class RemoteServiceAdmin implements
 		closeDefaultContainerSelectors();
 		closeImportRegistrations();
 		closeExportRegistrations();
+		closeEventListenerHookRegistrations();
 		this.clientBundle = null;
 	}
 
@@ -2159,7 +2202,7 @@ public class RemoteServiceAdmin implements
 
 		private ID containerID;
 		private EndpointDescription endpointDescription;
-		
+
 		public RemoteServiceAdminEvent(
 				ID containerID,
 				int type,
@@ -2188,7 +2231,7 @@ public class RemoteServiceAdmin implements
 		public EndpointDescription getEndpointDescription() {
 			return endpointDescription;
 		}
-		
+
 		public ID getContainerID() {
 			return containerID;
 		}

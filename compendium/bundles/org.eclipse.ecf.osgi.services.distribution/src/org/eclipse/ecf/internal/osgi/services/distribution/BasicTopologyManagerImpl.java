@@ -1,6 +1,6 @@
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
-import java.util.Collection;
+import java.util.Map;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.AbstractTopologyManager;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -58,6 +58,7 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 		}
 	}
 
+	// EndpointListener impl
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -85,10 +86,12 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 		handleEndpointRemoved(endpoint, matchedFilter);
 	}
 
-	void event(ServiceEvent event, Collection contexts) {
-		handleEvent(event, contexts);
+	// EventListenerHook impl
+	void event(ServiceEvent event, Map listeners) {
+		handleEvent(event, listeners);
 	}
 
+	// RemoteServiceAdminListener impl
 	void handleRemoteAdminEvent(RemoteServiceAdminEvent event) {
 		handleRemoteServiceAdminEvent(event);
 	}

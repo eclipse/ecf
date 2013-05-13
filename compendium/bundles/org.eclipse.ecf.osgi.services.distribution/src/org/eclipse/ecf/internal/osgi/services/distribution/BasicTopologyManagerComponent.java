@@ -1,13 +1,13 @@
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
-import java.util.Collection;
+import java.util.Map;
 import org.osgi.framework.ServiceEvent;
-import org.osgi.framework.hooks.service.EventHook;
+import org.osgi.framework.hooks.service.EventListenerHook;
 import org.osgi.service.remoteserviceadmin.EndpointListener;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener;
 
-public class BasicTopologyManagerComponent implements EventHook,
+public class BasicTopologyManagerComponent implements EventListenerHook,
 		RemoteServiceAdminListener {
 
 	private boolean exportRegisteredSvcs = new Boolean(
@@ -39,14 +39,14 @@ public class BasicTopologyManagerComponent implements EventHook,
 					exportRegisteredSvcsClassname, exportRegisteredSvcsFilter);
 	}
 
-	// EventHook impl
-	public void event(ServiceEvent event, Collection contexts) {
-		basicTopologyManagerImpl.event(event, contexts);
-	}
-
 	// RemoteServiceAdminListener impl
 	public void remoteAdminEvent(RemoteServiceAdminEvent event) {
 		basicTopologyManagerImpl.handleRemoteAdminEvent(event);
+	}
+
+	// EventListenerHook impl
+	public void event(ServiceEvent event, Map listeners) {
+		basicTopologyManagerImpl.event(event, listeners);
 	}
 
 }

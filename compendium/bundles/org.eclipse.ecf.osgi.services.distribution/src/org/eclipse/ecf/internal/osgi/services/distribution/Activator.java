@@ -19,7 +19,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.framework.hooks.service.EventHook;
+import org.osgi.framework.hooks.service.EventListenerHook;
 import org.osgi.service.log.LogService;
 import org.osgi.service.remoteserviceadmin.EndpointListener;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener;
@@ -62,7 +62,7 @@ public class Activator implements BundleActivator {
 	private BasicTopologyManagerImpl basicTopologyManagerImpl;
 	private ServiceRegistration endpointListenerReg;
 	private BasicTopologyManagerComponent basicTopologyManagerComp;
-	private ServiceRegistration eventHookRegistration;
+	private ServiceRegistration eventListenerHookRegistration;
 	private ServiceRegistration eventAdminListenerRegistration;
 
 	public static Activator getDefault() {
@@ -162,12 +162,13 @@ public class Activator implements BundleActivator {
 			return; // If this property is set we assume DS is being used.
 
 		// The following code is to make sure that we don't do any more if
-		// EventHook has already been registered for us by DS
-		// Create serviceFilter for EventHook classname
-		String serviceName = EventHook.class.getName();
+		// EventListenerHook has already been registered for us by DS
+		// Create serviceFilter for EventListenerHook classname
+		String serviceName = EventListenerHook.class.getName();
 		Filter serviceFilter = context
 				.createFilter("(objectclass=" + serviceName + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-		// if this bundle has already registered EventHook service via ds, then
+		// if this bundle has already registered EventListenerHook service via
+		// ds, then
 		// we're done
 		ServiceReference[] refs = context.getBundle().getRegisteredServices();
 		if (refs != null) {
@@ -185,9 +186,9 @@ public class Activator implements BundleActivator {
 		eventAdminListenerRegistration = this.context.registerService(
 				RemoteServiceAdminListener.class, basicTopologyManagerComp,
 				null);
-		// register the basic topology manager as EventHook service
-		eventHookRegistration = this.context.registerService(EventHook.class,
-				basicTopologyManagerComp, null);
+		// register the basic topology manager as EventListenerHook service
+		eventListenerHookRegistration = this.context.registerService(
+				EventListenerHook.class, basicTopologyManagerComp, null);
 		// export any previously registered remote services by calling activate
 		basicTopologyManagerComp.activate();
 	}
@@ -199,9 +200,9 @@ public class Activator implements BundleActivator {
 	 * org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext ctxt) throws Exception {
-		if (eventHookRegistration != null) {
-			eventHookRegistration.unregister();
-			eventHookRegistration = null;
+		if (eventListenerHookRegistration != null) {
+			eventListenerHookRegistration.unregister();
+			eventListenerHookRegistration = null;
 		}
 		if (basicTopologyManagerComp != null) {
 			basicTopologyManagerComp
