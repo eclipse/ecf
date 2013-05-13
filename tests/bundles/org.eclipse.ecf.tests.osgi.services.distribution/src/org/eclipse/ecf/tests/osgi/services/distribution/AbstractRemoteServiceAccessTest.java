@@ -85,7 +85,7 @@ public abstract class AbstractRemoteServiceAccessTest extends
 			}
 
 			public long getTimeout() {
-				return 30000;
+				return IRemoteCall.DEFAULT_TIMEOUT;
 			}
 
 		};
