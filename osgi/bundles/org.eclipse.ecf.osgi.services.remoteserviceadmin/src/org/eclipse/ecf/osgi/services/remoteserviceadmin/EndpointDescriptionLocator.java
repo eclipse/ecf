@@ -444,10 +444,17 @@ public class EndpointDescriptionLocator {
 			final LocatorServiceListener locatorListener) {
 		IProgressRunnable runnable = new IProgressRunnable() {
 			public Object run(IProgressMonitor arg0) throws Exception {
-				IServiceInfo[] serviceInfos = locator.getServices();
-				for (int i = 0; i < serviceInfos.length; i++) {
-					locatorListener.handleService(serviceInfos[i], true);
+				IServiceInfo[] serviceInfos = null;
+				try {
+					serviceInfos = locator.getServices();
+				} catch (Exception e) {
+					logError(
+							"processInitialLocatorServices", "Exception in locator.getServices()", e); //$NON-NLS-1$ //$NON-NLS-2$
 				}
+				if (serviceInfos != null)
+					for (int i = 0; i < serviceInfos.length; i++) {
+						locatorListener.handleService(serviceInfos[i], true);
+					}
 				return null;
 			}
 		};
