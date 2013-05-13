@@ -11,6 +11,7 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
@@ -29,11 +30,28 @@ import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 public class EndpointDescriptionAdvertiser implements
 		IEndpointDescriptionAdvertiser {
 
+	private String advertiserFilter = System
+			.getProperty("org.eclipse.ecf.osgi.services.remoteserviceadmin.endpointDescriptionDiscoveryAdvertiserFilter"); //$NON-NLS-1$
+
 	private EndpointDescriptionLocator endpointDescriptionLocator;
+	private List<String> filteredAdvertisers = new ArrayList<String>();
 
 	public EndpointDescriptionAdvertiser(
 			EndpointDescriptionLocator endpointDescriptionLocator) {
 		this.endpointDescriptionLocator = endpointDescriptionLocator;
+		if (advertiserFilter != null) {
+			try {
+				String[] fas = advertiserFilter.split(","); //$NON-NLS-1$
+				if (fas != null)
+					for (int i = 0; i < fas.length; i++)
+						filteredAdvertisers.add(fas[i]);
+			} catch (PatternSyntaxException e) {
+				// should never happen
+			}
+		}
+		for (String filteredAdvertiser : filteredAdvertisers)
+			trace("EndpointDescriptionAdvertiser<init>", //$NON-NLS-1$
+					"filtering advertiser=" + filteredAdvertiser); //$NON-NLS-1$
 	}
 
 	/**
@@ -47,9 +65,11 @@ public class EndpointDescriptionAdvertiser implements
 	 * @since 3.0
 	 */
 	protected void trace(String methodName, String message) {
-		LogUtility.trace(methodName, DebugOptions.ENDPOINT_DESCRIPTION_ADVERTISER, this.getClass(), message);
+		LogUtility.trace(methodName,
+				DebugOptions.ENDPOINT_DESCRIPTION_ADVERTISER, this.getClass(),
+				message);
 	}
-	
+
 	/**
 	 * @since 3.0
 	 */
@@ -57,10 +77,10 @@ public class EndpointDescriptionAdvertiser implements
 			IServiceInfo serviceInfo, boolean advertise) {
 		try {
 			if (advertise) {
-				trace("doDiscovery","discoveryAdvertiser="+discoveryAdvertiser+" serviceInfo="+serviceInfo); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				trace("doDiscovery", "discoveryAdvertiser=" + discoveryAdvertiser + " serviceInfo=" + serviceInfo); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				discoveryAdvertiser.registerService(serviceInfo);
 			} else {
-				trace("doUndiscovery","discoveryAdvertiser="+discoveryAdvertiser+" serviceInfo="+serviceInfo); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				trace("doUndiscovery", "discoveryAdvertiser=" + discoveryAdvertiser + " serviceInfo=" + serviceInfo); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				discoveryAdvertiser.unregisterService(serviceInfo);
 			}
 			return Status.OK_STATUS;
@@ -78,7 +98,21 @@ public class EndpointDescriptionAdvertiser implements
 	}
 
 	protected IDiscoveryAdvertiser[] getDiscoveryAdvertisers() {
-		return endpointDescriptionLocator.getDiscoveryAdvertisers();
+		IDiscoveryAdvertiser[] unfilteredAdvertisers = endpointDescriptionLocator
+				.getDiscoveryAdvertisers();
+		List<IDiscoveryAdvertiser> results = new ArrayList<IDiscoveryAdvertiser>();
+		if (unfilteredAdvertisers != null)
+			for (int i = 0; i < unfilteredAdvertisers.length; i++) {
+				String className = unfilteredAdvertisers[i].getClass()
+						.getName();
+				if (!filteredAdvertisers.contains(className))
+					results.add(unfilteredAdvertisers[i]);
+				else
+					LogUtility
+							.logWarning(
+									"getDiscoveryAdvertisers", DebugOptions.ENDPOINT_DESCRIPTION_ADVERTISER, this.getClass(), "Filtering out discoveryAdvertiser=" + className); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+		return results.toArray(new IDiscoveryAdvertiser[results.size()]);
 	}
 
 	protected IStatus createErrorStatus(String message) {
@@ -159,6 +193,7 @@ public class EndpointDescriptionAdvertiser implements
 	}
 
 	public void close() {
+		this.filteredAdvertisers.clear();
 		this.endpointDescriptionLocator = null;
 	}
 
