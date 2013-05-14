@@ -73,7 +73,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 		else if (arg instanceof String) {
 			return new Integer((String) arg);
 		} else
-			return new Integer(-1);
+			throw new IllegalArgumentException("arg is not of integer type"); //$NON-NLS-1$
 	}
 
 	protected class GenericContainerArgs {
@@ -109,7 +109,10 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 					idVal = IDFactory.getDefault().createGUID();
 				else
 					newID = getIDFromArg(idVal);
-				ka = getIntegerFromArg(map.get(KEEPALIVE_PROP));
+				Object o = map.get(KEEPALIVE_PROP);
+				if (o == null)
+					o = map.get(KEEPALIVE_PROP.toLowerCase());
+				ka = getIntegerFromArg(o);
 			} else if (args.length > 1) {
 				if (args[0] instanceof String || args[0] instanceof ID)
 					newID = getIDFromArg(args[0]);
@@ -144,7 +147,10 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 				if (idVal == null)
 					throw new IDCreateException("id property must be present for server container creation"); //$NON-NLS-1$
 				newID = getIDFromArg(idVal);
-				ka = getIntegerFromArg(map.get(KEEPALIVE_PROP));
+				Object o = map.get(KEEPALIVE_PROP);
+				if (o == null)
+					o = map.get(KEEPALIVE_PROP.toLowerCase());
+				ka = getIntegerFromArg(o);
 			} else if (args.length > 1) {
 				if (args[0] instanceof String || args[0] instanceof ID)
 					newID = getIDFromArg(args[0]);
