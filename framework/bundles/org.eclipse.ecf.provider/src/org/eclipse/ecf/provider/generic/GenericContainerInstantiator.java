@@ -73,7 +73,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 		else if (arg instanceof String) {
 			return new Integer((String) arg);
 		} else
-			return new Integer(-1);
+			throw new IllegalArgumentException("arg is not of integer type"); //$NON-NLS-1$
 	}
 
 	protected class GenericContainerArgs {
