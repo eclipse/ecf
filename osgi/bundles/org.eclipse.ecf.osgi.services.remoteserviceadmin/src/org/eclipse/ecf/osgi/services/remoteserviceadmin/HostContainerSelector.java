@@ -10,6 +10,7 @@
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -23,6 +24,11 @@ import org.osgi.framework.ServiceReference;
  */
 public class HostContainerSelector extends AbstractHostContainerSelector
 		implements IHostContainerSelector {
+
+	private static final boolean reuseExistingContainers = new Boolean(
+			System.getProperty(
+					"org.eclipse.ecf.osgi.services.remoteserviceadmin.HostContainerSelector.reuseExistingContainers", //$NON-NLS-1$
+					"true")).booleanValue(); //$NON-NLS-1$
 
 	private boolean autoCreateContainer = false;
 
@@ -49,10 +55,10 @@ public class HostContainerSelector extends AbstractHostContainerSelector
 			throws SelectContainerException {
 		// Find previously created containers that match the given
 		// serviceExportedConfigs and serviceIntents
-		Collection rsContainers = selectExistingHostContainers(
+		Collection rsContainers = (reuseExistingContainers) ? selectExistingHostContainers(
 				serviceReference, overridingProperties,
 				serviceExportedInterfaces, serviceExportedConfigs,
-				serviceIntents);
+				serviceIntents) : Collections.EMPTY_LIST;
 
 		if (rsContainers.size() == 0 && autoCreateContainer) {
 			// If no existing containers are found we'll go through

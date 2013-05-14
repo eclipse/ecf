@@ -22,6 +22,11 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 public class ConsumerContainerSelector extends
 		AbstractConsumerContainerSelector implements IConsumerContainerSelector {
 
+	private static final boolean reuseExistingContainers = new Boolean(
+			System.getProperty(
+					"org.eclipse.ecf.osgi.services.remoteserviceadmin.ConsumerContainerSelector.reuseExistingContainers", //$NON-NLS-1$
+					"true")).booleanValue(); //$NON-NLS-1$
+
 	private boolean autoCreateContainer = false;
 
 	public ConsumerContainerSelector(boolean autoCreateContainer) {
@@ -45,8 +50,9 @@ public class ConsumerContainerSelector extends
 		// Get connect targetID
 		ID connectTargetID = endpointDescription.getConnectTargetID();
 
-		IRemoteServiceContainer rsContainer = selectExistingConsumerContainer(
-				endpointContainerID, serviceImportedConfigs, connectTargetID);
+		IRemoteServiceContainer rsContainer = (reuseExistingContainers) ? selectExistingConsumerContainer(
+				endpointContainerID, serviceImportedConfigs, connectTargetID)
+				: null;
 
 		// If we haven't found any existing containers then we create one
 		// from the remoteSupportedConfigs...*iff* autoCreateContainer is
