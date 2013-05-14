@@ -228,7 +228,7 @@ public class RestClientService extends AbstractClientService {
 		} else {
 			NameValuePair[] params = toNameValuePairs(uri, call, callable);
 			if (params != null) {
-				result.setEntity(new UrlEncodedFormEntity(Arrays.asList(params)));
+				result.setEntity(getUrlEncodedFormEntity(Arrays.asList(params), putRequestType));
 			}
 		}
 		return result;
@@ -251,8 +251,9 @@ public class RestClientService extends AbstractClientService {
 			}
 		} else {
 			NameValuePair[] params = toNameValuePairs(uri, call, callable);
-			if (params != null)
-				result.setEntity(new UrlEncodedFormEntity(Arrays.asList(params)));
+			if (params != null) {
+				result.setEntity(getUrlEncodedFormEntity(Arrays.asList(params), postRequestType));
+			}
 		}
 		return result;
 	}
@@ -269,6 +270,13 @@ public class RestClientService extends AbstractClientService {
 			result.setQueryString(params);
 		**/
 		return result;
+	}
+
+	protected UrlEncodedFormEntity getUrlEncodedFormEntity(List list, AbstractEntityRequestType postRequestType) throws UnsupportedEncodingException {
+		if (postRequestType.defaultCharset != null) {
+			return new UrlEncodedFormEntity(list, postRequestType.defaultCharset);
+		}
+		return new UrlEncodedFormEntity(list);
 	}
 
 	protected NameValuePair[] toNameValuePairs(String uri, IRemoteCall call, IRemoteCallable callable) throws NotSerializableException {
