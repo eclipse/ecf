@@ -49,17 +49,7 @@ public class EndpointDescription extends
 	private ID[] idFilter;
 	private String rsFilter;
 
-	private int hashCode = 7;
 	private Map overrides;
-
-	private void computeHashCode() {
-		this.hashCode = 31 * this.hashCode + getId().hashCode();
-		this.hashCode = 31 * this.hashCode
-				+ new Long(getServiceId()).intValue();
-		String frameworkUUID = getFrameworkUUID();
-		this.hashCode = 31 * this.hashCode
-				+ (frameworkUUID == null ? 0 : frameworkUUID.hashCode());
-	}
 
 	/**
 	 * 
@@ -81,7 +71,6 @@ public class EndpointDescription extends
 			final Map<String, Object> properties) {
 		super(reference, properties);
 		verifyECFProperties();
-		computeHashCode();
 	}
 
 	/**
@@ -100,7 +89,6 @@ public class EndpointDescription extends
 	public EndpointDescription(Map<String, Object> properties) {
 		super(properties);
 		verifyECFProperties();
-		computeHashCode();
 	}
 
 	private void verifyECFProperties() {
@@ -200,28 +188,6 @@ public class EndpointDescription extends
 
 	public String getRemoteServiceFilter() {
 		return rsFilter;
-	}
-
-	public int hashCode() {
-		return hashCode;
-	}
-
-	public boolean equals(Object other) {
-		if (other == null)
-			return false;
-		if (this == other)
-			return true;
-		if (!(other instanceof EndpointDescription))
-			return false;
-		EndpointDescription o = (EndpointDescription) other;
-		String frameworkUUID = getFrameworkUUID();
-		// equals returns true: 1) if getId() returns same String
-		return getId().equals(o.getId())
-		// 2) getServiceId() returns same value
-				&& getServiceId() == o.getServiceId()
-				// 3) a non-null frameworkUUID...and frameworkUUIDs equal
-				&& (frameworkUUID == null ? true : frameworkUUID.equals(o
-						.getFrameworkUUID()));
 	}
 
 	void setPropertiesOverrides(Map propertiesOverrides) {
