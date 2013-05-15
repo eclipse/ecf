@@ -178,7 +178,8 @@ public class RemoteServiceAdmin implements
 		}
 
 		eventListenerHookRegistration = getRSABundle().getBundleContext()
-				.registerService(EventListenerHook.class.getName(), new RSAEventListenerHook(), null);
+				.registerService(EventListenerHook.class.getName(),
+						new RSAEventListenerHook(), null);
 	}
 
 	private void handleServiceUnregistering(ServiceReference serviceReference) {
@@ -1805,7 +1806,7 @@ public class RemoteServiceAdmin implements
 			// version comparator service
 			Version remoteVersion = interfaceVersions.get(className);
 			Version localVersion = getPackageVersionViaRequestingBundle(
-					packageName, bundle);
+					packageName, bundle, remoteVersion);
 			if (comparePackageVersions(packageName, remoteVersion, localVersion)) {
 				logError("verifyServiceInterfaceVersionsForProxy", //$NON-NLS-1$
 						"Failed version check for proxy creation.  clientBundle=" //$NON-NLS-1$
@@ -1869,7 +1870,7 @@ public class RemoteServiceAdmin implements
 	}
 
 	private Version getPackageVersionViaRequestingBundle(String packageName,
-			Bundle requestingBundle) {
+			Bundle requestingBundle, Version remoteVersion) {
 		Version result = null;
 		// First check the requesting bundle for the desired export package
 		// capability
@@ -1879,11 +1880,15 @@ public class RemoteServiceAdmin implements
 			List<BundleCapability> requestingBundleCapabilities = requestingBundleRevision
 					.getDeclaredCapabilities(BundleRevision.PACKAGE_NAMESPACE);
 			for (BundleCapability requestingBundleCapability : requestingBundleCapabilities) {
-				Version version = getVersionForMatchingCapability(packageName,
-						requestingBundleCapability);
+				Version candidate = getVersionForMatchingCapability(
+						packageName, requestingBundleCapability);
 				// If found, set our result
-				if (version != null)
-					result = version;
+				if (candidate != null) {
+					if (remoteVersion != null
+							&& candidate.equals(remoteVersion))
+						return candidate;
+					result = candidate;
+				}
 			}
 		}
 		// If not found in requestingBundle export package, then
