@@ -40,6 +40,12 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 
 	private static final String KEEPALIVE_PROP = "keepAlive"; //$NON-NLS-1$
 
+	private static final Object HOSTNAME_PROP = "hostname"; //$NON-NLS-1$
+
+	private static final Object PORT_PROP = "port"; //$NON-NLS-1$
+
+	private static final Object PATH_PROP = "path"; //$NON-NLS-1$
+
 	public GenericContainerInstantiator() {
 		super();
 	}
@@ -73,7 +79,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 		else if (arg instanceof String) {
 			return new Integer((String) arg);
 		} else
-			throw new IllegalArgumentException("arg is not of integer type"); //$NON-NLS-1$
+			throw new IllegalArgumentException("arg=" + arg + " is not of integer type"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	protected class GenericContainerArgs {
@@ -144,9 +150,31 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 			if (args[0] instanceof Map) {
 				Map map = (Map) args[0];
 				Object idVal = map.get(ID_PROP);
-				if (idVal == null)
-					throw new IDCreateException("id property must be present for server container creation"); //$NON-NLS-1$
-				newID = getIDFromArg(idVal);
+				if (idVal != null) {
+					newID = getIDFromArg(idVal);
+				} else {
+					String hostname = TCPServerSOContainer.DEFAULT_HOST;
+					Object hostVal = map.get(HOSTNAME_PROP);
+					if (hostVal != null) {
+						if (!(hostVal instanceof String))
+							throw new IllegalArgumentException("hostname value must be of type String"); //$NON-NLS-1$
+						hostname = (String) hostVal;
+					}
+					int port = -1;
+					Object portVal = map.get(PORT_PROP);
+					if (portVal != null)
+						port = getIntegerFromArg(portVal).intValue();
+					if (port < 0)
+						port = getTCPServerPort(port);
+					String path = TCPServerSOContainer.DEFAULT_NAME;
+					Object pathVal = map.get(PATH_PROP);
+					if (pathVal != null) {
+						if (!(pathVal instanceof String))
+							throw new IllegalArgumentException("path value must be of type String"); //$NON-NLS-1$
+						path = (String) pathVal;
+					}
+					newID = createTCPServerID(hostname, port, path);
+				}
 				Object o = map.get(KEEPALIVE_PROP);
 				if (o == null)
 					o = map.get(KEEPALIVE_PROP.toLowerCase());
@@ -160,19 +188,26 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 				newID = getIDFromArg(args[0]);
 		}
 		if (newID == null) {
-			int port = -1;
-			if (TCPServerSOContainer.DEFAULT_FALLBACK_PORT) {
-				port = getFreePort();
-			} else if (portIsFree(TCPServerSOContainer.DEFAULT_PORT)) {
-				port = TCPServerSOContainer.DEFAULT_PORT;
-			}
-			if (port < 0)
-				throw new IDCreateException("No server port is available for generic server creation.  org.eclipse.ecf.provider.generic.port.fallback=" + TCPServerSOContainer.DEFAULT_FALLBACK_PORT + " and org.eclipse.ecf.provider.generic.port=" + TCPServerSOContainer.DEFAULT_PORT); //$NON-NLS-1$ //$NON-NLS-2$
-			newID = IDFactory.getDefault().createStringID(TCPServerSOContainer.DEFAULT_PROTOCOL + "://" + TCPServerSOContainer.DEFAULT_HOST + ":" + port + TCPServerSOContainer.DEFAULT_NAME);//$NON-NLS-1$ //$NON-NLS-2$
+			int port = getTCPServerPort(-1);
+			newID = createTCPServerID(TCPServerSOContainer.DEFAULT_HOST, port, TCPServerSOContainer.DEFAULT_NAME);
 		}
 		if (ka == null)
 			ka = new Integer(TCPServerSOContainer.DEFAULT_KEEPALIVE);
 		return new GenericContainerArgs(newID, ka);
+	}
+
+	private ID createTCPServerID(String hostname, int port, String path) {
+		return IDFactory.getDefault().createStringID(TCPServerSOContainer.DEFAULT_PROTOCOL + "://" + hostname + ":" + port + path); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+
+	private int getTCPServerPort(int input) {
+		if (TCPServerSOContainer.DEFAULT_FALLBACK_PORT)
+			input = getFreePort();
+		else if (portIsFree(TCPServerSOContainer.DEFAULT_PORT))
+			input = TCPServerSOContainer.DEFAULT_PORT;
+		if (input < 0)
+			throw new IDCreateException("No server port is available for generic server creation.  org.eclipse.ecf.provider.generic.port.fallback=" + TCPServerSOContainer.DEFAULT_FALLBACK_PORT + " and org.eclipse.ecf.provider.generic.port=" + TCPServerSOContainer.DEFAULT_PORT); //$NON-NLS-1$ //$NON-NLS-2$
+		return input;
 	}
 
 	private boolean portIsFree(int port) {
