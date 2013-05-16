@@ -223,14 +223,11 @@ public class RemoteServiceAdmin implements
 	public Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> exportService(
 			ServiceReference serviceReference,
 			Map<String, ?> overridingProperties) {
-
 		trace("exportService", "serviceReference=" + serviceReference //$NON-NLS-1$ //$NON-NLS-2$
 				+ ",properties=" + overridingProperties); //$NON-NLS-1$
-
 		overridingProperties = PropertiesUtil.mergeProperties(serviceReference,
 				overridingProperties == null ? Collections.EMPTY_MAP
 						: overridingProperties);
-
 		// First get exported interfaces
 		String[] exportedInterfaces = PropertiesUtil.getExportedInterfaces(
 				serviceReference, overridingProperties);
@@ -241,7 +238,6 @@ public class RemoteServiceAdmin implements
 		// verifyExportedInterfaces
 		if (!validExportedInterfaces(serviceReference, exportedInterfaces))
 			return Collections.EMPTY_LIST;
-
 		// Get optional exported configs
 		String[] exportedConfigs = PropertiesUtil
 				.getStringArrayFromPropertyValue(overridingProperties
@@ -365,13 +361,11 @@ public class RemoteServiceAdmin implements
 		// First, make sure that the client bundle has the IMPORT endpoint
 		// permission
 		checkEndpointPermission(endpointDescription, EndpointPermission.IMPORT);
-
 		EndpointDescription ed = null;
 		if (endpointDescription instanceof EndpointDescription)
 			ed = (EndpointDescription) endpointDescription;
 		else
 			ed = new EndpointDescription(endpointDescription.getProperties());
-
 		// Now get IConsumerContainerSelector, to select the ECF container
 		// for the given endpointDescription
 		IConsumerContainerSelector consumerContainerSelector = getConsumerContainerSelector();
@@ -500,25 +494,6 @@ public class RemoteServiceAdmin implements
 			ImportRegistration importRegistration) {
 		synchronized (importedRegistrations) {
 			return importedRegistrations.remove(importRegistration);
-		}
-	}
-
-	private void closeDefaultContainerSelectors() {
-		if (defaultHostContainerSelectorRegistration != null) {
-			defaultHostContainerSelectorRegistration.unregister();
-			defaultHostContainerSelectorRegistration = null;
-		}
-		if (defaultHostContainerSelector != null) {
-			defaultHostContainerSelector.close();
-			defaultHostContainerSelector = null;
-		}
-		if (defaultConsumerContainerSelectorRegistration != null) {
-			defaultConsumerContainerSelectorRegistration.unregister();
-			defaultConsumerContainerSelectorRegistration = null;
-		}
-		if (defaultConsumerContainerSelector != null) {
-			defaultConsumerContainerSelector.close();
-			defaultConsumerContainerSelector = null;
 		}
 	}
 
@@ -998,12 +973,6 @@ public class RemoteServiceAdmin implements
 
 	private void postEvent(RemoteServiceAdminEvent event,
 			EndpointDescription endpointDescription) {
-		EventAdmin eventAdmin = getEventAdmin();
-		if (eventAdmin == null) {
-			//logWarning("RemoteServiceAdmin.postEvent", "No event admin service available to post event=" //$NON-NLS-1$ //$NON-NLS-2$
-			// + event);
-			return;
-		}
 		int eventType = event.getType();
 		String eventTypeName = null;
 		String registrationTypeName = null;
@@ -1060,7 +1029,11 @@ public class RemoteServiceAdmin implements
 		eventProperties.put("bundle.symbolicname", //$NON-NLS-1$
 				rsaBundle.getSymbolicName());
 		eventProperties.put("bundle.version", rsaBundle.getVersion()); //$NON-NLS-1$
-		String[] signers = getSignersForBundle(clientBundle);
+		List<String> result = new ArrayList<String>();
+		Map signers1 = clientBundle.getSignerCertificates(Bundle.SIGNERS_ALL);
+		for (Iterator i = signers1.keySet().iterator(); i.hasNext();)
+			result.add(i.next().toString());
+		String[] signers = (String[]) result.toArray(new String[result.size()]);
 		if (signers != null && signers.length > 0)
 			eventProperties.put("bundle.signer", signers); //$NON-NLS-1$
 		Throwable t = event.getException();
@@ -1094,19 +1067,18 @@ public class RemoteServiceAdmin implements
 									.size()]));
 		eventProperties.put("timestamp", new Long(new Date().getTime())); //$NON-NLS-1$
 		eventProperties.put("event", event); //$NON-NLS-1$
-		if (registrationTypeName != null) {
+		if (registrationTypeName != null) 
 			eventProperties.put(registrationTypeName, endpointDescription);
+		
+		EventAdmin eventAdmin = getEventAdmin();
+		if (eventAdmin == null) {
+			logError("postRemoteServiceAdminEvent", //$NON-NLS-1$
+					"No EventAdmin service available to send eventTopic=" //$NON-NLS-1$
+							+ topic + " eventProperties=" + eventProperties); //$NON-NLS-1$
+			return;
 		}
-		postRemoteServiceAdminEvent(topic, eventProperties);
-
-	}
-
-	private String[] getSignersForBundle(Bundle bundle) {
-		List<String> result = new ArrayList<String>();
-		Map signers = bundle.getSignerCertificates(Bundle.SIGNERS_ALL);
-		for (Iterator i = signers.keySet().iterator(); i.hasNext();)
-			result.add(i.next().toString());
-		return (String[]) result.toArray(new String[result.size()]);
+		// post via event admin
+		eventAdmin.postEvent(new Event(topic, eventProperties));
 	}
 
 	private void publishExportEvent(ExportRegistration exportRegistration) {
@@ -1135,15 +1107,6 @@ public class RemoteServiceAdmin implements
 						: RemoteServiceAdminEvent.IMPORT_ERROR, getRSABundle(),
 				importReference, exception, endpointDescription);
 		publishEvent(rsaEvent, endpointDescription);
-	}
-
-	private void closeRemoteServiceAdminListenerTracker() {
-		synchronized (remoteServiceAdminListenerTrackerLock) {
-			if (remoteServiceAdminListenerTracker != null) {
-				remoteServiceAdminListenerTracker.close();
-				remoteServiceAdminListenerTracker = null;
-			}
-		}
 	}
 
 	private RemoteServiceAdminListener[] getListeners(EndpointPermission perm) {
@@ -1194,67 +1157,11 @@ public class RemoteServiceAdmin implements
 		return (EventAdmin) eventAdminTracker.getService();
 	}
 
-	private void postRemoteServiceAdminEvent(String topic,
-			Dictionary eventProperties) {
-		EventAdmin eventAdmin = getEventAdmin();
-		if (eventAdmin == null) {
-			logError("postRemoteServiceAdminEvent", //$NON-NLS-1$
-					"No EventAdmin service available to send eventTopic=" //$NON-NLS-1$
-							+ topic + " eventProperties=" + eventProperties); //$NON-NLS-1$
-			return;
-		}
-		eventAdmin.postEvent(new Event(topic, eventProperties));
-	}
-
-	private void closeEventAdminTracker() {
-		synchronized (eventAdminTrackerLock) {
-			if (eventAdminTracker != null) {
-				eventAdminTracker.close();
-				eventAdminTracker = null;
-			}
-		}
-	}
-
-	private void closePackageAdminTracker() {
-		synchronized (packageAdminTrackerLock) {
-			if (packageAdminTracker != null) {
-				packageAdminTracker.close();
-				packageAdminTracker = null;
-			}
-		}
-	}
-
 	private Object consumerContainerSelectorTrackerLock = new Object();
 	private ServiceTracker consumerContainerSelectorTracker;
 
-	private void closeConsumerContainerSelectorTracker() {
-		synchronized (consumerContainerSelectorTrackerLock) {
-			if (consumerContainerSelectorTracker != null) {
-				consumerContainerSelectorTracker.close();
-				consumerContainerSelectorTracker = null;
-			}
-		}
-		if (defaultConsumerContainerSelector != null) {
-			defaultConsumerContainerSelector.close();
-			defaultConsumerContainerSelector = null;
-		}
-	}
-
 	private Object hostContainerSelectorTrackerLock = new Object();
 	private ServiceTracker hostContainerSelectorTracker;
-
-	private void closeHostContainerSelectorTracker() {
-		synchronized (hostContainerSelectorTrackerLock) {
-			if (hostContainerSelectorTracker != null) {
-				hostContainerSelectorTracker.close();
-				hostContainerSelectorTracker = null;
-			}
-		}
-		if (defaultHostContainerSelector != null) {
-			defaultHostContainerSelector.close();
-			defaultHostContainerSelector = null;
-		}
-	}
 
 	protected IHostContainerSelector getHostContainerSelector() {
 		synchronized (hostContainerSelectorTrackerLock) {
@@ -1700,12 +1607,6 @@ public class RemoteServiceAdmin implements
 
 	private Map<Bundle, ProxyClassLoader> proxyClassLoaders = new HashMap<Bundle, ProxyClassLoader>();
 
-	private void closeProxyClassLoaderCache() {
-		synchronized (proxyClassLoaders) {
-			proxyClassLoaders.clear();
-		}
-	}
-
 	private ClassLoader getProxyClassLoader(Bundle bundle) {
 		ProxyClassLoader proxyClassLoaderForBundle = null;
 		synchronized (proxyClassLoaders) {
@@ -2099,17 +2000,66 @@ public class RemoteServiceAdmin implements
 		}
 	}
 
-	private void closeExportRegistrations() {
-		List<ExportRegistration> toClose = null;
-		synchronized (exportedRegistrations) {
-			toClose = new ArrayList<ExportRegistration>(exportedRegistrations);
-			exportedRegistrations.clear();
+	public void close() {
+		trace("close", "closing importedRegistrations=" + importedRegistrations //$NON-NLS-1$ //$NON-NLS-2$
+				+ " exportedRegistrations=" + exportedRegistrations); //$NON-NLS-1$
+		synchronized (remoteServiceAdminListenerTrackerLock) {
+			if (remoteServiceAdminListenerTracker != null) {
+				remoteServiceAdminListenerTracker.close();
+				remoteServiceAdminListenerTracker = null;
+			}
 		}
-		for (ExportRegistration reg : toClose)
-			reg.close();
-	}
-
-	private void closeImportRegistrations() {
+		synchronized (eventAdminTrackerLock) {
+			if (eventAdminTracker != null) {
+				eventAdminTracker.close();
+				eventAdminTracker = null;
+			}
+		}
+		synchronized (packageAdminTrackerLock) {
+			if (packageAdminTracker != null) {
+				packageAdminTracker.close();
+				packageAdminTracker = null;
+			}
+		}
+		synchronized (proxyClassLoaders) {
+			proxyClassLoaders.clear();
+		}
+		synchronized (consumerContainerSelectorTrackerLock) {
+			if (consumerContainerSelectorTracker != null) {
+				consumerContainerSelectorTracker.close();
+				consumerContainerSelectorTracker = null;
+			}
+		}
+		if (defaultConsumerContainerSelector != null) {
+			defaultConsumerContainerSelector.close();
+			defaultConsumerContainerSelector = null;
+		}
+		synchronized (hostContainerSelectorTrackerLock) {
+			if (hostContainerSelectorTracker != null) {
+				hostContainerSelectorTracker.close();
+				hostContainerSelectorTracker = null;
+			}
+		}
+		if (defaultHostContainerSelector != null) {
+			defaultHostContainerSelector.close();
+			defaultHostContainerSelector = null;
+		}
+		if (defaultHostContainerSelectorRegistration != null) {
+			defaultHostContainerSelectorRegistration.unregister();
+			defaultHostContainerSelectorRegistration = null;
+		}
+		if (defaultHostContainerSelector != null) {
+			defaultHostContainerSelector.close();
+			defaultHostContainerSelector = null;
+		}
+		if (defaultConsumerContainerSelectorRegistration != null) {
+			defaultConsumerContainerSelectorRegistration.unregister();
+			defaultConsumerContainerSelectorRegistration = null;
+		}
+		if (defaultConsumerContainerSelector != null) {
+			defaultConsumerContainerSelector.close();
+			defaultConsumerContainerSelector = null;
+		}
 		List<ImportRegistration> toClose = null;
 		synchronized (importedRegistrations) {
 			toClose = new ArrayList<ImportRegistration>(importedRegistrations);
@@ -2117,28 +2067,17 @@ public class RemoteServiceAdmin implements
 		}
 		for (ImportRegistration reg : toClose)
 			reg.close();
-	}
-
-	private void closeEventListenerHookRegistrations() {
+		List<ExportRegistration> toClose1 = null;
+		synchronized (exportedRegistrations) {
+			toClose1 = new ArrayList<ExportRegistration>(exportedRegistrations);
+			exportedRegistrations.clear();
+		}
+		for (ExportRegistration reg1 : toClose1)
+			reg1.close();
 		if (eventListenerHookRegistration != null) {
 			eventListenerHookRegistration.unregister();
 			eventListenerHookRegistration = null;
 		}
-	}
-
-	public void close() {
-		trace("close", "closing importedRegistrations=" + importedRegistrations //$NON-NLS-1$ //$NON-NLS-2$
-				+ " exportedRegistrations=" + exportedRegistrations); //$NON-NLS-1$
-		closeRemoteServiceAdminListenerTracker();
-		closeEventAdminTracker();
-		closePackageAdminTracker();
-		closeProxyClassLoaderCache();
-		closeConsumerContainerSelectorTracker();
-		closeHostContainerSelectorTracker();
-		closeDefaultContainerSelectors();
-		closeImportRegistrations();
-		closeExportRegistrations();
-		closeEventListenerHookRegistrations();
 		this.clientBundle = null;
 	}
 
