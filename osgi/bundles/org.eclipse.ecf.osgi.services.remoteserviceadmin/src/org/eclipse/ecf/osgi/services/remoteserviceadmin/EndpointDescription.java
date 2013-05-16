@@ -195,6 +195,23 @@ public class EndpointDescription extends
 				propertiesOverrides);
 	}
 
+	@Override
+	public boolean isSameService(
+			org.osgi.service.remoteserviceadmin.EndpointDescription other) {
+		// If same ed instance then they are for same service
+		if (this == other)
+			return true;
+		// Like superclass, check to see that the framework id is not null
+		String frameworkId = getFrameworkUUID();
+		if (frameworkId == null)
+			return false;
+		// The id, the service id and the frameworkid have to be identical
+		// to be considered the same service
+		return (getId().equals(other.getId())
+				&& getServiceId() == other.getServiceId() && frameworkId
+					.equals(other.getFrameworkUUID()));
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
