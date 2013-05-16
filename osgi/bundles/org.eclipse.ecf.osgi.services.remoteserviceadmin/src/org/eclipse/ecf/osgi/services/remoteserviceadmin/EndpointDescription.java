@@ -210,7 +210,7 @@ public class EndpointDescription extends
 	
 	public String toString() {
 		StringBuffer sb = new StringBuffer("ECFEndpointDescription["); //$NON-NLS-1$
-		sb.append("id=").append(getId()); //$NON-NLS-1$
+		sb.append("id").append(getId()); //$NON-NLS-1$
 		sb.append(";endpoint.service.id=").append(getServiceId()); //$NON-NLS-1$
 		sb.append(";frameworkid=").append(getFrameworkUUID()).append("]");  //$NON-NLS-1$//$NON-NLS-2$
 		return sb.toString();

@@ -42,6 +42,8 @@ import org.osgi.framework.ServiceReference;
  */
 public abstract class AbstractContainerSelector {
 
+	public static final IRemoteServiceContainer[] EMPTY_REMOTE_SERVICE_CONTAINER_ARRAY = new IRemoteServiceContainer[] {};
+
 	protected IContainerManager getContainerManager() {
 		return Activator.getDefault().getContainerManager();
 	}
