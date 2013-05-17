@@ -32,4 +32,23 @@ public interface IRemoteCallParameterSerializer {
 	 */
 	public IRemoteCallParameter serializeParameter(String endpoint, IRemoteCall call, IRemoteCallable callable, IRemoteCallParameter paramDefault, Object paramToSerialize) throws NotSerializableException;
 
+	/**
+	 * Serializes all remote call parameters of this call. This method is invoked after 
+	 * {@link IRemoteCallParameter}{@link #serializeParameter(String, IRemoteCall, IRemoteCallable, IRemoteCallParameter, Object)} 
+	 * and allows to override its results (read override IRemoteCallParameters).
+	 * 
+	 * @param endpoint the endpoint.  Should not be <code>null</code>.
+	 * @param call the call associated with the parameter to serialize.  Will not be <code>null</code>.
+	 * @param callable the callable associated with the parameter to serialize.  Will not be <code>null</code>.
+	 * @param currentParameters the list of current parameters (from the callable) that would be send
+	 * @param paramToSerialize all parameters to serialize.
+	 * @return List the serialized parameters...with appropriate name and serialized value.
+	 * @throws NotSerializableException if a parameter cannot be serialized.
+	 * @since 8.0
+	 * 
+	 * @see "https://bugs.eclipse.org/408034"
+	 * @noreference This method is not intended to be referenced by clients.
+	 */
+	public IRemoteCallParameter[] serializeParameter(String endpoint, IRemoteCall call, IRemoteCallable callable, IRemoteCallParameter[] currentParameters, Object[] paramToSerialize) throws NotSerializableException;
+
 }

@@ -380,6 +380,18 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 		IRemoteCallParameter[] defaultCallableParameters = callable.getDefaultParameters();
 		if (callParameters == null)
 			return defaultCallableParameters;
+
+		/*
+		 * The loop calls for each call model obj the serializer, unless
+		 * - the model obj already happens to be a IRemoteCallParameter
+		 * - There are no default call parameters defined (see org.eclipse.ecf.remoteservice.client.RemoteCallable.defaultParameters)
+		 * otherwise:
+		 * - Iff the model obj is null, the default's call parameter value is used. Otherwise, the serializer is called.
+		 * 
+		 * Invariant: The order of model objs (callParameters) passed into this method and 
+		 * the order of default call parameters (RemoteCallable.defaultParameters) decide what model obj
+		 * gets combined with a default parameter.
+		 */
 		for (int i = 0; i < callParameters.length; i++) {
 			Object p = callParameters[i];
 			// If the parameter is already a remote call parameter just add
@@ -398,7 +410,8 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 					results.add(val);
 			}
 		}
-		// Check if we should send additional default parameters and whether there are more to send
+		// Check if we should send _additional_ default parameters and whether there are more to send.
+		// This depends on the previous for loop and how many (default) parameters have been used by it.
 		if (alwaysSendDefaultParameters && (defaultCallableParameters.length > callParameters.length)) {
 			// Start with the first parameter that wasn't specified
 			for (int i = callParameters.length; i < defaultCallableParameters.length; i++) {
@@ -412,7 +425,10 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 				results.add(serialziedParam);
 			}
 		}
-		return (IRemoteCallParameter[]) results.toArray(new IRemoteCallParameter[] {});
+
+		// Depending the two previous blocks, this potentially adds IRemoteCallParameters a second time to the list
+		// This is something for the user to handle/decide
+		return serializeParameter(uri, call, callable, results, callParameters);
 	}
 
 	/**
@@ -426,6 +442,17 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 		// Get parameter serializer...and
 		IRemoteCallParameterSerializer serializer = getParameterSerializer();
 		IRemoteCallParameter val = (serializer == null) ? null : serializer.serializeParameter(uri, call, callable, defaultParameter, parameterValue);
+		return val;
+	}
+
+	/**
+	 * @since 8.0
+	 */
+	protected IRemoteCallParameter[] serializeParameter(String uri, IRemoteCall call, IRemoteCallable callable, List currentParameters, Object[] parameterValue) throws NotSerializableException {
+		// Get parameter serializer...and
+		IRemoteCallParameterSerializer serializer = getParameterSerializer();
+		IRemoteCallParameter[] current = (IRemoteCallParameter[]) currentParameters.toArray(new IRemoteCallParameter[currentParameters.size()]);
+		IRemoteCallParameter[] val = (serializer == null) ? current : serializer.serializeParameter(uri, call, callable, current, parameterValue);
 		return val;
 	}
 

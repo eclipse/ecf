@@ -18,7 +18,7 @@ import org.eclipse.ecf.remoteservice.IRemoteCall;
  * @since 4.0
  *
  */
-public class StringParameterSerializer implements IRemoteCallParameterSerializer {
+public class StringParameterSerializer extends AbstractParameterSerializer implements IRemoteCallParameterSerializer {
 
 	/**
 	 * @throws NotSerializableException  
