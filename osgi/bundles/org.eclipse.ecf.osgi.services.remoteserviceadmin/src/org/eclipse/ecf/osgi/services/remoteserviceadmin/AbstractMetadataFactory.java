@@ -175,20 +175,16 @@ public abstract class AbstractMetadataFactory {
 		// remote service id
 		Long remoteServiceId = decodeLong(discoveredServiceProperties,
 				org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
-
-		if (remoteServiceId != null) {
-			endpointDescriptionProperties.put(
-					org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,
-					remoteServiceId);
-
+		endpointDescriptionProperties.put(
+				org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,
+				remoteServiceId);
+		String containerIDNamespace = decodeString(discoveredServiceProperties,
+				RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
+		if (containerIDNamespace != null) {
 			// container id namespace
-			String containerIDNamespace = decodeString(
-					discoveredServiceProperties,
-					RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
-			if (containerIDNamespace != null)
-				endpointDescriptionProperties.put(
-						RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE,
-						containerIDNamespace);
+			endpointDescriptionProperties.put(
+					RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE,
+					containerIDNamespace);
 
 			// connect target ID
 			String connectTargetIDName = decodeString(
@@ -224,7 +220,7 @@ public abstract class AbstractMetadataFactory {
 		decodeNonStandardServiceProperties(discoveredServiceProperties,
 				endpointDescriptionProperties);
 
-		return (remoteServiceId == null) ? new org.osgi.service.remoteserviceadmin.EndpointDescription(
+		return (containerIDNamespace == null) ? new org.osgi.service.remoteserviceadmin.EndpointDescription(
 				endpointDescriptionProperties) : new EndpointDescription(
 				endpointDescriptionProperties);
 	}

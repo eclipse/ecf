@@ -9,8 +9,10 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 import org.eclipse.core.runtime.IStatus;
@@ -23,6 +25,7 @@ import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.remoteserviceadmin.EndpointListener;
 import org.osgi.service.remoteserviceadmin.ImportRegistration;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent;
 import org.osgi.util.tracker.ServiceTracker;
@@ -131,6 +134,9 @@ public abstract class AbstractTopologyManager {
 				.getService();
 	}
 
+	/**
+	 * @since 3.0
+	 */
 	protected void advertiseEndpointDescription(
 			EndpointDescription endpointDescription) {
 		IEndpointDescriptionAdvertiser advertiser = getEndpointDescriptionAdvertiser(endpointDescription);
@@ -152,6 +158,9 @@ public abstract class AbstractTopologyManager {
 							+ " FAILED", result); //$NON-NLS-1$
 	}
 
+	/**
+	 * @since 3.0
+	 */
 	protected void unadvertiseEndpointDescription(
 			EndpointDescription endpointDescription) {
 		IEndpointDescriptionAdvertiser advertiser = getEndpointDescriptionAdvertiser(endpointDescription);
@@ -170,6 +179,26 @@ public abstract class AbstractTopologyManager {
 					"Unadvertise of endpointDescription=" + endpointDescription //$NON-NLS-1$
 							+ " FAILED", result); //$NON-NLS-1$
 	}
+
+	protected void unadvertiseEndpointDescription(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
+		IEndpointDescriptionAdvertiser advertiser = getEndpointDescriptionAdvertiser(endpointDescription);
+		if (advertiser == null) {
+			logError(
+					"unadvertiseEndpointDescription", //$NON-NLS-1$
+					"No endpoint description advertiser available to unadvertise endpointDescription=" //$NON-NLS-1$
+							+ endpointDescription);
+			return;
+		}
+		// Now unadvertise endpoint description using endpoint description
+		// advertiser
+		IStatus result = advertiser.unadvertise(endpointDescription);
+		if (!result.isOK())
+			logError("unadvertiseEndpointDescription", //$NON-NLS-1$
+					"Unadvertise of endpointDescription=" + endpointDescription //$NON-NLS-1$
+							+ " FAILED", result); //$NON-NLS-1$
+	}
+
 
 	protected void logError(String methodName, String message,
 			Throwable exception) {
@@ -192,73 +221,21 @@ public abstract class AbstractTopologyManager {
 				this.getClass(), message);
 	}
 
-	protected void handleEndpointAdded(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
-			String matchedFilter) {
-		if (!(endpointDescription instanceof org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription))
-			handleNonECFEndpointAdded(endpointDescription, matchedFilter);
-		else {
-			// First, select importing remote service admin
-			trace("handleEndpointAdded", "endpointDescription=" //$NON-NLS-1$ //$NON-NLS-2$
-					+ endpointDescription);
-			getRemoteServiceAdmin().importService(endpointDescription);
-		}
+	/**
+	 * @since 3.0
+	 */
+	protected void handleECFEndpointAdded(EndpointDescription endpointDescription) {
+		trace("handleEndpointAdded", "endpointDescription=" //$NON-NLS-1$ //$NON-NLS-2$
+				+ endpointDescription);
+		// Import service
+		getRemoteServiceAdmin().importService(endpointDescription);
 	}
 
 	/**
 	 * @since 3.0
 	 */
-	protected void handleNonECFEndpointAdded(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
-			String matchedFilter) {
-
-		IEndpointDescriptionAdvertiser advertiser = getEndpointDescriptionAdvertiser(endpointDescription);
-		if (advertiser == null) {
-			logWarning("handleOSGiEndpointAdded", //$NON-NLS-1$
-					"No endpoint description advertiser available for endpointDescription=" //$NON-NLS-1$
-							+ endpointDescription);
-			return;
-		}
-		// Now advertise endpoint description using endpoint description
-		// advertiser
-		trace("handleOSGiEndpointAdded", //$NON-NLS-1$
-				"advertising endpointDescription=" + endpointDescription //$NON-NLS-1$
-						+ " with advertiser=" + advertiser); //$NON-NLS-1$
-		IStatus result = advertiser.advertise(endpointDescription);
-		if (!result.isOK())
-			logError("handleOSGiEndpointAdded", //$NON-NLS-1$
-					"Advertise of endpointDescription=" + endpointDescription //$NON-NLS-1$
-							+ " FAILED", result); //$NON-NLS-1$
-	}
-
-	protected void handleInvalidImportRegistration(
-			ImportRegistration importRegistration, Throwable t) {
-		logError("handleInvalidImportRegistration", "importRegistration=" //$NON-NLS-1$ //$NON-NLS-2$
-				+ importRegistration, t);
-	}
-
-	/**
-	 * @since 3.0
-	 */
-	protected void handleEvent(ServiceEvent event, Map listeners) {
-		switch (event.getType()) {
-		case ServiceEvent.MODIFIED:
-			handleServiceModifying(event.getServiceReference());
-			break;
-		case ServiceEvent.REGISTERED:
-			handleServiceRegistering(event.getServiceReference());
-			break;
-		default:
-			break;
-		}
-	}
-
-	protected void handleEndpointRemoved(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
-			String matchedFilter) {
-		if (!(endpointDescription instanceof org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription))
-			handleNonECFEndpointRemoved(endpointDescription, matchedFilter);
-		else {
+	protected void handleECFEndpointRemoved(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
 			trace("handleEndpointRemoved", "endpointDescription=" //$NON-NLS-1$ //$NON-NLS-2$
 					+ endpointDescription);
 			RemoteServiceAdmin rsa = (RemoteServiceAdmin) getRemoteServiceAdmin();
@@ -272,9 +249,96 @@ public abstract class AbstractTopologyManager {
 					importedRegistration.close();
 				}
 			}
-		}
 	}
 
+	private String isInterested(Object scopeobj, org.osgi.service.remoteserviceadmin.EndpointDescription description) {
+		if (scopeobj instanceof List<?>) {
+			List<String> scope = (List<String>) scopeobj;
+			for (Iterator<String> it = scope.iterator(); it.hasNext();) {
+				String filter = it.next();
+
+				if (description.matches(filter)) {
+					return filter;
+				}
+			}
+		} else if (scopeobj instanceof String[]) {
+			String[] scope = (String[]) scopeobj;
+			for (String filter : scope) {
+				if (description.matches(filter)) {
+					return filter;
+				}
+			}
+		} else if (scopeobj instanceof String) {
+			StringTokenizer st = new StringTokenizer((String)scopeobj, " "); //$NON-NLS-1$
+			for (; st.hasMoreTokens();) {
+				String filter = st.nextToken();
+				if (description.matches(filter)) {
+					return filter;
+				}
+			}
+		}
+		return null;
+	}
+
+	private void notifyOtherEndpointListeners(EndpointListener exceptEndpointListener, org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription, boolean added) {
+		ServiceReference[] listeners = null;
+		try {
+			listeners = context.getServiceReferences(
+					EndpointListener.class.getName(),
+					"(" + EndpointListener.ENDPOINT_LISTENER_SCOPE + "=*)");  //$NON-NLS-1$//$NON-NLS-2$
+		} catch (InvalidSyntaxException e) {
+			// Should never happen
+		}
+		if (listeners != null) {
+			for(int i=0; i < listeners.length; i++) {
+				EndpointListener listener = (EndpointListener) getContext().getService(listeners[i]);
+				if (listener != exceptEndpointListener) {
+					Object scope = listeners[i].getProperty(EndpointListener.ENDPOINT_LISTENER_SCOPE);
+					String matchedFilter = isInterested(scope, endpointDescription);
+					if (matchedFilter != null) {
+						if (added) listener.endpointAdded(endpointDescription, matchedFilter);
+						else listener.endpointRemoved(endpointDescription, matchedFilter);
+					}
+				}
+			}
+		}
+	}
+	/**
+	 * @since 3.0
+	 */
+	protected void handleNonECFEndpointAdded(EndpointListener listener,
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
+		notifyOtherEndpointListeners(listener, endpointDescription, true);
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	protected void handleNonECFEndpointRemoved(EndpointListener listener,
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
+		notifyOtherEndpointListeners(listener, endpointDescription, false);
+	}
+
+	protected void advertiseEndpointDescription(org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
+		// forward to all other endpoint listener
+	IEndpointDescriptionAdvertiser advertiser = getEndpointDescriptionAdvertiser(endpointDescription);
+	if (advertiser == null) {
+		logWarning("handleOSGiEndpointAdded", //$NON-NLS-1$
+				"No endpoint description advertiser available for endpointDescription=" //$NON-NLS-1$
+						+ endpointDescription);
+		return;
+	}
+	// Now advertise endpoint description using endpoint description
+	// advertiser
+	trace("handleOSGiEndpointAdded", //$NON-NLS-1$
+			"advertising endpointDescription=" + endpointDescription //$NON-NLS-1$
+					+ " with advertiser=" + advertiser); //$NON-NLS-1$
+	IStatus result = advertiser.advertise(endpointDescription);
+	if (!result.isOK())
+		logError("handleOSGiEndpointAdded", //$NON-NLS-1$
+				"Advertise of endpointDescription=" + endpointDescription //$NON-NLS-1$
+						+ " FAILED", result); //$NON-NLS-1$
+	}
 	/**
 	 * @since 3.0
 	 */
@@ -298,6 +362,30 @@ public abstract class AbstractTopologyManager {
 			logError("handleOSGiEndpointRemoved", //$NON-NLS-1$
 					"Unadvertise of endpointDescription=" + endpointDescription //$NON-NLS-1$
 							+ " FAILED", result); //$NON-NLS-1$
+	}
+
+
+
+	protected void handleInvalidImportRegistration(
+			ImportRegistration importRegistration, Throwable t) {
+		logError("handleInvalidImportRegistration", "importRegistration=" //$NON-NLS-1$ //$NON-NLS-2$
+				+ importRegistration, t);
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	protected void handleEvent(ServiceEvent event, Map listeners) {
+		switch (event.getType()) {
+		case ServiceEvent.MODIFIED:
+			handleServiceModifying(event.getServiceReference());
+			break;
+		case ServiceEvent.REGISTERED:
+			handleServiceRegistering(event.getServiceReference());
+			break;
+		default:
+			break;
+		}
 	}
 
 	protected void handleServiceRegistering(ServiceReference serviceReference) {

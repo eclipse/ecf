@@ -27,14 +27,6 @@ import org.osgi.util.tracker.ServiceTracker;
 
 public class Activator implements BundleActivator {
 
-	private static final boolean allowLoopbackReference = new Boolean(
-			System.getProperty(
-					"org.eclipse.ecf.osgi.services.discovery.allowLoopbackReference", //$NON-NLS-1$
-					"false")).booleanValue(); //$NON-NLS-1$
-
-	private static final String endpointListenerScope = System
-			.getProperty("org.eclipse.ecf.osgi.services.discovery.endpointListenerScope"); //$NON-NLS-1$
-
 	public static final String PLUGIN_ID = "org.eclipse.ecf.osgi.services.distribution"; //$NON-NLS-1$
 
 	public static final boolean autoCreateProxyContainer = new Boolean(
@@ -107,30 +99,6 @@ public class Activator implements BundleActivator {
 			logService.log(sr, level, message, t);
 	}
 
-	private String getEndpointListenerScope() {
-		// If it's set via system property, then simply use it
-		if (endpointListenerScope != null)
-			return endpointListenerScope;
-		// Otherwise create it
-		// if allowLoopbackReference is true, then return a filter to match all
-		// endpoint description ids
-		StringBuffer elScope = new StringBuffer("("); //$NON-NLS-1$
-		if (allowLoopbackReference) {
-			elScope.append(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID);
-			elScope.append("=*"); //$NON-NLS-1$
-		} else {
-			// filter so that local framework uuid is not the same as local
-			// value
-			elScope.append("!("); //$NON-NLS-1$
-			elScope.append(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID);
-			elScope.append("="); //$NON-NLS-1$
-			elScope.append(basicTopologyManagerImpl.getFrameworkUUID());
-			elScope.append(")"); //$NON-NLS-1$
-		}
-		elScope.append(")"); //$NON-NLS-1$
-		return elScope.toString();
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -144,14 +112,12 @@ public class Activator implements BundleActivator {
 		this.context = ctxt;
 		// Create basicTopologyManagerImpl
 		basicTopologyManagerImpl = new BasicTopologyManagerImpl(context);
-
 		// Register basicTopologyManagerImpl as EndpointListener always, so that
-		// it
 		// gets notified when Endpoints are discovered
 		Properties props = new Properties();
 		props.put(
 				org.osgi.service.remoteserviceadmin.EndpointListener.ENDPOINT_LISTENER_SCOPE,
-				getEndpointListenerScope());
+				basicTopologyManagerImpl.getScope());
 		endpointListenerReg = getContext().registerService(
 				EndpointListener.class.getName(), basicTopologyManagerImpl,
 				(Dictionary) props);
