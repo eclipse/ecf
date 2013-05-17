@@ -35,7 +35,7 @@ public class RemoteConstants {
 	 * value as one of the entries in the list returned from
 	 * {@link IServiceTypeID#getServices()}.
 	 */
-	public static final String DISCOVERY_SERVICE_TYPE = "ecf.osgirsvc"; //$NON-NLS-1$
+	public static final String DISCOVERY_SERVICE_TYPE = "ecfosgirsvc"; //$NON-NLS-1$
 	/**
 	 * ECF discovery scope property. Value type is String+. If set, the value
 	 * will be used by the {@link IServiceInfoFactory} during
