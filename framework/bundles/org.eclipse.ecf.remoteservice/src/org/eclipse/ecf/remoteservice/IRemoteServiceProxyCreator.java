@@ -3,7 +3,7 @@ package org.eclipse.ecf.remoteservice;
 import java.lang.reflect.InvocationHandler;
 
 /**
- * @since 7.0
+ * @since 8.0
  */
 public interface IRemoteServiceProxyCreator {
 
