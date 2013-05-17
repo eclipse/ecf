@@ -9,6 +9,9 @@
  *******************************************************************************/
 package org.eclipse.ecf.remoteservice.rpc.client;
 
+import java.io.NotSerializableException;
+import java.util.ArrayList;
+import java.util.List;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.client.*;
 
@@ -18,6 +21,22 @@ import org.eclipse.ecf.remoteservice.client.*;
  * @author psamolisov
  */
 public class TrivialParameterServializer implements IRemoteCallParameterSerializer {
+
+	/**
+	 * @throws NotSerializableException  
+	 */
+	public IRemoteCallParameter[] serializeParameter(String endpoint, IRemoteCall call, IRemoteCallable callable,
+			IRemoteCallParameter[] currentParameters, Object[] paramToSerialize) throws NotSerializableException {
+		List results = new ArrayList();
+		if (paramToSerialize != null) {
+			for (int i = 0; i < paramToSerialize.length; i++) {
+				IRemoteCallParameter p = new RemoteCallParameter(currentParameters[i].getName(),
+						paramToSerialize[i] == null ? currentParameters[i].getValue() : paramToSerialize);
+				results.add(p);
+			}
+		}
+		return (IRemoteCallParameter[]) results.toArray(new IRemoteCallParameter[results.size()]);
+	}
 
 	/**
 	 * All parameters will be serialized in the Apache XML-RPC library. We shouldn't serialize any parameters
