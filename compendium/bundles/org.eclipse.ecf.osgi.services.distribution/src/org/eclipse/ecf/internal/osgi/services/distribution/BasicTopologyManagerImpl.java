@@ -105,27 +105,15 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
 			String matchedFilter) {
 		if (matchedFilter.equals(endpointListenerScope))
-			handleEndpointAddedViaELScope(endpoint);
+			if (endpoint instanceof EndpointDescription)
+				handleECFEndpointAdded((EndpointDescription) endpoint);
+			else
+				handleNonECFEndpointAdded(this, endpoint);
 		else if (matchedFilter.equals(ALL_SCOPE))
-			handleEndpointAddedViaAllScope(endpoint);
-	}
-
-	protected void handleEndpointAddedViaELScope(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint) {
-		if (endpoint instanceof EndpointDescription)
-			handleECFEndpointAdded((EndpointDescription) endpoint);
-		else
-			handleNonECFEndpointAdded(this, endpoint);
-	}
-
-	protected void handleEndpointAddedViaAllScope(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint) {
-		if (endpoint instanceof EndpointDescription) {
-			logError(
-					"handleEndpointAddedViaAllScope", "Attempt to add ECF endpoint description directly.  endpoint=" + endpoint); //$NON-NLS-1$ //$NON-NLS-2$
-			return;
-		} else
-			advertiseEndpointDescription(endpoint);
+			if (endpoint instanceof EndpointDescription)
+				handleECFEndpointAdded((EndpointDescription) endpoint);
+			else
+				advertiseEndpointDescription(endpoint);
 	}
 
 	/*
@@ -140,27 +128,15 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
 			String matchedFilter) {
 		if (matchedFilter.equals(endpointListenerScope))
-			handleEndpointRemovedViaELScope(endpoint);
+			if (endpoint instanceof EndpointDescription)
+				handleECFEndpointRemoved((EndpointDescription) endpoint);
+			else
+				handleNonECFEndpointRemoved(this, endpoint);
 		else if (matchedFilter.equals(ALL_SCOPE))
-			handleEndpointRemovedViaAllScope(endpoint);
-	}
-
-	protected void handleEndpointRemovedViaELScope(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint) {
-		if (endpoint instanceof EndpointDescription)
-			handleECFEndpointRemoved((EndpointDescription) endpoint);
-		else
-			handleNonECFEndpointRemoved(this, endpoint);
-	}
-
-	protected void handleEndpointRemovedViaAllScope(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint) {
-		if (endpoint instanceof EndpointDescription) {
-			logError(
-					"handleEndpointRemovedViaAllScope", "Attempt to remove ECF endpoint description directly.  endpoint=" + endpoint); //$NON-NLS-1$ //$NON-NLS-2$
-			return;
-		} else
-			unadvertiseEndpointDescription(endpoint);
+			if (endpoint instanceof EndpointDescription)
+				handleECFEndpointRemoved((EndpointDescription) endpoint);
+			else
+				unadvertiseEndpointDescription(endpoint);
 	}
 
 	// EventListenerHook impl
