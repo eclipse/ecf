@@ -48,11 +48,10 @@ public abstract class AbstractMetadataFactory {
 		result.setPropertyString(name, value.toString());
 	}
 
-	private static final Long DEFAULT_LONG = new Long(0);
-
+	private final Long DEFAULT_LONG = new Long(0);
+	
 	protected Long decodeLong(IServiceProperties props, String name) {
-		// This is for bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=408450
-		Object o = props.getPropertyString(name);
+		Object o = props.getProperty(name);
 		if (o == null)
 			return DEFAULT_LONG;
 		if (o instanceof Long)
