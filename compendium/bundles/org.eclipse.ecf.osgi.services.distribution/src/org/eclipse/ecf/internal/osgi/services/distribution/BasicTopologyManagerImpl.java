@@ -3,6 +3,7 @@ package org.eclipse.ecf.internal.osgi.services.distribution;
 import java.util.Map;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.AbstractTopologyManager;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
@@ -22,16 +23,15 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 			.getProperty("org.eclipse.ecf.osgi.services.discovery.endpointListenerScope"); //$NON-NLS-1$
 
 	private String endpointListenerScope;
-	private static final String ALL_SCOPE = "(" //$NON-NLS-1$
-			+ org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID
-			+ "=*)"; //$NON-NLS-1$
+	private static final String NON_ECF_SCOPE = "(!(" //$NON-NLS-1$
+			+ RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE + "=*))"; //$NON-NLS-1$
 
 	BasicTopologyManagerImpl(BundleContext context) {
 		super(context);
 		if (defaultScope != null)
 			this.endpointListenerScope = defaultScope;
 		else if (allowLoopbackReference)
-			endpointListenerScope = ALL_SCOPE;
+			endpointListenerScope = NON_ECF_SCOPE;
 		else {
 			StringBuffer elScope = new StringBuffer("("); //$NON-NLS-1$
 			// filter so that local framework uuid is not the same as local
@@ -47,8 +47,8 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 	}
 
 	String[] getScope() {
-		return (ALL_SCOPE.equals(endpointListenerScope)) ? new String[] { endpointListenerScope }
-				: new String[] { endpointListenerScope, ALL_SCOPE };
+		return (NON_ECF_SCOPE.equals(endpointListenerScope)) ? new String[] { endpointListenerScope }
+				: new String[] { endpointListenerScope, NON_ECF_SCOPE };
 	}
 
 	protected String getFrameworkUUID() {
@@ -109,7 +109,7 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 				handleECFEndpointAdded((EndpointDescription) endpoint);
 			else
 				handleNonECFEndpointAdded(this, endpoint);
-		else if (matchedFilter.equals(ALL_SCOPE))
+		else if (matchedFilter.equals(NON_ECF_SCOPE))
 			if (endpoint instanceof EndpointDescription)
 				handleECFEndpointAdded((EndpointDescription) endpoint);
 			else
@@ -132,7 +132,7 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 				handleECFEndpointRemoved((EndpointDescription) endpoint);
 			else
 				handleNonECFEndpointRemoved(this, endpoint);
-		else if (matchedFilter.equals(ALL_SCOPE))
+		else if (matchedFilter.equals(NON_ECF_SCOPE))
 			if (endpoint instanceof EndpointDescription)
 				handleECFEndpointRemoved((EndpointDescription) endpoint);
 			else
