@@ -38,14 +38,18 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 		else {
 			// If loopback not allowed, then we have our scope include
 			// both !frameworkUUID same, and ONLY_ECF_SCOPE
-			StringBuffer elScope = new StringBuffer("("); //$NON-NLS-1$
+			StringBuffer elScope = new StringBuffer(""); //$NON-NLS-1$
 			// filter so that local framework uuid is not the same as local
 			// value
-			elScope.append("&("); //$NON-NLS-1$
-			elScope.append("!(").append(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID).append("=").append(getFrameworkUUID()).append(")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			elScope.append("(&(!(").append(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID).append("=").append(getFrameworkUUID()).append("))"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			elScope.append(ONLY_ECF_SCOPE);
 			elScope.append(")"); //$NON-NLS-1$
-			elScope.append(")"); //$NON-NLS-1$
+			try {
+				context.createFilter(elScope.toString());
+			} catch (InvalidSyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			endpointListenerScope = elScope.toString();
 		}
 	}
