@@ -45,6 +45,7 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 			elScope.append("!(").append(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID).append("=").append(getFrameworkUUID()).append(")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			elScope.append(ONLY_ECF_SCOPE);
 			elScope.append(")"); //$NON-NLS-1$
+			elScope.append(")"); //$NON-NLS-1$
 			endpointListenerScope = elScope.toString();
 		}
 	}
