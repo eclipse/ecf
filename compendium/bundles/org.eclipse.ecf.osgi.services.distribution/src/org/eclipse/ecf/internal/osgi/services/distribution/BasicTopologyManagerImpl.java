@@ -3,6 +3,7 @@ package org.eclipse.ecf.internal.osgi.services.distribution;
 import java.util.Map;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.AbstractTopologyManager;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
@@ -22,33 +23,34 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 			.getProperty("org.eclipse.ecf.osgi.services.discovery.endpointListenerScope"); //$NON-NLS-1$
 
 	private String endpointListenerScope;
-	private static final String ALL_SCOPE = "(" //$NON-NLS-1$
-			+ org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID
-			+ "=*)"; //$NON-NLS-1$
+	private static final String ONLY_ECF_SCOPE = "(" + RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE + "=*)"; //$NON-NLS-1$ //$NON-NLS-2$
+	private static final String NO_ECF_SCOPE = "(!(" //$NON-NLS-1$
+			+ RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE + "=*))"; //$NON-NLS-1$
 
 	BasicTopologyManagerImpl(BundleContext context) {
 		super(context);
 		if (defaultScope != null)
 			this.endpointListenerScope = defaultScope;
-		else if (allowLoopbackReference)
-			endpointListenerScope = ALL_SCOPE;
+		// If loopback is allowed, then for this endpoint listener we only
+		// consider those that have a namespace (only ECF endpoint descriptions)
+		if (allowLoopbackReference)
+			endpointListenerScope = ONLY_ECF_SCOPE;
 		else {
+			// If loopback not allowed, then we have our scope include
+			// both !frameworkUUID same, and ONLY_ECF_SCOPE
 			StringBuffer elScope = new StringBuffer("("); //$NON-NLS-1$
 			// filter so that local framework uuid is not the same as local
 			// value
-			elScope.append("!("); //$NON-NLS-1$
-			elScope.append(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID);
-			elScope.append("="); //$NON-NLS-1$
-			elScope.append(getFrameworkUUID());
-			elScope.append(")"); //$NON-NLS-1$
+			elScope.append("&("); //$NON-NLS-1$
+			elScope.append("!(").append(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID).append("=").append(getFrameworkUUID()).append(")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			elScope.append(ONLY_ECF_SCOPE);
 			elScope.append(")"); //$NON-NLS-1$
 			endpointListenerScope = elScope.toString();
 		}
 	}
 
 	String[] getScope() {
-		return (ALL_SCOPE.equals(endpointListenerScope)) ? new String[] { endpointListenerScope }
-				: new String[] { endpointListenerScope, ALL_SCOPE };
+		return new String[] { endpointListenerScope, NO_ECF_SCOPE };
 	}
 
 	protected String getFrameworkUUID() {
@@ -109,7 +111,7 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 				handleECFEndpointAdded((EndpointDescription) endpoint);
 			else
 				handleNonECFEndpointAdded(this, endpoint);
-		else if (matchedFilter.equals(ALL_SCOPE))
+		else if (matchedFilter.equals(NO_ECF_SCOPE))
 			if (endpoint instanceof EndpointDescription)
 				handleECFEndpointAdded((EndpointDescription) endpoint);
 			else
@@ -132,7 +134,7 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 				handleECFEndpointRemoved((EndpointDescription) endpoint);
 			else
 				handleNonECFEndpointRemoved(this, endpoint);
-		else if (matchedFilter.equals(ALL_SCOPE))
+		else if (matchedFilter.equals(NO_ECF_SCOPE))
 			if (endpoint instanceof EndpointDescription)
 				handleECFEndpointRemoved((EndpointDescription) endpoint);
 			else
