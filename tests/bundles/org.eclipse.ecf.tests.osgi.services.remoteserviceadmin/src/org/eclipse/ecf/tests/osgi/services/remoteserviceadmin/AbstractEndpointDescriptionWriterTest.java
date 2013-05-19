@@ -51,6 +51,20 @@ public abstract class AbstractEndpointDescriptionWriterTest extends
 				// TODO Auto-generated method stub
 				return Status.OK_STATUS;
 			}
+
+			@Override
+			public IStatus advertise(
+					org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
+				// TODO Auto-generated method stub
+				return Status.OK_STATUS;
+			}
+
+			@Override
+			public IStatus unadvertise(
+					org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
+				// TODO Auto-generated method stub
+				return null;
+			}
 		};
 	}
 

@@ -45,6 +45,20 @@ public abstract class AbstractEndpointDescriptionEDEFBundleGeneratorTest extends
 				// TODO Auto-generated method stub
 				return Status.OK_STATUS;
 			}
+
+			@Override
+			public IStatus advertise(
+					org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
+				// TODO Auto-generated method stub
+				return Status.OK_STATUS;
+			}
+
+			@Override
+			public IStatus unadvertise(
+					org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
+				// TODO Auto-generated method stub
+				return Status.OK_STATUS;
+			}
 		};
 	}
 
