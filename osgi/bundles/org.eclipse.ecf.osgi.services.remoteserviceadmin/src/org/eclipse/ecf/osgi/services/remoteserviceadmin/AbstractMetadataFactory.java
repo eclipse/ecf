@@ -48,11 +48,25 @@ public abstract class AbstractMetadataFactory {
 		result.setPropertyString(name, value.toString());
 	}
 
+	private final Long DEFAULT_LONG = new Long(0);
+	
 	protected Long decodeLong(IServiceProperties props, String name) {
-		String longAsString = props.getPropertyString(name);
-		if (longAsString == null)
-			return new Long(0);
-		return new Long(longAsString);
+		Object o = props.getProperty(name);
+		if (o == null)
+			return DEFAULT_LONG;
+		if (o instanceof Long)
+			return (Long) o;
+		if (o instanceof Integer)
+			return new Long(((Integer) o).longValue());
+		if (o instanceof String)
+			try {
+				return new Long((String) o);
+			} catch (NumberFormatException e) {
+				LogUtility
+						.logError(
+								"decodeLong", DebugOptions.METADATA_FACTORY, this.getClass(), "Exception decoding long with name=" + name + " and value=" + o); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			}
+		return DEFAULT_LONG;
 	}
 
 	protected void encodeList(IServiceProperties props, String name,
