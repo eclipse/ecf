@@ -171,7 +171,7 @@ public class RemoteConstants {
 	 * It allows those accessing the remote service proxy to get information
 	 * about the endpoint id.
 	 */
-	public static final String SERVICE_IMPORTED_ENDPOINT_ID = "ecf.service.imported.endpoint.id"; //$NON-NLS-1$
+	public static final String SERVICE_IMPORTED_ENDPOINT_ID = org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID;
 
 	/**
 	 * This property is set on the remote service proxy during
@@ -182,5 +182,5 @@ public class RemoteConstants {
 	 * . It allows those accessing the remote service proxy to get information
 	 * about the endpoint remote service id.
 	 */
-	public static final String SERVICE_IMPORTED_ENDPOINT_SERVICE_ID = "ecf.service.imported.endpoint.service.id"; //$NON-NLS-1$
+	public static final String SERVICE_IMPORTED_ENDPOINT_SERVICE_ID = org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID;
 }

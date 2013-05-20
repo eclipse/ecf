@@ -1877,16 +1877,10 @@ public class RemoteServiceAdmin implements
 						importedConfigs);
 
 		// Set endpoint.id and endpoint.service.id
-		resultProperties
-				.put(org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_ENDPOINT_ID,
-						endpointDescription
-								.getProperties()
-								.get(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID));
-		resultProperties
-				.put(org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_ENDPOINT_SERVICE_ID,
-						endpointDescription
-								.getProperties()
-								.get(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID));
+		String endpointId = endpointDescription.getId();
+		resultProperties.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID, endpointId);
+		Long endpointServiceId = new Long(endpointDescription.getServiceId());
+		resultProperties.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID, endpointServiceId);
 
 		return resultProperties;
 	}
