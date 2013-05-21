@@ -23,6 +23,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.util.LogHelper;
@@ -58,13 +59,16 @@ public class Activator implements BundleActivator {
 		return instance;
 	}
 
+	public IContainerManager getContainerManager() {
+		return (IContainerManager) ContainerFactory.getDefault();
+	}
+	
 	private ServiceRegistration remoteServiceAdminRegistration;
 
 	private EndpointDescriptionLocator endpointDescriptionLocator;
 	private EndpointDescriptionAdvertiser endpointDescriptionAdvertiser;
 	private ServiceRegistration endpointDescriptionAdvertiserRegistration;
 
-	private ServiceTracker containerManagerTracker;
 	// Logging
 	private ServiceTracker logServiceTracker = null;
 	private LogService logService = null;
@@ -114,8 +118,7 @@ public class Activator implements BundleActivator {
 
 	private String[][] getSupportedConfigsAndIntents() {
 		IContainerManager containerManager = getContainerManager();
-		Assert.isNotNull(containerManager,
-				"Container manager must be present to start ECF Remote Service Admin"); //$NON-NLS-1$
+		Assert.isNotNull(containerManager,"Container manager must be present to start ECF Remote Service Admin"); //$NON-NLS-1$
 		ContainerTypeDescription[] remoteServiceDescriptions = containerManager
 				.getContainerFactory().getDescriptionsForContainerAdapter(
 						IRemoteServiceContainerAdapter.class);
@@ -265,10 +268,6 @@ public class Activator implements BundleActivator {
 				logService = null;
 			}
 		}
-		if (containerManagerTracker != null) {
-			containerManagerTracker.close();
-			containerManagerTracker = null;
-		}
 		stopProxyServiceFactoryBundle();
 		Activator.context = null;
 		Activator.instance = null;
@@ -355,12 +354,4 @@ public class Activator implements BundleActivator {
 			logService.log(sr, level, message, t);
 	}
 
-	public IContainerManager getContainerManager() {
-		if (containerManagerTracker == null) {
-			containerManagerTracker = new ServiceTracker(context,
-					IContainerManager.class.getName(), null);
-			containerManagerTracker.open();
-		}
-		return (IContainerManager) containerManagerTracker.getService();
-	}
 }

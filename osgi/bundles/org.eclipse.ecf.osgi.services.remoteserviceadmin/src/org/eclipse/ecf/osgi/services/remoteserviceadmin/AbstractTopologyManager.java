@@ -130,7 +130,7 @@ public abstract class AbstractTopologyManager {
 	protected org.osgi.service.remoteserviceadmin.RemoteServiceAdmin getRemoteServiceAdmin() {
 		synchronized (remoteServiceAdminTrackerLock) {
 			if (remoteServiceAdminTracker == null) {
-				remoteServiceAdminTracker = new ServiceTracker(getContext(),
+				remoteServiceAdminTracker = new ServiceTracker(Activator.getContext(),
 						createRSAFilter(), null);
 				remoteServiceAdminTracker.open();
 			}
