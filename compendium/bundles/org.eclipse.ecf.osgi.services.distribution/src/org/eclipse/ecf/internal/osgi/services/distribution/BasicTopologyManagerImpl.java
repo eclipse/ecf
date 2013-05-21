@@ -4,6 +4,7 @@ import java.util.Map;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.AbstractTopologyManager;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
@@ -21,6 +22,10 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 
 	private static final String defaultScope = System
 			.getProperty("org.eclipse.ecf.osgi.services.discovery.endpointListenerScope"); //$NON-NLS-1$
+
+	private static final boolean disableDiscovery = new Boolean(
+			System.getProperty(
+					"org.eclipse.ecf.osgi.services.discovery.disableDiscovery", "false")).booleanValue(); //$NON-NLS-1$ //$NON-NLS-2$
 
 	private String endpointListenerScope;
 	private static final String ONLY_ECF_SCOPE = "(" + RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE + "=*)"; //$NON-NLS-1$ //$NON-NLS-2$
@@ -147,6 +152,39 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 
 	// RemoteServiceAdminListener impl
 	void handleRemoteAdminEvent(RemoteServiceAdminEvent event) {
-		handleRemoteServiceAdminEvent(event);
+		if (!(event instanceof RemoteServiceAdmin.RemoteServiceAdminEvent))
+			return;
+		RemoteServiceAdmin.RemoteServiceAdminEvent rsaEvent = (RemoteServiceAdmin.RemoteServiceAdminEvent) event;
+
+		int eventType = event.getType();
+		EndpointDescription endpointDescription = rsaEvent
+				.getEndpointDescription();
+
+		if (disableDiscovery) {
+			logWarning(
+					"handleRemoteAdminEvent", "discovery disabled.  RemoteServiceAdminEvent type=" + eventType + " description=" + endpointDescription); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			return;
+		}
+
+		switch (eventType) {
+		case RemoteServiceAdminEvent.EXPORT_REGISTRATION:
+			advertiseEndpointDescription(endpointDescription);
+			break;
+		case RemoteServiceAdminEvent.EXPORT_UNREGISTRATION:
+			unadvertiseEndpointDescription(endpointDescription);
+			break;
+		case RemoteServiceAdminEvent.EXPORT_ERROR:
+			logError("handleExportError", "Export error with event=" + rsaEvent); //$NON-NLS-1$ //$NON-NLS-2$
+			break;
+		case RemoteServiceAdminEvent.IMPORT_REGISTRATION:
+			break;
+		case RemoteServiceAdminEvent.IMPORT_UNREGISTRATION:
+			break;
+		case RemoteServiceAdminEvent.IMPORT_ERROR:
+			break;
+		default:
+			logWarning(
+					"handleRemoteAdminEvent", "RemoteServiceAdminEvent=" + rsaEvent + " received with unrecognized type"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		}
 	}
 }
