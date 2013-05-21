@@ -21,10 +21,5 @@
 (org.osgi.framework.ServicePermission "org.osgi.framework.hooks.service.EventListenerHook" "register")
 (org.osgi.framework.ServicePermission "org.osgi.service.remoteserviceadmin.RemoteServiceAdmin" "get")
 #
-(org.osgi.framework.AdaptPermission "*" "adapt")
-(org.osgi.framework.AdminPermission "*" "*")
-(org.eclipse.equinox.log.LogPermission "*" "log")
 (java.util.PropertyPermission "*" "read")
-(java.net.SocketPermission "*" "accept,connect,listen")
 (java.lang.RuntimePermission "*")
-(org.osgi.service.event.TopicPermission "org/osgi/service/remoteserviceadmin/*" "publish")
