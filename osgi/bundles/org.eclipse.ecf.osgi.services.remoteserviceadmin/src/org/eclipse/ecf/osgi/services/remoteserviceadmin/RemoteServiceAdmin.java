@@ -313,10 +313,11 @@ public class RemoteServiceAdmin implements
 					// ExportRegistration
 					EndpointDescription endpointDescription = new EndpointDescription(
 							serviceReference, endpointDescriptionProperties);
+					
+					checkEndpointPermission(endpointDescription,
+							EndpointPermission.EXPORT);
 					try {
 						// Check security access for export
-						checkEndpointPermission(endpointDescription,
-								EndpointPermission.EXPORT);
 						// Actually do the export and return export registration
 						exportRegistration = exportService(serviceReference,
 								overridingProperties, exportedInterfaces,
