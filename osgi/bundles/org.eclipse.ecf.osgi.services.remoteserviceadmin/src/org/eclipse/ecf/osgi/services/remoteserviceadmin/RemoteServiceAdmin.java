@@ -11,6 +11,8 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,6 +29,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
@@ -223,16 +226,15 @@ public class RemoteServiceAdmin implements
 
 	// RemoteServiceAdmin service interface impl methods
 	public Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> exportService(
-			ServiceReference serviceReference,
-			Map<String, ?> overridingProperties) {
+			final ServiceReference serviceReference, Map<String, ?> op) {
 		trace("exportService", "serviceReference=" + serviceReference //$NON-NLS-1$ //$NON-NLS-2$
-				+ ",properties=" + overridingProperties); //$NON-NLS-1$
-		overridingProperties = PropertiesUtil.mergeProperties(serviceReference,
-				overridingProperties == null ? Collections.EMPTY_MAP
-						: overridingProperties);
+				+ ",properties=" + op); //$NON-NLS-1$
+		final Map<String, ?> overridingProperties = PropertiesUtil
+				.mergeProperties(serviceReference,
+						op == null ? Collections.EMPTY_MAP : op);
 		// First get exported interfaces
-		String[] exportedInterfaces = PropertiesUtil.getExportedInterfaces(
-				serviceReference, overridingProperties);
+		final String[] exportedInterfaces = PropertiesUtil
+				.getExportedInterfaces(serviceReference, overridingProperties);
 		if (exportedInterfaces == null)
 			throw new IllegalArgumentException(
 					org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_INTERFACES
@@ -241,37 +243,45 @@ public class RemoteServiceAdmin implements
 		if (!validExportedInterfaces(serviceReference, exportedInterfaces))
 			return Collections.EMPTY_LIST;
 		// Get optional exported configs
-		String[] exportedConfigs = PropertiesUtil
+		String[] ecs = PropertiesUtil
 				.getStringArrayFromPropertyValue(overridingProperties
 						.get(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_CONFIGS));
-		if (exportedConfigs == null) {
-			exportedConfigs = PropertiesUtil
+		if (ecs == null) {
+			ecs = PropertiesUtil
 					.getStringArrayFromPropertyValue(serviceReference
 							.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_CONFIGS));
 		}
+		final String[] exportedConfigs = ecs;
 		// Get all intents (service.intents, service.exported.intents,
 		// service.exported.intents.extra)
-		String[] serviceIntents = PropertiesUtil.getServiceIntents(
+		final String[] serviceIntents = PropertiesUtil.getServiceIntents(
 				serviceReference, overridingProperties);
 
 		// Get a host container selector, and use it to
-		IHostContainerSelector hostContainerSelector = getHostContainerSelector();
+		final IHostContainerSelector hostContainerSelector = getHostContainerSelector();
 		// select ECF remote service containers that match given exported
 		// interfaces, configs, and intents
 		IRemoteServiceContainer[] rsContainers = null;
 		try {
-			rsContainers = hostContainerSelector.selectHostContainers(
-					serviceReference,
-					(Map<String, Object>) overridingProperties,
-					exportedInterfaces, exportedConfigs, serviceIntents);
-		} catch (SelectContainerException e) {
+			rsContainers = AccessController
+					.doPrivileged(new PrivilegedExceptionAction() {
+						public Object run() throws SelectContainerException {
+							return hostContainerSelector.selectHostContainers(
+									serviceReference,
+									(Map<String, Object>) overridingProperties,
+									exportedInterfaces, exportedConfigs,
+									serviceIntents);
+						}
+					});
+		} catch (PrivilegedActionException e) {
 			// If exception, create error export registration
 			ExportRegistration errorRegistration = createErrorExportRegistration(
 					serviceReference,
 					(Map<String, Object>) overridingProperties,
 					"Error selecting or creating host container for serviceReference=" //$NON-NLS-1$
 							+ serviceReference + " properties=" //$NON-NLS-1$
-							+ overridingProperties, e);
+							+ overridingProperties,
+					(SelectContainerException) e.getException());
 			// Add to exportedRegistrations
 			synchronized (exportedRegistrations) {
 				exportedRegistrations.add(errorRegistration);
@@ -364,14 +374,11 @@ public class RemoteServiceAdmin implements
 		// First, make sure that the client bundle has the IMPORT endpoint
 		// permission
 		checkEndpointPermission(endpointDescription, EndpointPermission.IMPORT);
-		EndpointDescription ed = null;
-		if (endpointDescription instanceof EndpointDescription)
-			ed = (EndpointDescription) endpointDescription;
-		else
-			ed = new EndpointDescription(endpointDescription.getProperties());
+		final EndpointDescription ed = (endpointDescription instanceof EndpointDescription) ? (EndpointDescription) endpointDescription
+				: new EndpointDescription(endpointDescription.getProperties());
 		// Now get IConsumerContainerSelector, to select the ECF container
 		// for the given endpointDescription
-		IConsumerContainerSelector consumerContainerSelector = getConsumerContainerSelector();
+		final IConsumerContainerSelector consumerContainerSelector = getConsumerContainerSelector();
 		// If there is none, then we can go no further
 		if (consumerContainerSelector == null) {
 			logError("importService", //$NON-NLS-1$
@@ -381,10 +388,18 @@ public class RemoteServiceAdmin implements
 		// Select the rsContainer to handle the endpoint description
 		IRemoteServiceContainer rsContainer = null;
 		try {
-			rsContainer = consumerContainerSelector.selectConsumerContainer(ed);
-		} catch (SelectContainerException e) {
+			rsContainer = AccessController
+					.doPrivileged(new PrivilegedExceptionAction<IRemoteServiceContainer>() {
+						public IRemoteServiceContainer run()
+								throws SelectContainerException {
+							return consumerContainerSelector
+									.selectConsumerContainer(ed);
+						}
+					});
+		} catch (PrivilegedActionException e) {
 			// If failed, create an error ImportRegistration
-			ImportRegistration errorRegistration = new ImportRegistration(ed, e);
+			ImportRegistration errorRegistration = new ImportRegistration(ed,
+					e.getException());
 			// Add it to the set of imported registrations
 			synchronized (importedRegistrations) {
 				importedRegistrations.add(errorRegistration);
@@ -1019,14 +1034,14 @@ public class RemoteServiceAdmin implements
 					+ " not understood for event=" + event + ".  Not posting"); //$NON-NLS-1$ //$NON-NLS-2$
 			return;
 		}
-		String topic = "org/osgi/service/remoteserviceadmin/" + eventTypeName; //$NON-NLS-1$
+		final String topic = "org/osgi/service/remoteserviceadmin/" + eventTypeName; //$NON-NLS-1$
 		Bundle rsaBundle = getRSABundle();
 		if (rsaBundle == null) {
 			logError(
 					"postEvent", "RSA Bundle is null.  Not posting remote service admin event=" + event); //$NON-NLS-1$ //$NON-NLS-2$
 			return;
 		}
-		Dictionary eventProperties = new Properties();
+		final Dictionary eventProperties = new Properties();
 		eventProperties.put("bundle", rsaBundle); //$NON-NLS-1$
 		eventProperties.put("bundle.id", //$NON-NLS-1$
 				new Long(rsaBundle.getBundleId()));
@@ -1074,7 +1089,7 @@ public class RemoteServiceAdmin implements
 		if (registrationTypeName != null)
 			eventProperties.put(registrationTypeName, endpointDescription);
 
-		EventAdmin eventAdmin = getEventAdmin();
+		final EventAdmin eventAdmin = getEventAdmin();
 		if (eventAdmin == null) {
 			logError("postRemoteServiceAdminEvent", //$NON-NLS-1$
 					"No EventAdmin service available to send eventTopic=" //$NON-NLS-1$
@@ -1082,7 +1097,12 @@ public class RemoteServiceAdmin implements
 			return;
 		}
 		// post via event admin
-		eventAdmin.postEvent(new Event(topic, eventProperties));
+		AccessController.doPrivileged(new PrivilegedAction<Object>() {
+			public Object run() {
+				eventAdmin.postEvent(new Event(topic, eventProperties));
+				return null;
+			}
+		});
 	}
 
 	private void publishExportEvent(ExportRegistration exportRegistration) {
@@ -1791,11 +1811,15 @@ public class RemoteServiceAdmin implements
 		return result;
 	}
 
-	private Version getVersionForPackage(Bundle providingBundle,
+	private Version getVersionForPackage(final Bundle providingBundle,
 			String packageName) {
 		Version result = null;
-		BundleRevision providingBundleRevision = providingBundle
-				.adapt(BundleRevision.class);
+		BundleRevision providingBundleRevision = AccessController
+				.doPrivileged(new PrivilegedAction<BundleRevision>() {
+					public BundleRevision run() {
+						return providingBundle.adapt(BundleRevision.class);
+					}
+				});
 		if (providingBundleRevision == null)
 			return null;
 		List<BundleCapability> providerCapabilities = providingBundleRevision
@@ -1809,12 +1833,16 @@ public class RemoteServiceAdmin implements
 	}
 
 	private Version getPackageVersionViaRequestingBundle(String packageName,
-			Bundle requestingBundle, Version remoteVersion) {
+			final Bundle requestingBundle, Version remoteVersion) {
 		Version result = null;
 		// First check the requesting bundle for the desired export package
 		// capability
-		BundleRevision requestingBundleRevision = (BundleRevision) requestingBundle
-				.adapt(BundleRevision.class);
+		BundleRevision requestingBundleRevision = AccessController
+				.doPrivileged(new PrivilegedAction<BundleRevision>() {
+					public BundleRevision run() {
+						return requestingBundle.adapt(BundleRevision.class);
+					}
+				});
 		if (requestingBundleRevision != null) {
 			List<BundleCapability> requestingBundleCapabilities = requestingBundleRevision
 					.getDeclaredCapabilities(BundleRevision.PACKAGE_NAMESPACE);
@@ -1996,28 +2024,36 @@ public class RemoteServiceAdmin implements
 		ID endpointContainerID = endpointDescription.getContainerID();
 		Assert.isNotNull(endpointContainerID);
 		// Get connect target ID. May be null
-		ID targetID = endpointDescription.getConnectTargetID();
-		if (targetID == null)
-			targetID = endpointContainerID;
+		ID tID = endpointDescription.getConnectTargetID();
+		if (tID == null)
+			tID = endpointContainerID;
+		final ID targetID = tID;
 		// Get idFilter...also may be null
-		ID[] idFilter = getIDFilter(endpointDescription, endpointContainerID);
+		final ID[] idFilter = getIDFilter(endpointDescription,
+				endpointContainerID);
 		// Get remote service filter
-		String rsFilter = getRemoteServiceFilter(endpointDescription);
+		final String rsFilter = getRemoteServiceFilter(endpointDescription);
 		// IRemoteServiceReferences from query
 		Collection<IRemoteServiceReference> rsRefs = new ArrayList<IRemoteServiceReference>();
 		// Get IRemoteServiceContainerAdapter
-		IRemoteServiceContainerAdapter containerAdapter = rsContainer
+		final IRemoteServiceContainerAdapter containerAdapter = rsContainer
 				.getContainerAdapter();
 		// rsContainerID
 		ID rsContainerID = rsContainer.getContainer().getID();
 		try {
 			// Get first interface name for service reference
 			// lookup
-			String intf = interfaces.iterator().next();
+			final String intf = interfaces.iterator().next();
 			// Get/lookup remote service references
-			IRemoteServiceReference[] refs = containerAdapter
-					.getRemoteServiceReferences(targetID, idFilter, intf,
-							rsFilter);
+			IRemoteServiceReference[] refs = AccessController
+					.doPrivileged(new PrivilegedExceptionAction<IRemoteServiceReference[]>() {
+						public IRemoteServiceReference[] run()
+								throws ContainerConnectException,
+								InvalidSyntaxException {
+							return containerAdapter.getRemoteServiceReferences(
+									targetID, idFilter, intf, rsFilter);
+						}
+					});
 			if (refs == null) {
 				logWarning("doImportService", //$NON-NLS-1$
 						"getRemoteServiceReferences return null for targetID=" //$NON-NLS-1$
@@ -2039,6 +2075,14 @@ public class RemoteServiceAdmin implements
 
 			return new ImportRegistration(createAndRegisterProxy(
 					endpointDescription, rsContainer, selectedRsReference));
+		} catch (PrivilegedActionException e) {
+			logError(
+					"importService", "selectRemoteServiceReference returned null for rsRefs=" //$NON-NLS-1$ //$NON-NLS-2$
+							+ rsRefs + ",targetID=" + targetID //$NON-NLS-1$
+							+ ",idFilter=" + idFilter + ",interfaces=" //$NON-NLS-1$ //$NON-NLS-2$
+							+ interfaces + ",rsFilter=" + rsFilter //$NON-NLS-1$
+							+ ",rsContainerID=" + rsContainerID, e.getException()); //$NON-NLS-1$
+			return new ImportRegistration(endpointDescription, e.getException());
 		} catch (Exception e) {
 			logError(
 					"importService", "selectRemoteServiceReference returned null for rsRefs=" //$NON-NLS-1$ //$NON-NLS-2$
