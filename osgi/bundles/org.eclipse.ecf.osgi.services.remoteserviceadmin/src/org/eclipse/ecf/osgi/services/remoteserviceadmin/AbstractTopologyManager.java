@@ -9,6 +9,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -71,16 +73,22 @@ public abstract class AbstractTopologyManager {
 	 */
 	protected IEndpointDescriptionAdvertiser getEndpointDescriptionAdvertiser(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
-		synchronized (endpointDescriptionAdvertiserTrackerLock) {
-			if (endpointDescriptionAdvertiserTracker == null) {
-				endpointDescriptionAdvertiserTracker = new ServiceTracker(
-						getContext(),
-						IEndpointDescriptionAdvertiser.class.getName(), null);
-				endpointDescriptionAdvertiserTracker.open();
-			}
-		}
-		IEndpointDescriptionAdvertiser advertiser = (IEndpointDescriptionAdvertiser) endpointDescriptionAdvertiserTracker
-				.getService();
+		IEndpointDescriptionAdvertiser advertiser = AccessController
+				.doPrivileged(new PrivilegedAction<IEndpointDescriptionAdvertiser>() {
+					public IEndpointDescriptionAdvertiser run() {
+						synchronized (endpointDescriptionAdvertiserTrackerLock) {
+							if (endpointDescriptionAdvertiserTracker == null) {
+								endpointDescriptionAdvertiserTracker = new ServiceTracker(
+										getContext(),
+										IEndpointDescriptionAdvertiser.class
+												.getName(), null);
+								endpointDescriptionAdvertiserTracker.open();
+							}
+						}
+						return (IEndpointDescriptionAdvertiser) endpointDescriptionAdvertiserTracker
+								.getService();
+					}
+				});
 		if (advertiser == null)
 			logWarning("handleOSGiEndpointAdded", //$NON-NLS-1$
 					"No endpoint description advertiser available for endpointDescription=" //$NON-NLS-1$
@@ -130,8 +138,8 @@ public abstract class AbstractTopologyManager {
 	protected org.osgi.service.remoteserviceadmin.RemoteServiceAdmin getRemoteServiceAdmin() {
 		synchronized (remoteServiceAdminTrackerLock) {
 			if (remoteServiceAdminTracker == null) {
-				remoteServiceAdminTracker = new ServiceTracker(Activator.getContext(),
-						createRSAFilter(), null);
+				remoteServiceAdminTracker = new ServiceTracker(
+						Activator.getContext(), createRSAFilter(), null);
 				remoteServiceAdminTracker.open();
 			}
 		}

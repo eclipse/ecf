@@ -12,6 +12,8 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -343,23 +345,30 @@ public class EndpointDescriptionLocator {
 	}
 
 	public IDiscoveryAdvertiser[] getDiscoveryAdvertisers() {
-		synchronized (advertiserTrackerLock) {
-			if (advertiserTracker == null) {
-				advertiserTracker = new ServiceTracker(context,
-						IDiscoveryAdvertiser.class.getName(), null);
-				advertiserTracker.open();
-			}
-		}
-		ServiceReference[] advertiserRefs = advertiserTracker
-				.getServiceReferences();
-		if (advertiserRefs == null)
-			return null;
-		List<IDiscoveryAdvertiser> results = new ArrayList<IDiscoveryAdvertiser>();
-		for (int i = 0; i < advertiserRefs.length; i++) {
-			results.add((IDiscoveryAdvertiser) context
-					.getService(advertiserRefs[i]));
-		}
-		return results.toArray(new IDiscoveryAdvertiser[results.size()]);
+		return AccessController
+				.doPrivileged(new PrivilegedAction<IDiscoveryAdvertiser[]>() {
+					public IDiscoveryAdvertiser[] run() {
+						synchronized (advertiserTrackerLock) {
+							if (advertiserTracker == null) {
+								advertiserTracker = new ServiceTracker(context,
+										IDiscoveryAdvertiser.class.getName(),
+										null);
+								advertiserTracker.open();
+							}
+						}
+						ServiceReference[] advertiserRefs = advertiserTracker
+								.getServiceReferences();
+						if (advertiserRefs == null)
+							return null;
+						List<IDiscoveryAdvertiser> results = new ArrayList<IDiscoveryAdvertiser>();
+						for (int i = 0; i < advertiserRefs.length; i++) {
+							results.add((IDiscoveryAdvertiser) context
+									.getService(advertiserRefs[i]));
+						}
+						return results.toArray(new IDiscoveryAdvertiser[results
+								.size()]);
+					}
+				});
 	}
 
 	private void openLocator(IDiscoveryLocator locator) {
@@ -531,16 +540,21 @@ public class EndpointDescriptionLocator {
 	}
 
 	public IServiceInfoFactory getServiceInfoFactory() {
-		if (context == null)
-			return null;
-		synchronized (serviceInfoFactoryTrackerLock) {
-			if (serviceInfoFactoryTracker == null) {
-				serviceInfoFactoryTracker = new ServiceTracker(context,
-						IServiceInfoFactory.class.getName(), null);
-				serviceInfoFactoryTracker.open();
-			}
-		}
-		return (IServiceInfoFactory) serviceInfoFactoryTracker.getService();
+		return AccessController
+				.doPrivileged(new PrivilegedAction<IServiceInfoFactory>() {
+					public IServiceInfoFactory run() {
+						synchronized (serviceInfoFactoryTrackerLock) {
+							if (serviceInfoFactoryTracker == null) {
+								serviceInfoFactoryTracker = new ServiceTracker(
+										context, IServiceInfoFactory.class
+												.getName(), null);
+								serviceInfoFactoryTracker.open();
+							}
+						}
+						return (IServiceInfoFactory) serviceInfoFactoryTracker
+								.getService();
+					}
+				});
 	}
 
 	public IDiscoveredEndpointDescriptionFactory getDiscoveredEndpointDescriptionFactory() {
@@ -560,14 +574,19 @@ public class EndpointDescriptionLocator {
 
 	private Object endpointListenerServiceTrackerLock = new Object();
 
-	public EndpointListenerHolder[] getMatchingEndpointListenerHolders(
-			EndpointDescription description) {
-		synchronized (endpointListenerServiceTrackerLock) {
-			if (context == null)
-				return null;
-			return getMatchingEndpointListenerHolders(
-					endpointListenerTracker.getServiceReferences(), description);
-		}
+	protected EndpointListenerHolder[] getMatchingEndpointListenerHolders(
+			final EndpointDescription description) {
+		return AccessController
+				.doPrivileged(new PrivilegedAction<EndpointListenerHolder[]>() {
+					public EndpointListenerHolder[] run() {
+						synchronized (endpointListenerServiceTrackerLock) {
+							return getMatchingEndpointListenerHolders(
+									endpointListenerTracker
+											.getServiceReferences(),
+									description);
+						}
+					}
+				});
 	}
 
 	public class EndpointListenerHolder {

@@ -49,7 +49,7 @@ public abstract class AbstractMetadataFactory {
 	}
 
 	private final Long DEFAULT_LONG = new Long(0);
-	
+
 	protected Long decodeLong(IServiceProperties props, String name) {
 		Object o = props.getProperty(name);
 		if (o == null)

@@ -272,7 +272,8 @@ public class PropertiesUtil {
 		for (Iterator i = propMap.keySet().iterator(); i.hasNext();) {
 			Object key = i.next();
 			Object val = propMap.get(key);
-			if (key != null && val != null) result.put(key, val);
+			if (key != null && val != null)
+				result.put(key, val);
 		}
 		return result;
 	}

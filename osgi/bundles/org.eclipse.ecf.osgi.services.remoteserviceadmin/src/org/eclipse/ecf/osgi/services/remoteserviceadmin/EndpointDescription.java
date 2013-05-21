@@ -211,7 +211,7 @@ public class EndpointDescription extends
 				&& getServiceId() == other.getServiceId() && frameworkId
 					.equals(other.getFrameworkUUID()));
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -224,12 +224,12 @@ public class EndpointDescription extends
 			return overrides;
 		return super.getProperties();
 	}
-	
+
 	public String toString() {
 		StringBuffer sb = new StringBuffer("ECFEndpointDescription["); //$NON-NLS-1$
 		sb.append("id").append(getId()); //$NON-NLS-1$
 		sb.append(";endpoint.service.id=").append(getServiceId()); //$NON-NLS-1$
-		sb.append(";frameworkid=").append(getFrameworkUUID()).append("]");  //$NON-NLS-1$//$NON-NLS-2$
+		sb.append(";frameworkid=").append(getFrameworkUUID()).append("]"); //$NON-NLS-1$//$NON-NLS-2$
 		return sb.toString();
 	}
 }

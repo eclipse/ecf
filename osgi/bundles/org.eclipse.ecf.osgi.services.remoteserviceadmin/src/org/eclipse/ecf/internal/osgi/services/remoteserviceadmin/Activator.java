@@ -62,7 +62,7 @@ public class Activator implements BundleActivator {
 	public IContainerManager getContainerManager() {
 		return (IContainerManager) ContainerFactory.getDefault();
 	}
-	
+
 	private ServiceRegistration remoteServiceAdminRegistration;
 
 	private EndpointDescriptionLocator endpointDescriptionLocator;
@@ -118,7 +118,8 @@ public class Activator implements BundleActivator {
 
 	private String[][] getSupportedConfigsAndIntents() {
 		IContainerManager containerManager = getContainerManager();
-		Assert.isNotNull(containerManager,"Container manager must be present to start ECF Remote Service Admin"); //$NON-NLS-1$
+		Assert.isNotNull(containerManager,
+				"Container manager must be present to start ECF Remote Service Admin"); //$NON-NLS-1$
 		ContainerTypeDescription[] remoteServiceDescriptions = containerManager
 				.getContainerFactory().getDescriptionsForContainerAdapter(
 						IRemoteServiceContainerAdapter.class);
@@ -210,10 +211,9 @@ public class Activator implements BundleActivator {
 				new Integer(Integer.MIN_VALUE));
 		endpointDescriptionAdvertiser = new EndpointDescriptionAdvertiser(
 				endpointDescriptionLocator);
-		endpointDescriptionAdvertiserRegistration = getContext()
-				.registerService(
-						IEndpointDescriptionAdvertiser.class.getName(),
-						endpointDescriptionAdvertiser, (Dictionary) properties);
+		endpointDescriptionAdvertiserRegistration = context.registerService(
+				IEndpointDescriptionAdvertiser.class.getName(),
+				endpointDescriptionAdvertiser, (Dictionary) properties);
 
 		// start endpointDescriptionLocator
 		endpointDescriptionLocator.start();

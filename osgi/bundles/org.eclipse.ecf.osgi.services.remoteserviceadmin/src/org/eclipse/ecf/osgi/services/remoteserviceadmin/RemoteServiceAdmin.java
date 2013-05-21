@@ -9,6 +9,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -140,10 +142,10 @@ public class RemoteServiceAdmin implements
 				Integer.MIN_VALUE));
 		// host container selector
 		ServiceReference[] hostContainerSelectorRefs = null;
+		BundleContext rsaBundleContext = getRSABundleContext();
 		try {
-			hostContainerSelectorRefs = getClientBundleContext()
-					.getServiceReferences(
-							IHostContainerSelector.class.getName(), null);
+			hostContainerSelectorRefs = rsaBundleContext.getServiceReferences(
+					IHostContainerSelector.class.getName(), null);
 		} catch (InvalidSyntaxException e) {
 			// will not happen
 		}
@@ -152,14 +154,14 @@ public class RemoteServiceAdmin implements
 				|| hostContainerSelectorRefs.length == 0) {
 			defaultHostContainerSelector = new HostContainerSelector(
 					hostDefaultConfigTypes, hostAutoCreateContainer);
-			defaultHostContainerSelectorRegistration = getClientBundleContext()
+			defaultHostContainerSelectorRegistration = rsaBundleContext
 					.registerService(IHostContainerSelector.class.getName(),
 							defaultHostContainerSelector, (Dictionary) props);
 		}
 		// consumer container selector
 		ServiceReference[] consumerContainerSelectorRefs = null;
 		try {
-			consumerContainerSelectorRefs = getClientBundleContext()
+			consumerContainerSelectorRefs = rsaBundleContext
 					.getServiceReferences(
 							IConsumerContainerSelector.class.getName(), null);
 		} catch (InvalidSyntaxException e) {
@@ -170,16 +172,16 @@ public class RemoteServiceAdmin implements
 				|| consumerContainerSelectorRefs.length == 0) {
 			defaultConsumerContainerSelector = new ConsumerContainerSelector(
 					consumerAutoCreateContainer);
-			defaultConsumerContainerSelectorRegistration = getClientBundleContext()
+			defaultConsumerContainerSelectorRegistration = rsaBundleContext
 					.registerService(
 							IConsumerContainerSelector.class.getName(),
 							defaultConsumerContainerSelector,
 							(Dictionary) props);
 		}
 
-		eventListenerHookRegistration = getRSABundle().getBundleContext()
-				.registerService(EventListenerHook.class.getName(),
-						new RSAEventListenerHook(), null);
+		eventListenerHookRegistration = rsaBundleContext.registerService(
+				EventListenerHook.class.getName(), new RSAEventListenerHook(),
+				null);
 	}
 
 	private void handleServiceUnregistering(ServiceReference serviceReference) {
@@ -313,7 +315,7 @@ public class RemoteServiceAdmin implements
 					// ExportRegistration
 					EndpointDescription endpointDescription = new EndpointDescription(
 							serviceReference, endpointDescriptionProperties);
-					
+
 					checkEndpointPermission(endpointDescription,
 							EndpointPermission.EXPORT);
 					try {
@@ -465,11 +467,12 @@ public class RemoteServiceAdmin implements
 		return clientBundle.getBundleContext();
 	}
 
+	private BundleContext getRSABundleContext() {
+		return Activator.getContext();
+	}
+
 	private Bundle getRSABundle() {
-		BundleContext bundleContext = Activator.getContext();
-		if (bundleContext == null)
-			return null;
-		return bundleContext.getBundle();
+		return getRSABundleContext().getBundle();
 	}
 
 	private void addImportRegistration(ImportRegistration importRegistration) {
@@ -1068,9 +1071,9 @@ public class RemoteServiceAdmin implements
 									.size()]));
 		eventProperties.put("timestamp", new Long(new Date().getTime())); //$NON-NLS-1$
 		eventProperties.put("event", event); //$NON-NLS-1$
-		if (registrationTypeName != null) 
+		if (registrationTypeName != null)
 			eventProperties.put(registrationTypeName, endpointDescription);
-		
+
 		EventAdmin eventAdmin = getEventAdmin();
 		if (eventAdmin == null) {
 			logError("postRemoteServiceAdminEvent", //$NON-NLS-1$
@@ -1111,14 +1114,20 @@ public class RemoteServiceAdmin implements
 	}
 
 	private RemoteServiceAdminListener[] getListeners(EndpointPermission perm) {
-		synchronized (remoteServiceAdminListenerTrackerLock) {
-			if (remoteServiceAdminListenerTracker == null) {
-				remoteServiceAdminListenerTracker = new ServiceTracker(
-						getClientBundleContext(),
-						RemoteServiceAdminListener.class.getName(), null);
-				remoteServiceAdminListenerTracker.open();
+		AccessController.doPrivileged(new PrivilegedAction<Object>() {
+			public Object run() {
+				synchronized (remoteServiceAdminListenerTrackerLock) {
+					if (remoteServiceAdminListenerTracker == null) {
+						remoteServiceAdminListenerTracker = new ServiceTracker(
+								getRSABundleContext(),
+								RemoteServiceAdminListener.class.getName(),
+								null);
+						remoteServiceAdminListenerTracker.open();
+					}
+					return null;
+				}
 			}
-		}
+		});
 		ServiceReference[] unfilteredRefs = remoteServiceAdminListenerTracker
 				.getServiceReferences();
 		if (unfilteredRefs == null)
@@ -1129,9 +1138,14 @@ public class RemoteServiceAdmin implements
 			if (perm == null || ref.getBundle().hasPermission(perm))
 				filteredRefs.add(ref);
 		List<RemoteServiceAdminListener> results = new ArrayList<RemoteServiceAdminListener>();
-		for (ServiceReference ref : filteredRefs) {
-			RemoteServiceAdminListener l = (RemoteServiceAdminListener) remoteServiceAdminListenerTracker
-					.getService(ref);
+		for (final ServiceReference ref : filteredRefs) {
+			RemoteServiceAdminListener l = AccessController
+					.doPrivileged(new PrivilegedAction<RemoteServiceAdminListener>() {
+						public RemoteServiceAdminListener run() {
+							return (RemoteServiceAdminListener) remoteServiceAdminListenerTracker
+									.getService(ref);
+						}
+					});
 			if (l != null)
 				results.add(l);
 		}
@@ -1150,12 +1164,18 @@ public class RemoteServiceAdmin implements
 	}
 
 	private EventAdmin getEventAdmin() {
-		synchronized (eventAdminTrackerLock) {
-			eventAdminTracker = new ServiceTracker(getClientBundleContext(),
-					EventAdmin.class.getName(), null);
-			eventAdminTracker.open();
-		}
-		return (EventAdmin) eventAdminTracker.getService();
+		return AccessController
+				.doPrivileged(new PrivilegedAction<EventAdmin>() {
+					public EventAdmin run() {
+						synchronized (eventAdminTrackerLock) {
+							eventAdminTracker = new ServiceTracker(
+									getClientBundleContext(), EventAdmin.class
+											.getName(), null);
+							eventAdminTracker.open();
+						}
+						return (EventAdmin) eventAdminTracker.getService();
+					}
+				});
 	}
 
 	private Object consumerContainerSelectorTrackerLock = new Object();
@@ -1165,29 +1185,41 @@ public class RemoteServiceAdmin implements
 	private ServiceTracker hostContainerSelectorTracker;
 
 	protected IHostContainerSelector getHostContainerSelector() {
-		synchronized (hostContainerSelectorTrackerLock) {
-			if (hostContainerSelectorTracker == null) {
-				hostContainerSelectorTracker = new ServiceTracker(
-						getClientBundleContext(),
-						IHostContainerSelector.class.getName(), null);
-				hostContainerSelectorTracker.open();
-			}
-		}
-		return (IHostContainerSelector) hostContainerSelectorTracker
-				.getService();
+		return AccessController
+				.doPrivileged(new PrivilegedAction<IHostContainerSelector>() {
+					public IHostContainerSelector run() {
+						synchronized (hostContainerSelectorTrackerLock) {
+							if (hostContainerSelectorTracker == null) {
+								hostContainerSelectorTracker = new ServiceTracker(
+										getRSABundleContext(),
+										IHostContainerSelector.class.getName(),
+										null);
+								hostContainerSelectorTracker.open();
+							}
+						}
+						return (IHostContainerSelector) hostContainerSelectorTracker
+								.getService();
+					}
+				});
 	}
 
 	protected IConsumerContainerSelector getConsumerContainerSelector() {
-		synchronized (consumerContainerSelectorTrackerLock) {
-			if (consumerContainerSelectorTracker == null) {
-				consumerContainerSelectorTracker = new ServiceTracker(
-						getClientBundleContext(),
-						IConsumerContainerSelector.class.getName(), null);
-				consumerContainerSelectorTracker.open();
-			}
-		}
-		return (IConsumerContainerSelector) consumerContainerSelectorTracker
-				.getService();
+		return AccessController
+				.doPrivileged(new PrivilegedAction<IConsumerContainerSelector>() {
+					public IConsumerContainerSelector run() {
+						synchronized (consumerContainerSelectorTrackerLock) {
+							if (consumerContainerSelectorTracker == null) {
+								consumerContainerSelectorTracker = new ServiceTracker(
+										getClientBundleContext(),
+										IConsumerContainerSelector.class
+												.getName(), null);
+								consumerContainerSelectorTracker.open();
+							}
+						}
+						return (IConsumerContainerSelector) consumerContainerSelectorTracker
+								.getService();
+					}
+				});
 	}
 
 	private ContainerTypeDescription getContainerTypeDescription(
@@ -1204,9 +1236,15 @@ public class RemoteServiceAdmin implements
 			return !ctd.isServer();
 	}
 
-	private Version getPackageVersion(ServiceReference serviceReference,
+	private Version getPackageVersion(final ServiceReference serviceReference,
 			String serviceInterface, String packageName) {
-		Object service = getClientBundleContext().getService(serviceReference);
+		Object service = AccessController
+				.doPrivileged(new PrivilegedAction<Object>() {
+					public Object run() {
+						return getRSABundleContext().getService(
+								serviceReference);
+					}
+				});
 		if (service == null)
 			return null;
 		Class[] interfaceClasses = service.getClass().getInterfaces();
@@ -1433,11 +1471,11 @@ public class RemoteServiceAdmin implements
 	}
 
 	private ImportEndpoint createAndRegisterProxy(
-			EndpointDescription endpointDescription,
+			final EndpointDescription endpointDescription,
 			IRemoteServiceContainer rsContainer,
 			IRemoteServiceReference selectedRsReference) throws Exception {
 
-		BundleContext proxyServiceFactoryContext = getProxyServiceFactoryContext(endpointDescription);
+		final BundleContext proxyServiceFactoryContext = getProxyServiceFactoryContext(endpointDescription);
 		if (proxyServiceFactoryContext == null)
 			throw new NullPointerException(
 					"getProxyServiceFactoryContext returned null.  Cannot register proxy service factory"); //$NON-NLS-1$
@@ -1446,7 +1484,7 @@ public class RemoteServiceAdmin implements
 				.getContainerAdapter();
 		ID rsContainerID = rsContainer.getContainer().getID();
 		// First get IRemoteService for selectedRsReference
-		IRemoteService rs = containerAdapter
+		final IRemoteService rs = containerAdapter
 				.getRemoteService(selectedRsReference);
 		if (rs == null)
 			throw new NullPointerException(
@@ -1454,20 +1492,26 @@ public class RemoteServiceAdmin implements
 							+ selectedRsReference + ",rsContainerID=" //$NON-NLS-1$
 							+ rsContainerID);
 
-		Map proxyProperties = createProxyProperties(endpointDescription,
+		final Map proxyProperties = createProxyProperties(endpointDescription,
 				rsContainer, selectedRsReference, rs);
 
 		// sync sref props with endpoint props
 		endpointDescription.setPropertiesOverrides(proxyProperties);
 
-		List<String> serviceTypes = endpointDescription.getInterfaces();
+		final List<String> serviceTypes = endpointDescription.getInterfaces();
 
-		ServiceRegistration proxyRegistration = proxyServiceFactoryContext
-				.registerService((String[]) serviceTypes
-						.toArray(new String[serviceTypes.size()]),
-						createProxyServiceFactory(endpointDescription, rs),
-						(Dictionary) PropertiesUtil
-								.createDictionaryFromMap(proxyProperties));
+		ServiceRegistration proxyRegistration = AccessController
+				.doPrivileged(new PrivilegedAction<ServiceRegistration>() {
+					public ServiceRegistration run() {
+						return proxyServiceFactoryContext.registerService(
+								(String[]) serviceTypes
+										.toArray(new String[serviceTypes.size()]),
+								createProxyServiceFactory(endpointDescription,
+										rs),
+								(Dictionary) PropertiesUtil
+										.createDictionaryFromMap(proxyProperties));
+					}
+				});
 
 		return new ImportEndpoint(containerAdapter, selectedRsReference,
 				new RemoteServiceListener(), proxyRegistration,
@@ -1879,14 +1923,19 @@ public class RemoteServiceAdmin implements
 
 		// Set endpoint.id and endpoint.service.id
 		String endpointId = endpointDescription.getId();
-		resultProperties.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID, endpointId);
+		resultProperties
+				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
+						endpointId);
 		Long endpointServiceId = new Long(endpointDescription.getServiceId());
-		resultProperties.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID, endpointServiceId);
+		resultProperties
+				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID,
+						endpointServiceId);
 
 		return resultProperties;
 	}
 
-	private ExportRegistration exportService(ServiceReference serviceReference,
+	private ExportRegistration exportService(
+			final ServiceReference serviceReference,
 			Map<String, ?> overridingProperties, String[] exportedInterfaces,
 			IRemoteServiceContainer rsContainer,
 			Map<String, Object> endpointDescriptionProperties) throws Exception {
@@ -1907,12 +1956,18 @@ public class RemoteServiceAdmin implements
 			remoteRegistration = osgiContainerAdapter.registerRemoteService(
 					exportedInterfaces, serviceReference, PropertiesUtil
 							.createDictionaryFromMap(remoteServiceProperties));
-		} else
+		} else {
+			Object service = AccessController
+					.doPrivileged(new PrivilegedAction<Object>() {
+						public Object run() {
+							return getClientBundleContext().getService(
+									serviceReference);
+						}
+					});
 			remoteRegistration = containerAdapter.registerRemoteService(
-					exportedInterfaces,
-					getClientBundleContext().getService(serviceReference),
-					PropertiesUtil
+					exportedInterfaces, service, PropertiesUtil
 							.createDictionaryFromMap(remoteServiceProperties));
+		}
 		endpointDescriptionProperties
 				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID,
 						remoteRegistration
