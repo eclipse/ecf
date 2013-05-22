@@ -459,10 +459,8 @@ public class RemoteServiceAdmin implements
 			props.put(
 					org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
 					UUID.randomUUID().toString());
-			org.osgi.service.remoteserviceadmin.EndpointDescription ed = new EndpointDescription(
-					props);
-			sm.checkPermission(new EndpointPermission(ed, Activator
-					.getDefault().getFrameworkUUID(), EndpointPermission.READ));
+			checkEndpointPermissionRead("checkRSAReadAccess",new EndpointDescription( //$NON-NLS-1$
+					props));
 		}
 	}
 
@@ -1116,7 +1114,7 @@ public class RemoteServiceAdmin implements
 
 		final EventAdmin eventAdmin = getEventAdmin();
 		if (eventAdmin == null) {
-			logError("postRemoteServiceAdminEvent", //$NON-NLS-1$
+			logError("postEvent", //$NON-NLS-1$
 					"No EventAdmin service available to send eventTopic=" //$NON-NLS-1$
 							+ topic + " eventProperties=" + eventProperties); //$NON-NLS-1$
 			return;
@@ -1214,7 +1212,7 @@ public class RemoteServiceAdmin implements
 					public EventAdmin run() {
 						synchronized (eventAdminTrackerLock) {
 							eventAdminTracker = new ServiceTracker(
-									getClientBundleContext(), EventAdmin.class
+									getRSABundleContext(), EventAdmin.class
 											.getName(), null);
 							eventAdminTracker.open();
 						}

@@ -38,7 +38,7 @@
 (org.osgi.framework.ServicePermission "org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener" "get,register")
 (org.osgi.framework.ServicePermission "*" "get,register")
 #  
-(org.osgi.service.event.TopicPermission "org/osgi/service/remoteserviceadmin/*" "publish")
+(org.osgi.service.event.TopicPermission "org/osgi/service/remoteserviceadmin/*" "publish,subscribe")
 (org.osgi.framework.AdaptPermission "*" "adapt")
 (org.osgi.framework.AdminPermission "*" "*")
 (org.eclipse.equinox.log.LogPermission "*" "log")
