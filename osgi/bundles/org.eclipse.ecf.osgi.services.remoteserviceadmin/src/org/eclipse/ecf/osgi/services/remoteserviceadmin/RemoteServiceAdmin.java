@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.UUID;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.ContainerConnectException;
@@ -434,6 +435,11 @@ public class RemoteServiceAdmin implements
 	public Collection<org.osgi.service.remoteserviceadmin.ExportReference> getExportedServices() {
 		Collection<org.osgi.service.remoteserviceadmin.ExportReference> results = new ArrayList<org.osgi.service.remoteserviceadmin.ExportReference>();
 		synchronized (exportedRegistrations) {
+			// XXX The spec doesn't specify what is supposed to happen
+			// when the registrations is empty...but the TCK test method:  RemoteServiceAdminSecure.testNoPermissions()
+			// assumes that a SecurityException is thrown when accessed without READ permission
+			if (exportedRegistrations.isEmpty())
+				checkRSAReadAccess();
 			for (ExportRegistration reg : exportedRegistrations) {
 				org.osgi.service.remoteserviceadmin.ExportReference eRef = reg
 						.getExportReference();
@@ -446,9 +452,28 @@ public class RemoteServiceAdmin implements
 		return results;
 	}
 
+	private void checkRSAReadAccess() {
+		SecurityManager sm = System.getSecurityManager();
+		if (sm != null) {
+			Map<String, Object> props = new HashMap();
+			props.put(
+					org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
+					UUID.randomUUID().toString());
+			org.osgi.service.remoteserviceadmin.EndpointDescription ed = new EndpointDescription(
+					props);
+			sm.checkPermission(new EndpointPermission(ed, Activator
+					.getDefault().getFrameworkUUID(), EndpointPermission.READ));
+		}
+	}
+
 	public Collection<org.osgi.service.remoteserviceadmin.ImportReference> getImportedEndpoints() {
 		Collection<org.osgi.service.remoteserviceadmin.ImportReference> results = new ArrayList<org.osgi.service.remoteserviceadmin.ImportReference>();
 		synchronized (importedRegistrations) {
+			// XXX The spec doesn't specify what is supposed to happen
+			// when the registrations is empty...but the TCK test method:  RemoteServiceAdminSecure.testNoPermissions()
+			// assumes that a SecurityException is thrown when accessed without READ permission
+			if (importedRegistrations.isEmpty())
+				checkRSAReadAccess();
 			for (ImportRegistration reg : importedRegistrations) {
 				org.osgi.service.remoteserviceadmin.ImportReference iRef = reg
 						.getImportReference();
