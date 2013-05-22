@@ -453,15 +453,14 @@ public class RemoteServiceAdmin implements
 	}
 
 	private void checkRSAReadAccess() {
-		SecurityManager sm = System.getSecurityManager();
-		if (sm != null) {
-			Map<String, Object> props = new HashMap();
-			props.put(
-					org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
-					UUID.randomUUID().toString());
-			checkEndpointPermissionRead("checkRSAReadAccess",new EndpointDescription( //$NON-NLS-1$
-					props));
-		}
+		Map<String, Object> props = new HashMap();
+		props.put(
+				org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
+				UUID.randomUUID().toString());
+		props.put(org.osgi.framework.Constants.OBJECTCLASS, new String[] { UUID.randomUUID().toString() });
+		checkEndpointPermissionRead(
+				"checkRSAReadAccess", new org.osgi.service.remoteserviceadmin.EndpointDescription( //$NON-NLS-1$
+						props));
 	}
 
 	public Collection<org.osgi.service.remoteserviceadmin.ImportReference> getImportedEndpoints() {
@@ -1112,7 +1111,18 @@ public class RemoteServiceAdmin implements
 		if (registrationTypeName != null)
 			eventProperties.put(registrationTypeName, endpointDescription);
 
-		final EventAdmin eventAdmin = getEventAdmin();
+		final EventAdmin eventAdmin = AccessController
+		.doPrivileged(new PrivilegedAction<EventAdmin>() {
+			public EventAdmin run() {
+				synchronized (eventAdminTrackerLock) {
+					eventAdminTracker = new ServiceTracker(
+							getRSABundleContext(), EventAdmin.class
+									.getName(), null);
+					eventAdminTracker.open();
+				}
+				return (EventAdmin) eventAdminTracker.getService();
+			}
+		});
 		if (eventAdmin == null) {
 			logError("postEvent", //$NON-NLS-1$
 					"No EventAdmin service available to send eventTopic=" //$NON-NLS-1$
@@ -1204,21 +1214,6 @@ public class RemoteServiceAdmin implements
 				return exportEndpoint;
 		}
 		return null;
-	}
-
-	private EventAdmin getEventAdmin() {
-		return AccessController
-				.doPrivileged(new PrivilegedAction<EventAdmin>() {
-					public EventAdmin run() {
-						synchronized (eventAdminTrackerLock) {
-							eventAdminTracker = new ServiceTracker(
-									getRSABundleContext(), EventAdmin.class
-											.getName(), null);
-							eventAdminTracker.open();
-						}
-						return (EventAdmin) eventAdminTracker.getService();
-					}
-				});
 	}
 
 	private Object consumerContainerSelectorTrackerLock = new Object();
