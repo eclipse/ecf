@@ -23,7 +23,7 @@ import org.osgi.framework.ServiceRegistration;
 public abstract class AbstractRemoteServiceRegisterTest extends
 		AbstractDistributionTest {
 
-	protected static final int REGISTER_WAIT = 15000;
+	protected static final int REGISTER_WAIT = 10000;
 	private ServiceRegistration registration;
 
 	protected abstract String getServerContainerTypeName();
