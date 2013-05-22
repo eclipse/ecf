@@ -459,9 +459,8 @@ public class RemoteServiceAdmin implements
 				UUID.randomUUID().toString());
 		props.put(org.osgi.framework.Constants.OBJECTCLASS, new String[] { UUID.randomUUID().toString() });
 		props.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS, UUID.randomUUID().toString());
-		checkEndpointPermissionRead(
-				"checkRSAReadAccess", new org.osgi.service.remoteserviceadmin.EndpointDescription( //$NON-NLS-1$
-						props));
+		checkEndpointPermission(new org.osgi.service.remoteserviceadmin.EndpointDescription(
+						props),org.osgi.service.remoteserviceadmin.EndpointPermission.READ);
 	}
 
 	public Collection<org.osgi.service.remoteserviceadmin.ImportReference> getImportedEndpoints() {
