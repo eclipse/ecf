@@ -14,14 +14,20 @@ import java.util.List;
 import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.core.jobs.JobsExecutor;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
+import org.eclipse.equinox.concurrent.future.IExecutor;
+import org.eclipse.equinox.concurrent.future.IProgressRunnable;
+import org.eclipse.equinox.concurrent.future.ImmediateExecutor;
+import org.eclipse.equinox.concurrent.future.ThreadsExecutor;
 
 /**
  * Default implementation of {@link IEndpointDescriptionAdvertiser}.
@@ -30,8 +36,12 @@ import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 public class EndpointDescriptionAdvertiser implements
 		IEndpointDescriptionAdvertiser {
 
-	private String advertiserFilter = System
+	private static final String advertiserFilter = System
 			.getProperty("org.eclipse.ecf.osgi.services.remoteserviceadmin.endpointDescriptionDiscoveryAdvertiserFilter"); //$NON-NLS-1$
+
+	private static final String executorType = System
+			.getProperty(
+					"org.eclipse.ecf.osgi.services.remoteserviceadmin.endpointDescriptionDiscoveryAdvertiserExecutorType", "immediate"); //$NON-NLS-1$ //$NON-NLS-2$
 
 	private EndpointDescriptionLocator endpointDescriptionLocator;
 	private List<String> filteredAdvertisers = new ArrayList<String>();
@@ -54,6 +64,25 @@ public class EndpointDescriptionAdvertiser implements
 					"filtering advertiser=" + filteredAdvertiser); //$NON-NLS-1$
 	}
 
+	private IExecutor createExecutor() {
+		if (executorType.equals("jobs")) { //$NON-NLS-1$
+			return new JobsExecutor(this.getClass().getName());
+		} else if (executorType.equals("threads")) { //$NON-NLS-1$
+			return new ThreadsExecutor();
+		} else
+			return new ImmediateExecutor();
+	}
+
+	private IExecutor executor;
+
+	private IExecutor getExecutor() {
+		synchronized (this) {
+			if (executor == null)
+				executor = createExecutor();
+			return executor;
+		}
+	}
+
 	/**
 	 * @since 3.0
 	 */
@@ -73,24 +102,34 @@ public class EndpointDescriptionAdvertiser implements
 	/**
 	 * @since 3.0
 	 */
-	protected IStatus doDiscovery(IDiscoveryAdvertiser discoveryAdvertiser,
-			IServiceInfo serviceInfo, boolean advertise) {
-		try {
-			if (advertise) {
-				trace("doDiscovery", "discoveryAdvertiser=" + discoveryAdvertiser + " serviceInfo=" + serviceInfo); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				discoveryAdvertiser.registerService(serviceInfo);
-			} else {
-				trace("doUndiscovery", "discoveryAdvertiser=" + discoveryAdvertiser + " serviceInfo=" + serviceInfo); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				discoveryAdvertiser.unregisterService(serviceInfo);
+	protected IStatus doDiscovery(
+			final IDiscoveryAdvertiser discoveryAdvertiser,
+			final IServiceInfo serviceInfo, final boolean advertise) {
+		IProgressRunnable<IStatus> runnable = new IProgressRunnable<IStatus>() {
+			public IStatus run(IProgressMonitor monitor) throws Exception {
+				try {
+					if (advertise) {
+						trace("doDiscovery", "discoveryAdvertiser=" + discoveryAdvertiser + " serviceInfo=" + serviceInfo); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						synchronized (discoveryAdvertiser) {
+							discoveryAdvertiser.registerService(serviceInfo);
+						}
+					} else {
+						trace("doUndiscovery", "discoveryAdvertiser=" + discoveryAdvertiser + " serviceInfo=" + serviceInfo); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						synchronized (discoveryAdvertiser) {
+							discoveryAdvertiser.unregisterService(serviceInfo);
+						}
+					}
+				} catch (Exception e) {
+					LogUtility
+							.logError(
+									"doDiscovery", DebugOptions.ENDPOINT_DESCRIPTION_ADVERTISER, this.getClass(), createErrorStatus("Unexplained exception in discoveryAdvertiserID=" + discoveryAdvertiser + " for serviceInfo=" + serviceInfo + " advertise=" + true)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+				}
+				return null;
 			}
-			return Status.OK_STATUS;
-		} catch (Exception e) {
-			return createErrorStatus((advertise ? "registerService" //$NON-NLS-1$
-					: "unregisterService") //$NON-NLS-1$
-					+ " with serviceInfo=" //$NON-NLS-1$
-					+ serviceInfo + " for discoveryAdvertiser=" //$NON-NLS-1$
-					+ discoveryAdvertiser + " failed", e); //$NON-NLS-1$
-		}
+		};
+		// Start/do it
+		getExecutor().execute(runnable, null);
+		return Status.OK_STATUS;
 	}
 
 	protected IServiceInfoFactory getServiceInfoFactory() {
@@ -195,6 +234,7 @@ public class EndpointDescriptionAdvertiser implements
 	public void close() {
 		this.filteredAdvertisers.clear();
 		this.endpointDescriptionLocator = null;
+		executor = null;
 	}
 
 	public IStatus advertise(
