@@ -124,7 +124,7 @@
     <rm:provider componentTypes="osgi.bundle" readerType="p2" source="false" mutable="false">
       <rm:property key="buckminster.source" value="false"/>
       <rm:property key="buckminster.mutable" value="false"/>
-      <rm:uri format="http://ftp.osuosl.org/pub/eclipse/tools/orbit/downloads/drops/S20130427215344/repository"/>
+      <rm:uri format="http://ftp.osuosl.org/pub/eclipse/tools/orbit/downloads/drops/R20130517111416/repository"/>
     </rm:provider>
     <rm:provider xsi:type="pde:PDEMapProvider" componentTypes="osgi.bundle,eclipse.feature" readerType="cvs" mutable="false">
       <rm:property key="buckminster.mutable" value="false"/>
