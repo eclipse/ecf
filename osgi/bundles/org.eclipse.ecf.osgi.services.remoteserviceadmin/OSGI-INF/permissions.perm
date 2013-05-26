@@ -22,6 +22,7 @@
 (org.osgi.framework.PackagePermission "org.osgi.service.log" "import")
 (org.osgi.framework.PackagePermission "org.osgi.service.remoteserviceadmin" "import")
 (org.osgi.framework.PackagePermission "org.osgi.util.tracker" "import")
+(org.osgi.framework.PackagePermission "org.eclipse.ecf.core.jobs" "import")
 # Exports
 (org.osgi.framework.PackagePermission "org.eclipse.ecf.osgi.services.remoteserviceadmin" "export")
 # Services
