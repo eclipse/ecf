@@ -9,7 +9,6 @@ Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf.discovery,
  org.eclipse.ecf.discovery.ui,
- org.eclipse.update.ui,
  org.eclipse.ui
 Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
  J2SE-1.4
