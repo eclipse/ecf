@@ -128,7 +128,7 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 	}
 
 	/**
-	 * @since 7.0
+	 * @since 8.0
 	 */
 	public class ProxyClassLoader extends ClassLoader {
 
@@ -157,7 +157,7 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 	}
 
 	/**
-	 * @since 7.0
+	 * @since 8.0
 	 */
 	protected IRemoteServiceProxyCreator getRemoteServiceProxyCreator() {
 		ServiceTracker st = new ServiceTracker(Activator.getDefault().getContext(), IRemoteServiceProxyCreator.class, null);
