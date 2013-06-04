@@ -12,6 +12,7 @@ Require-Bundle: org.eclipse.equinox.common,
 Eclipse-LazyStart: true
 Import-Package: org.apache.http;version="4.1.0",
  org.apache.http.client;version="4.1.0",
+ org.apache.http.conn;version="4.1.0",
  org.apache.http.conn.util;version="4.1.0",
  org.apache.http.entity;version="4.1.0",
  org.apache.http.impl;version="4.1.0",
