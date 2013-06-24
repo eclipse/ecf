@@ -770,7 +770,7 @@ public class EndpointDescriptionLocator {
 									+ fileURL);
 				ins = fileURL.openStream();
 				return endpointDescriptionReader.readEndpointDescriptions(ins);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				logError("handleEndpointDescriptionFile", //$NON-NLS-1$
 						"Exception creating endpoint descriptions from fileURL=" //$NON-NLS-1$
 								+ fileURL, e);
