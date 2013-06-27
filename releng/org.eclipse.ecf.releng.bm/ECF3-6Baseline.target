@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.6"?>
-
-<target includeMode="feature" name="ECF3-6Baseline" sequenceNumber="1">
+<?pde version="3.8"?><target includeMode="feature" name="ECF3-6Baseline" sequenceNumber="6">
 <locations>
-<location includeAllPlatforms="false" includeMode="slicer" includeSource="false" type="InstallableUnit">
-<unit id="org.eclipse.ecf.core.feature.group" version="3.6.0.v20130309-0714"/>
-<repository location="http://download.eclipse.org/rt/ecf/3.6.0/site.p2/"/>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="false" type="InstallableUnit">
+<unit id="org.eclipse.ecf.core.feature.group" version="3.6.1.v20130605-1748"/>
+<repository location="http://download.eclipse.org/rt/ecf/3.6.1/site.p2/"/>
 </location>
 </locations>
 <includeBundles>
