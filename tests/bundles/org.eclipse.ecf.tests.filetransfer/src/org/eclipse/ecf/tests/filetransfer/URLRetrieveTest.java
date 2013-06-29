@@ -43,7 +43,7 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 	public static final String HTTP_MALFORMED_URL = "http://malformed:-1";
 	public static final String HTTP_RETRIEVE_NON_CANONICAL_URL = "http://eclipse.saplabs.bg//eclipse///updates/3.4/plugins/org.eclipse.equinox.p2.exemplarysetup.source_1.0.0.v20080427-2136.jar.pack.gz";
 	
-	private static final String FTP_RETRIEVE = "ftp://ftp.osuosl.org/pub/eclipse/rt/ecf/3.5.6/org.eclipse.ecf.sdk_3.5.6.v20120610-1946.zip";
+	private static final String FTP_RETRIEVE = "ftp://ftp.osuosl.org/pub/eclipse/rt/ecf/3.6.1/org.eclipse.ecf.sdk_3.6.1.v20130605-1748.zip";
 	
 	// See bug 237936
 	private static final String BUG_237936_URL = "http://www.eclipse.org/downloads/download.php?file=/webtools/updates/site.xml&format=xml&countryCode=us&timeZone=-5&responseType=xml";
