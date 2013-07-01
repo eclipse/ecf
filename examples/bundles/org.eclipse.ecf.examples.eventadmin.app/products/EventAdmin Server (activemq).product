@@ -21,6 +21,7 @@
    </vm>
 
    <plugins>
+      <plugin id="javax.jms"/>
       <plugin id="org.eclipse.core.contenttype"/>
       <plugin id="org.eclipse.core.jobs"/>
       <plugin id="org.eclipse.core.runtime"/>
