@@ -16,6 +16,8 @@ import java.io.Serializable;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.eclipse.ecf.internal.remoteservice.eventadmin.NoSerializationHandler;
+import org.eclipse.ecf.remoteservice.eventadmin.serialization.SmartSerializationHandler;
 import org.osgi.service.event.Event;
 
 /**
@@ -24,6 +26,12 @@ import org.osgi.service.event.Event;
 public class EventMessage implements Serializable {
 
 	private static final long serialVersionUID = 2743430591605178391L;
+	
+	/**
+	 * @since 1.2
+	 */
+	public static SmartSerializationHandler serializationHandler = new NoSerializationHandler();
+	
 	private String topic;
 	private Map properties;
 
@@ -47,8 +55,9 @@ public class EventMessage implements Serializable {
 				: new Hashtable(propertyNames.length);
 		for (int i = 0; i < propertyNames.length; i++) {
 			Object val = event.getProperty(propertyNames[i]);
-			if (!(val instanceof Serializable || val instanceof Externalizable))
-				throw new NotSerializableException("Cannot serialize property value of name="+propertyNames[i]+" and value="+val);
+			if (!(val instanceof Serializable || val instanceof Externalizable)) {
+				val = serializationHandler.serialize(val);
+			}
 			ht.put(propertyNames[i], val);
 		}
 		return ht;
@@ -59,7 +68,16 @@ public class EventMessage implements Serializable {
 	}
 	
 	protected Map getProperties() {
-		return properties;
+//		if (useSmartSerialization) {
+//			// check to see if there is a smart serialized object contained in
+//			// the props
+//			for (int i = 0; i < properties.size(); i++) {
+//				
+//			}
+//			return properties;
+//		} else {
+			return properties;
+//		}
 	}
 	
 	protected Event createLocalEvent() {
