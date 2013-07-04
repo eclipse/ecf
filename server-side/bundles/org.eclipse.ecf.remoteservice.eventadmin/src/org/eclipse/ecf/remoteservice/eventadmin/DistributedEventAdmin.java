@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2010 Composent, Inc. and others.
+ * Copyright (c) 2005, 2010 IBM Corporation, Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
+ *    IBM Corporation - initial API and implementation (non-distributed EventAdmin)
  *****************************************************************************/
 package org.eclipse.ecf.remoteservice.eventadmin;
 
