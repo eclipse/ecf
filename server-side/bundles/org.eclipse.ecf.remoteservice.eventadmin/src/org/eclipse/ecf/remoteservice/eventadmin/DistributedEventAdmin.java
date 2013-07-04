@@ -16,7 +16,9 @@ import java.io.IOException;
 import java.io.NotSerializableException;
 import java.security.Permission;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
@@ -34,12 +36,15 @@ import org.eclipse.osgi.framework.eventmgr.EventManager;
 import org.eclipse.osgi.framework.eventmgr.ListenerQueue;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.osgi.service.event.EventHandler;
 import org.osgi.service.event.TopicPermission;
 import org.osgi.service.log.LogService;
+import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 public class DistributedEventAdmin extends BaseSharedObject implements
 		EventAdmin {
@@ -55,10 +60,20 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 
 	private LogTracker logTracker;
 	private LogService log;
-	private EventHandlerTracker eventHandlerTracker;
 	private EventManager eventManager;
+	private ServiceTracker etfServiceTracker;
+	private final Set eventFilters = new HashSet();
 
 	private static final String SHARED_OBJECT_MESSAGE_METHOD = "__handlePostEventSharedObjectMsg";
+
+	/**
+	 * @since 1.2
+	 */
+	protected EventHandlerTracker eventHandlerTracker;
+	/**
+	 * @since 1.2
+	 */
+	protected BundleContext context;
 
 	/**
 	 * @noreference
@@ -81,6 +96,7 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	 */
 	public DistributedEventAdmin(BundleContext context, LogService log) {
 		Assert.isNotNull(context);
+		this.context = context;
 		if (log == null) {
 			// create log tracker and set the log to it
 			this.logTracker = new LogTracker(context, System.out);
@@ -119,6 +135,30 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 				"Distributed EventAdmin Async Event Dispatcher Thread",
 				eventGroup);
 		eventHandlerTracker.open();
+		
+		// Other services can contribute Event topic filters which will be ignored
+		// by the distribution part of DistributedEventAdmin. This is primarily useful
+		// in cases where the Event data cannot be serialized or serialization is too
+		// expensive.
+		etfServiceTracker = new ServiceTracker(this.context, EventTopicFilter.class, new ServiceTrackerCustomizer() {
+			public Object addingService(ServiceReference reference) {
+				final EventTopicFilter etf = (EventTopicFilter) context.getService(reference);
+				addEventTopicFilters(etf.getFilters());
+				return etf;
+			}
+
+			public void modifiedService(ServiceReference reference,
+					Object service) {
+				// nop
+			}
+
+			public void removedService(ServiceReference reference,
+					Object service) {
+				final EventTopicFilter etf = (EventTopicFilter) service;
+				removeEventTopicFilters(etf.getFilters());
+			}
+		});
+		etfServiceTracker.open();
 	}
 
 	/**
@@ -134,6 +174,10 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 		}
 		if (logTracker != null)
 			logTracker.close();
+		if (etfServiceTracker != null) {
+			etfServiceTracker.close();
+			etfServiceTracker = null;
+		}
 	}
 
 	/**
@@ -180,10 +224,12 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 		// send into a new Event, or if it should not be sent at all
 		Event eventToSend = getEventToSend(event);
 		if (eventToSend != null) {
-			sendMessage(eventToSend);
-			// sent successfully, so now dispatch to any appropriate local
-			// EventHandlers
-			notifyPostSendMessage(eventToSend);
+			if (!eventFilters.contains(event.getTopic())) {
+				sendMessage(eventToSend);
+				// sent successfully, so now dispatch to any appropriate local
+				// EventHandlers
+				notifyPostSendMessage(eventToSend);
+			}
 			// This does local dispatch asynchronously
 			localDispatch(event, true);
 		}
@@ -643,4 +689,19 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 		}
 	}
 
+	/**
+	 * @since 1.2
+	 */
+	public boolean addEventTopicFilters(String[] filters) {
+		final List asList = Arrays.asList(filters);
+		return eventFilters.addAll(asList);
+	}
+	
+	/**
+	 * @since 1.2
+	 */
+	public boolean removeEventTopicFilters(String[] filters) {
+		final List asList = Arrays.asList(filters);
+		return eventFilters.removeAll(asList);
+	}
 }
