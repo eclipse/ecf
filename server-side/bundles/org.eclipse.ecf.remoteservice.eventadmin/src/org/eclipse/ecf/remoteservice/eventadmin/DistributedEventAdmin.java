@@ -8,6 +8,7 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *    IBM Corporation - initial API and implementation (non-distributed EventAdmin)
+ *    Markus Alexander Kuppe - https://bugs.eclipse.org/412261
  *****************************************************************************/
 package org.eclipse.ecf.remoteservice.eventadmin;
 
@@ -43,12 +44,28 @@ import org.osgi.service.log.LogService;
 public class DistributedEventAdmin extends BaseSharedObject implements
 		EventAdmin {
 
+	/**
+	 * @since 1.2
+	 * @noreference
+	 * protected non-final for unit tests only!!!
+	 */
+	protected static boolean ignoreSerializationExceptions = Boolean
+			.getBoolean(DistributedEventAdmin.class.getName()
+					+ ".IgnoreSerialzationFailures");
+
 	private LogTracker logTracker;
 	private LogService log;
 	private EventHandlerTracker eventHandlerTracker;
 	private EventManager eventManager;
 
 	private static final String SHARED_OBJECT_MESSAGE_METHOD = "__handlePostEventSharedObjectMsg";
+
+	/**
+	 * @noreference
+	 */
+	protected DistributedEventAdmin() {
+		// nop
+	}
 
 	/**
 	 * Create a Distributed EventAdmin implementation.
@@ -300,9 +317,16 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 				+ " messageParams="
 				+ ((messageParams == null) ? null : Arrays
 						.asList(messageParams));
-		logError(exceptionMessage, exception);
-		// By default we throw a runtime exception
-		throw new ServiceException(exceptionMessage, exception);
+
+		// By default we throw a runtime exception, but
+		// only throw an exception if not explicitly turned off
+		if (!(exception instanceof NotSerializableException)
+				|| !ignoreSerializationExceptions) {
+			logError(exceptionMessage, exception);
+			throw new ServiceException(exceptionMessage, exception);
+		} else {
+			logWarning(exceptionMessage, exception);
+		}
 	}
 
 	/**
