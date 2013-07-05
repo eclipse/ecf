@@ -30,7 +30,7 @@ public class EventAdminManagerApplication extends AbstractEventAdminApplication
 		Properties props = new Properties();
 		props.put(EventConstants.EVENT_TOPIC, "*");
 		testEventHandlerRegistration = bundleContext.registerService(
-				EventHandler.class.getName(), new TestEventHandler(), props);
+				EventHandler.class.getName(), new TestEventHandler("Server"), props);
 
 		// XXX for testing, setup a test sender
 		testSender = new TestSender(eventAdminImpl, topic, container.getID()

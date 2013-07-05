@@ -15,8 +15,14 @@ import org.osgi.service.event.EventHandler;
 
 public class TestEventHandler implements EventHandler {
 
+	private String name;
+
+	public TestEventHandler(String name) {
+		this.name = name;
+	}
+	
 	public void handleEvent(Event event) {
-		System.out.println("handleEvent\n\ttopic=" + event.getTopic()
+		System.out.println("handleEvent by: " + name + "\n\ttopic=" + event.getTopic()
 				+ "\n\tmessage=" + event.getProperty("message") + "\n\tsender="
 				+ event.getProperty("sender")
 				+ "\n\twrapped in non-serializable="
