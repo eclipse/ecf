@@ -41,7 +41,7 @@ public abstract class AbstractEventAdminApplication implements IApplication {
 	protected String containerType;
 	protected String containerId;
 	protected String targetId;
-	protected String topic = DEFAULT_TOPIC;
+	protected String[] topics = {DEFAULT_TOPIC, "anotherTopic", "anotherTopic/subTopic"};
 
 	protected ServiceTracker containerManagerTracker;
 	private final Object appLock = new Object();
@@ -53,6 +53,11 @@ public abstract class AbstractEventAdminApplication implements IApplication {
 	protected Object startup(IApplicationContext context) throws Exception {
 		// Get BundleContext
 		bundleContext = Activator.getContext();
+		
+		// register a serialization handler for the topic that sends
+		// non-serializable event properties
+		bundleContext.registerService(SerializationHandler.class,
+				new ExampleSerializationHandler(DEFAULT_TOPIC), null);
 
 		// register a serialization handler for the topic that sends
 		// non-serializable event properties
@@ -74,7 +79,7 @@ public abstract class AbstractEventAdminApplication implements IApplication {
 		eventAdminImpl.start();
 		// register as EventAdmin service instance
 		Properties props = new Properties();
-		props.put(EventConstants.EVENT_TOPIC, topic);
+		props.put(EventConstants.EVENT_TOPIC, topics);
 		eventAdminRegistration = bundleContext.registerService(
 				"org.osgi.service.event.EventAdmin", eventAdminImpl, props);
 
@@ -167,7 +172,7 @@ public abstract class AbstractEventAdminApplication implements IApplication {
 				.getAdapter(ISharedObjectContainer.class);
 		// Add to soContainer, with topic as name
 		soContainer.getSharedObjectManager().addSharedObject(
-				IDFactory.getDefault().createStringID(topic), eventAdminImpl,
+				IDFactory.getDefault().createStringID(DEFAULT_TOPIC), eventAdminImpl,
 				null);
 
 		// then connect to target Id

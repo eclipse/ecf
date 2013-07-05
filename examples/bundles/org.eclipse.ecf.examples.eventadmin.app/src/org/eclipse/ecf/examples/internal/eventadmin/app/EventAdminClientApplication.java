@@ -30,12 +30,12 @@ public class EventAdminClientApplication extends AbstractEventAdminApplication {
 
 		// XXX for testing, setup an event handler
 		Properties props = new Properties();
-		props.put(EventConstants.EVENT_TOPIC, "*");
+		props.put(EventConstants.EVENT_TOPIC, DEFAULT_TOPIC);
 		testEventHandlerRegistration = bundleContext.registerService(
 				EventHandler.class.getName(), new TestEventHandler("Client"), props);
 
 		// XXX for testing, setup a test sender
-		testSender = new TestSender(eventAdminImpl, topic, container.getID()
+		testSender = new TestSender(eventAdminImpl, topics, container.getID()
 				.getName());
 		new Thread(testSender).start();
 
@@ -73,7 +73,6 @@ public class EventAdminClientApplication extends AbstractEventAdminApplication {
 		containerType = DEFAULT_CONTAINER_TYPE;
 		containerId = null;
 		targetId = DEFAULT_CONTAINER_TARGET;
-		topic = DEFAULT_TOPIC;
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-containerType")) {
 				containerType = args[i + 1];
@@ -82,10 +81,9 @@ public class EventAdminClientApplication extends AbstractEventAdminApplication {
 				targetId = args[i + 1];
 				i++;
 			} else if (args[i].equals("-topic")) {
-				topic = args[i + 1];
+				topics = new String[] {args[i + 1]};
 				i++;
 			}
 		}
-
 	}
 }

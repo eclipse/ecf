@@ -22,12 +22,17 @@ public class TestEventHandler implements EventHandler {
 	}
 	
 	public void handleEvent(Event event) {
+		String extra = "";
+		if (event.getProperty("nonserializable") != null) {
+			extra = "\n\twrapped in non-serializable="
+					+ ((NonSerializable) event.getProperty("nonserializable"))
+							.getPayload();
+		}
+		
 		System.out.println("handleEvent by: " + name + "\n\ttopic=" + event.getTopic()
 				+ "\n\tmessage=" + event.getProperty("message") + "\n\tsender="
 				+ event.getProperty("sender")
-				+ "\n\twrapped in non-serializable="
-				+ ((NonSerializable) event.getProperty("nonserializable"))
-						.getPayload());
+				+ extra);
 	}
 
 }

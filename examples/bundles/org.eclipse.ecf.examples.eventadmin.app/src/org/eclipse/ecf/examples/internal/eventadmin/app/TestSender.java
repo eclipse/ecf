@@ -23,30 +23,34 @@ public class TestSender implements Runnable {
 	private long waittime = DEFAULT_WAITTIME;
 
 	private EventAdmin eventAdmin;
-	private String topic;
+	private String[] topics;
 	private String sender;
 	private boolean done = false;
 	private long messageCounter = 0L;
 
-	public TestSender(EventAdmin eventAdmin, String topic, String sender) {
+	public TestSender(EventAdmin eventAdmin, String[] topics, String sender) {
 		this.eventAdmin = eventAdmin;
-		this.topic = topic;
+		this.topics = topics;
 		this.sender = sender;
 	}
 
 	public void run() {
 		synchronized (this) {
+			int i = 0;
 			while (!done) {
 				try {
 					wait(waittime);
 					Map msgProps = new Properties();
 					msgProps.put("message", "message #" + messageCounter++);
 					msgProps.put("sender", sender);
+					String topic = topics[i++ % topics.length];
 					// Add a non-serializable object.
 					// See that we have registered an SerializationHandler
 					// for this topic (on both ends local & remote)
 					// org.eclipse.ecf.examples.internal.eventadmin.app.AbstractEventAdminApplication.startup(IApplicationContext)
-					msgProps.put("nonserializable", new NonSerializable("MessageCnt: " + messageCounter));
+					if (topic.equals(AbstractEventAdminApplication.DEFAULT_TOPIC)) {
+						msgProps.put("nonserializable", new NonSerializable("MessageCnt: " + messageCounter));
+					}
 					eventAdmin.postEvent(new Event(topic, msgProps));
 				} catch (Exception e) {
 					e.printStackTrace();

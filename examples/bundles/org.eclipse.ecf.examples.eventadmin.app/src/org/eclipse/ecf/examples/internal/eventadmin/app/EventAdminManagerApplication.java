@@ -33,7 +33,7 @@ public class EventAdminManagerApplication extends AbstractEventAdminApplication
 				EventHandler.class.getName(), new TestEventHandler("Server"), props);
 
 		// XXX for testing, setup a test sender
-		testSender = new TestSender(eventAdminImpl, topic, container.getID()
+		testSender = new TestSender(eventAdminImpl, topics, container.getID()
 				.getName());
 		new Thread(testSender).start();
 
@@ -70,7 +70,6 @@ public class EventAdminManagerApplication extends AbstractEventAdminApplication
 		containerType = DEFAULT_CONTAINER_TYPE;
 		containerId = DEFAULT_CONTAINER_ID;
 		targetId = null;
-		topic = DEFAULT_TOPIC;
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-containerType")) {
 				containerType = args[i + 1];
@@ -79,11 +78,10 @@ public class EventAdminManagerApplication extends AbstractEventAdminApplication
 				containerId = args[i + 1];
 				i++;
 			} else if (args[i].equals("-topic")) {
-				topic = args[i + 1];
+				topics = new String[] {args[i + 1]};
 				i++;
 			}
 		}
-
 	}
 
 }
