@@ -23,6 +23,7 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.core.sharedobject.SharedObjectAddException;
 import org.eclipse.ecf.remoteservice.eventadmin.DistributedEventAdmin;
+import org.eclipse.ecf.remoteservice.eventadmin.serialization.SerializationHandler;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.osgi.framework.BundleContext;
@@ -52,6 +53,11 @@ public abstract class AbstractEventAdminApplication implements IApplication {
 	protected Object startup(IApplicationContext context) throws Exception {
 		// Get BundleContext
 		bundleContext = Activator.getContext();
+
+		// register a serialization handler for the topic that sends
+		// non-serializable event properties
+		bundleContext.registerService(SerializationHandler.class,
+				new ExampleSerializationHandler(DEFAULT_TOPIC), null);
 
 		// Process Arguments
 		final String[] args = mungeArguments((String[]) context.getArguments()

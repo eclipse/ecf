@@ -18,7 +18,10 @@ public class TestEventHandler implements EventHandler {
 	public void handleEvent(Event event) {
 		System.out.println("handleEvent\n\ttopic=" + event.getTopic()
 				+ "\n\tmessage=" + event.getProperty("message") + "\n\tsender="
-				+ event.getProperty("sender"));
+				+ event.getProperty("sender")
+				+ "\n\twrapped in non-serializable="
+				+ ((NonSerializable) event.getProperty("nonserializable"))
+						.getPayload());
 	}
 
 }

@@ -16,9 +16,11 @@ import java.io.IOException;
 import java.io.NotSerializableException;
 import java.security.Permission;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
@@ -28,9 +30,11 @@ import org.eclipse.ecf.core.sharedobject.BaseSharedObject;
 import org.eclipse.ecf.core.sharedobject.SharedObjectMsg;
 import org.eclipse.ecf.core.sharedobject.events.ISharedObjectCreateResponseEvent;
 import org.eclipse.ecf.core.sharedobject.events.ISharedObjectMessageEvent;
+import org.eclipse.ecf.internal.remoteservice.eventadmin.DefaultSerializationHandler;
 import org.eclipse.ecf.internal.remoteservice.eventadmin.EventHandlerTracker;
 import org.eclipse.ecf.internal.remoteservice.eventadmin.EventHandlerWrapper;
 import org.eclipse.ecf.internal.remoteservice.eventadmin.LogTracker;
+import org.eclipse.ecf.remoteservice.eventadmin.serialization.SerializationHandler;
 import org.eclipse.osgi.framework.eventmgr.CopyOnWriteIdentityMap;
 import org.eclipse.osgi.framework.eventmgr.EventManager;
 import org.eclipse.osgi.framework.eventmgr.ListenerQueue;
@@ -62,12 +66,15 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	private LogService log;
 	private EventManager eventManager;
 	private ServiceTracker etfServiceTracker;
+	private ServiceTracker shServiceTracker;
 	private final Set eventFilters = new HashSet();
+	private final Map topic2serializationHandler = new HashMap();
 
 	private static final String SHARED_OBJECT_MESSAGE_METHOD = "__handlePostEventSharedObjectMsg";
 
 	/**
 	 * @since 1.2
+	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	protected EventHandlerTracker eventHandlerTracker;
 	/**
@@ -159,6 +166,27 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 			}
 		});
 		etfServiceTracker.open();
+
+		// SerializationHandler are responsible to handle serialization of Event properties
+		shServiceTracker = new ServiceTracker(this.context, SerializationHandler.class, new ServiceTrackerCustomizer() {
+			public Object addingService(ServiceReference reference) {
+				final SerializationHandler sh = (SerializationHandler) context.getService(reference);
+				topic2serializationHandler.put(sh.getTopic(), sh);
+				return sh;
+			}
+
+			public void modifiedService(ServiceReference reference,
+					Object service) {
+				// nop
+			}
+
+			public void removedService(ServiceReference reference,
+					Object service) {
+				final SerializationHandler sh = (SerializationHandler) service;
+				topic2serializationHandler.remove(sh.getTopic());
+			}
+		});
+		shServiceTracker.open();
 	}
 
 	/**
@@ -177,6 +205,10 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 		if (etfServiceTracker != null) {
 			etfServiceTracker.close();
 			etfServiceTracker = null;
+		}
+		if (shServiceTracker != null) {
+			shServiceTracker.close();
+			shServiceTracker = null;
 		}
 	}
 
@@ -310,8 +342,19 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	 */
 	protected Object[] createMessageDataFromEvent(ID target, Event eventToSend)
 			throws NotSerializableException {
-		Object[] results = { new EventMessage(eventToSend) };
+		final Object[] results = { new EventMessage(eventToSend, getSerializationHandler(eventToSend.getTopic())) };
 		return results;
+	}
+
+	/**
+	 * @since 1.2
+	 */
+	protected SerializationHandler getSerializationHandler(String topic) {
+		final SerializationHandler sh = (SerializationHandler) topic2serializationHandler.get(topic);
+		if (sh == null) {
+			return DefaultSerializationHandler.INST;
+		}
+		return sh;
 	}
 
 	/**
@@ -338,7 +381,8 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	 * @since 1.1
 	 */
 	protected Event createEventFromMessageData(ID fromID, Object[] messageData) {
-		EventMessage eventMessage = (EventMessage) messageData[0];
+		final EventMessage eventMessage = (EventMessage) messageData[0];
+		eventMessage.setSerializationHandler(getSerializationHandler(eventMessage.getTopic()));
 		return eventMessage.getEvent();
 	}
 

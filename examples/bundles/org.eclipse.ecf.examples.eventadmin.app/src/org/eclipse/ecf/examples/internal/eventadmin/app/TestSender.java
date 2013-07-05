@@ -42,6 +42,11 @@ public class TestSender implements Runnable {
 					Map msgProps = new Properties();
 					msgProps.put("message", "message #" + messageCounter++);
 					msgProps.put("sender", sender);
+					// Add a non-serializable object.
+					// See that we have registered an SerializationHandler
+					// for this topic (on both ends local & remote)
+					// org.eclipse.ecf.examples.internal.eventadmin.app.AbstractEventAdminApplication.startup(IApplicationContext)
+					msgProps.put("nonserializable", new NonSerializable("MessageCnt: " + messageCounter));
 					eventAdmin.postEvent(new Event(topic, msgProps));
 				} catch (Exception e) {
 					e.printStackTrace();

@@ -10,12 +10,15 @@
  *****************************************************************************/
 package org.eclipse.ecf.remoteservice.eventadmin;
 
-import java.io.Externalizable;
 import java.io.NotSerializableException;
 import java.io.Serializable;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
+import org.eclipse.ecf.internal.remoteservice.eventadmin.DefaultSerializationHandler;
+import org.eclipse.ecf.remoteservice.eventadmin.serialization.SerializationHandler;
 import org.osgi.service.event.Event;
 
 /**
@@ -27,10 +30,21 @@ public class EventMessage implements Serializable {
 	private String topic;
 	private Map properties;
 
+	private transient SerializationHandler sh = new DefaultSerializationHandler();
 	private transient Event localEvent;
 
 	public EventMessage(Event event)
 			throws NotSerializableException {
+		this.topic = event.getTopic();
+		this.properties = createPropertiesFromEvent(event);
+	}
+	
+	/**
+	 * @since 1.2
+	 */
+	public EventMessage(Event event,
+			SerializationHandler serializationHandler) throws NotSerializableException {
+		this.sh = serializationHandler;
 		this.topic = event.getTopic();
 		this.properties = createPropertiesFromEvent(event);
 	}
@@ -47,9 +61,7 @@ public class EventMessage implements Serializable {
 				: new Hashtable(propertyNames.length);
 		for (int i = 0; i < propertyNames.length; i++) {
 			Object val = event.getProperty(propertyNames[i]);
-			if (!(val instanceof Serializable || val instanceof Externalizable))
-				throw new NotSerializableException("Cannot serialize property value of name="+propertyNames[i]+" and value="+val);
-			ht.put(propertyNames[i], val);
+			ht.put(propertyNames[i], sh.serialize(val));
 		}
 		return ht;
 	}
@@ -59,6 +71,12 @@ public class EventMessage implements Serializable {
 	}
 	
 	protected Map getProperties() {
+		final Set keySet = properties.keySet();
+		for (final Iterator itr = keySet.iterator(); itr.hasNext();) {
+			final Object key = (Object) itr.next();
+			final Object val = properties.get(key);
+			properties.put(key, sh.deserialize(val));
+		}
 		return properties;
 	}
 	
@@ -82,5 +100,12 @@ public class EventMessage implements Serializable {
 		buffer.append("]");
 		return buffer.toString();
 	}
-	
+
+	/**
+	 * @since 1.2
+	 */
+	public void setSerializationHandler(
+			SerializationHandler serializationHandler) {
+		this.sh = serializationHandler;
+	}
 }
