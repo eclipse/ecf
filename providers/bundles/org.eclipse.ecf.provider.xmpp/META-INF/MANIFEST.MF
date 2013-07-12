@@ -10,7 +10,7 @@ Require-Bundle: org.eclipse.ecf;bundle-version="3.1.0",
  org.eclipse.ecf.provider,
  org.eclipse.ecf.presence,
  org.eclipse.ecf.filetransfer,
- org.jivesoftware.smack;bundle-version="3.1.0",
+ org.jivesoftware.smack;bundle-version="3.3.0",
  org.eclipse.ecf.sharedobject,
  org.eclipse.equinox.common;bundle-version="3.5.0"
 Eclipse-LazyStart: true

@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.jivesoftware.smack
-Bundle-Version: 3.1.100.qualifier
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-Version: 3.3.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
 Export-Package: org.jivesoftware.smack,
@@ -37,3 +37,4 @@ Export-Package: org.jivesoftware.smack,
 Bundle-ClassPath: .,
  jars/xpp.jar
 Eclipse-ExtensibleAPI: true
+Import-Package: org.xbill.DNS;version="2.0.8";resolution:=optional

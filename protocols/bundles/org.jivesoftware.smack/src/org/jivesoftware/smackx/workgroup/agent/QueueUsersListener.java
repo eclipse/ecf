@@ -1,6 +1,6 @@
 /**
- * $Revision: 1.1 $
- * $Date: 2009/12/15 09:04:04 $
+ * $Revision$
+ * $Date$
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -21,6 +21,8 @@ package org.jivesoftware.smackx.workgroup.agent;
 
 import java.util.Date;
 import java.util.Set;
+
+import org.jivesoftware.smackx.workgroup.QueueUser;
 
 public interface QueueUsersListener {
 
@@ -54,5 +56,5 @@ public interface QueueUsersListener {
      * @param queue the workgroup queue.
      * @param users the list of users waiting in the queue.
      */
-    public void usersUpdated(WorkgroupQueue queue, Set users);
+    public void usersUpdated(WorkgroupQueue queue, Set<QueueUser> users);
 }

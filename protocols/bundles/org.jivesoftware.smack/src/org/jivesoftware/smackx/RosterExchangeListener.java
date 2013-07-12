@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 13325 $
+ * $Date: 2012-10-26 03:47:55 -0700 (Fri, 26 Oct 2012) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -37,6 +37,6 @@ public interface RosterExchangeListener {
      * @param remoteRosterEntries the entries sent by the user. The entries are instances of 
      * RemoteRosterEntry.
      */
-    public void entriesReceived(String from, Iterator remoteRosterEntries);
+    public void entriesReceived(String from, Iterator<RemoteRosterEntry> remoteRosterEntries);
 
 }

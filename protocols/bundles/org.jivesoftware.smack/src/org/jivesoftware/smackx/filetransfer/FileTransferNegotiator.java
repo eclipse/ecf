@@ -19,9 +19,20 @@
  */
 package org.jivesoftware.smackx.filetransfer;
 
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.PacketCollector;
-import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.PacketIDFilter;
 import org.jivesoftware.smack.packet.IQ;
@@ -30,12 +41,10 @@ import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smackx.Form;
 import org.jivesoftware.smackx.FormField;
 import org.jivesoftware.smackx.ServiceDiscoveryManager;
+import org.jivesoftware.smackx.bytestreams.ibb.InBandBytestreamManager;
+import org.jivesoftware.smackx.bytestreams.socks5.Socks5BytestreamManager;
 import org.jivesoftware.smackx.packet.DataForm;
 import org.jivesoftware.smackx.packet.StreamInitiation;
-
-import java.net.URLConnection;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Manages the negotiation of file transfers according to JEP-0096. If a file is
@@ -43,30 +52,18 @@ import java.util.concurrent.ConcurrentHashMap;
  * will be sent.
  *
  * @author Alexander Wenckus
- * @see <a href=http://www.jabber.org/jeps/jep-0096.html>JEP-0096: File Transfer</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transfer</a>
  */
 public class FileTransferNegotiator {
 
     // Static
 
-    /**
-     * The XMPP namespace of the SOCKS5 bytestream
-     */
-    public static final String BYTE_STREAM = "http://jabber.org/protocol/bytestreams";
-
-    /**
-     * The XMPP namespace of the In-Band bytestream
-     */
-    public static final String INBAND_BYTE_STREAM = "http://jabber.org/protocol/ibb";
-
     private static final String[] NAMESPACE = {
             "http://jabber.org/protocol/si/profile/file-transfer",
-            "http://jabber.org/protocol/si", BYTE_STREAM, INBAND_BYTE_STREAM};
+            "http://jabber.org/protocol/si"};
 
-    private static final String[] PROTOCOLS = {BYTE_STREAM, INBAND_BYTE_STREAM};
-
-    private static final Map<XMPPConnection, FileTransferNegotiator> transferObject =
-            new ConcurrentHashMap<XMPPConnection, FileTransferNegotiator>();
+    private static final Map<Connection, FileTransferNegotiator> transferObject =
+            new ConcurrentHashMap<Connection, FileTransferNegotiator>();
 
     private static final String STREAM_INIT_PREFIX = "jsi_";
 
@@ -79,7 +76,7 @@ public class FileTransferNegotiator {
      * set this variable to true for testing purposes as IBB is the backup file transfer method
      * and shouldn't be used as the only transfer method in production systems.
      */
-    public static boolean IBB_ONLY = false;
+    public static boolean IBB_ONLY = (System.getProperty("ibb") != null);//true;
 
     /**
      * Returns the file transfer negotiator related to a particular connection.
@@ -90,7 +87,7 @@ public class FileTransferNegotiator {
      * @return The IMFileTransferManager
      */
     public static FileTransferNegotiator getInstanceFor(
-            final XMPPConnection connection) {
+            final Connection connection) {
         if (connection == null) {
             throw new IllegalArgumentException("Connection cannot be null");
         }
@@ -117,18 +114,28 @@ public class FileTransferNegotiator {
      * @param connection The connection on which to enable or disable the services.
      * @param isEnabled  True to enable, false to disable.
      */
-    public static void setServiceEnabled(final XMPPConnection connection,
+    public static void setServiceEnabled(final Connection connection,
             final boolean isEnabled) {
         ServiceDiscoveryManager manager = ServiceDiscoveryManager
                 .getInstanceFor(connection);
-        for (String ns : NAMESPACE) {
+
+        List<String> namespaces = new ArrayList<String>();
+        namespaces.addAll(Arrays.asList(NAMESPACE));
+        namespaces.add(InBandBytestreamManager.NAMESPACE);
+        if (!IBB_ONLY) {
+            namespaces.add(Socks5BytestreamManager.NAMESPACE);
+        }
+
+        for (String namespace : namespaces) {
             if (isEnabled) {
-                manager.addFeature(ns);
-            }
-            else {
-                manager.removeFeature(ns);
+                if (!manager.includesFeature(namespace)) {
+                    manager.addFeature(namespace);
+                }
+            } else {
+                manager.removeFeature(namespace);
             }
         }
+        
     }
 
     /**
@@ -138,21 +145,32 @@ public class FileTransferNegotiator {
      * @param connection The connection to check
      * @return True if all related services are enabled, false if they are not.
      */
-    public static boolean isServiceEnabled(final XMPPConnection connection) {
-        for (String ns : NAMESPACE) {
-            if (!ServiceDiscoveryManager.getInstanceFor(connection).includesFeature(ns))
+    public static boolean isServiceEnabled(final Connection connection) {
+        ServiceDiscoveryManager manager = ServiceDiscoveryManager
+                .getInstanceFor(connection);
+
+        List<String> namespaces = new ArrayList<String>();
+        namespaces.addAll(Arrays.asList(NAMESPACE));
+        namespaces.add(InBandBytestreamManager.NAMESPACE);
+        if (!IBB_ONLY) {
+            namespaces.add(Socks5BytestreamManager.NAMESPACE);
+        }
+
+        for (String namespace : namespaces) {
+            if (!manager.includesFeature(namespace)) {
                 return false;
+            }
         }
         return true;
     }
 
     /**
-     * A convience method to create an IQ packet.
+     * A convenience method to create an IQ packet.
      *
      * @param ID   The packet ID of the
      * @param to   To whom the packet is addressed.
      * @param from From whom the packet is sent.
-     * @param type The iq type of the packet.
+     * @param type The IQ type of the packet.
      * @return The created IQ packet.
      */
     public static IQ createIQ(final String ID, final String to,
@@ -175,27 +193,32 @@ public class FileTransferNegotiator {
      *
      * @return Returns a collection of the supported transfer protocols.
      */
-    public static Collection getSupportedProtocols() {
-        return Collections.unmodifiableList(Arrays.asList(PROTOCOLS));
+    public static Collection<String> getSupportedProtocols() {
+        List<String> protocols = new ArrayList<String>();
+        protocols.add(InBandBytestreamManager.NAMESPACE);
+        if (!IBB_ONLY) {
+            protocols.add(Socks5BytestreamManager.NAMESPACE);
+        }
+        return Collections.unmodifiableList(protocols);
     }
 
     // non-static
 
-    private final XMPPConnection connection;
+    private final Connection connection;
 
-    private final Socks5TransferNegotiatorManager byteStreamTransferManager;
+    private final StreamNegotiator byteStreamTransferManager;
 
     private final StreamNegotiator inbandTransferManager;
 
-    private FileTransferNegotiator(final XMPPConnection connection) {
+    private FileTransferNegotiator(final Connection connection) {
         configureConnection(connection);
 
         this.connection = connection;
-        byteStreamTransferManager = new Socks5TransferNegotiatorManager(connection);
+        byteStreamTransferManager = new Socks5TransferNegotiator(connection);
         inbandTransferManager = new IBBTransferNegotiator(connection);
     }
 
-    private void configureConnection(final XMPPConnection connection) {
+    private void configureConnection(final Connection connection) {
         connection.addConnectionListener(new ConnectionListener() {
             public void connectionClosed() {
                 cleanup(connection);
@@ -219,9 +242,8 @@ public class FileTransferNegotiator {
         });
     }
 
-    private void cleanup(final XMPPConnection connection) {
+    private void cleanup(final Connection connection) {
         if (transferObject.remove(connection) != null) {
-            byteStreamTransferManager.cleanup();
             inbandTransferManager.cleanup();
         }
     }
@@ -271,8 +293,8 @@ public class FileTransferNegotiator {
 
     private FormField getStreamMethodField(DataForm form) {
         FormField field = null;
-        for (Iterator it = form.getFields(); it.hasNext();) {
-            field = (FormField) it.next();
+        for (Iterator<FormField> it = form.getFields(); it.hasNext();) {
+            field = it.next();
             if (field.getVariable().equals(STREAM_DATA_FIELD_NAME)) {
                 break;
             }
@@ -286,12 +308,12 @@ public class FileTransferNegotiator {
         String variable;
         boolean isByteStream = false;
         boolean isIBB = false;
-        for (Iterator it = field.getOptions(); it.hasNext();) {
-            variable = ((FormField.Option) it.next()).getValue();
-            if (variable.equals(BYTE_STREAM) && !IBB_ONLY) {
+        for (Iterator<FormField.Option> it = field.getOptions(); it.hasNext();) {
+            variable = it.next().getValue();
+            if (variable.equals(Socks5BytestreamManager.NAMESPACE) && !IBB_ONLY) {
                 isByteStream = true;
             }
-            else if (variable.equals(INBAND_BYTE_STREAM)) {
+            else if (variable.equals(InBandBytestreamManager.NAMESPACE)) {
                 isIBB = true;
             }
         }
@@ -302,13 +324,14 @@ public class FileTransferNegotiator {
             throw new XMPPException(error.getMessage(), error);
         }
 
-        if (isByteStream && isIBB && field.getType().equals(FormField.TYPE_LIST_MULTI)) {
+       //if (isByteStream && isIBB && field.getType().equals(FormField.TYPE_LIST_MULTI)) {
+        if (isByteStream && isIBB) { 
             return new FaultTolerantNegotiator(connection,
-                    byteStreamTransferManager.createNegotiator(),
+                    byteStreamTransferManager,
                     inbandTransferManager);
         }
         else if (isByteStream) {
-            return byteStreamTransferManager.createNegotiator();
+            return byteStreamTransferManager;
         }
         else {
             return inbandTransferManager;
@@ -346,11 +369,11 @@ public class FileTransferNegotiator {
      * the option of, accepting, rejecting, or not responding to a received file
      * transfer request.
      * <p/>
-     * If they accept, the packet will contain the other user's choosen stream
+     * If they accept, the packet will contain the other user's chosen stream
      * type to send the file across. The two choices this implementation
      * provides to the other user for file transfer are <a
      * href="http://www.jabber.org/jeps/jep-0065.html">SOCKS5 Bytestreams</a>,
-     * which is the prefered method of transfer, and <a
+     * which is the preferred method of transfer, and <a
      * href="http://www.jabber.org/jeps/jep-0047.html">In-Band Bytestreams</a>,
      * which is the fallback mechanism.
      * <p/>
@@ -422,10 +445,10 @@ public class FileTransferNegotiator {
         boolean isIBB = false;
         for (Iterator<String> it = field.getValues(); it.hasNext();) {
             variable = it.next();
-            if (variable.equals(BYTE_STREAM) && !IBB_ONLY) {
+            if (variable.equals(Socks5BytestreamManager.NAMESPACE) && !IBB_ONLY) {
                 isByteStream = true;
             }
-            else if (variable.equals(INBAND_BYTE_STREAM)) {
+            else if (variable.equals(InBandBytestreamManager.NAMESPACE)) {
                 isIBB = true;
             }
         }
@@ -438,10 +461,10 @@ public class FileTransferNegotiator {
 
         if (isByteStream && isIBB) {
             return new FaultTolerantNegotiator(connection,
-                    byteStreamTransferManager.createNegotiator(), inbandTransferManager);
+                    byteStreamTransferManager, inbandTransferManager);
         }
         else if (isByteStream) {
-            return byteStreamTransferManager.createNegotiator();
+            return byteStreamTransferManager;
         }
         else {
             return inbandTransferManager;
@@ -451,11 +474,11 @@ public class FileTransferNegotiator {
     private DataForm createDefaultInitiationForm() {
         DataForm form = new DataForm(Form.TYPE_FORM);
         FormField field = new FormField(STREAM_DATA_FIELD_NAME);
-        field.setType(FormField.TYPE_LIST_MULTI);
+        field.setType(FormField.TYPE_LIST_SINGLE);
         if (!IBB_ONLY) {
-            field.addOption(new FormField.Option(BYTE_STREAM));
+            field.addOption(new FormField.Option(Socks5BytestreamManager.NAMESPACE));
         }
-        field.addOption(new FormField.Option(INBAND_BYTE_STREAM));
+        field.addOption(new FormField.Option(InBandBytestreamManager.NAMESPACE));
         form.addField(field);
         return form;
     }

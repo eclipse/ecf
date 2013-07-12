@@ -1,9 +1,9 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 13604 $
+ * $Date: 2013-04-07 12:15:32 -0700 (Sun, 07 Apr 2013) $
  *
- * Copyright 2003-2007 Jive Software.
+ * Copyright 2003 Jive Software.
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

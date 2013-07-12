@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 13452 $
+ * $Date: 2013-02-06 19:42:33 -0800 (Wed, 06 Feb 2013) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -20,10 +20,11 @@
 
 package org.jivesoftware.smack;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
 import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Packet;
-
-import java.util.LinkedList;
 
 /**
  * Provides a mechanism to collect packets into a result queue that pass a
@@ -32,37 +33,43 @@ import java.util.LinkedList;
  * use than a {@link PacketListener} when you need to wait for a specific
  * result.<p>
  *
- * Each packet collector will queue up to 2^16 packets for processing before
- * older packets are automatically dropped.
+ * Each packet collector will queue up a configured number of packets for processing before
+ * older packets are automatically dropped.  The default number is retrieved by 
+ * {@link SmackConfiguration#getPacketCollectorSize()}.
  *
- * @see XMPPConnection#createPacketCollector(PacketFilter)
+ * @see Connection#createPacketCollector(PacketFilter)
  * @author Matt Tucker
  */
 public class PacketCollector {
 
-    /**
-     * Max number of packets that any one collector can hold. After the max is
-     * reached, older packets will be automatically dropped from the queue as
-     * new packets are added.
-     */
-    private static final int MAX_PACKETS = 65536;
-
     private PacketFilter packetFilter;
-    private LinkedList<Packet> resultQueue;
-    private PacketReader packetReader;
+    private ArrayBlockingQueue<Packet> resultQueue;
+    private Connection connection;
     private boolean cancelled = false;
 
     /**
      * Creates a new packet collector. If the packet filter is <tt>null</tt>, then
      * all packets will match this collector.
      *
-     * @param packetReader the packetReader the collector is tied to.
+     * @param conection the connection the collector is tied to.
      * @param packetFilter determines which packets will be returned by this collector.
      */
-    protected PacketCollector(PacketReader packetReader, PacketFilter packetFilter) {
-        this.packetReader = packetReader;
+    protected PacketCollector(Connection conection, PacketFilter packetFilter) {
+    	this(conection, packetFilter, SmackConfiguration.getPacketCollectorSize());
+    }
+
+    /**
+     * Creates a new packet collector. If the packet filter is <tt>null</tt>, then
+     * all packets will match this collector.
+     *
+     * @param conection the connection the collector is tied to.
+     * @param packetFilter determines which packets will be returned by this collector.
+     * @param maxSize the maximum number of packets that will be stored in the collector.
+     */
+    protected PacketCollector(Connection conection, PacketFilter packetFilter, int maxSize) {
+        this.connection = conection;
         this.packetFilter = packetFilter;
-        this.resultQueue = new LinkedList<Packet>();
+        this.resultQueue = new ArrayBlockingQueue<Packet>(maxSize);
     }
 
     /**
@@ -74,7 +81,7 @@ public class PacketCollector {
         // If the packet collector has already been cancelled, do nothing.
         if (!cancelled) {
             cancelled = true;
-            packetReader.cancelPacketCollector(this);
+            connection.removePacketCollector(this);
         }
     }
 
@@ -96,13 +103,8 @@ public class PacketCollector {
      * @return the next packet result, or <tt>null</tt> if there are no more
      *      results.
      */
-    public synchronized Packet pollResult() {
-        if (resultQueue.isEmpty()) {
-            return null;
-        }
-        else {
-            return resultQueue.removeLast();
-        }
+    public Packet pollResult() {
+    	return resultQueue.poll();
     }
 
     /**
@@ -111,17 +113,13 @@ public class PacketCollector {
      *
      * @return the next available packet.
      */
-    public synchronized Packet nextResult() {
-        // Wait indefinitely until there is a result to return.
-        while (resultQueue.isEmpty()) {
-            try {
-                wait();
-            }
-            catch (InterruptedException ie) {
-                // Ignore.
-            }
-        }
-        return resultQueue.removeLast();
+    public Packet nextResult() {
+        try {
+			return resultQueue.take();
+		}
+		catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
     }
 
     /**
@@ -132,40 +130,13 @@ public class PacketCollector {
      * @param timeout the amount of time to wait for the next packet (in milleseconds).
      * @return the next available packet.
      */
-    public synchronized Packet nextResult(long timeout) {
-        // Wait up to the specified amount of time for a result.
-        if (resultQueue.isEmpty()) {
-            long waitTime = timeout;
-            long start = System.currentTimeMillis();
-            try {
-                // Keep waiting until the specified amount of time has elapsed, or
-                // a packet is available to return.
-                while (resultQueue.isEmpty()) {
-                    if (waitTime <= 0) {
-                        break;
-                    }
-                    wait(waitTime);
-                    long now = System.currentTimeMillis();
-                    waitTime -= (now - start);
-                    start = now;
-                }
-            }
-            catch (InterruptedException ie) {
-                // Ignore.
-            }
-            // Still haven't found a result, so return null.
-            if (resultQueue.isEmpty()) {
-                return null;
-            }
-            // Return the packet that was found.
-            else {
-                return resultQueue.removeLast();
-            }
-        }
-        // There's already a packet waiting, so return it.
-        else {
-            return resultQueue.removeLast();
-        }
+    public Packet nextResult(long timeout) {
+    	try {
+			return resultQueue.poll(timeout, TimeUnit.MILLISECONDS);
+		}
+		catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
     }
 
     /**
@@ -174,19 +145,16 @@ public class PacketCollector {
      *
      * @param packet the packet to process.
      */
-    protected synchronized void processPacket(Packet packet) {
+    protected void processPacket(Packet packet) {
         if (packet == null) {
             return;
         }
+        
         if (packetFilter == null || packetFilter.accept(packet)) {
-            // If the max number of packets has been reached, remove the oldest one.
-            if (resultQueue.size() == MAX_PACKETS) {
-                resultQueue.removeLast();
-            }
-            // Add the new packet.
-            resultQueue.addFirst(packet);
-            // Notify waiting threads a result is available.
-            notifyAll();
+        	while (!resultQueue.offer(packet)) {
+        		// Since we know the queue is full, this poll should never actually block.
+        		resultQueue.poll();
+        	}
         }
     }
 }

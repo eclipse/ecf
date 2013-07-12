@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 13598 $
+ * $Date: 2013-03-31 07:24:50 -0700 (Sun, 31 Mar 2013) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -292,11 +292,30 @@ public class FormField {
             buf.append("<value>").append(i.next()).append("</value>");
         }
         // Loop through all the values and append them to the string buffer
-        for (Iterator i = getOptions(); i.hasNext();) {
-            buf.append(((Option) i.next()).toXML());
+        for (Iterator<Option> i = getOptions(); i.hasNext();) {
+            buf.append((i.next()).toXML());
         }
         buf.append("</field>");
         return buf.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (obj == this)
+            return true;
+        if (!(obj instanceof FormField))
+            return false;
+
+        FormField other = (FormField) obj;
+
+        return toXML().equals(other.toXML());
+    }
+
+    @Override
+    public int hashCode() {
+        return toXML().hashCode();
     }
 
     /**
@@ -336,6 +355,7 @@ public class FormField {
             return value;
         }
 
+        @Override
         public String toString() {
             return getLabel();
         }
@@ -353,6 +373,37 @@ public class FormField {
 
             buf.append("</option>");
             return buf.toString();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null)
+                return false;
+            if (obj == this)
+                return true;
+            if (obj.getClass() != getClass())
+                return false;
+
+            Option other = (Option) obj;
+
+            if (!value.equals(other.value))
+                return false;
+
+            String thisLabel = label == null ? "" : label;
+            String otherLabel = other.label == null ? "" : other.label;
+
+            if (!thisLabel.equals(otherLabel))
+                return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = 1;
+            result = 37 * result + value.hashCode();
+            result = 37 * result + (label == null ? 0 : label.hashCode());
+            return result;
         }
     }
 }

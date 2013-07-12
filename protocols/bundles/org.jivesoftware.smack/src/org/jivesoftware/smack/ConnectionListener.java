@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 11613 $
+ * $Date: 2010-02-09 03:55:56 -0800 (Tue, 09 Feb 2010) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -22,10 +22,10 @@ package org.jivesoftware.smack;
 
 /**
  * Interface that allows for implementing classes to listen for connection closing
- * and reconnection events. Listeners are registered with XMPPConnection objects.
+ * and reconnection events. Listeners are registered with Connection objects.
  *
- * @see XMPPConnection#addConnectionListener
- * @see XMPPConnection#removeConnectionListener
+ * @see Connection#addConnectionListener
+ * @see Connection#removeConnectionListener
  * 
  * @author Matt Tucker
  */

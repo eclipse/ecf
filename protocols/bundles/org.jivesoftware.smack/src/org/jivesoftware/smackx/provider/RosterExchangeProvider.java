@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 13325 $
+ * $Date: 2012-10-26 03:47:55 -0700 (Fri, 26 Oct 2012) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -57,13 +57,13 @@ public class RosterExchangeProvider implements PacketExtensionProvider {
         RemoteRosterEntry remoteRosterEntry = null;
 		String jid = "";
 		String name = "";
-		ArrayList groupsName = new ArrayList();
+		ArrayList<String> groupsName = new ArrayList<String>();
         while (!done) {
             int eventType = parser.next();
             if (eventType == XmlPullParser.START_TAG) {
                 if (parser.getName().equals("item")) {
                 	// Reset this variable since they are optional for each item
-					groupsName = new ArrayList();
+					groupsName = new ArrayList<String>();
 					// Initialize the variables from the parsed XML
                     jid = parser.getAttributeValue("", "jid");
                     name = parser.getAttributeValue("", "name");

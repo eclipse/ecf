@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 13560 $
+ * $Date: 2013-03-18 01:50:48 -0700 (Mon, 18 Mar 2013) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -20,19 +20,50 @@
 
 package org.jivesoftware.smackx.muc;
 
-import org.jivesoftware.smack.*;
-import org.jivesoftware.smack.filter.*;
-import org.jivesoftware.smack.packet.*;
-import org.jivesoftware.smackx.Form;
-import org.jivesoftware.smackx.NodeInformationProvider;
-import org.jivesoftware.smackx.ServiceDiscoveryManager;
-import org.jivesoftware.smackx.packet.*;
-
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.jivesoftware.smack.Chat;
+import org.jivesoftware.smack.ConnectionCreationListener;
+import org.jivesoftware.smack.ConnectionListener;
+import org.jivesoftware.smack.MessageListener;
+import org.jivesoftware.smack.PacketCollector;
+import org.jivesoftware.smack.PacketInterceptor;
+import org.jivesoftware.smack.PacketListener;
+import org.jivesoftware.smack.SmackConfiguration;
+import org.jivesoftware.smack.Connection;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.filter.AndFilter;
+import org.jivesoftware.smack.filter.FromMatchesFilter;
+import org.jivesoftware.smack.filter.MessageTypeFilter;
+import org.jivesoftware.smack.filter.PacketExtensionFilter;
+import org.jivesoftware.smack.filter.PacketFilter;
+import org.jivesoftware.smack.filter.PacketIDFilter;
+import org.jivesoftware.smack.filter.PacketTypeFilter;
+import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.PacketExtension;
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.Registration;
+import org.jivesoftware.smackx.Form;
+import org.jivesoftware.smackx.NodeInformationProvider;
+import org.jivesoftware.smackx.ServiceDiscoveryManager;
+import org.jivesoftware.smackx.packet.DiscoverInfo;
+import org.jivesoftware.smackx.packet.DiscoverItems;
+import org.jivesoftware.smackx.packet.MUCAdmin;
+import org.jivesoftware.smackx.packet.MUCInitialPresence;
+import org.jivesoftware.smackx.packet.MUCOwner;
+import org.jivesoftware.smackx.packet.MUCUser;
 
 /**
  * A MultiUserChat is a conversation that takes place among many users in a virtual
@@ -49,10 +80,10 @@ public class MultiUserChat {
     private final static String discoNamespace = "http://jabber.org/protocol/muc";
     private final static String discoNode = "http://jabber.org/protocol/muc#rooms";
 
-    private static Map<XMPPConnection, List<String>> joinedRooms =
-            new WeakHashMap<XMPPConnection, List<String>>();
+    private static Map<Connection, List<String>> joinedRooms =
+            new WeakHashMap<Connection, List<String>>();
 
-    private XMPPConnection connection;
+    private Connection connection;
     private String room;
     private String subject;
     private String nickname = null;
@@ -76,8 +107,8 @@ public class MultiUserChat {
     private List<PacketListener> connectionListeners = new ArrayList<PacketListener>();
 
     static {
-        XMPPConnection.addConnectionCreationListener(new ConnectionCreationListener() {
-            public void connectionCreated(final XMPPConnection connection) {
+        Connection.addConnectionCreationListener(new ConnectionCreationListener() {
+            public void connectionCreated(final Connection connection) {
                 // Set on every established connection that this client supports the Multi-User
                 // Chat protocol. This information will be used when another client tries to
                 // discover whether this client supports MUC or not.
@@ -103,6 +134,11 @@ public class MultiUserChat {
                         public List<DiscoverInfo.Identity> getNodeIdentities() {
                             return null;
                         }
+
+                        @Override
+                        public List<PacketExtension> getNodePacketExtensions() {
+                            return null;
+                        }
                     });
             }
         });
@@ -123,7 +159,7 @@ public class MultiUserChat {
      *      "service" is the hostname at which the multi-user chat
      *      service is running. Make sure to provide a valid JID.
      */
-    public MultiUserChat(XMPPConnection connection, String room) {
+    public MultiUserChat(Connection connection, String room) {
         this.connection = connection;
         this.room = room.toLowerCase();
         init();
@@ -136,7 +172,7 @@ public class MultiUserChat {
      * @param user the user to check. A fully qualified xmpp ID, e.g. jdoe@example.com.
      * @return a boolean indicating whether the specified user supports the MUC protocol.
      */
-    public static boolean isServiceEnabled(XMPPConnection connection, String user) {
+    public static boolean isServiceEnabled(Connection connection, String user) {
         try {
             DiscoverInfo result =
                 ServiceDiscoveryManager.getInstanceFor(connection).discoverInfo(user);
@@ -156,7 +192,7 @@ public class MultiUserChat {
      * @param connection the connection used to join the rooms.
      * @return an Iterator on the rooms where the user has joined using a given connection.
      */
-    private static Iterator<String> getJoinedRooms(XMPPConnection connection) {
+    private static Iterator<String> getJoinedRooms(Connection connection) {
         List<String> rooms = joinedRooms.get(connection);
         if (rooms != null) {
             return rooms.iterator();
@@ -173,7 +209,7 @@ public class MultiUserChat {
      * @param user the user to check. A fully qualified xmpp ID, e.g. jdoe@example.com.
      * @return an Iterator on the rooms where the requested user has joined.
      */
-    public static Iterator<String> getJoinedRooms(XMPPConnection connection, String user) {
+    public static Iterator<String> getJoinedRooms(Connection connection, String user) {
         try {
             ArrayList<String> answer = new ArrayList<String>();
             // Send the disco packet to the user
@@ -202,7 +238,7 @@ public class MultiUserChat {
      * @return the discovered information of a given room without actually having to join the room.
      * @throws XMPPException if an error occured while trying to discover information of a room.
      */
-    public static RoomInfo getRoomInfo(XMPPConnection connection, String room)
+    public static RoomInfo getRoomInfo(Connection connection, String room)
             throws XMPPException {
         DiscoverInfo info = ServiceDiscoveryManager.getInstanceFor(connection).discoverInfo(room);
         return new RoomInfo(info);
@@ -215,7 +251,7 @@ public class MultiUserChat {
      * @return a collection with the XMPP addresses of the Multi-User Chat services.
      * @throws XMPPException if an error occured while trying to discover MUC services.
      */
-    public static Collection<String> getServiceNames(XMPPConnection connection) throws XMPPException {
+    public static Collection<String> getServiceNames(Connection connection) throws XMPPException {
         final List<String> answer = new ArrayList<String>();
         ServiceDiscoveryManager discoManager = ServiceDiscoveryManager.getInstanceFor(connection);
         DiscoverItems items = discoManager.discoverItems(connection.getServiceName());
@@ -245,7 +281,7 @@ public class MultiUserChat {
      * @return a collection of HostedRooms.
      * @throws XMPPException if an error occured while trying to discover the information.
      */
-    public static Collection<HostedRoom> getHostedRooms(XMPPConnection connection, String serviceName)
+    public static Collection<HostedRoom> getHostedRooms(Connection connection, String serviceName)
             throws XMPPException {
         List<HostedRoom> answer = new ArrayList<HostedRoom>();
         ServiceDiscoveryManager discoManager = ServiceDiscoveryManager.getInstanceFor(connection);
@@ -738,7 +774,7 @@ public class MultiUserChat {
      * @param inviter the inviter of the declined invitation.
      * @param reason the reason why the invitee is declining the invitation.
      */
-    public static void decline(XMPPConnection conn, String room, String inviter, String reason) {
+    public static void decline(Connection conn, String room, String inviter, String reason) {
         Message message = new Message(room);
 
         // Create the MUCUser packet that will include the rejection
@@ -760,7 +796,7 @@ public class MultiUserChat {
      * @param conn the connection where the listener will be applied.
      * @param listener an invitation listener.
      */
-    public static void addInvitationListener(XMPPConnection conn, InvitationListener listener) {
+    public static void addInvitationListener(Connection conn, InvitationListener listener) {
         InvitationsMonitor.getInvitationsMonitor(conn).addInvitationListener(listener);
     }
 
@@ -771,7 +807,7 @@ public class MultiUserChat {
      * @param conn the connection where the listener was applied.
      * @param listener an invitation listener.
      */
-    public static void removeInvitationListener(XMPPConnection conn, InvitationListener listener) {
+    public static void removeInvitationListener(Connection conn, InvitationListener listener) {
         InvitationsMonitor.getInvitationsMonitor(conn).removeInvitationListener(listener);
     }
 
@@ -1127,7 +1163,7 @@ public class MultiUserChat {
      * XMPP user ID of the user who initiated the ban.
      *
      * @param jid the bare XMPP user ID of the user to ban (e.g. "user@host.org").
-     * @param reason the reason why the user was banned.
+     * @param reason the optional reason why the user was banned.
      * @throws XMPPException if an error occurs banning a user. In particular, a
      *      405 error can occur if a moderator or a user with an affiliation of "owner" or "admin"
      *      was tried to be banned (i.e. Not Allowed error).
@@ -1246,7 +1282,7 @@ public class MultiUserChat {
      * @throws XMPPException if an error occurs granting ownership privileges to a user.
      */
     public void grantOwnership(Collection<String> jids) throws XMPPException {
-        changeAffiliationByOwner(jids, "owner");
+        changeAffiliationByAdmin(jids, "owner");
     }
 
     /**
@@ -1259,7 +1295,7 @@ public class MultiUserChat {
      * @throws XMPPException if an error occurs granting ownership privileges to a user.
      */
     public void grantOwnership(String jid) throws XMPPException {
-        changeAffiliationByOwner(jid, "owner");
+        changeAffiliationByAdmin(jid, "owner", null);
     }
 
     /**
@@ -1271,7 +1307,7 @@ public class MultiUserChat {
      * @throws XMPPException if an error occurs revoking ownership privileges from a user.
      */
     public void revokeOwnership(Collection<String> jids) throws XMPPException {
-        changeAffiliationByOwner(jids, "admin");
+        changeAffiliationByAdmin(jids, "admin");
     }
 
     /**
@@ -1283,7 +1319,7 @@ public class MultiUserChat {
      * @throws XMPPException if an error occurs revoking ownership privileges from a user.
      */
     public void revokeOwnership(String jid) throws XMPPException {
-        changeAffiliationByOwner(jid, "admin");
+        changeAffiliationByAdmin(jid, "admin", null);
     }
 
     /**
@@ -1393,6 +1429,14 @@ public class MultiUserChat {
         }
     }
 
+    /**
+     * Tries to change the affiliation with an 'muc#admin' namespace
+     *
+     * @param jid
+     * @param affiliation
+     * @param reason the reason for the affiliation change (optional)
+     * @throws XMPPException
+     */
     private void changeAffiliationByAdmin(String jid, String affiliation, String reason)
             throws XMPPException {
         MUCAdmin iq = new MUCAdmin();
@@ -1602,7 +1646,7 @@ public class MultiUserChat {
      *         don't have enough privileges to get this information.
      */
     public Collection<Affiliate> getOwners() throws XMPPException {
-        return getAffiliatesByOwner("owner");
+        return getAffiliatesByAdmin("owner");
     }
 
     /**
@@ -1673,8 +1717,8 @@ public class MultiUserChat {
         }
         // Get the list of affiliates from the server's answer
         List<Affiliate> affiliates = new ArrayList<Affiliate>();
-        for (Iterator it = answer.getItems(); it.hasNext();) {
-            affiliates.add(new Affiliate((MUCOwner.Item) it.next()));
+        for (Iterator<MUCOwner.Item> it = answer.getItems(); it.hasNext();) {
+            affiliates.add(new Affiliate(it.next()));
         }
         return affiliates;
     }
@@ -1714,8 +1758,8 @@ public class MultiUserChat {
         }
         // Get the list of affiliates from the server's answer
         List<Affiliate> affiliates = new ArrayList<Affiliate>();
-        for (Iterator it = answer.getItems(); it.hasNext();) {
-            affiliates.add(new Affiliate((MUCAdmin.Item) it.next()));
+        for (Iterator<MUCAdmin.Item> it = answer.getItems(); it.hasNext();) {
+            affiliates.add(new Affiliate(it.next()));
         }
         return affiliates;
     }
@@ -1776,8 +1820,8 @@ public class MultiUserChat {
         }
         // Get the list of participants from the server's answer
         List<Occupant> participants = new ArrayList<Occupant>();
-        for (Iterator it = answer.getItems(); it.hasNext();) {
-            participants.add(new Occupant((MUCAdmin.Item) it.next()));
+        for (Iterator<MUCAdmin.Item> it = answer.getItems(); it.hasNext();) {
+            participants.add(new Occupant(it.next()));
         }
         return participants;
     }
@@ -1871,7 +1915,7 @@ public class MultiUserChat {
      * group chat. Only "group chat" messages addressed to this group chat will
      * be delivered to the listener. If you wish to listen for other packets
      * that may be associated with this group chat, you should register a
-     * PacketListener directly with the XMPPConnection with the appropriate
+     * PacketListener directly with the Connection with the appropriate
      * PacketListener.
      *
      * @param listener a packet listener.
@@ -1956,6 +2000,7 @@ public class MultiUserChat {
             return;
         }
         rooms.remove(room);
+        cleanup();
     }
 
     /**
@@ -2005,7 +2050,7 @@ public class MultiUserChat {
             userStatusListeners.toArray(listeners);
         }
         // Get the classes of the method parameters
-        Class[] paramClasses = new Class[params.length];
+        Class<?>[] paramClasses = new Class[params.length];
         for (int i = 0; i < params.length; i++) {
             paramClasses[i] = params[i].getClass();
         }
@@ -2058,7 +2103,7 @@ public class MultiUserChat {
         }
         try {
             // Get the method to execute based on the requested methodName and parameter
-            Class[] classes = new Class[params.size()];
+            Class<?>[] classes = new Class[params.size()];
             for (int i=0;i<params.size(); i++) {
                 classes[i] = String.class;
             }
@@ -2500,8 +2545,7 @@ public class MultiUserChat {
         }
     }
 
-    public void finalize() throws Throwable {
-        super.finalize();
+    private void cleanup() {
         try {
             if (connection != null) {
                 roomListenerMultiplexor.removeRoom(room);
@@ -2510,10 +2554,14 @@ public class MultiUserChat {
                     connection.removePacketListener(connectionListener);
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // Do nothing
         }
+    }
+
+    protected void finalize() throws Throwable {
+        cleanup();
+        super.finalize();
     }
 
     /**
@@ -2525,12 +2573,12 @@ public class MultiUserChat {
     private static class InvitationsMonitor implements ConnectionListener {
         // We use a WeakHashMap so that the GC can collect the monitor when the
         // connection is no longer referenced by any object.
-        private final static Map<XMPPConnection, WeakReference<InvitationsMonitor>> monitors =
-                new WeakHashMap<XMPPConnection, WeakReference<InvitationsMonitor>>();
+        private final static Map<Connection, WeakReference<InvitationsMonitor>> monitors =
+                new WeakHashMap<Connection, WeakReference<InvitationsMonitor>>();
 
         private final List<InvitationListener> invitationsListeners =
                 new ArrayList<InvitationListener>();
-        private XMPPConnection connection;
+        private Connection connection;
         private PacketFilter invitationFilter;
         private PacketListener invitationPacketListener;
 
@@ -2540,7 +2588,7 @@ public class MultiUserChat {
          * @param conn the connection to monitor for room invitations.
          * @return a new or existing InvitationsMonitor for a given connection.
          */
-        public static InvitationsMonitor getInvitationsMonitor(XMPPConnection conn) {
+        public static InvitationsMonitor getInvitationsMonitor(Connection conn) {
             synchronized (monitors) {
                 if (!monitors.containsKey(conn)) {
                     // We need to use a WeakReference because the monitor references the
@@ -2559,7 +2607,7 @@ public class MultiUserChat {
          * 
          * @param connection the connection to monitor for possible room invitations
          */
-        private InvitationsMonitor(XMPPConnection connection) {
+        private InvitationsMonitor(Connection connection) {
             this.connection = connection;
         }
 

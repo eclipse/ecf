@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 13325 $
+ * $Date: 2012-10-26 03:47:55 -0700 (Fri, 26 Oct 2012) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -77,7 +77,7 @@ public class RemoteRosterEntry {
      *
      * @return an Iterator for the group names.
      */
-    public Iterator getGroupNames() {
+    public Iterator<String> getGroupNames() {
         synchronized (groupNames) {
             return Collections.unmodifiableList(groupNames).iterator();
         }

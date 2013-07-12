@@ -1,6 +1,6 @@
 /**
- * $Revision: 1.1 $
- * $Date: 2009/12/15 09:04:05 $
+ * $Revision$
+ * $Date$
  *
  * Copyright 2006-2007 Jive Software.
  *
@@ -58,7 +58,7 @@ public class Privacy extends IQ {
      * @param listItem the {@link PrivacyItem} that rules the list.
      * @return the privacy List.
      */
-    public List setPrivacyList(String listName, List<PrivacyItem> listItem) {
+    public List<PrivacyItem> setPrivacyList(String listName, List<PrivacyItem> listItem) {
         // Add new list to the itemLists
         this.getItemLists().put(listName, listItem);
         return listItem;

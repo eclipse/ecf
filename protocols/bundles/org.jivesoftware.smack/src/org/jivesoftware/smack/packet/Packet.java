@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 13560 $
+ * $Date: 2013-03-18 01:50:48 -0700 (Mon, 18 Mar 2013) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -89,6 +89,22 @@ public abstract class Packet {
 
     private final Map<String,Object> properties = new HashMap<String, Object>();
     private XMPPError error = null;
+
+    public Packet() {
+    }
+
+    public Packet(Packet p) {
+        packetID = p.getPacketID();
+        to = p.getTo();
+        from = p.getFrom();
+        xmlns = p.xmlns;
+        error = p.error;
+
+        // Copy extensions
+        for (PacketExtension pe : p.getExtensions()) {
+            addExtension(pe);
+        }
+    }
 
     /**
      * Returns the unique ID of the packet. The returned value could be <tt>null</tt> when
@@ -247,12 +263,23 @@ public abstract class Packet {
     }
 
     /**
-     * Adds a packet extension to the packet.
+     * Adds a packet extension to the packet. Does nothing if extension is null.
      *
      * @param extension a packet extension.
      */
     public void addExtension(PacketExtension extension) {
+        if (extension == null) return;
         packetExtensions.add(extension);
+    }
+
+    /**
+     * Adds a collection of packet extensions to the packet. Does nothing if extensions is null.
+     * 
+     * @param extensions a collection of packet extensions
+     */
+    public void addExtensions(Collection<PacketExtension> extensions) {
+        if (extensions == null) return;
+        packetExtensions.addAll(extensions);
     }
 
     /**
@@ -266,7 +293,7 @@ public abstract class Packet {
 
     /**
      * Returns the packet property with the specified name or <tt>null</tt> if the
-     * property doesn't exist. Property values that were orginally primitives will
+     * property doesn't exist. Property values that were originally primitives will
      * be returned as their object equivalent. For example, an int property will be
      * returned as an Integer, a double as a Double, etc.
      *
@@ -416,17 +443,14 @@ public abstract class Packet {
         return this.xmlns;
     }
 
-    protected static String parseXMLLang(String language) {
-        if (language == null || "".equals(language)) {
-            language = DEFAULT_LANGUAGE;
-        }
-        return language;
-    }
-
-    protected static String getDefaultLanguage() {
+    /**
+     * Returns the default language used for all messages containing localized content.
+     * 
+     * @return the default language
+     */
+    public static String getDefaultLanguage() {
         return DEFAULT_LANGUAGE;
     }
-
 
     public boolean equals(Object o) {
         if (this == o) return true;

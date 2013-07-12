@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 12965 $
+ * $Date: 2012-02-06 20:32:59 -0800 (Mon, 06 Feb 2012) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -89,24 +89,15 @@ public class RoomInfo {
         // Get the information based on the discovered extended information
         Form form = Form.getFormFrom(info);
         if (form != null) {
-        	// changed by slewis...fix for old smack bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=289944
-        	// get description formField first
-        	FormField formField = form.getField("muc#roominfo_description");
-            this.description =
-                    (String) ((formField==null)?null:formField.getValues().next());
-            // Then get subject formField (and check for null)
-            formField = form.getField("muc#roominfo_subject");
-            Iterator<String> values = (formField==null)?null:formField.getValues();
-            if (values != null && values.hasNext()) {
-                this.subject = values.next();
-            }
-            else {
-                this.subject = "";
-            }
-            formField = form.getField("muc#roominfo_occupants");
-            this.occupantsCount = (formField==null)?0:
-                Integer.parseInt((String) formField.getValues()
-                        .next());
+            FormField descField = form.getField("muc#roominfo_description");
+            this.description = ( descField == null || !(descField.getValues().hasNext()) )? "" : descField.getValues().next();
+
+            FormField subjField = form.getField("muc#roominfo_subject");
+            this.subject = ( subjField == null || !(subjField.getValues().hasNext()) ) ? "" : subjField.getValues().next();
+
+            FormField occCountField = form.getField("muc#roominfo_occupants");
+            this.occupantsCount = occCountField == null ? -1 : Integer.parseInt(occCountField.getValues()
+                    .next());
         }
     }
 

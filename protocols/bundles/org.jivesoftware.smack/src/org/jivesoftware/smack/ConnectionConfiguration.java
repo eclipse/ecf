@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 3306 $
+ * $Date: 2006-01-16 14:34:56 -0300 (Mon, 16 Jan 2006) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -22,10 +22,15 @@ package org.jivesoftware.smack;
 
 import org.jivesoftware.smack.proxy.ProxyInfo;
 import org.jivesoftware.smack.util.DNSUtil;
+import org.jivesoftware.smack.util.dns.HostAddress;
 
 import javax.net.SocketFactory;
+import javax.net.ssl.SSLContext;
 import javax.security.auth.callback.CallbackHandler;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Configuration to use while establishing the connection to the server. It is possible to
@@ -38,10 +43,16 @@ import java.io.File;
  */
 public class ConnectionConfiguration implements Cloneable {
 
+    /**
+     * Hostname of the XMPP server. Usually servers use the same service name as the name
+     * of the server. However, there are some servers like google where host would be
+     * talk.google.com and the serviceName would be gmail.com.
+     */
     private String serviceName;
 
     private String host;
     private int port;
+    protected List<HostAddress> hostAddresses;
 
     private String truststorePath;
     private String truststoreType;
@@ -54,6 +65,7 @@ public class ConnectionConfiguration implements Cloneable {
     private boolean selfSignedCertificateEnabled = false;
     private boolean expiredCertificatesCheckEnabled = false;
     private boolean notMatchingDomainCheckEnabled = false;
+    private SSLContext customSSLContext;
 
     private boolean compressionEnabled = false;
 
@@ -63,7 +75,7 @@ public class ConnectionConfiguration implements Cloneable {
      */
     private CallbackHandler callbackHandler;
 
-    private boolean debuggerEnabled = XMPPConnection.DEBUG_ENABLED;
+    private boolean debuggerEnabled = Connection.DEBUG_ENABLED;
 
     // Flag that indicates if a reconnection should be attempted when abruptly disconnected
     private boolean reconnectionAllowed = true;
@@ -80,7 +92,7 @@ public class ConnectionConfiguration implements Cloneable {
     private SecurityMode securityMode = SecurityMode.enabled;
 	
 	// Holds the proxy information (such as proxyhost, proxyport, username, password etc)
-    private ProxyInfo proxy;
+    protected ProxyInfo proxy;
 
     /**
      * Creates a new ConnectionConfiguration for the specified service name.
@@ -91,12 +103,11 @@ public class ConnectionConfiguration implements Cloneable {
      */
     public ConnectionConfiguration(String serviceName) {
         // Perform DNS lookup to get host and port to use
-        DNSUtil.HostAddress address = DNSUtil.resolveXMPPDomain(serviceName);
-        init(address.getHost(), address.getPort(), serviceName, 
-			ProxyInfo.forDefaultProxy());
+        hostAddresses = DNSUtil.resolveXMPPDomain(serviceName);
+        init(serviceName, ProxyInfo.forDefaultProxy());
     }
-	
-	/**
+
+     /**
      * Creates a new ConnectionConfiguration for the specified service name 
      * with specified proxy.
      * A DNS SRV lookup will be performed to find out the actual host address
@@ -107,8 +118,8 @@ public class ConnectionConfiguration implements Cloneable {
      */
     public ConnectionConfiguration(String serviceName,ProxyInfo proxy) {
         // Perform DNS lookup to get host and port to use
-        DNSUtil.HostAddress address = DNSUtil.resolveXMPPDomain(serviceName);
-        init(address.getHost(), address.getPort(), serviceName, proxy);
+        hostAddresses = DNSUtil.resolveXMPPDomain(serviceName);
+        init(serviceName, proxy);
     }
 
     /**
@@ -126,7 +137,8 @@ public class ConnectionConfiguration implements Cloneable {
      * @param serviceName the name of the service provided by an XMPP server.
      */
     public ConnectionConfiguration(String host, int port, String serviceName) {
-        init(host, port, serviceName, ProxyInfo.forDefaultProxy());
+        initHostAddresses(host, port);
+        init(serviceName, ProxyInfo.forDefaultProxy());
     }
 	
 	/**
@@ -145,7 +157,8 @@ public class ConnectionConfiguration implements Cloneable {
      * @param proxy the proxy through which XMPP is to be connected
      */
     public ConnectionConfiguration(String host, int port, String serviceName, ProxyInfo proxy) {
-        init(host, port, serviceName, proxy);
+        initHostAddresses(host, port);
+        init(serviceName, proxy);
     }
 
     /**
@@ -156,7 +169,8 @@ public class ConnectionConfiguration implements Cloneable {
      * @param port the port where the XMPP is listening.
      */
     public ConnectionConfiguration(String host, int port) {
-        init(host, port, host, ProxyInfo.forDefaultProxy());
+        initHostAddresses(host, port);
+        init(host, ProxyInfo.forDefaultProxy());
     }
 	
 	/**
@@ -168,14 +182,13 @@ public class ConnectionConfiguration implements Cloneable {
      * @param proxy the proxy through which XMPP is to be connected
      */
     public ConnectionConfiguration(String host, int port, ProxyInfo proxy) {
-        init(host, port, host, proxy);
+        initHostAddresses(host, port);
+        init(host, proxy);
     }
 
-    private void init(String host, int port, String serviceName, ProxyInfo proxy) {
-        this.host = host;
-        this.port = port;
+    protected void init(String serviceName, ProxyInfo proxy) {
         this.serviceName = serviceName;
-		this.proxy = proxy;
+        this.proxy = proxy;
 
         // Build the default path to the cacert truststore file. By default we are
         // going to use the file located in $JREHOME/lib/security/cacerts.
@@ -195,6 +208,15 @@ public class ConnectionConfiguration implements Cloneable {
 		
 		//Setting the SocketFactory according to proxy supplied
         socketFactory = proxy.getSocketFactory();
+    }
+
+    /**
+     * Sets the server name, also known as XMPP domain of the target server.
+     *
+     * @param serviceName the XMPP domain of the target server.
+     */
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
     }
 
     /**
@@ -225,6 +247,11 @@ public class ConnectionConfiguration implements Cloneable {
      */
     public int getPort() {
         return port;
+    }
+
+    public void setUsedHostAddress(HostAddress hostAddress) {
+        this.host = hostAddress.getFQDN();
+        this.port = hostAddress.getPort();
     }
 
     /**
@@ -473,6 +500,25 @@ public class ConnectionConfiguration implements Cloneable {
     }
 
     /**
+     * Gets the custom SSLContext for SSL sockets. This is null by default.
+     *
+     * @return the SSLContext previously set with setCustomSSLContext() or null.
+     */
+    public SSLContext getCustomSSLContext() {
+        return this.customSSLContext;
+    }
+
+    /**
+     * Sets a custom SSLContext for creating SSL sockets. A custom Context causes all other
+     * SSL/TLS realted settings to be ignored.
+     *
+     * @param context the custom SSLContext for new sockets; null to reset default behavior.
+     */
+    public void setCustomSSLContext(SSLContext context) {
+        this.customSSLContext = context;
+    }
+
+    /**
      * Returns true if the connection is going to use stream compression. Stream compression
      * will be requested after TLS was established (if TLS was enabled) and only if the server
      * offered stream compression. With stream compression network traffic can be reduced
@@ -522,7 +568,7 @@ public class ConnectionConfiguration implements Cloneable {
 
     /**
      * Returns true if the new connection about to be establish is going to be debugged. By
-     * default the value of {@link XMPPConnection#DEBUG_ENABLED} is used.
+     * default the value of {@link Connection#DEBUG_ENABLED} is used.
      *
      * @return true if the new connection about to be establish is going to be debugged.
      */
@@ -532,7 +578,7 @@ public class ConnectionConfiguration implements Cloneable {
 
     /**
      * Sets if the new connection about to be establish is going to be debugged. By
-     * default the value of {@link XMPPConnection#DEBUG_ENABLED} is used.
+     * default the value of {@link Connection#DEBUG_ENABLED} is used.
      *
      * @param debuggerEnabled if the new connection about to be establish is going to be debugged.
      */
@@ -639,6 +685,10 @@ public class ConnectionConfiguration implements Cloneable {
         return this.socketFactory;
     }
 
+    public List<HostAddress> getHostAddresses() {
+        return Collections.unmodifiableList(hostAddresses);
+    }
+
     /**
      * An enumeration for TLS security modes that are available when making a connection
      * to the XMPP server.
@@ -706,5 +756,16 @@ public class ConnectionConfiguration implements Cloneable {
         this.username = username;
         this.password = password;
         this.resource = resource;
+    }
+
+    private void initHostAddresses(String host, int port) {
+        hostAddresses = new ArrayList<HostAddress>(1);
+        HostAddress hostAddress;
+        try {
+             hostAddress = new HostAddress(host, port);
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+        hostAddresses.add(hostAddress);
     }
 }

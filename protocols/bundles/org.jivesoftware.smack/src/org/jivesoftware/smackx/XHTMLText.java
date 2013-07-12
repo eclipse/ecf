@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 12588 $
+ * $Date: 2011-09-08 18:26:22 -0700 (Thu, 08 Sep 2011) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -131,7 +131,7 @@ public class XHTMLText {
      * 
      */
     public void appendBrTag() {
-        text.append("<br>");
+        text.append("<br/>");
     }
 
     /**

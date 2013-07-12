@@ -24,7 +24,7 @@ package org.jivesoftware.smack.util.collections;
  * @author Michael A. Smith
  * @author Neil O'Toole
  * @author Matt Hall, John Watkinson, Stephen Colebourne
- * @version $Revision: 1.1 $ $Date: 2009/12/15 09:04:07 $
+ * @version $Revision: 1.1 $ $Date: 2005/10/11 17:05:32 $
  * @since Commons Collections 3.0
  */
 public abstract class AbstractKeyValue <K,V> implements KeyValue<K, V> {

@@ -1,7 +1,7 @@
 /**
  * $RCSfile: PEPPubSub.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/12/15 09:04:04 $
+ * $Revision: 1.2 $
+ * $Date: 2007/11/03 04:46:52 $
  *
  * Copyright 2003-2007 Jive Software.
  *

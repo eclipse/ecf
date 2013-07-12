@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 13598 $
+ * $Date: 2013-03-31 07:24:50 -0700 (Sun, 31 Mar 2013) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -21,6 +21,7 @@
 package org.jivesoftware.smackx.packet;
 
 import org.jivesoftware.smack.packet.PacketExtension;
+import org.jivesoftware.smackx.Form;
 import org.jivesoftware.smackx.FormField;
 
 import java.util.ArrayList;
@@ -123,11 +124,11 @@ public class DataForm implements PacketExtension {
     }
 
     public String getElementName() {
-        return "x";
+        return Form.ELEMENT;
     }
 
     public String getNamespace() {
-        return "jabber:x:data";
+        return Form.NAMESPACE;
     }
 
     /**
@@ -195,6 +196,21 @@ public class DataForm implements PacketExtension {
         }
     }
 
+    /**
+     * Returns true if this DataForm has at least one FORM_TYPE field which is
+     * hidden. This method is used for sanity checks.
+     *
+     * @return
+     */
+    public boolean hasHiddenFormTypeField() {
+        boolean found = false;
+        for (FormField f : fields) {
+            if (f.getVariable().equals("FORM_TYPE") && f.getType() != null && f.getType().equals("hidden"))
+                found = true;
+        }
+        return found;
+    }
+
     public String toXML() {
         StringBuilder buf = new StringBuilder();
         buf.append("<").append(getElementName()).append(" xmlns=\"").append(getNamespace()).append(
@@ -202,7 +218,7 @@ public class DataForm implements PacketExtension {
         if (getTitle() != null) {
             buf.append("<title>").append(getTitle()).append("</title>");
         }
-        for (Iterator it=getInstructions(); it.hasNext();) {
+        for (Iterator<String> it=getInstructions(); it.hasNext();) {
             buf.append("<instructions>").append(it.next()).append("</instructions>");
         }
         // Append the list of fields returned from a search
@@ -210,13 +226,13 @@ public class DataForm implements PacketExtension {
             buf.append(getReportedData().toXML());
         }
         // Loop through all the items returned from a search and append them to the string buffer
-        for (Iterator i = getItems(); i.hasNext();) {
-            Item item = (Item) i.next();
+        for (Iterator<Item> i = getItems(); i.hasNext();) {
+            Item item = i.next();
             buf.append(item.toXML());
         }
         // Loop through all the form fields and append them to the string buffer
-        for (Iterator i = getFields(); i.hasNext();) {
-            FormField field = (FormField) i.next();
+        for (Iterator<FormField> i = getFields(); i.hasNext();) {
+            FormField field = i.next();
             buf.append(field.toXML());
         }
         buf.append("</").append(getElementName()).append(">");
@@ -250,8 +266,8 @@ public class DataForm implements PacketExtension {
             StringBuilder buf = new StringBuilder();
             buf.append("<reported>");
             // Loop through all the form items and append them to the string buffer
-            for (Iterator i = getFields(); i.hasNext();) {
-                FormField field = (FormField) i.next();
+            for (Iterator<FormField> i = getFields(); i.hasNext();) {
+                FormField field = i.next();
                 buf.append(field.toXML());
             }
             buf.append("</reported>");
@@ -285,8 +301,8 @@ public class DataForm implements PacketExtension {
             StringBuilder buf = new StringBuilder();
             buf.append("<item>");
             // Loop through all the form items and append them to the string buffer
-            for (Iterator i = getFields(); i.hasNext();) {
-                FormField field = (FormField) i.next();
+            for (Iterator<FormField> i = getFields(); i.hasNext();) {
+                FormField field = i.next();
                 buf.append(field.toXML());
             }
             buf.append("</item>");

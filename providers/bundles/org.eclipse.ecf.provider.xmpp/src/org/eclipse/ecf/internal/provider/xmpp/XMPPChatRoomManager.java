@@ -36,6 +36,7 @@ import org.eclipse.ecf.presence.history.IHistoryManager;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPRoomID;
 import org.eclipse.osgi.util.NLS;
+import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
@@ -148,7 +149,7 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 		if (connection != null) {
 			// Setup invitation requestListener
 			MultiUserChat.addInvitationListener(ecfConnection.getXMPPConnection(), new InvitationListener() {
-				public void invitationReceived(XMPPConnection arg0, String arg1, String arg2, String arg3, String arg4, Message arg5) {
+				public void invitationReceived(Connection arg0, String arg1, String arg2, String arg3, String arg4, Message arg5) {
 					fireInvitationReceived(createRoomIDFromName(arg1), createUserIDFromName(arg2), createUserIDFromName(arg5.getTo()), arg5.getSubject(), arg3);
 				}
 			});

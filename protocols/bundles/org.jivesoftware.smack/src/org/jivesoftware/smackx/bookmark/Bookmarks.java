@@ -1,6 +1,6 @@
 /**
- * $Revision: 1.2 $
- * $Date: 2009/12/15 09:04:06 $
+ * $Revision$
+ * $Date$
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -35,7 +35,7 @@ import java.util.List;
  * See the following code sample for saving Bookmarks:
  * <p/>
  * <pre>
- * XMPPConnection con = new XMPPConnection("jabber.org");
+ * Connection con = new XMPPConnection("jabber.org");
  * con.login("john", "doe");
  * Bookmarks bookmarks = new Bookmarks();
  * <p/>
@@ -62,15 +62,15 @@ import java.util.List;
  */
 public class Bookmarks implements PrivateData {
 
-    private List bookmarkedURLS;
-    private List bookmarkedConferences;
+    private List<BookmarkedURL> bookmarkedURLS;
+    private List<BookmarkedConference> bookmarkedConferences;
 
     /**
      * Required Empty Constructor to use Bookmarks.
      */
     public Bookmarks() {
-        bookmarkedURLS = new ArrayList();
-        bookmarkedConferences = new ArrayList();
+        bookmarkedURLS = new ArrayList<BookmarkedURL>();
+        bookmarkedConferences = new ArrayList<BookmarkedConference>();
     }
 
     /**
@@ -128,7 +128,7 @@ public class Bookmarks implements PrivateData {
      *
      * @return a collection of all Bookmarked URLs.
      */
-    public List getBookmarkedURLS() {
+    public List<BookmarkedURL> getBookmarkedURLS() {
         return bookmarkedURLS;
     }
 
@@ -137,7 +137,7 @@ public class Bookmarks implements PrivateData {
      *
      * @return a collection of all Bookmarked Conferences.
      */
-    public List getBookmarkedConferences() {
+    public List<BookmarkedConference> getBookmarkedConferences() {
         return bookmarkedConferences;
     }
 
@@ -169,9 +169,9 @@ public class Bookmarks implements PrivateData {
         StringBuilder buf = new StringBuilder();
         buf.append("<storage xmlns=\"storage:bookmarks\">");
 
-        final Iterator urls = getBookmarkedURLS().iterator();
+        final Iterator<BookmarkedURL> urls = getBookmarkedURLS().iterator();
         while (urls.hasNext()) {
-            BookmarkedURL urlStorage = (BookmarkedURL) urls.next();
+            BookmarkedURL urlStorage = urls.next();
             if(urlStorage.isShared()) {
                 continue;
             }
@@ -184,9 +184,9 @@ public class Bookmarks implements PrivateData {
         }
 
         // Add Conference additions
-        final Iterator conferences = getBookmarkedConferences().iterator();
+        final Iterator<BookmarkedConference> conferences = getBookmarkedConferences().iterator();
         while (conferences.hasNext()) {
-            BookmarkedConference conference = (BookmarkedConference) conferences.next();
+            BookmarkedConference conference = conferences.next();
             if(conference.isShared()) {
                 continue;
             }

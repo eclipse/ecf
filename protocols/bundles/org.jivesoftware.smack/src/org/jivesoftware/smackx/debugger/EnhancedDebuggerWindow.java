@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 13325 $
+ * $Date: 2012-10-26 03:47:55 -0700 (Fri, 26 Oct 2012) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -226,7 +226,7 @@ public class EnhancedDebuggerWindow {
         Vector<String> providers = new Vector<String>();
         for (Object provider : ProviderManager.getInstance().getIQProviders()) {
             if (provider.getClass() == Class.class) {
-                providers.add(((Class) provider).getName());
+                providers.add(((Class<?>) provider).getName());
             }
             else {
                 providers.add(provider.getClass().getName());
@@ -245,7 +245,7 @@ public class EnhancedDebuggerWindow {
         providers = new Vector<String>();
         for (Object provider : ProviderManager.getInstance().getExtensionProviders()) {
             if (provider.getClass() == Class.class) {
-                providers.add(((Class) provider).getName());
+                providers.add(((Class<?>) provider).getName());
             }
             else {
                 providers.add(provider.getClass().getName());

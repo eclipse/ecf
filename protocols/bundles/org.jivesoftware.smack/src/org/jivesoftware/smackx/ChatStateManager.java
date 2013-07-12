@@ -1,7 +1,7 @@
 /**
- * $RCSfile: ChatStateManager.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/12/15 09:04:05 $
+ * $RCSfile$
+ * $Revision: 2407 $
+ * $Date: 2004-11-02 15:37:00 -0800 (Tue, 02 Nov 2004) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -20,25 +20,31 @@
 
 package org.jivesoftware.smackx;
 
-import org.jivesoftware.smack.*;
-import org.jivesoftware.smack.util.collections.ReferenceMap;
-import org.jivesoftware.smack.filter.PacketFilter;
-import org.jivesoftware.smack.filter.NotFilter;
-import org.jivesoftware.smack.filter.PacketExtensionFilter;
-import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.PacketExtension;
-import org.jivesoftware.smackx.packet.ChatStateExtension;
-
+import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import org.jivesoftware.smack.Chat;
+import org.jivesoftware.smack.ChatManagerListener;
+import org.jivesoftware.smack.Connection;
+import org.jivesoftware.smack.MessageListener;
+import org.jivesoftware.smack.PacketInterceptor;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.filter.NotFilter;
+import org.jivesoftware.smack.filter.PacketExtensionFilter;
+import org.jivesoftware.smack.filter.PacketFilter;
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.PacketExtension;
+import org.jivesoftware.smack.util.collections.ReferenceMap;
+import org.jivesoftware.smackx.packet.ChatStateExtension;
+
 /**
- * Handles chat state for all chats on a particular XMPPConnection. This class manages both the
+ * Handles chat state for all chats on a particular Connection. This class manages both the
  * packet extensions and the disco response neccesary for compliance with
  * <a href="http://www.xmpp.org/extensions/xep-0085.html">XEP-0085</a>.
  *
- * NOTE: {@link org.jivesoftware.smackx.ChatStateManager#getInstance(org.jivesoftware.smack.XMPPConnection)}
+ * NOTE: {@link org.jivesoftware.smackx.ChatStateManager#getInstance(org.jivesoftware.smack.Connection)}
  * needs to be called in order for the listeners to be registered appropriately with the connection.
  * If this does not occur you will not receive the update notifications.
  *
@@ -48,36 +54,40 @@ import java.util.WeakHashMap;
  */
 public class ChatStateManager {
 
-    private static final Map<XMPPConnection, ChatStateManager> managers =
-            new WeakHashMap<XMPPConnection, ChatStateManager>();
+    private static final Map<Connection, WeakReference<ChatStateManager>> managers =
+            new WeakHashMap<Connection, WeakReference<ChatStateManager>>();
 
     private static final PacketFilter filter = new NotFilter(
                 new PacketExtensionFilter("http://jabber.org/protocol/chatstates"));
 
     /**
-     * Returns the ChatStateManager related to the XMPPConnection and it will create one if it does
+     * Returns the ChatStateManager related to the Connection and it will create one if it does
      * not yet exist.
      *
      * @param connection the connection to return the ChatStateManager
      * @return the ChatStateManager related the the connection.
      */
-    public static ChatStateManager getInstance(final XMPPConnection connection) {
+    public static ChatStateManager getInstance(final Connection connection) {
         if(connection == null) {
             return null;
         }
         synchronized (managers) {
-            ChatStateManager manager = managers.get(connection);
-            if (manager == null) {
+            ChatStateManager manager;
+            WeakReference<ChatStateManager> ref = managers.get(connection);
+            
+            if (ref == null) {
                 manager = new ChatStateManager(connection);
                 manager.init();
-                managers.put(connection, manager);
+                managers.put(connection, new WeakReference<ChatStateManager>(manager));
             }
+            else
+            	manager = ref.get();
 
             return manager;
         }
     }
 
-    private final XMPPConnection connection;
+    private final Connection connection;
 
     private final OutgoingMessageInterceptor outgoingInterceptor = new OutgoingMessageInterceptor();
 
@@ -89,7 +99,7 @@ public class ChatStateManager {
     private final Map<Chat, ChatState> chatStates =
             new ReferenceMap<Chat, ChatState>(ReferenceMap.WEAK, ReferenceMap.HARD);
 
-    private ChatStateManager(XMPPConnection connection) {
+    private ChatStateManager(Connection connection) {
         this.connection = connection;
     }
 

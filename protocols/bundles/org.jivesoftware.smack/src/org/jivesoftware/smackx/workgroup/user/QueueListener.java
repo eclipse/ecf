@@ -1,6 +1,6 @@
 /**
- * $Revision: 1.1 $
- * $Date: 2009/12/15 09:04:08 $
+ * $Revision$
+ * $Date$
  *
  * Copyright 2003-2007 Jive Software.
  *

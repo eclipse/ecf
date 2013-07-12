@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 11613 $
+ * $Date: 2010-02-09 03:55:56 -0800 (Tue, 09 Feb 2010) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -42,7 +42,7 @@ public class LiteDebugger implements SmackDebugger {
     private static final String NEWLINE = "\n";
 
     private JFrame frame = null;
-    private XMPPConnection connection = null;
+    private Connection connection = null;
 
     private PacketListener listener = null;
 
@@ -51,7 +51,7 @@ public class LiteDebugger implements SmackDebugger {
     private ReaderListener readerListener;
     private WriterListener writerListener;
 
-    public LiteDebugger(XMPPConnection connection, Writer writer, Reader reader) {
+    public LiteDebugger(Connection connection, Writer writer, Reader reader) {
         this.connection = connection;
         this.writer = writer;
         this.reader = reader;

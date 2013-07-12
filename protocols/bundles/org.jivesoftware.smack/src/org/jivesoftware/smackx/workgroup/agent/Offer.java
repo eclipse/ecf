@@ -1,6 +1,6 @@
 /**
- * $Revision: 1.1 $
- * $Date: 2009/12/15 09:04:04 $
+ * $Revision$
+ * $Date$
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -19,11 +19,12 @@
 
 package org.jivesoftware.smackx.workgroup.agent;
 
-import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Packet;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,7 +37,7 @@ import java.util.Map;
  */
 public class Offer {
 
-    private XMPPConnection connection;
+    private Connection connection;
     private AgentSession session;
 
     private String sessionID;
@@ -44,7 +45,7 @@ public class Offer {
     private String userID;
     private String workgroupName;
     private Date expiresDate;
-    private Map metaData;
+    private Map<String, List<String>> metaData;
     private OfferContent content;
 
     private boolean accepted = false;
@@ -64,9 +65,9 @@ public class Offer {
      * @param content content of the offer. The content explains the reason for the offer
      *        (e.g. user request, transfer)
      */
-    Offer(XMPPConnection conn, AgentSession agentSession, String userID,
+    Offer(Connection conn, AgentSession agentSession, String userID,
             String userJID, String workgroupName, Date expiresDate,
-            String sessionID, Map metaData, OfferContent content)
+            String sessionID, Map<String, List<String>> metaData, OfferContent content)
     {
         this.connection = conn;
         this.session = agentSession;
@@ -155,7 +156,7 @@ public class Offer {
      *
      * @return the offer meta-data.
      */
-    public Map getMetaData() {
+    public Map<String, List<String>> getMetaData() {
         return this.metaData;
     }
 

@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 13325 $
+ * $Date: 2012-10-26 03:47:55 -0700 (Fri, 26 Oct 2012) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -22,7 +22,7 @@ package org.jivesoftware.smackx;
 
 import org.jivesoftware.smack.PacketCollector;
 import org.jivesoftware.smack.SmackConfiguration;
-import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.*;
 import org.jivesoftware.smack.packet.IQ;
@@ -57,11 +57,11 @@ public class OfflineMessageManager {
 
     private final static String namespace = "http://jabber.org/protocol/offline";
 
-    private XMPPConnection connection;
+    private Connection connection;
 
     private PacketFilter packetFilter;
 
-    public OfflineMessageManager(XMPPConnection connection) {
+    public OfflineMessageManager(Connection connection) {
         this.connection = connection;
         packetFilter =
                 new AndFilter(new PacketExtensionFilter("offline", namespace),
@@ -113,8 +113,8 @@ public class OfflineMessageManager {
         List<OfflineMessageHeader> answer = new ArrayList<OfflineMessageHeader>();
         DiscoverItems items = ServiceDiscoveryManager.getInstanceFor(connection).discoverItems(
                 null, namespace);
-        for (Iterator it = items.getItems(); it.hasNext();) {
-            DiscoverItems.Item item = (DiscoverItems.Item) it.next();
+        for (Iterator<DiscoverItems.Item> it = items.getItems(); it.hasNext();) {
+            DiscoverItems.Item item = it.next();
             answer.add(new OfflineMessageHeader(item));
         }
         return answer.iterator();

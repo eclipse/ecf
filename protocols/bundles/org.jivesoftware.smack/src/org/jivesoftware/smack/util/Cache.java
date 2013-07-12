@@ -1,6 +1,6 @@
 /**
- * $Revision$
- * $Date$
+ * $Revision: 1456 $
+ * $Date: 2005-06-01 22:04:54 -0700 (Wed, 01 Jun 2005) $
  *
  * Copyright 2003-2005 Jive Software.
  *
@@ -477,7 +477,7 @@ public class Cache<K, V> implements Map<K, V> {
                 return false;
             }
 
-            final CacheObject cacheObject = (CacheObject) o;
+            final CacheObject<?> cacheObject = (CacheObject<?>) o;
 
             return object.equals(cacheObject.object);
 

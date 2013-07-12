@@ -1,6 +1,6 @@
 /**
- * $Revision: 1.1 $
- * $Date: 2009/12/15 09:04:06 $
+ * $Revision$
+ * $Date$
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -31,6 +31,7 @@ import org.jivesoftware.smack.util.PacketParserUtils;
 import org.xmlpull.v1.XmlPullParser;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -49,7 +50,7 @@ public class OfferRequestProvider implements IQProvider {
         int timeout = -1;
         OfferContent content = null;
         boolean done = false;
-        Map metaData = new HashMap();
+        Map<String, List<String>> metaData = new HashMap<String, List<String>>();
 
         if (eventType != XmlPullParser.START_TAG) {
             // throw exception
@@ -111,11 +112,11 @@ public class OfferRequestProvider implements IQProvider {
         private int timeout;
         private String userID;
         private String userJID;
-        private Map metaData;
+        private Map<String, List<String>> metaData;
         private String sessionID;
         private OfferContent content;
 
-        public OfferRequestPacket(String userJID, String userID, int timeout, Map metaData,
+        public OfferRequestPacket(String userJID, String userID, int timeout, Map<String, List<String>> metaData,
                 String sessionID, OfferContent content)
         {
             this.userJID = userJID;
@@ -174,7 +175,7 @@ public class OfferRequestProvider implements IQProvider {
          *
          * @return meta-data associated with the offer.
          */
-        public Map getMetaData() {
+        public Map<String, List<String>> getMetaData() {
             return this.metaData;
         }
 

@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 11613 $
+ * $Date: 2010-02-09 03:55:56 -0800 (Tue, 09 Feb 2010) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -29,7 +29,7 @@ import org.jivesoftware.smack.*;
  * displays XML traffic.<p>
  * 
  * Every implementation of this interface <b>must</b> have a public constructor with the following 
- * arguments: XMPPConnection, Writer, Reader.
+ * arguments: Connection, Writer, Reader.
  * 
  * @author Gaston Dombiak
  */

@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 11827 $
+ * $Date: 2010-08-15 09:37:51 -0700 (Sun, 15 Aug 2010) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -37,7 +37,8 @@ public class RosterEntry {
     private String name;
     private RosterPacket.ItemType type;
     private RosterPacket.ItemStatus status;
-    private XMPPConnection connection;
+    final private Roster roster;
+    final private Connection connection;
 
     /**
      * Creates a new roster entry.
@@ -49,11 +50,12 @@ public class RosterEntry {
      * @param connection a connection to the XMPP server.
      */
     RosterEntry(String user, String name, RosterPacket.ItemType type,
-                RosterPacket.ItemStatus status, XMPPConnection connection) {
+                RosterPacket.ItemStatus status, Roster roster, Connection connection) {
         this.user = user;
         this.name = name;
         this.type = type;
         this.status = status;
+        this.roster = roster;
         this.connection = connection;
     }
 
@@ -114,7 +116,7 @@ public class RosterEntry {
         List<RosterGroup> results = new ArrayList<RosterGroup>();
         // Loop through all roster groups and find the ones that contain this
         // entry. This algorithm should be fine
-        for (RosterGroup group: connection.roster.getGroups()) {
+        for (RosterGroup group: roster.getGroups()) {
             if (group.contains(this)) {
                 results.add(group);
             }
@@ -179,6 +181,50 @@ public class RosterEntry {
         }
     }
 
+    /**
+     * Indicates whether some other object is "equal to" this by comparing all members.
+     * <p>
+     * The {@link #equals(Object)} method returns <code>true</code> if the user JIDs are equal.
+     * 
+     * @param obj the reference object with which to compare.
+     * @return <code>true</code> if this object is the same as the obj argument; <code>false</code>
+     *         otherwise.
+     */
+    public boolean equalsDeep(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        RosterEntry other = (RosterEntry) obj;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        }
+        else if (!name.equals(other.name))
+            return false;
+        if (status == null) {
+            if (other.status != null)
+                return false;
+        }
+        else if (!status.equals(other.status))
+            return false;
+        if (type == null) {
+            if (other.type != null)
+                return false;
+        }
+        else if (!type.equals(other.type))
+            return false;
+        if (user == null) {
+            if (other.user != null)
+                return false;
+        }
+        else if (!user.equals(other.user))
+            return false;
+        return true;
+    }
+    
     static RosterPacket.Item toRosterItem(RosterEntry entry) {
         RosterPacket.Item item = new RosterPacket.Item(entry.getUser(), entry.getName());
         item.setItemType(entry.getType());
@@ -189,4 +235,5 @@ public class RosterEntry {
         }
         return item;
     }
+
 }

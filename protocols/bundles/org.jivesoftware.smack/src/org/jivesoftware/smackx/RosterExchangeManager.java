@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 13325 $
+ * $Date: 2012-10-26 03:47:55 -0700 (Fri, 26 Oct 2012) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -20,11 +20,19 @@
 
 package org.jivesoftware.smackx;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-import org.jivesoftware.smack.*;
-import org.jivesoftware.smack.filter.*;
-import org.jivesoftware.smack.packet.*;
+import org.jivesoftware.smack.PacketListener;
+import org.jivesoftware.smack.Roster;
+import org.jivesoftware.smack.RosterEntry;
+import org.jivesoftware.smack.RosterGroup;
+import org.jivesoftware.smack.Connection;
+import org.jivesoftware.smack.filter.PacketExtensionFilter;
+import org.jivesoftware.smack.filter.PacketFilter;
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smackx.packet.RosterExchange;
 
 /**
@@ -38,9 +46,9 @@ import org.jivesoftware.smackx.packet.RosterExchange;
  */
 public class RosterExchangeManager {
 
-    private List rosterExchangeListeners = new ArrayList();
+    private List<RosterExchangeListener> rosterExchangeListeners = new ArrayList<RosterExchangeListener>();
 
-    private XMPPConnection con;
+    private Connection con;
 
     private PacketFilter packetFilter = new PacketExtensionFilter("x", "jabber:x:roster");
     private PacketListener packetListener;
@@ -48,9 +56,9 @@ public class RosterExchangeManager {
     /**
      * Creates a new roster exchange manager.
      *
-     * @param con an XMPPConnection.
+     * @param con a Connection which is used to send and receive messages.
      */
-    public RosterExchangeManager(XMPPConnection con) {
+    public RosterExchangeManager(Connection con) {
         this.con = con;
         init();
     }
@@ -141,7 +149,7 @@ public class RosterExchangeManager {
     /**
      * Fires roster exchange listeners.
      */
-    private void fireRosterExchangeListeners(String from, Iterator remoteRosterEntries) {
+    private void fireRosterExchangeListeners(String from, Iterator<RemoteRosterEntry> remoteRosterEntries) {
         RosterExchangeListener[] listeners = null;
         synchronized (rosterExchangeListeners) {
             listeners = new RosterExchangeListener[rosterExchangeListeners.size()];
@@ -172,7 +180,8 @@ public class RosterExchangeManager {
             con.removePacketListener(packetListener);
 
     }
-    public void finalize() {
+    protected void finalize() throws Throwable {
         destroy();
+        super.finalize();
     }
 }

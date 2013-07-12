@@ -26,7 +26,7 @@ import java.util.Iterator;
  * 2.1.1 and 3.1 due to issues with <code>IteratorUtils</code>.
  *
  * @author Matt Hall, John Watkinson, Stephen Colebourne
- * @version $Revision: 1.1 $ $Date: 2009/12/15 09:04:07 $
+ * @version $Revision: 1.1 $ $Date: 2005/10/11 17:05:24 $
  * @since Commons Collections 2.1.1 and 3.1
  */
 public class EmptyIterator <E> extends AbstractEmptyIterator<E> implements ResettableIterator<E> {

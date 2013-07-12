@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 11634 $
+ * $Date: 2010-02-16 01:10:51 -0800 (Tue, 16 Feb 2010) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -39,7 +39,7 @@ import java.util.List;
 public class RosterGroup {
 
     private String name;
-    private XMPPConnection connection;
+    private Connection connection;
     private final List<RosterEntry> entries;
 
     /**
@@ -48,7 +48,7 @@ public class RosterGroup {
      * @param name the name of the group.
      * @param connection the connection the group belongs to.
      */
-    RosterGroup(String name, XMPPConnection connection) {
+    RosterGroup(String name, Connection connection) {
         this.name = name;
         this.connection = connection;
         entries = new ArrayList<RosterEntry>();
@@ -157,6 +157,8 @@ public class RosterGroup {
     /**
      * Adds a roster entry to this group. If the entry was unfiled then it will be removed from 
      * the unfiled list and will be added to this group.
+     * Note that this is an asynchronous call -- Smack must wait for the server
+     * to receive the updated roster.
      *
      * @param entry a roster entry.
      * @throws XMPPException if an error occured while trying to add the entry to the group.
@@ -187,8 +189,6 @@ public class RosterGroup {
             else if (response.getType() == IQ.Type.ERROR) {
                 throw new XMPPException(response.getError());
             }
-            // Add the new entry to the group since the server processed the request successfully
-            addEntryLocal(entry);
         }
     }
 
@@ -196,6 +196,8 @@ public class RosterGroup {
      * Removes a roster entry from this group. If the entry does not belong to any other group 
      * then it will be considered as unfiled, therefore it will be added to the list of unfiled 
      * entries.
+     * Note that this is an asynchronous call -- Smack must wait for the server
+     * to receive the updated roster.
      *
      * @param entry a roster entry.
      * @throws XMPPException if an error occured while trying to remove the entry from the group. 
@@ -229,8 +231,6 @@ public class RosterGroup {
             else if (response.getType() == IQ.Type.ERROR) {
                 throw new XMPPException(response.getError());
             }
-            // Remove the entry locally since the server processed the request successfully
-            removeEntryLocal(entry);
         }
     }
 

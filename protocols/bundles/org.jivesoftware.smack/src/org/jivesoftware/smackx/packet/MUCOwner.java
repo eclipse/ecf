@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 13325 $
+ * $Date: 2012-10-26 03:47:55 -0700 (Fri, 26 Oct 2012) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -35,7 +35,7 @@ import java.util.List;
  */
 public class MUCOwner extends IQ {
 
-    private List items = new ArrayList();
+    private List<Item> items = new ArrayList<Item>();
     private Destroy destroy;
 
     /**
@@ -45,9 +45,9 @@ public class MUCOwner extends IQ {
      * @return an Iterator for item childs that holds information about affiliation,
      *          jids and nicks.
      */
-    public Iterator getItems() {
+    public Iterator<Item> getItems() {
         synchronized (items) {
-            return Collections.unmodifiableList(new ArrayList(items)).iterator();
+            return Collections.unmodifiableList(new ArrayList<Item>(items)).iterator();
         }
     }
 

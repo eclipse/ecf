@@ -1,7 +1,7 @@
 /**
- * $RCSfile: SASLExternalMechanism.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/12/15 09:04:06 $
+ * $RCSfile$
+ * $Revision$
+ * $Date$
  *
  *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");

@@ -20,13 +20,14 @@
 package org.jivesoftware.smackx.filetransfer;
 
 import org.jivesoftware.smack.PacketListener;
-import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.filter.AndFilter;
 import org.jivesoftware.smack.filter.IQTypeFilter;
 import org.jivesoftware.smack.filter.PacketTypeFilter;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.XMPPError;
+import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.packet.StreamInitiation;
 
 import java.util.ArrayList;
@@ -48,17 +49,17 @@ public class FileTransferManager {
 
 	private final FileTransferNegotiator fileTransferNegotiator;
 
-	private List listeners;
+	private List<FileTransferListener> listeners;
 
-	private XMPPConnection connection;
+	private Connection connection;
 
 	/**
 	 * Creates a file transfer manager to initiate and receive file transfers.
 	 * 
 	 * @param connection
-	 *            The XMPPConnection that the file transfers will use.
+	 *            The Connection that the file transfers will use.
 	 */
-	public FileTransferManager(XMPPConnection connection) {
+	public FileTransferManager(Connection connection) {
 		this.connection = connection;
 		this.fileTransferNegotiator = FileTransferNegotiator
 				.getInstanceFor(connection);
@@ -83,7 +84,7 @@ public class FileTransferManager {
 	}
 
 	private void initListeners() {
-		listeners = new ArrayList();
+		listeners = new ArrayList<FileTransferListener>();
 
 		connection.addPacketListener(new PacketListener() {
 			public void processPacket(Packet packet) {
@@ -125,18 +126,21 @@ public class FileTransferManager {
 	 * Creates an OutgoingFileTransfer to send a file to another user.
 	 * 
 	 * @param userID
-	 *            The fully qualified jabber ID with resource of the user to
+	 *            The fully qualified jabber ID (i.e. full JID) with resource of the user to
 	 *            send the file to.
 	 * @return The send file object on which the negotiated transfer can be run.
+	 * @exception IllegalArgumentException if userID is null or not a full JID
 	 */
 	public OutgoingFileTransfer createOutgoingFileTransfer(String userID) {
-//        Why is this only accepting fully qualified JID?
-//        if (userID == null || StringUtils.parseName(userID).length() <= 0
-//				|| StringUtils.parseServer(userID).length() <= 0
-//				|| StringUtils.parseResource(userID).length() <= 0) {
-//			throw new IllegalArgumentException(
-//					"The provided user id was not fully qualified");
-//		}
+        if (userID == null) {
+            throw new IllegalArgumentException("userID was null");
+        }
+        // We need to create outgoing file transfers with a full JID since this method will later
+        // use XEP-0095 to negotiate the stream. This is done with IQ stanzas that need to be addressed to a full JID
+        // in order to reach an client entity.
+        else if (!StringUtils.isFullJID(userID)) {
+            throw new IllegalArgumentException("The provided user id was not a full JID (i.e. with resource part)");
+        }
 
 		return new OutgoingFileTransfer(connection.getUser(), userID,
 				fileTransferNegotiator.getNextStreamID(),
@@ -172,7 +176,7 @@ public class FileTransferManager {
 		IQ rejection = FileTransferNegotiator.createIQ(
 				initiation.getPacketID(), initiation.getFrom(), initiation
 						.getTo(), IQ.Type.ERROR);
-		rejection.setError(new XMPPError(XMPPError.Condition.forbidden));
+		rejection.setError(new XMPPError(XMPPError.Condition.no_acceptable));
 		connection.sendPacket(rejection);
 	}
 }

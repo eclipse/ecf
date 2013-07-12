@@ -1,6 +1,6 @@
 /**
- * $Revision: 1.1 $
- * $Date: 2009/12/15 09:04:04 $
+ * $Revision$
+ * $Date$
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -20,6 +20,7 @@
 package org.jivesoftware.smackx.workgroup.agent;
 
 import org.jivesoftware.smackx.workgroup.MetaData;
+import org.jivesoftware.smackx.workgroup.QueueUser;
 import org.jivesoftware.smackx.workgroup.WorkgroupInvitation;
 import org.jivesoftware.smackx.workgroup.WorkgroupInvitationListener;
 import org.jivesoftware.smackx.workgroup.ext.history.AgentChatHistory;
@@ -53,14 +54,14 @@ import java.util.*;
  */
 public class AgentSession {
 
-    private XMPPConnection connection;
+    private Connection connection;
 
     private String workgroupJID;
 
     private boolean online = false;
     private Presence.Mode presenceMode;
     private int maxChats;
-    private final Map metaData;
+    private final Map<String, List<String>> metaData;
 
     private Map<String, WorkgroupQueue> queues;
 
@@ -83,7 +84,7 @@ public class AgentSession {
      *                     authentication.
      * @param workgroupJID the fully qualified JID of the workgroup.
      */
-    public AgentSession(String workgroupJID, XMPPConnection connection) {
+    public AgentSession(String workgroupJID, Connection connection) {
         // Login must have been done before passing in connection.
         if (!connection.isAuthenticated()) {
             throw new IllegalStateException("Must login to server before creating workgroup.");
@@ -96,7 +97,7 @@ public class AgentSession {
 
         this.maxChats = -1;
 
-        this.metaData = new HashMap();
+        this.metaData = new HashMap<String, List<String>>();
 
         this.queues = new HashMap<String, WorkgroupQueue>();
 
@@ -199,10 +200,10 @@ public class AgentSession {
      */
     public void setMetaData(String key, String val) throws XMPPException {
         synchronized (this.metaData) {
-            String oldVal = (String)this.metaData.get(key);
+            List<String> oldVals = metaData.get(key);
 
-            if ((oldVal == null) || (!oldVal.equals(val))) {
-                metaData.put(key, val);
+            if ((oldVals == null) || (!oldVals.get(0).equals(val))) {
+                oldVals.set(0, val);
 
                 setStatus(presenceMode, maxChats);
             }
@@ -218,7 +219,7 @@ public class AgentSession {
      */
     public void removeMetaData(String key) throws XMPPException {
         synchronized (this.metaData) {
-            String oldVal = (String)metaData.remove(key);
+            List<String> oldVal = metaData.remove(key);
 
             if (oldVal != null) {
                 setStatus(presenceMode, maxChats);
@@ -233,8 +234,8 @@ public class AgentSession {
      * @return the meta data value associated with the key or <tt>null</tt> if the meta-data
      *         doesn't exist..
      */
-    public String getMetaData(String key) {
-        return (String)metaData.get(key);
+    public List<String> getMetaData(String key) {
+        return metaData.get(key);
     }
 
     /**
@@ -642,7 +643,7 @@ public class AgentSession {
     }
 
     private void fireInvitationEvent(String groupChatJID, String sessionID, String body,
-                                     String from, Map metaData) {
+                                     String from, Map<String, List<String>> metaData) {
         WorkgroupInvitation invitation = new WorkgroupInvitation(connection.getUser(), groupChatJID,
                 workgroupJID, sessionID, body, from, metaData);
 
@@ -654,7 +655,7 @@ public class AgentSession {
     }
 
     private void fireQueueUsersEvent(WorkgroupQueue queue, WorkgroupQueue.Status status,
-                                     int averageWaitTime, Date oldestEntry, Set users) {
+                                     int averageWaitTime, Date oldestEntry, Set<QueueUser> users) {
         synchronized (queueUsersListeners) {
             for (QueueUsersListener listener : queueUsersListeners) {
                 if (status != null) {
@@ -754,7 +755,7 @@ public class AgentSession {
             MUCUser.Invite invite = mucUser != null ? mucUser.getInvite() : null;
             if (invite != null && workgroupJID.equals(invite.getFrom())) {
                 String sessionID = null;
-                Map metaData = null;
+                Map<String, List<String>> metaData = null;
 
                 SessionID sessionIDExt = (SessionID)message.getExtension(SessionID.ELEMENT_NAME,
                         SessionID.NAMESPACE);
@@ -980,7 +981,7 @@ public class AgentSession {
      * @return Map a map of all metadata associated with the sessionID.
      * @throws XMPPException if an error occurs while getting information from the server.
      */
-    public Map getChatMetadata(String sessionID) throws XMPPException {
+    public Map<String, List<String>> getChatMetadata(String sessionID) throws XMPPException {
         ChatMetadata request = new ChatMetadata();
         request.setType(IQ.Type.GET);
         request.setTo(workgroupJID);
@@ -1112,12 +1113,12 @@ public class AgentSession {
     /**
      * Returns the generic metadata of the workgroup the agent belongs to.
      *
-     * @param con   the XMPPConnection to use.
+     * @param con   the Connection to use.
      * @param query an optional query object used to tell the server what metadata to retrieve. This can be null.
      * @throws XMPPException if an error occurs while sending the request to the server.
      * @return the settings for the workgroup.
      */
-    public GenericSettings getGenericSettings(XMPPConnection con, String query) throws XMPPException {
+    public GenericSettings getGenericSettings(Connection con, String query) throws XMPPException {
         GenericSettings setting = new GenericSettings();
         setting.setType(IQ.Type.GET);
         setting.setTo(workgroupJID);
@@ -1138,7 +1139,7 @@ public class AgentSession {
         return response;
     }
 
-    public boolean hasMonitorPrivileges(XMPPConnection con) throws XMPPException {
+    public boolean hasMonitorPrivileges(Connection con) throws XMPPException {
         MonitorPacket request = new MonitorPacket();
         request.setType(IQ.Type.GET);
         request.setTo(workgroupJID);
@@ -1160,7 +1161,7 @@ public class AgentSession {
 
     }
 
-    public void makeRoomOwner(XMPPConnection con, String sessionID) throws XMPPException {
+    public void makeRoomOwner(Connection con, String sessionID) throws XMPPException {
         MonitorPacket request = new MonitorPacket();
         request.setType(IQ.Type.SET);
         request.setTo(workgroupJID);

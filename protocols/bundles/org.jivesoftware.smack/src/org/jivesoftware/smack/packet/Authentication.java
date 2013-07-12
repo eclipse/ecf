@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 11613 $
+ * $Date: 2010-02-09 03:55:56 -0800 (Tue, 09 Feb 2010) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -106,7 +106,7 @@ public class Authentication extends IQ {
      *
      * @param connectionID the connection ID.
      * @param password     the password.
-     * @see org.jivesoftware.smack.XMPPConnection#getConnectionID()
+     * @see org.jivesoftware.smack.Connection#getConnectionID()
      */
     public void setDigest(String connectionID, String password) {
         this.digest = StringUtils.hash(connectionID + password);
@@ -121,7 +121,7 @@ public class Authentication extends IQ {
      *
      * @param digest the digest, which is the SHA-1 hash of the connection ID
      *               the user's password, encoded as hex.
-     * @see org.jivesoftware.smack.XMPPConnection#getConnectionID()
+     * @see org.jivesoftware.smack.Connection#getConnectionID()
      */
     public void setDigest(String digest) {
         this.digest = digest;

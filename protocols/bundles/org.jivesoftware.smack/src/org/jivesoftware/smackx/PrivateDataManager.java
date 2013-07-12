@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 13325 $
+ * $Date: 2012-10-26 03:47:55 -0700 (Fri, 26 Oct 2012) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -22,7 +22,7 @@ package org.jivesoftware.smackx;
 
 import org.jivesoftware.smack.PacketCollector;
 import org.jivesoftware.smack.SmackConfiguration;
-import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.PacketIDFilter;
 import org.jivesoftware.smack.packet.IQ;
@@ -62,7 +62,7 @@ public class PrivateDataManager {
     /**
      * Map of provider instances.
      */
-    private static Map privateDataProviders = new Hashtable();
+    private static Map<String, PrivateDataProvider> privateDataProviders = new Hashtable<String, PrivateDataProvider>();
 
     /**
      * Returns the private data provider registered to the specified XML element name and namespace.
@@ -118,7 +118,7 @@ public class PrivateDataManager {
     }
 
 
-    private XMPPConnection connection;
+    private Connection connection;
 
     /**
      * The user to get and set private data for. In most cases, this value should
@@ -135,7 +135,7 @@ public class PrivateDataManager {
      * @param connection an XMPP connection which must have already undergone a
      *      successful login.
      */
-    public PrivateDataManager(XMPPConnection connection) {
+    public PrivateDataManager(Connection connection) {
         if (!connection.isAuthenticated()) {
             throw new IllegalStateException("Must be logged in to XMPP server.");
         }
@@ -154,7 +154,7 @@ public class PrivateDataManager {
      *      successful login.
      * @param user the XMPP address of the user to get and set private data for.
      */
-    public PrivateDataManager(XMPPConnection connection, String user) {
+    public PrivateDataManager(Connection connection, String user) {
         if (!connection.isAuthenticated()) {
             throw new IllegalStateException("Must be logged in to XMPP server.");
         }

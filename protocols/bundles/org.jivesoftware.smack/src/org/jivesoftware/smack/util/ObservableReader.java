@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 13325 $
+ * $Date: 2012-10-26 03:47:55 -0700 (Fri, 26 Oct 2012) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -32,7 +32,7 @@ import java.util.*;
 public class ObservableReader extends Reader {
 
     Reader wrappedReader = null;
-    List listeners = new ArrayList();
+    List<ReaderListener> listeners = new ArrayList<ReaderListener>();
 
     public ObservableReader(Reader wrappedReader) {
         this.wrappedReader = wrappedReader;

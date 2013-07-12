@@ -1,6 +1,6 @@
 /**
- * $Revision: 1.1 $
- * $Date: 2009/12/15 09:04:04 $
+ * $Revision$
+ * $Date$
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -22,7 +22,7 @@ package org.jivesoftware.smackx.workgroup.agent;
 import org.jivesoftware.smackx.workgroup.packet.AgentStatus;
 import org.jivesoftware.smackx.workgroup.packet.AgentStatusRequest;
 import org.jivesoftware.smack.PacketListener;
-import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.filter.PacketTypeFilter;
 import org.jivesoftware.smack.packet.Packet;
@@ -50,11 +50,11 @@ public class AgentRoster {
     private static final int EVENT_AGENT_REMOVED = 1;
     private static final int EVENT_PRESENCE_CHANGED = 2;
 
-    private XMPPConnection connection;
+    private Connection connection;
     private String workgroupJID;
-    private List entries;
-    private List listeners;
-    private Map presenceMap;
+    private List<String> entries;
+    private List<AgentRosterListener> listeners;
+    private Map<String, Map<String, Presence>> presenceMap;
     // The roster is marked as initialized when at least a single roster packet
     // has been recieved and processed.
     boolean rosterInitialized = false;
@@ -64,12 +64,12 @@ public class AgentRoster {
      *
      * @param connection an XMPP connection.
      */
-    AgentRoster(XMPPConnection connection, String workgroupJID) {
+    AgentRoster(Connection connection, String workgroupJID) {
         this.connection = connection;
         this.workgroupJID = workgroupJID;
-        entries = new ArrayList();
-        listeners = new ArrayList();
-        presenceMap = new HashMap();
+        entries = new ArrayList<String>();
+        listeners = new ArrayList<AgentRosterListener>();
+        presenceMap = new HashMap<String, Map<String, Presence>>();
         // Listen for any roster packets.
         PacketFilter rosterFilter = new PacketTypeFilter(AgentStatusRequest.class);
         connection.addPacketListener(new AgentStatusListener(), rosterFilter);
@@ -106,19 +106,19 @@ public class AgentRoster {
                 listeners.add(listener);
 
                 // Fire events for the existing entries and presences in the roster
-                for (Iterator it = getAgents().iterator(); it.hasNext();) {
-                    String jid = (String)it.next();
+                for (Iterator<String> it = getAgents().iterator(); it.hasNext();) {
+                    String jid = it.next();
                     // Check again in case the agent is no longer in the roster (highly unlikely
                     // but possible)
                     if (entries.contains(jid)) {
                         // Fire the agent added event
                         listener.agentAdded(jid);
-                        Map userPresences = (Map)presenceMap.get(jid);
+                        Map<String,Presence> userPresences = presenceMap.get(jid);
                         if (userPresences != null) {
-                            Iterator presences = userPresences.values().iterator();
+                            Iterator<Presence> presences = userPresences.values().iterator();
                             while (presences.hasNext()) {
                                 // Fire the presence changed event
-                                listener.presenceChanged((Presence)presences.next());
+                                listener.presenceChanged(presences.next());
                             }
                         }
                     }
@@ -153,10 +153,10 @@ public class AgentRoster {
      *
      * @return all entries in the roster.
      */
-    public Set getAgents() {
-        Set agents = new HashSet();
+    public Set<String> getAgents() {
+        Set<String> agents = new HashSet<String>();
         synchronized (entries) {
-            for (Iterator i = entries.iterator(); i.hasNext();) {
+            for (Iterator<String> i = entries.iterator(); i.hasNext();) {
                 agents.add(i.next());
             }
         }
@@ -176,8 +176,8 @@ public class AgentRoster {
             return false;
         }
         synchronized (entries) {
-            for (Iterator i = entries.iterator(); i.hasNext();) {
-                String entry = (String)i.next();
+            for (Iterator<String> i = entries.iterator(); i.hasNext();) {
+                String entry = i.next();
                 if (entry.toLowerCase().equals(jid.toLowerCase())) {
                     return true;
                 }
@@ -197,7 +197,7 @@ public class AgentRoster {
      */
     public Presence getPresence(String user) {
         String key = getPresenceMapKey(user);
-        Map userPresences = (Map)presenceMap.get(key);
+        Map<String, Presence> userPresences = presenceMap.get(key);
         if (userPresences == null) {
             Presence presence = new Presence(Presence.Type.unavailable);
             presence.setFrom(user);
@@ -206,7 +206,7 @@ public class AgentRoster {
         else {
             // Find the resource with the highest priority
             // Might be changed to use the resource with the highest availability instead.
-            Iterator it = userPresences.keySet().iterator();
+            Iterator<String> it = userPresences.keySet().iterator();
             Presence p;
             Presence presence = null;
 
@@ -303,14 +303,14 @@ public class AgentRoster {
                 else if (!workgroupJID.equals(agentStatus.getWorkgroupJID())) {
                     return;
                 }
-                Map userPresences;
+                Map<String, Presence> userPresences;
                 // Get the user presence map
                 if (presenceMap.get(key) == null) {
-                    userPresences = new HashMap();
+                    userPresences = new HashMap<String, Presence>();
                     presenceMap.put(key, userPresences);
                 }
                 else {
-                    userPresences = (Map)presenceMap.get(key);
+                    userPresences = presenceMap.get(key);
                 }
                 // Add the new presence, using the resources as a key.
                 synchronized (userPresences) {
@@ -318,8 +318,8 @@ public class AgentRoster {
                 }
                 // Fire an event.
                 synchronized (entries) {
-                    for (Iterator i = entries.iterator(); i.hasNext();) {
-                        String entry = (String)i.next();
+                    for (Iterator<String> i = entries.iterator(); i.hasNext();) {
+                        String entry = i.next();
                         if (entry.toLowerCase().equals(StringUtils.parseBareAddress(key).toLowerCase())) {
                             fireEvent(EVENT_PRESENCE_CHANGED, packet);
                         }
@@ -329,7 +329,7 @@ public class AgentRoster {
             // If an "unavailable" packet, remove any entries in the presence map.
             else if (presence.getType() == Presence.Type.unavailable) {
                 if (presenceMap.get(key) != null) {
-                    Map userPresences = (Map)presenceMap.get(key);
+                    Map<String,Presence> userPresences = presenceMap.get(key);
                     synchronized (userPresences) {
                         userPresences.remove(StringUtils.parseResource(from));
                     }
@@ -339,7 +339,7 @@ public class AgentRoster {
                 }
                 // Fire an event.
                 synchronized (entries) {
-                    for (Iterator i = entries.iterator(); i.hasNext();) {
+                    for (Iterator<String> i = entries.iterator(); i.hasNext();) {
                         String entry = (String)i.next();
                         if (entry.toLowerCase().equals(StringUtils.parseBareAddress(key).toLowerCase())) {
                             fireEvent(EVENT_PRESENCE_CHANGED, packet);
@@ -358,8 +358,8 @@ public class AgentRoster {
         public void processPacket(Packet packet) {
             if (packet instanceof AgentStatusRequest) {
                 AgentStatusRequest statusRequest = (AgentStatusRequest)packet;
-                for (Iterator i = statusRequest.getAgents().iterator(); i.hasNext();) {
-                    AgentStatusRequest.Item item = (AgentStatusRequest.Item)i.next();
+                for (Iterator<AgentStatusRequest.Item> i = statusRequest.getAgents().iterator(); i.hasNext();) {
+                    AgentStatusRequest.Item item = i.next();
                     String agentJID = item.getJID();
                     if ("remove".equals(item.getType())) {
 

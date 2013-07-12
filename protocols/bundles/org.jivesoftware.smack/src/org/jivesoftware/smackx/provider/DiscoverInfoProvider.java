@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 13560 $
+ * $Date: 2013-03-18 01:50:48 -0700 (Mon, 18 Mar 2013) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -42,6 +42,7 @@ public class DiscoverInfoProvider implements IQProvider {
         String name = "";
         String type = "";
         String variable = "";
+        String lang = "";
         discoverInfo.setNode(parser.getAttributeValue("", "node"));
         while (!done) {
             int eventType = parser.next();
@@ -51,6 +52,7 @@ public class DiscoverInfoProvider implements IQProvider {
                     category = parser.getAttributeValue("", "category");
                     name = parser.getAttributeValue("", "name");
                     type = parser.getAttributeValue("", "type");
+                    lang = parser.getAttributeValue(parser.getNamespace("xml"), "lang");
                 }
                 else if (parser.getName().equals("feature")) {
                     // Initialize the variables from the parsed XML
@@ -64,8 +66,9 @@ public class DiscoverInfoProvider implements IQProvider {
             } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals("identity")) {
                     // Create a new identity and add it to the discovered info.
-                    identity = new DiscoverInfo.Identity(category, name);
-                    identity.setType(type);
+                    identity = new DiscoverInfo.Identity(category, name, type);
+                    if (lang != null)
+                        identity.setLanguage(lang);
                     discoverInfo.addIdentity(identity);
                 }
                 if (parser.getName().equals("feature")) {

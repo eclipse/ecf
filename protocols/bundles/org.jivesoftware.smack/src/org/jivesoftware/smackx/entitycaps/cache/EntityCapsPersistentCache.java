@@ -1,9 +1,4 @@
 /**
- * $Revision: 1.1 $
- * $Date: 2009/12/15 09:04:07 $
- *
- * Copyright 2003-2007 Jive Software.
- *
  * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,11 +11,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jivesoftware.smackx.filetransfer;
+package org.jivesoftware.smackx.entitycaps.cache;
 
-/**
- *
- */
-public interface FileTransferNegotiatorManager {
-    StreamNegotiator createNegotiator();
+import java.io.IOException;
+
+import org.jivesoftware.smackx.packet.DiscoverInfo;
+
+public interface EntityCapsPersistentCache {
+    /**
+     * Add an DiscoverInfo to the persistent Cache
+     * 
+     * @param node
+     * @param info
+     */
+    void addDiscoverInfoByNodePersistent(String node, DiscoverInfo info);
+
+    /**
+     * Replay the Caches data into EntityCapsManager
+     */
+    void replay() throws IOException;
+
+    /**
+     * Empty the Cache
+     */
+    void emptyCache();
 }

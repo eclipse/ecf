@@ -1,7 +1,7 @@
 /**
- * $RCSfile: AdHocCommandData.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/12/15 09:04:04 $
+ * $RCSfile$
+ * $Revision$
+ * $Date$
  *
  * Copyright 2005-2008 Jive Software.
  *

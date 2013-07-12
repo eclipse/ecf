@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 11456 $
+ * $Date: 2009-12-09 12:29:48 -0800 (Wed, 09 Dec 2009) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -48,7 +48,7 @@ public interface PacketExtension {
     public String getNamespace();
 
     /**
-     * Returns the XML reppresentation of the PacketExtension.
+     * Returns the XML representation of the PacketExtension.
      *
      * @return the packet extension as XML.
      */

@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 13325 $
+ * $Date: 2012-10-26 03:47:55 -0700 (Fri, 26 Oct 2012) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -109,9 +109,9 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * It is possible to provide a custom provider manager instead of the default implementation
  * provided by Smack. If you want to provide your own provider manager then you need to do it
- * before creating any {@link org.jivesoftware.smack.XMPPConnection} by sending the static
+ * before creating any {@link org.jivesoftware.smack.Connection} by sending the static
  * {@link #setInstance(ProviderManager)} message. Trying to change the provider manager after
- * an XMPPConnection was created will result in an {@link IllegalStateException} error.
+ * an Connection was created will result in an {@link IllegalStateException} error.
  *
  * @author Matt Tucker
  */
@@ -137,9 +137,9 @@ public class ProviderManager {
     }
 
     /**
-     * Sets the only ProviderManager valid instance to be used by all XMPPConnections. If you
+     * Sets the only ProviderManager valid instance to be used by all Connections. If you
      * want to provide your own provider manager then you need to do it before creating
-     * any XMPPConnection. Otherwise an IllegalStateException will be thrown.
+     * any Connection. Otherwise an IllegalStateException will be thrown.
      *
      * @param providerManager the only ProviderManager valid instance to be used.
      * @throws IllegalStateException if a provider manager was already configued.
@@ -157,10 +157,10 @@ public class ProviderManager {
             // Get an array of class loaders to try loading the providers files from.
             ClassLoader[] classLoaders = getClassLoaders();
             for (ClassLoader classLoader : classLoaders) {
-                Enumeration providerEnum = classLoader.getResources(
+                Enumeration<URL> providerEnum = classLoader.getResources(
                         "META-INF/smack.providers");
                 while (providerEnum.hasMoreElements()) {
-                    URL url = (URL) providerEnum.nextElement();
+                    URL url = providerEnum.nextElement();
                     InputStream providerStream = null;
                     try {
                         providerStream = url.openStream();
@@ -190,7 +190,7 @@ public class ProviderManager {
                                         // reflection later to create instances of the class.
                                         try {
                                             // Add the provider to the map.
-                                            Class provider = Class.forName(className);
+                                            Class<?> provider = Class.forName(className);
                                             if (IQProvider.class.isAssignableFrom(provider)) {
                                                 iqProviders.put(key, provider.newInstance());
                                             }
@@ -224,7 +224,7 @@ public class ProviderManager {
                                         // of the class.
                                         try {
                                             // Add the provider to the map.
-                                            Class provider = Class.forName(className);
+                                            Class<?> provider = Class.forName(className);
                                             if (PacketExtensionProvider.class.isAssignableFrom(
                                                     provider)) {
                                                 extensionProviders.put(key, provider.newInstance());
@@ -309,7 +309,7 @@ public class ProviderManager {
             Object provider)
     {
         if (!(provider instanceof IQProvider || (provider instanceof Class &&
-                IQ.class.isAssignableFrom((Class)provider))))
+                IQ.class.isAssignableFrom((Class<?>)provider))))
         {
             throw new IllegalArgumentException("Provider must be an IQProvider " +
                     "or a Class instance.");

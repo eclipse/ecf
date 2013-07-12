@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 13560 $
+ * $Date: 2013-03-18 01:50:48 -0700 (Mon, 18 Mar 2013) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -43,6 +43,14 @@ public abstract class IQ extends Packet {
 
     private Type type = Type.GET;
 
+    public IQ() {
+        super();
+    }
+
+    public IQ(IQ iq) {
+        super(iq);
+        type = iq.getType();
+    }
     /**
      * Returns the type of the IQ packet.
      *
@@ -107,6 +115,75 @@ public abstract class IQ extends Packet {
      * @return the child element section of the IQ XML.
      */
     public abstract String getChildElementXML();
+
+    /**
+     * Convenience method to create a new empty {@link Type#RESULT IQ.Type.RESULT}
+     * IQ based on a {@link Type#GET IQ.Type.GET} or {@link Type#SET IQ.Type.SET}
+     * IQ. The new packet will be initialized with:<ul>
+     *      <li>The sender set to the recipient of the originating IQ.
+     *      <li>The recipient set to the sender of the originating IQ.
+     *      <li>The type set to {@link Type#RESULT IQ.Type.RESULT}.
+     *      <li>The id set to the id of the originating IQ.
+     *      <li>No child element of the IQ element.
+     * </ul>
+     *
+     * @param iq the {@link Type#GET IQ.Type.GET} or {@link Type#SET IQ.Type.SET} IQ packet.
+     * @throws IllegalArgumentException if the IQ packet does not have a type of
+     *      {@link Type#GET IQ.Type.GET} or {@link Type#SET IQ.Type.SET}.
+     * @return a new {@link Type#RESULT IQ.Type.RESULT} IQ based on the originating IQ.
+     */
+    public static IQ createResultIQ(final IQ request) {
+        if (!(request.getType() == Type.GET || request.getType() == Type.SET)) {
+            throw new IllegalArgumentException(
+                    "IQ must be of type 'set' or 'get'. Original IQ: " + request.toXML());
+        }
+        final IQ result = new IQ() {
+            public String getChildElementXML() {
+                return null;
+            }
+        };
+        result.setType(Type.RESULT);
+        result.setPacketID(request.getPacketID());
+        result.setFrom(request.getTo());
+        result.setTo(request.getFrom());
+        return result;
+    }
+
+    /**
+     * Convenience method to create a new {@link Type#ERROR IQ.Type.ERROR} IQ
+     * based on a {@link Type#GET IQ.Type.GET} or {@link Type#SET IQ.Type.SET}
+     * IQ. The new packet will be initialized with:<ul>
+     *      <li>The sender set to the recipient of the originating IQ.
+     *      <li>The recipient set to the sender of the originating IQ.
+     *      <li>The type set to {@link Type#ERROR IQ.Type.ERROR}.
+     *      <li>The id set to the id of the originating IQ.
+     *      <li>The child element contained in the associated originating IQ.
+     *      <li>The provided {@link XMPPError XMPPError}.
+     * </ul>
+     *
+     * @param iq the {@link Type#GET IQ.Type.GET} or {@link Type#SET IQ.Type.SET} IQ packet.
+     * @param error the error to associate with the created IQ packet.
+     * @throws IllegalArgumentException if the IQ packet does not have a type of
+     *      {@link Type#GET IQ.Type.GET} or {@link Type#SET IQ.Type.SET}.
+     * @return a new {@link Type#ERROR IQ.Type.ERROR} IQ based on the originating IQ.
+     */
+    public static IQ createErrorResponse(final IQ request, final XMPPError error) {
+        if (!(request.getType() == Type.GET || request.getType() == Type.SET)) {
+            throw new IllegalArgumentException(
+                    "IQ must be of type 'set' or 'get'. Original IQ: " + request.toXML());
+        }
+        final IQ result = new IQ() {
+            public String getChildElementXML() {
+                return request.getChildElementXML();
+            }
+        };
+        result.setType(Type.ERROR);
+        result.setPacketID(request.getPacketID());
+        result.setFrom(request.getTo());
+        result.setTo(request.getFrom());
+        result.setError(error);
+        return result;
+    }
 
     /**
      * A class to represent the type of the IQ packet. The types are:

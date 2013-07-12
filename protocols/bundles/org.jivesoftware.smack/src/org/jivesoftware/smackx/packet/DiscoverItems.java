@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 13560 $
+ * $Date: 2013-03-18 01:50:48 -0700 (Mon, 18 Mar 2013) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -21,7 +21,9 @@
 package org.jivesoftware.smackx.packet;
 
 import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.util.StringUtils;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -38,6 +40,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class DiscoverItems extends IQ {
 
+    public static final String NAMESPACE = "http://jabber.org/protocol/disco#items";
+
     private final List<Item> items = new CopyOnWriteArrayList<Item>();
     private String node;
 
@@ -49,6 +53,18 @@ public class DiscoverItems extends IQ {
     public void addItem(Item item) {
         synchronized (items) {
             items.add(item);
+        }
+    }
+
+    /**
+     * Adds a collection of items to the discovered information. Does nothing if itemsToAdd is null
+     *
+     * @param itemsToAdd
+     */
+    public void addItems(Collection<Item> itemsToAdd) {
+        if (itemsToAdd == null) return;
+        for (Item i : itemsToAdd) {
+            addItem(i);
         }
     }
 
@@ -91,10 +107,10 @@ public class DiscoverItems extends IQ {
 
     public String getChildElementXML() {
         StringBuilder buf = new StringBuilder();
-        buf.append("<query xmlns=\"http://jabber.org/protocol/disco#items\"");
+        buf.append("<query xmlns=\"" + NAMESPACE + "\"");
         if (getNode() != null) {
             buf.append(" node=\"");
-            buf.append(getNode());
+            buf.append(StringUtils.escapeForXML(getNode()));
             buf.append("\"");
         }
         buf.append(">");
@@ -222,13 +238,13 @@ public class DiscoverItems extends IQ {
             StringBuilder buf = new StringBuilder();
             buf.append("<item jid=\"").append(entityID).append("\"");
             if (name != null) {
-                buf.append(" name=\"").append(name).append("\"");
+                buf.append(" name=\"").append(StringUtils.escapeForXML(name)).append("\"");
             }
             if (node != null) {
-                buf.append(" node=\"").append(node).append("\"");
+                buf.append(" node=\"").append(StringUtils.escapeForXML(node)).append("\"");
             }
             if (action != null) {
-                buf.append(" action=\"").append(action).append("\"");
+                buf.append(" action=\"").append(StringUtils.escapeForXML(action)).append("\"");
             }
             buf.append("/>");
             return buf.toString();

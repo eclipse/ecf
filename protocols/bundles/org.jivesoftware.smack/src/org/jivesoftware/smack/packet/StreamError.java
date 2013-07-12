@@ -1,6 +1,6 @@
 /**
- * $Revision$
- * $Date$
+ * $Revision: 2408 $
+ * $Date: 2004-11-02 20:53:30 -0300 (Tue, 02 Nov 2004) $
  *
  * Copyright 2003-2005 Jive Software.
  *

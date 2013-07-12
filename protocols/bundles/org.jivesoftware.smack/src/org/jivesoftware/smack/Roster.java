@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 12087 $
+ * $Date: 2011-03-10 03:30:53 -0800 (Thu, 10 Mar 2011) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -45,7 +45,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * </ul>
  *
  * @author Matt Tucker
- * @see XMPPConnection#getRoster()
+ * @see Connection#getRoster()
  */
 public class Roster {
 
@@ -55,14 +55,14 @@ public class Roster {
      */
     private static SubscriptionMode defaultSubscriptionMode = SubscriptionMode.accept_all;
 
-    private XMPPConnection connection;
+    private Connection connection;
     private final Map<String, RosterGroup> groups;
     private final Map<String,RosterEntry> entries;
     private final List<RosterEntry> unfiledEntries;
     private final List<RosterListener> rosterListeners;
     private Map<String, Map<String, Presence>> presenceMap;
     // The roster is marked as initialized when at least a single roster packet
-    // has been recieved and processed.
+    // has been received and processed.
     boolean rosterInitialized = false;
     private PresencePacketListener presencePacketListener;
 
@@ -97,7 +97,7 @@ public class Roster {
      *
      * @param connection an XMPP connection.
      */
-    Roster(final XMPPConnection connection) {
+    Roster(final Connection connection) {
         this.connection = connection;
         groups = new ConcurrentHashMap<String, RosterGroup>();
         unfiledEntries = new CopyOnWriteArrayList<RosterEntry>();
@@ -111,8 +111,10 @@ public class Roster {
         PacketFilter presenceFilter = new PacketTypeFilter(Presence.class);
         presencePacketListener = new PresencePacketListener();
         connection.addPacketListener(presencePacketListener, presenceFilter);
+        
         // Listen for connection events
-        connection.addConnectionListener(new ConnectionListener() {
+        final ConnectionListener connectionListener = new AbstractConnectionListener() {
+            
             public void connectionClosed() {
                 // Changes the presence available contacts to unavailable
                 setOfflinePresences();
@@ -123,18 +125,22 @@ public class Roster {
                 setOfflinePresences();
             }
 
-            public void reconnectingIn(int seconds) {
-                // Ignore
-            }
-
-            public void reconnectionFailed(Exception e) {
-                // Ignore
-            }
-
-            public void reconnectionSuccessful() {
-                // Ignore
-            }
-        });
+        };
+        
+        // if not connected add listener after successful login
+        if(!this.connection.isConnected()) {
+            Connection.addConnectionCreationListener(new ConnectionCreationListener() {
+                
+                public void connectionCreated(Connection connection) {
+                    if(connection.equals(Roster.this.connection)) {
+                        Roster.this.connection.addConnectionListener(connectionListener);
+                    }
+                    
+                }
+            });
+        } else {
+            connection.addConnectionListener(connectionListener);
+        }
     }
 
     /**
@@ -171,8 +177,17 @@ public class Roster {
      * Reloads the entire roster from the server. This is an asynchronous operation,
      * which means the method will return immediately, and the roster will be
      * reloaded at a later point when the server responds to the reload request.
+     * 
+     * @throws IllegalStateException if connection is not logged in or logged in anonymously
      */
     public void reload() {
+        if (!connection.isAuthenticated()) {
+            throw new IllegalStateException("Not logged in to server.");
+        }
+        if (connection.isAnonymous()) {
+            throw new IllegalStateException("Anonymous users can't have a roster.");
+        }
+
         connection.sendPacket(new RosterPacket());
     }
 
@@ -206,11 +221,19 @@ public class Roster {
      *
      * @param name the name of the group.
      * @return a new group.
+     * @throws IllegalStateException if connection is not logged in or logged in anonymously
      */
     public RosterGroup createGroup(String name) {
+        if (!connection.isAuthenticated()) {
+            throw new IllegalStateException("Not logged in to server.");
+        }
+        if (connection.isAnonymous()) {
+            throw new IllegalStateException("Anonymous users can't have a roster.");
+        }
         if (groups.containsKey(name)) {
             throw new IllegalArgumentException("Group with name " + name + " alread exists.");
         }
+        
         RosterGroup group = new RosterGroup(name, connection);
         groups.put(name, group);
         return group;
@@ -225,15 +248,23 @@ public class Roster {
      * @param groups the list of group names the entry will belong to, or <tt>null</tt> if the
      *               the roster entry won't belong to a group.
      * @throws XMPPException if an XMPP exception occurs.
+     * @throws IllegalStateException if connection is not logged in or logged in anonymously
      */
     public void createEntry(String user, String name, String[] groups) throws XMPPException {
+        if (!connection.isAuthenticated()) {
+            throw new IllegalStateException("Not logged in to server.");
+        }
+        if (connection.isAnonymous()) {
+            throw new IllegalStateException("Anonymous users can't have a roster.");
+        }
+
         // Create and send roster entry creation packet.
         RosterPacket rosterPacket = new RosterPacket();
         rosterPacket.setType(IQ.Type.SET);
         RosterPacket.Item item = new RosterPacket.Item(user, name);
         if (groups != null) {
             for (String group : groups) {
-                if (group != null) {
+                if (group != null && group.trim().length() > 0) {
                     item.addGroupName(group);
                 }
             }
@@ -267,8 +298,16 @@ public class Roster {
      *
      * @param entry a roster entry.
      * @throws XMPPException if an XMPP error occurs.
+     * @throws IllegalStateException if connection is not logged in or logged in anonymously
      */
     public void removeEntry(RosterEntry entry) throws XMPPException {
+        if (!connection.isAuthenticated()) {
+            throw new IllegalStateException("Not logged in to server.");
+        }
+        if (connection.isAnonymous()) {
+            throw new IllegalStateException("Anonymous users can't have a roster.");
+        }
+
         // Only remove the entry if it's in the entry list.
         // The actual removal logic takes place in RosterPacketListenerprocess>>Packet(Packet)
         if (!entries.containsKey(entry.getUser())) {
@@ -389,7 +428,7 @@ public class Roster {
     }
 
     /**
-     * Returns an unmodiable collections of all the roster groups.
+     * Returns an unmodifiable collections of all the roster groups.
      *
      * @return an iterator for all roster groups.
      */
@@ -784,7 +823,7 @@ public class Roster {
             RosterPacket rosterPacket = (RosterPacket) packet;
             for (RosterPacket.Item item : rosterPacket.getRosterItems()) {
                 RosterEntry entry = new RosterEntry(item.getUser(), item.getName(),
-                        item.getItemType(), item.getItemStatus(), connection);
+                        item.getItemType(), item.getItemStatus(), Roster.this, connection);
 
                 // If the packet is of the type REMOVE then remove the entry
                 if (RosterPacket.ItemType.remove.equals(item.getItemType())) {
@@ -813,10 +852,14 @@ public class Roster {
                     }
                     else {
                         // If the entry was in then list then update its state with the new values
-                        entries.put(item.getUser(), entry);
-                        
-                        // Keep note that an entry has been updated
+                        RosterEntry oldEntry = entries.put(item.getUser(), entry);
+
+                        RosterPacket.Item oldItem = RosterEntry.toRosterItem(oldEntry);
+                        //We have also to check if only the group names have changed from the item
+                        if (oldEntry == null || !oldEntry.equalsDeep(entry) || !item.getGroupNames().equals(oldItem.getGroupNames()))
+                        {
                         updatedEntries.add(item.getUser());
+                        }
                     }
                     // If the roster entry belongs to any groups, remove it from the
                     // list of unfiled entries.
@@ -833,8 +876,10 @@ public class Roster {
 
                 // Find the list of groups that the user currently belongs to.
                 List<String> currentGroupNames = new ArrayList<String>();
-                for (RosterGroup rosterGroup : entry.getGroups()) {
-                    currentGroupNames.add(rosterGroup.getName());
+                for (RosterGroup group: getGroups()) {
+                    if (group.contains(entry)) {
+                        currentGroupNames.add(group.getName());
+                    }
                 }
 
                 // If the packet is not of the type REMOVE then add the entry to the groups
@@ -857,14 +902,14 @@ public class Roster {
 
                     // We have the list of old and new group names. We now need to
                     // remove the entry from the all the groups it may no longer belong
-                    // to. We do this by subracting the new group set from the old.
+                    // to. We do this by subtracting the new group set from the old.
                     for (String newGroupName : newGroupNames) {
                         currentGroupNames.remove(newGroupName);
                     }
                 }
 
                 // Loop through any groups that remain and remove the entries.
-                // This is neccessary for the case of remote entry removals.
+                // This is necessary for the case of remote entry removals.
                 for (String groupName : currentGroupNames) {
                     RosterGroup group = getGroup(groupName);
                     group.removeEntryLocal(entry);

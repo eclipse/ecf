@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 13638 $
+ * $Date: 2013-05-04 05:15:17 -0700 (Sat, 04 May 2013) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -20,12 +20,16 @@
 
 package org.jivesoftware.smack;
 
-import org.xmlpull.mxp1.MXParser;
-import org.xmlpull.v1.XmlPullParser;
-
 import java.io.InputStream;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Vector;
+
+import org.xmlpull.mxp1.MXParser;
+import org.xmlpull.v1.XmlPullParser;
 
 /**
  * Represents the configuration of Smack. The configuration is used for:
@@ -44,11 +48,20 @@ import java.util.*;
  */
 public final class SmackConfiguration {
 
-    private static final String SMACK_VERSION = "3.1.0";
+    private static final String SMACK_VERSION = "3.3.0";
 
     private static int packetReplyTimeout = 5000;
     private static int keepAliveInterval = 30000;
     private static Vector<String> defaultMechs = new Vector<String>();
+
+    private static boolean localSocks5ProxyEnabled = true;
+    private static int localSocks5ProxyPort = 7777;
+    private static int packetCollectorSize = 5000;
+
+    /**
+     * This automatically enables EntityCaps for new connections if it is set to true
+     */
+    private static boolean autoEnableEntityCaps = false;
 
     private SmackConfiguration() {
     }
@@ -65,9 +78,9 @@ public final class SmackConfiguration {
             // Get an array of class loaders to try loading the providers files from.
             ClassLoader[] classLoaders = getClassLoaders();
             for (ClassLoader classLoader : classLoaders) {
-                Enumeration configEnum = classLoader.getResources("META-INF/smack-config.xml");
+                Enumeration<URL> configEnum = classLoader.getResources("META-INF/smack-config.xml");
                 while (configEnum.hasMoreElements()) {
-                    URL url = (URL) configEnum.nextElement();
+                    URL url = configEnum.nextElement();
                     InputStream systemStream = null;
                     try {
                         systemStream = url.openStream();
@@ -82,14 +95,25 @@ public final class SmackConfiguration {
                                     parseClassToLoad(parser);
                                 }
                                 else if (parser.getName().equals("packetReplyTimeout")) {
-                                    packetReplyTimeout =
-                                            parseIntProperty(parser, packetReplyTimeout);
+                                    packetReplyTimeout = parseIntProperty(parser, packetReplyTimeout);
                                 }
                                 else if (parser.getName().equals("keepAliveInterval")) {
                                     keepAliveInterval = parseIntProperty(parser, keepAliveInterval);
                                 }
                                 else if (parser.getName().equals("mechName")) {
                                     defaultMechs.add(parser.nextText());
+                                } 
+                                else if (parser.getName().equals("localSocks5ProxyEnabled")) {
+                                    localSocks5ProxyEnabled = Boolean.parseBoolean(parser.nextText());
+                                } 
+                                else if (parser.getName().equals("localSocks5ProxyPort")) {
+                                    localSocks5ProxyPort = parseIntProperty(parser, localSocks5ProxyPort);
+                                }
+                                else if (parser.getName().equals("packetCollectorSize")) {
+                                    packetCollectorSize = parseIntProperty(parser, packetCollectorSize);
+                                }
+                                else if (parser.getName().equals("autoEnableEntityCaps")) {
+                                    autoEnableEntityCaps = Boolean.parseBoolean(parser.nextText());
                                 }
                             }
                             eventType = parser.next();
@@ -176,6 +200,26 @@ public final class SmackConfiguration {
     }
 
     /**
+     * Gets the default max size of a packet collector before it will delete 
+     * the older packets.
+     * 
+     * @return The number of packets to queue before deleting older packets.
+     */
+    public static int getPacketCollectorSize() {
+    	return packetCollectorSize;
+    }
+
+    /**
+     * Sets the default max size of a packet collector before it will delete 
+     * the older packets.
+     * 
+     * @param The number of packets to queue before deleting older packets.
+     */
+    public static void setPacketCollectorSize(int collectorSize) {
+    	packetCollectorSize = collectorSize;
+    }
+    
+    /**
      * Add a SASL mechanism to the list to be used.
      *
      * @param mech the SASL mechanism to be added
@@ -228,6 +272,60 @@ public final class SmackConfiguration {
      */
     public static List<String> getSaslMechs() {
         return defaultMechs;
+    }
+
+    /**
+     * Returns true if the local Socks5 proxy should be started. Default is true.
+     * 
+     * @return if the local Socks5 proxy should be started
+     */
+    public static boolean isLocalSocks5ProxyEnabled() {
+        return localSocks5ProxyEnabled;
+    }
+
+    /**
+     * Sets if the local Socks5 proxy should be started. Default is true.
+     * 
+     * @param localSocks5ProxyEnabled if the local Socks5 proxy should be started
+     */
+    public static void setLocalSocks5ProxyEnabled(boolean localSocks5ProxyEnabled) {
+        SmackConfiguration.localSocks5ProxyEnabled = localSocks5ProxyEnabled;
+    }
+
+    /**
+     * Return the port of the local Socks5 proxy. Default is 7777.
+     * 
+     * @return the port of the local Socks5 proxy
+     */
+    public static int getLocalSocks5ProxyPort() {
+        return localSocks5ProxyPort;
+    }
+
+    /**
+     * Sets the port of the local Socks5 proxy. Default is 7777. If you set the port to a negative
+     * value Smack tries the absolute value and all following until it finds an open port.
+     * 
+     * @param localSocks5ProxyPort the port of the local Socks5 proxy to set
+     */
+    public static void setLocalSocks5ProxyPort(int localSocks5ProxyPort) {
+        SmackConfiguration.localSocks5ProxyPort = localSocks5ProxyPort;
+    }
+
+    /**
+     * Check if Entity Caps are enabled as default for every new connection
+     * @return
+     */
+    public static boolean autoEnableEntityCaps() {
+        return autoEnableEntityCaps;
+    }
+
+    /**
+     * Set if Entity Caps are enabled or disabled for every new connection
+     * 
+     * @param true if Entity Caps should be auto enabled, false if not
+     */
+    public static void setAutoEnableEntityCaps(boolean b) {
+        autoEnableEntityCaps = b;
     }
 
     private static void parseClassToLoad(XmlPullParser parser) throws Exception {

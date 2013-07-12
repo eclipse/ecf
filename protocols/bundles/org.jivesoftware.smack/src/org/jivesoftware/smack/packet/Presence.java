@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 13428 $
+ * $Date: 2013-02-03 19:45:37 -0800 (Sun, 03 Feb 2013) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -209,7 +209,7 @@ public class Presence extends Packet {
      * @return the xml:lang of this Presence, or null if one has not been set.
      * @since 3.0.2
      */
-    private String getLanguage() {
+    public String getLanguage() {
         return language;
     }
 

@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 11613 $
+ * $Date: 2010-02-09 03:55:56 -0800 (Tue, 09 Feb 2010) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -25,9 +25,9 @@ import org.jivesoftware.smackx.packet.DiscoverItems;
  * Hosted rooms by a chat service may be discovered if they are configured to appear in the room
  * directory . The information that may be discovered is the XMPP address of the room and the room
  * name. The address of the room may be used for obtaining more detailed information
- * {@link org.jivesoftware.smackx.muc.MultiUserChat#getRoomInfo(org.jivesoftware.smack.XMPPConnection, String)}
+ * {@link org.jivesoftware.smackx.muc.MultiUserChat#getRoomInfo(org.jivesoftware.smack.Connection, String)}
  * or could be used for joining the room
- * {@link org.jivesoftware.smackx.muc.MultiUserChat#MultiUserChat(org.jivesoftware.smack.XMPPConnection, String)}
+ * {@link org.jivesoftware.smackx.muc.MultiUserChat#MultiUserChat(org.jivesoftware.smack.Connection, String)}
  * and {@link org.jivesoftware.smackx.muc.MultiUserChat#join(String)}.
  *
  * @author Gaston Dombiak

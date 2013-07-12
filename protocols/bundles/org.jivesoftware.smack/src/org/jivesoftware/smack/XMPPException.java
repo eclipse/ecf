@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 13588 $
+ * $Date: 2013-03-23 04:59:08 -0700 (Sat, 23 Mar 2013) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -41,10 +41,12 @@ import java.io.PrintWriter;
  * @author Matt Tucker
  */
 public class XMPPException extends Exception {
-
+    private static final long serialVersionUID = 6881651633890968625L;
+    
     private StreamError streamError = null;
     private XMPPError error = null;
     private Throwable wrappedThrowable = null;
+    private SmackError smackError = null;
 
     /**
      * Creates a new XMPPException.
@@ -63,6 +65,16 @@ public class XMPPException extends Exception {
     }
 
     /**
+     * Creates a new XMPPException with a Smack specific error code.
+     *
+     * @param code the root cause of the exception.
+     */
+    public XMPPException(SmackError code) {
+        super(code.getErrorMessage());
+        smackError = code;
+    }
+
+    /**
      * Creates a new XMPPException with the Throwable that was the root cause of the
      * exception.
      *
@@ -74,7 +86,7 @@ public class XMPPException extends Exception {
     }
 
     /**
-     * Cretaes a new XMPPException with the stream error that was the root case of the
+     * Creates a new XMPPException with the stream error that was the root case of the
      * exception. When a stream error is received from the server then the underlying
      * TCP connection will be closed by the server.
      *
@@ -142,6 +154,16 @@ public class XMPPException extends Exception {
      */
     public XMPPError getXMPPError() {
         return error;
+    }
+
+    /**
+     * Returns the SmackError asscociated with this exception, or <tt>null</tt> if there
+     * isn't one.
+     *
+     * @return the SmackError asscociated with this exception.
+     */
+    public SmackError getSmackError() {
+        return smackError;
     }
 
     /**

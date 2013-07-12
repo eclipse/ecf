@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 2407 $
+ * $Date: 2004-11-02 15:37:00 -0800 (Tue, 02 Nov 2004) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -20,25 +20,30 @@
 
 package org.jivesoftware.smackx.packet;
 
+import java.io.IOException;
+
 import org.jivesoftware.smack.PacketCollector;
 import org.jivesoftware.smack.SmackConfiguration;
-import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.PacketIDFilter;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.provider.IQProvider;
 import org.jivesoftware.smack.util.StringUtils;
 import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 /**
  * A last activity IQ for retrieving information about the last activity associated with a Jabber ID.
- * LastActivity (JEP-012) allows for retrieval of how long a particular user has been idle and the
+ * LastActivity (XEP-0012) allows for retrieval of how long a particular user has been idle and the
  * message the specified when doing so. Use {@link org.jivesoftware.smackx.LastActivityManager}
  * to get the last activity of a user.
  *
  * @author Derek DeMoro
  */
 public class LastActivity extends IQ {
+
+    public static final String NAMESPACE = "jabber:iq:last";
 
     public long lastActivity = -1;
     public String message;
@@ -49,12 +54,11 @@ public class LastActivity extends IQ {
 
     public String getChildElementXML() {
         StringBuilder buf = new StringBuilder();
-		buf.append("<query xmlns=\"jabber:iq:last\"");
-		if (lastActivity != -1) {
-			buf.append(" seconds=\"").append(lastActivity).append("\"");
-
-		}
-		buf.append("></query>");
+        buf.append("<query xmlns=\"" + NAMESPACE + "\"");
+        if (lastActivity != -1) {
+            buf.append(" seconds=\"").append(lastActivity).append("\"");
+        }
+        buf.append("></query>");
         return buf.toString();
     }
 
@@ -100,26 +104,29 @@ public class LastActivity extends IQ {
             super();
         }
 
-        public IQ parseIQ(XmlPullParser parser) throws Exception {
+        public IQ parseIQ(XmlPullParser parser) throws XMPPException, XmlPullParserException {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
-                throw new IllegalStateException("Parser not in proper position, or bad XML.");
+                throw new XMPPException("Parser not in proper position, or bad XML.");
             }
 
             LastActivity lastActivity = new LastActivity();
+            String seconds = parser.getAttributeValue("", "seconds");
+            String message = null;
             try {
-                String seconds = parser.getAttributeValue("", "seconds");
-                String message = parser.nextText();
-                if (seconds != null) {
-                    long xmlSeconds = new Double(seconds).longValue();
-                    lastActivity.setLastActivity((int)xmlSeconds);
-                }
-
-                if (message != null) {
-                    lastActivity.setMessage(message);
+                message = parser.nextText();
+            } catch (IOException e1) {
+                // Ignore
+            }
+            if (seconds != null) {
+                try {
+                    lastActivity.setLastActivity(Long.parseLong(seconds));
+                } catch (NumberFormatException e) {
+                    // Ignore
                 }
             }
-            catch (Exception e) {
-                e.printStackTrace();
+
+            if (message != null) {
+                lastActivity.setMessage(message);
             }
             return lastActivity;
         }
@@ -127,14 +134,14 @@ public class LastActivity extends IQ {
 
     /**
      * Retrieve the last activity of a particular jid.
-     * @param con the current XMPPConnection.
+     * @param con the current Connection.
      * @param jid the JID of the user.
      * @return the LastActivity packet of the jid.
      * @throws XMPPException thrown if a server error has occured.
      * @deprecated This method only retreives the lapsed time since the last logout of a particular jid. 
-     * Replaced by {@link  org.jivesoftware.smackx.LastActivityManager#getLastActivity(XMPPConnection, String)  getLastActivity}
+     * Replaced by {@link  org.jivesoftware.smackx.LastActivityManager#getLastActivity(Connection, String)  getLastActivity}
      */
-    public static LastActivity getLastActivity(XMPPConnection con, String jid) throws XMPPException {
+    public static LastActivity getLastActivity(Connection con, String jid) throws XMPPException {
         LastActivity activity = new LastActivity();
         jid = StringUtils.parseBareAddress(jid);
         activity.setTo(jid);

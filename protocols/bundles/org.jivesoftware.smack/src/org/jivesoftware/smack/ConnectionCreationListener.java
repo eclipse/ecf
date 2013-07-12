@@ -1,7 +1,7 @@
 /**
- * $RCSfile: ConnectionCreationListener.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/12/15 09:04:03 $
+ * $RCSfile$
+ * $Revision: 11652 $
+ * $Date: 2010-02-23 16:45:40 -0800 (Tue, 23 Feb 2010) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -21,9 +21,9 @@
 package org.jivesoftware.smack;
 
 /**
- * Implementors of this interface will be notified when a new {@link XMPPConnection}
+ * Implementors of this interface will be notified when a new {@link Connection}
  * has been created. The newly created connection will not be actually connected to
- * the server. Use {@link XMPPConnection#addConnectionCreationListener(ConnectionCreationListener)}
+ * the server. Use {@link Connection#addConnectionCreationListener(ConnectionCreationListener)}
  * to add new listeners.
  *
  * @author Gaston Dombiak
@@ -34,8 +34,8 @@ public interface ConnectionCreationListener {
      * Notification that a new connection has been created. The new connection
      * will not yet be connected to the server.
      * 
-     * @param connection the newly created connection. 
+     * @param connection the newly created connection.
      */
-    public void connectionCreated(XMPPConnection connection);
+    public void connectionCreated(Connection connection);
 
 }

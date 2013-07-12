@@ -1,7 +1,7 @@
 /**
- * $RCSfile: RoomListenerMultiplexor.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/12/15 09:04:06 $
+ * $RCSfile$
+ * $Revision: 2779 $
+ * $Date: 2005-09-05 17:00:45 -0300 (Mon, 05 Sep 2005) $
  *
  * Copyright 2003-2006 Jive Software.
  *
@@ -22,7 +22,7 @@ package org.jivesoftware.smackx.muc;
 
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.PacketListener;
-import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.util.StringUtils;
@@ -34,9 +34,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A <code>RoomListenerMultiplexor</code> multiplexes incoming packets on
- * an <code>XMPPConnection</code> using a single listener/filter pair.
+ * a <code>Connection</code> using a single listener/filter pair.
  * A single <code>RoomListenerMultiplexor</code> is created for each
- * {@link org.jivesoftware.smack.XMPPConnection} that has joined MUC rooms
+ * {@link org.jivesoftware.smack.Connection} that has joined MUC rooms
  * within its session.
  *
  * @author Larry Kirschner
@@ -45,10 +45,10 @@ class RoomListenerMultiplexor implements ConnectionListener {
 
     // We use a WeakHashMap so that the GC can collect the monitor when the
     // connection is no longer referenced by any object.
-    private static final Map<XMPPConnection, WeakReference<RoomListenerMultiplexor>> monitors =
-            new WeakHashMap<XMPPConnection, WeakReference<RoomListenerMultiplexor>>();
+    private static final Map<Connection, WeakReference<RoomListenerMultiplexor>> monitors =
+            new WeakHashMap<Connection, WeakReference<RoomListenerMultiplexor>>();
 
-    private XMPPConnection connection;
+    private Connection connection;
     private RoomMultiplexFilter filter;
     private RoomMultiplexListener listener;
 
@@ -58,9 +58,9 @@ class RoomListenerMultiplexor implements ConnectionListener {
      * @param conn the connection to monitor for room invitations.
      * @return a new or existing RoomListenerMultiplexor for a given connection.
      */
-    public static RoomListenerMultiplexor getRoomMultiplexor(XMPPConnection conn) {
+    public static RoomListenerMultiplexor getRoomMultiplexor(Connection conn) {
         synchronized (monitors) {
-            if (!monitors.containsKey(conn)) {
+            if (!monitors.containsKey(conn) || monitors.get(conn).get() == null) {
                 RoomListenerMultiplexor rm = new RoomListenerMultiplexor(conn, new RoomMultiplexFilter(),
                         new RoomMultiplexListener());
 
@@ -78,9 +78,9 @@ class RoomListenerMultiplexor implements ConnectionListener {
 
     /**
      * All access should be through
-     * the static method {@link #getRoomMultiplexor(XMPPConnection)}.
+     * the static method {@link #getRoomMultiplexor(Connection)}.
      */
-    private RoomListenerMultiplexor(XMPPConnection connection, RoomMultiplexFilter filter,
+    private RoomListenerMultiplexor(Connection connection, RoomMultiplexFilter filter,
             RoomMultiplexListener listener) {
         if (connection == null) {
             throw new IllegalArgumentException("Connection is null");
@@ -146,11 +146,11 @@ class RoomListenerMultiplexor implements ConnectionListener {
     }
 
     /**
-     * The single <code>XMPPConnection</code>-level <code>PacketFilter</code> used by a {@link RoomListenerMultiplexor}
-     * for all muc chat rooms on an <code>XMPPConnection</code>.
+     * The single <code>Connection</code>-level <code>PacketFilter</code> used by a {@link RoomListenerMultiplexor}
+     * for all muc chat rooms on an <code>Connection</code>.
      * Each time a muc chat room is added to/removed from an
-     * <code>XMPPConnection</code> the address for that chat room
-     * is added to/removed from that <code>XMPPConnection</code>'s
+     * <code>Connection</code> the address for that chat room
+     * is added to/removed from that <code>Connection</code>'s
      * <code>RoomMultiplexFilter</code>.
      */
     private static class RoomMultiplexFilter implements PacketFilter {
@@ -181,12 +181,12 @@ class RoomListenerMultiplexor implements ConnectionListener {
     }
 
     /**
-     * The single <code>XMPPConnection</code>-level <code>PacketListener</code>
+     * The single <code>Connection</code>-level <code>PacketListener</code>
      * used by a {@link RoomListenerMultiplexor}
-     * for all muc chat rooms on an <code>XMPPConnection</code>.
+     * for all muc chat rooms on an <code>Connection</code>.
      * Each time a muc chat room is added to/removed from an
-     * <code>XMPPConnection</code> the address and listener for that chat room
-     * are added to/removed from that <code>XMPPConnection</code>'s
+     * <code>Connection</code> the address and listener for that chat room
+     * are added to/removed from that <code>Connection</code>'s
      * <code>RoomMultiplexListener</code>.
      *
      * @author Larry Kirschner

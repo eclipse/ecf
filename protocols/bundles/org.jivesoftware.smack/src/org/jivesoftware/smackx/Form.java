@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 13560 $
+ * $Date: 2013-03-18 01:50:48 -0700 (Mon, 18 Mar 2013) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -20,14 +20,14 @@
 
 package org.jivesoftware.smackx;
 
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.PacketExtension;
-import org.jivesoftware.smackx.packet.DataForm;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
+
+import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.PacketExtension;
+import org.jivesoftware.smackx.packet.DataForm;
 
 /**
  * Represents a Form for gathering data. The form could be of the following types:
@@ -42,17 +42,22 @@ import java.util.StringTokenizer;
  * Depending of the form's type different operations are available. For example, it's only possible
  * to set answers if the form is of type "submit".
  * 
+ * @see <a href="http://xmpp.org/extensions/xep-0004.html">XEP-0004 Data Forms</a>
+ * 
  * @author Gaston Dombiak
  */
 public class Form {
-    
+
     public static final String TYPE_FORM = "form";
     public static final String TYPE_SUBMIT = "submit";
     public static final String TYPE_CANCEL = "cancel";
     public static final String TYPE_RESULT = "result";
-    
+
+    public static final String NAMESPACE = "jabber:x:data";
+    public static final String ELEMENT = "x";
+
     private DataForm dataForm;
-    
+
     /**
      * Returns a new ReportedData if the packet is used for gathering data and includes an 
      * extension that matches the elementName and namespace "x","jabber:x:data".  
@@ -308,6 +313,7 @@ public class Form {
             if (!FormField.TYPE_JID_MULTI.equals(field.getType())
                 && !FormField.TYPE_LIST_MULTI.equals(field.getType())
                 && !FormField.TYPE_LIST_SINGLE.equals(field.getType())
+                && !FormField.TYPE_TEXT_MULTI.equals(field.getType())
                 && !FormField.TYPE_HIDDEN.equals(field.getType())) {
                 throw new IllegalArgumentException("This field only accept list of values.");
             }
@@ -389,8 +395,8 @@ public class Form {
     public String getInstructions() {
         StringBuilder sb = new StringBuilder();
         // Join the list of instructions together separated by newlines
-        for (Iterator it = dataForm.getInstructions(); it.hasNext();) {
-            sb.append((String) it.next());
+        for (Iterator<String> it = dataForm.getInstructions(); it.hasNext();) {
+            sb.append(it.next());
             // If this is not the last instruction then append a newline
             if (it.hasNext()) {
                 sb.append("\n");

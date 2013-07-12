@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 11613 $
+ * $Date: 2010-02-09 03:55:56 -0800 (Tue, 09 Feb 2010) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -20,7 +20,7 @@
 
 package org.jivesoftware.smackx.muc;
 
-import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.packet.Message;
 
 /**
@@ -36,14 +36,14 @@ public interface InvitationListener {
      * If the room is password-protected, the invitee will receive a password to use to join
      * the room. If the room is members-only, the the invitee may be added to the member list.
      * 
-     * @param conn the XMPPConnection that received the invitation.
+     * @param conn the Connection that received the invitation.
      * @param room the room that invitation refers to.
      * @param inviter the inviter that sent the invitation. (e.g. crone1@shakespeare.lit).
      * @param reason the reason why the inviter sent the invitation.
      * @param password the password to use when joining the room.
      * @param message the message used by the inviter to send the invitation.
      */
-    public abstract void invitationReceived(XMPPConnection conn, String room, String inviter, String reason,
+    public abstract void invitationReceived(Connection conn, String room, String inviter, String reason,
                                             String password, Message message);
 
 }

@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 13325 $
+ * $Date: 2012-10-26 03:47:55 -0700 (Fri, 26 Oct 2012) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -167,8 +167,8 @@ public class MessageEvent implements PacketExtension {
      *
      * @return an iterator over all the types of events of the MessageEvent.
      */
-    public Iterator getEventTypes() {
-        ArrayList allEvents = new ArrayList();
+    public Iterator<String> getEventTypes() {
+        ArrayList<String> allEvents = new ArrayList<String>();
         if (isDelivered()) {
             allEvents.add(MessageEvent.DELIVERED);
         }

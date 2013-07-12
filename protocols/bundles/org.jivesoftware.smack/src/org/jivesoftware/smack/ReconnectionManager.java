@@ -1,7 +1,24 @@
+/**
+ * $RCSfile$
+ * $Revision$
+ * $Date$
+ *
+ * All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.jivesoftware.smack;
 
 import org.jivesoftware.smack.packet.StreamError;
-
+import java.util.Random;
 /**
  * Handles the automatic reconnection process. Every time a connection is dropped without
  * the application explictly closing it, the manager automatically tries to reconnect to
@@ -19,8 +36,10 @@ import org.jivesoftware.smack.packet.StreamError;
 public class ReconnectionManager implements ConnectionListener {
 
     // Holds the connection to the server
-    private XMPPConnection connection;
-
+    private Connection connection;
+    private Thread reconnectionThread;
+    private int randomBase = new Random().nextInt(11) + 5; // between 5 and 15 seconds
+    
     // Holds the state of the reconnection
     boolean done = false;
 
@@ -28,14 +47,14 @@ public class ReconnectionManager implements ConnectionListener {
         // Create a new PrivacyListManager on every established connection. In the init()
         // method of PrivacyListManager, we'll add a listener that will delete the
         // instance when the connection is closed.
-        XMPPConnection.addConnectionCreationListener(new ConnectionCreationListener() {
-            public void connectionCreated(XMPPConnection connection) {
+        Connection.addConnectionCreationListener(new ConnectionCreationListener() {
+            public void connectionCreated(Connection connection) {
                 connection.addConnectionListener(new ReconnectionManager(connection));
             }
         });
     }
 
-    private ReconnectionManager(XMPPConnection connection) {
+    private ReconnectionManager(Connection connection) {
         this.connection = connection;
     }
 
@@ -47,8 +66,7 @@ public class ReconnectionManager implements ConnectionListener {
      */
     private boolean isReconnectionAllowed() {
         return !done && !connection.isConnected()
-                && connection.getConfiguration().isReconnectionAllowed()
-                && connection.packetReader != null;
+                && connection.isReconnectionAllowed();
     }
 
     /**
@@ -62,12 +80,15 @@ public class ReconnectionManager implements ConnectionListener {
      * <li>Finally it will try indefinitely every 5 minutes.
      * </ol>
      */
-    protected void reconnect() {
+    synchronized protected void reconnect() {
         if (this.isReconnectionAllowed()) {
             // Since there is no thread running, creates a new one to attempt
             // the reconnection.
-            Thread reconnectionThread = new Thread() {
-
+            // avoid to run duplicated reconnectionThread -- fd: 16/09/2010
+            if (reconnectionThread!=null && reconnectionThread.isAlive()) return;
+            
+            reconnectionThread = new Thread() {
+             			
                 /**
                  * Holds the current number of reconnection attempts
                  */
@@ -79,13 +100,14 @@ public class ReconnectionManager implements ConnectionListener {
                  * @return the number of seconds until the next reconnection attempt.
                  */
                 private int timeDelay() {
+                    attempts++;
                     if (attempts > 13) {
-                        return 60 * 5;      // 5 minutes
+                	return randomBase*6*5;      // between 2.5 and 7.5 minutes (~5 minutes)
                     }
                     if (attempts > 7) {
-                        return 60;          // 1 minute
+                	return randomBase*6;       // between 30 and 90 seconds (~1 minutes)
                     }
-                    return 10;              // 10 seconds
+                    return randomBase;       // 10 seconds
                 }
 
                 /**
@@ -94,7 +116,7 @@ public class ReconnectionManager implements ConnectionListener {
                  */
                 public void run() {
                     // The process will try to reconnect until the connection is established or
-                    // the user cancel the reconnection process {@link XMPPConnection#disconnect()}
+                    // the user cancel the reconnection process {@link Connection#disconnect()}
                     while (ReconnectionManager.this.isReconnectionAllowed()) {
                         // Find how much time we should wait until the next reconnection
                         int remainingSeconds = timeDelay();
@@ -143,20 +165,20 @@ public class ReconnectionManager implements ConnectionListener {
      */
     protected void notifyReconnectionFailed(Exception exception) {
         if (isReconnectionAllowed()) {
-            for (ConnectionListener listener : connection.packetReader.connectionListeners) {
+            for (ConnectionListener listener : connection.connectionListeners) {
                 listener.reconnectionFailed(exception);
             }
         }
     }
 
     /**
-     * Fires listeners when The XMPPConnection will retry a reconnection. Expressed in seconds.
+     * Fires listeners when The Connection will retry a reconnection. Expressed in seconds.
      *
      * @param seconds the number of seconds that a reconnection will be attempted in.
      */
     protected void notifyAttemptToReconnectIn(int seconds) {
         if (isReconnectionAllowed()) {
-            for (ConnectionListener listener : connection.packetReader.connectionListeners) {
+            for (ConnectionListener listener : connection.connectionListeners) {
                 listener.reconnectingIn(seconds);
             }
         }

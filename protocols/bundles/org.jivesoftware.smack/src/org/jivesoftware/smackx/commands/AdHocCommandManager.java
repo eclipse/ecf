@@ -1,7 +1,7 @@
 /**
- * $RCSfile: AdHocCommandManager.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/12/15 09:04:05 $
+ * $RCSfile$
+ * $Revision$
+ * $Date$
  *
  * Copyright 2005-2008 Jive Software.
  *
@@ -25,6 +25,7 @@ import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.filter.PacketTypeFilter;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.Form;
@@ -47,8 +48,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * An AdHocCommandManager is responsible for keeping the list of available
  * commands offered by a service and for processing commands requests.
  *
- * Pass in an XMPPConnection isntance to
- * {@link #getAddHocCommandsManager(org.jivesoftware.smack.XMPPConnection)} in order to
+ * Pass in a Connection instance to
+ * {@link #getAddHocCommandsManager(org.jivesoftware.smack.Connection)} in order to
  * get an instance of this class. 
  * 
  * @author Gabriel Guardincerri
@@ -65,11 +66,11 @@ public class AdHocCommandManager {
     private static final int SESSION_TIMEOUT = 2 * 60;
 
     /**
-     * Map a XMPPConnection with it AdHocCommandManager. This map have a key-value
+     * Map a Connection with it AdHocCommandManager. This map have a key-value
      * pair for every active connection.
      */
-    private static Map<XMPPConnection, AdHocCommandManager> instances =
-            new ConcurrentHashMap<XMPPConnection, AdHocCommandManager>();
+    private static Map<Connection, AdHocCommandManager> instances =
+            new ConcurrentHashMap<Connection, AdHocCommandManager>();
 
     /**
      * Register the listener for all the connection creations. When a new
@@ -77,8 +78,8 @@ public class AdHocCommandManager {
      * related to that connection.
      */
     static {
-        XMPPConnection.addConnectionCreationListener(new ConnectionCreationListener() {
-            public void connectionCreated(XMPPConnection connection) {
+        Connection.addConnectionCreationListener(new ConnectionCreationListener() {
+            public void connectionCreated(Connection connection) {
                 new AdHocCommandManager(connection);
             }
         });
@@ -91,7 +92,7 @@ public class AdHocCommandManager {
      * @param connection the XMPP connection.
      * @return the AdHocCommandManager associated with the connection.
      */
-    public static AdHocCommandManager getAddHocCommandsManager(XMPPConnection connection) {
+    public static AdHocCommandManager getAddHocCommandsManager(Connection connection) {
         return instances.get(connection);
     }
 
@@ -101,9 +102,9 @@ public class AdHocCommandManager {
     private Thread sessionsSweeper;
 
     /**
-     * The XMPPConnection that this instances of AdHocCommandManager manages
+     * The Connection that this instances of AdHocCommandManager manages
      */
-    private XMPPConnection connection;
+    private Connection connection;
 
     /**
      * Map a command node with its AdHocCommandInfo. Note: Key=command node,
@@ -120,7 +121,7 @@ public class AdHocCommandManager {
      */
     private Map<String, LocalCommand> executingCommands = new ConcurrentHashMap<String, LocalCommand>();
 
-    private AdHocCommandManager(XMPPConnection connection) {
+    private AdHocCommandManager(Connection connection) {
         super();
         this.connection = connection;
         init();
@@ -138,10 +139,10 @@ public class AdHocCommandManager {
      * @param name the human readable name of the command.
      * @param clazz the class of the command, which must extend {@link LocalCommand}.
      */
-    public void registerCommand(String node, String name, final Class clazz) {
+    public void registerCommand(String node, String name, final Class<? extends LocalCommand> clazz) {
         registerCommand(node, name, new LocalCommandFactory() {
             public LocalCommand getInstance() throws InstantiationException, IllegalAccessException  {
-                return (LocalCommand)clazz.newInstance();
+                return clazz.newInstance();
             }
         });
     }
@@ -181,10 +182,14 @@ public class AdHocCommandManager {
                     public List<DiscoverInfo.Identity> getNodeIdentities() {
                         List<DiscoverInfo.Identity> answer = new ArrayList<DiscoverInfo.Identity>();
                         DiscoverInfo.Identity identity = new DiscoverInfo.Identity(
-                                "automation", name);
-                        identity.setType("command-node");
+                                "automation", name, "command-node");
                         answer.add(identity);
                         return answer;
+                    }
+
+                    @Override
+                    public List<PacketExtension> getNodePacketExtensions() {
+                        return null;
                     }
 
                 });
@@ -319,6 +324,11 @@ public class AdHocCommandManager {
                             public List<Identity> getNodeIdentities() {
                                 return null;
                             }
+
+                            @Override
+                            public List<PacketExtension> getNodePacketExtensions() {
+                                return null;
+                            }
                         });
 
         // The packet listener and the filter for processing some AdHoc Commands
@@ -333,46 +343,7 @@ public class AdHocCommandManager {
         PacketFilter filter = new PacketTypeFilter(AdHocCommandData.class);
         connection.addPacketListener(listener, filter);
 
-        // Create a thread to reap sessions. But, we'll only start it later when commands are
-        // actually registered.
-        sessionsSweeper = new Thread(new Runnable() {
-            public void run() {
-                while (true) {
-                    for (String sessionId : executingCommands.keySet()) {
-                        LocalCommand command = executingCommands.get(sessionId);
-                        // Since the command could be removed in the meanwhile
-                        // of getting the key and getting the value - by a
-                        // processed packet. We must check if it still in the
-                        // map.
-                        if (command != null) {
-                            long creationStamp = command.getCreationDate();
-                            // Check if the Session data has expired (default is
-                            // 10 minutes)
-                            // To remove it from the session list it waits for
-                            // the double of the of time out time. This is to
-                            // let
-                            // the requester know why his execution request is
-                            // not accepted. If the session is removed just
-                            // after the time out, then whe the user request to
-                            // continue the execution he will recieved an
-                            // invalid session error and not a time out error.
-                            if (System.currentTimeMillis() - creationStamp > SESSION_TIMEOUT * 1000 * 2) {
-                                // Remove the expired session
-                                executingCommands.remove(sessionId);
-                            }
-                        }
-                    }
-                    try {
-                        Thread.sleep(1000);
-                    }
-                    catch (InterruptedException ie) {
-                        // Ignore.
-                    }
-                }
-            }
-
-        });
-        sessionsSweeper.setDaemon(true);
+        sessionsSweeper = null;
     }
 
     /**
@@ -476,7 +447,45 @@ public class AdHocCommandManager {
                     response.setStatus(Status.executing);
                     executingCommands.put(sessionId, command);
                     // See if the session reaping thread is started. If not, start it.
-                    if (!sessionsSweeper.isAlive()) {
+                    if (sessionsSweeper == null) {
+                        sessionsSweeper = new Thread(new Runnable() {
+                            public void run() {
+                                while (true) {
+                                    for (String sessionId : executingCommands.keySet()) {
+                                        LocalCommand command = executingCommands.get(sessionId);
+                                        // Since the command could be removed in the meanwhile
+                                        // of getting the key and getting the value - by a
+                                        // processed packet. We must check if it still in the
+                                        // map.
+                                        if (command != null) {
+                                            long creationStamp = command.getCreationDate();
+                                            // Check if the Session data has expired (default is
+                                            // 10 minutes)
+                                            // To remove it from the session list it waits for
+                                            // the double of the of time out time. This is to
+                                            // let
+                                            // the requester know why his execution request is
+                                            // not accepted. If the session is removed just
+                                            // after the time out, then whe the user request to
+                                            // continue the execution he will recieved an
+                                            // invalid session error and not a time out error.
+                                            if (System.currentTimeMillis() - creationStamp > SESSION_TIMEOUT * 1000 * 2) {
+                                                // Remove the expired session
+                                                executingCommands.remove(sessionId);
+                                            }
+                                        }
+                                    }
+                                    try {
+                                        Thread.sleep(1000);
+                                    }
+                                    catch (InterruptedException ie) {
+                                        // Ignore.
+                                    }
+                                }
+                            }
+
+                        });
+                        sessionsSweeper.setDaemon(true);
                         sessionsSweeper.start();
                     }
                 }

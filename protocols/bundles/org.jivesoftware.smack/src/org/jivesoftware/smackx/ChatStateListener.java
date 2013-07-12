@@ -1,7 +1,7 @@
 /**
- * $RCSfile: ChatStateListener.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/12/15 09:04:05 $
+ * $RCSfile$
+ * $Revision: 2407 $
+ * $Date: 2004-11-02 15:37:00 -0800 (Tue, 02 Nov 2004) $
  *
  * Copyright 2003-2007 Jive Software.
  *

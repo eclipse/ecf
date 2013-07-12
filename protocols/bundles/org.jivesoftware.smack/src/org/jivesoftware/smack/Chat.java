@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 11613 $
+ * $Date: 2010-02-09 03:55:56 -0800 (Tue, 09 Feb 2010) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -154,7 +154,7 @@ public class Chat {
     /**
      * Delivers a message directly to this chat, which will add the message
      * to the collector and deliver it to all listeners registered with the
-     * Chat. This is used by the XMPPConnection class to deliver messages
+     * Chat. This is used by the Connection class to deliver messages
      * without a thread ID.
      *
      * @param message the message.

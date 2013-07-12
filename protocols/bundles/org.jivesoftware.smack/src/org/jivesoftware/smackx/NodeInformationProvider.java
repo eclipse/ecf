@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 13598 $
+ * $Date: 2013-03-31 07:24:50 -0700 (Sun, 31 Mar 2013) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -20,6 +20,7 @@
 
 package org.jivesoftware.smackx;
 
+import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smackx.packet.DiscoverInfo;
 import org.jivesoftware.smackx.packet.DiscoverItems;
 
@@ -36,7 +37,7 @@ import java.util.List;
  * @author Gaston Dombiak
  */
 public interface NodeInformationProvider {
-    
+
     /**
      * Returns a list of the Items {@link org.jivesoftware.smackx.packet.DiscoverItems.Item}
      * defined in the node. For example, the MUC protocol specifies that an XMPP client should 
@@ -44,7 +45,7 @@ public interface NodeInformationProvider {
      *  
      * @return a list of the Items defined in the node.
      */
-    public abstract List<DiscoverItems.Item> getNodeItems();
+    List<DiscoverItems.Item> getNodeItems();
 
     /**
      * Returns a list of the features defined in the node. For
@@ -54,7 +55,7 @@ public interface NodeInformationProvider {
      *
      * @return a list of the feature strings defined in the node.
      */
-    public abstract List<String> getNodeFeatures();
+    List<String> getNodeFeatures();
 
     /**
      * Returns a list of the indentites defined in the node. For
@@ -63,6 +64,12 @@ public interface NodeInformationProvider {
      *
      * @return a list of the Identities defined in the node.
      */
-    public abstract List<DiscoverInfo.Identity> getNodeIdentities();
+    List<DiscoverInfo.Identity> getNodeIdentities();
 
+    /**
+     * Returns a list of the packet extensions defined in the node.
+     *
+     * @return a list of the packet extensions defined in the node.
+     */
+    List<PacketExtension> getNodePacketExtensions();
 }

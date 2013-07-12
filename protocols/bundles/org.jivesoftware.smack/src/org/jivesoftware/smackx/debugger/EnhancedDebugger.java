@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 13325 $
+ * $Date: 2012-10-26 03:47:55 -0700 (Fri, 26 Oct 2012) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -22,7 +22,7 @@ package org.jivesoftware.smackx.debugger;
 
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.PacketListener;
-import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.debugger.SmackDebugger;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
@@ -112,7 +112,7 @@ public class EnhancedDebugger implements SmackDebugger {
     private JFormattedTextField userField = null;
     private JFormattedTextField statusField = null;
 
-    private XMPPConnection connection = null;
+    private Connection connection = null;
 
     private PacketListener packetReaderListener = null;
     private PacketListener packetWriterListener = null;
@@ -140,7 +140,7 @@ public class EnhancedDebugger implements SmackDebugger {
 
     JTabbedPane tabbedPane;
 
-    public EnhancedDebugger(XMPPConnection connection, Writer writer, Reader reader) {
+    public EnhancedDebugger(Connection connection, Writer writer, Reader reader) {
         this.connection = connection;
         this.writer = writer;
         this.reader = reader;
@@ -170,7 +170,7 @@ public class EnhancedDebugger implements SmackDebugger {
         // the GUI. This is what we call "interpreted" packet data, since it's the packet
         // data as Smack sees it and not as it's coming in as raw XML.
         packetReaderListener = new PacketListener() {
-            SimpleDateFormat dateFormatter = new SimpleDateFormat("hh:mm:ss aaa");
+            SimpleDateFormat dateFormatter = new SimpleDateFormat("hh:mm:ss:SS aaa");
 
             public void processPacket(final Packet packet) {
                 SwingUtilities.invokeLater(new Runnable() {
@@ -185,7 +185,7 @@ public class EnhancedDebugger implements SmackDebugger {
         // Create a thread that will listen for all outgoing packets and write them to
         // the GUI.
         packetWriterListener = new PacketListener() {
-            SimpleDateFormat dateFormatter = new SimpleDateFormat("hh:mm:ss aaa");
+            SimpleDateFormat dateFormatter = new SimpleDateFormat("hh:mm:ss:SS aaa");
 
             public void processPacket(final Packet packet) {
                 SwingUtilities.invokeLater(new Runnable() {
@@ -253,11 +253,12 @@ public class EnhancedDebugger implements SmackDebugger {
                 new DefaultTableModel(
                         new Object[]{"Hide", "Timestamp", "", "", "Message", "Id", "Type", "To", "From"},
                         0) {
-                    public boolean isCellEditable(int rowIndex, int mColIndex) {
+        			private static final long serialVersionUID = 8136121224474217264L;
+					public boolean isCellEditable(int rowIndex, int mColIndex) {
                         return false;
                     }
 
-                    public Class getColumnClass(int columnIndex) {
+                    public Class<?> getColumnClass(int columnIndex) {
                         if (columnIndex == 2 || columnIndex == 3) {
                             return Icon.class;
                         }
@@ -275,7 +276,7 @@ public class EnhancedDebugger implements SmackDebugger {
         table.getTableHeader().getColumnModel().getColumn(0).setMinWidth(0);
         // Set the column "timestamp" size
         table.getColumnModel().getColumn(1).setMaxWidth(300);
-        table.getColumnModel().getColumn(1).setPreferredWidth(70);
+        table.getColumnModel().getColumn(1).setPreferredWidth(90);
         // Set the column "direction" icon size
         table.getColumnModel().getColumn(2).setMaxWidth(50);
         table.getColumnModel().getColumn(2).setPreferredWidth(30);
@@ -315,7 +316,24 @@ public class EnhancedDebugger implements SmackDebugger {
         menu.add(menuItem1);
         // Add listener to the text area so the popup menu can come up.
         messageTextArea.addMouseListener(new PopupListener(menu));
-        allPane.setBottomComponent(new JScrollPane(messageTextArea));
+	JPanel sublayout = new JPanel(new BorderLayout());
+        sublayout.add(new JScrollPane(messageTextArea), BorderLayout.CENTER);
+       
+        JButton clearb = new JButton("Clear All Packets");
+        
+        clearb.addActionListener(new AbstractAction() {    
+	    private static final long serialVersionUID = -8576045822764763613L;
+
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+            messagesTable.setRowCount(0);
+		
+	    }
+	});
+
+        sublayout.add(clearb, BorderLayout.NORTH);
+        allPane.setBottomComponent(sublayout);
+       
         allPane.setDividerLocation(150);
 
         tabbedPane.add("All Packets", allPane);
@@ -607,7 +625,7 @@ public class EnhancedDebugger implements SmackDebugger {
         connPanel.add(
                 label,
                 new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, 21, 0, new Insets(0, 0, 0, 0), 0, 0));
-        field = new JFormattedTextField(new SimpleDateFormat("yyyy.MM.dd hh:mm:ss aaa"));
+        field = new JFormattedTextField(new SimpleDateFormat("yyyy.MM.dd hh:mm:ss:SS aaa"));
         field.setMinimumSize(new java.awt.Dimension(150, 20));
         field.setMaximumSize(new java.awt.Dimension(150, 20));
         field.setValue(creationTime);
@@ -645,7 +663,8 @@ public class EnhancedDebugger implements SmackDebugger {
                 new DefaultTableModel(new Object[][]{{"IQ", 0, 0}, {"Message", 0, 0},
                         {"Presence", 0, 0}, {"Other", 0, 0}, {"Total", 0, 0}},
                         new Object[]{"Type", "Received", "Sent"}) {
-                    public boolean isCellEditable(int rowIndex, int mColIndex) {
+        			private static final long serialVersionUID = -6793886085109589269L;
+					public boolean isCellEditable(int rowIndex, int mColIndex) {
                         return false;
                     }
                 };
@@ -711,20 +730,20 @@ public class EnhancedDebugger implements SmackDebugger {
      * Updates the statistics table
      */
     private void updateStatistics() {
-        statisticsTable.setValueAt(new Integer(receivedIQPackets), 0, 1);
-        statisticsTable.setValueAt(new Integer(sentIQPackets), 0, 2);
+        statisticsTable.setValueAt(Integer.valueOf(receivedIQPackets), 0, 1);
+        statisticsTable.setValueAt(Integer.valueOf(sentIQPackets), 0, 2);
 
-        statisticsTable.setValueAt(new Integer(receivedMessagePackets), 1, 1);
-        statisticsTable.setValueAt(new Integer(sentMessagePackets), 1, 2);
+        statisticsTable.setValueAt(Integer.valueOf(receivedMessagePackets), 1, 1);
+        statisticsTable.setValueAt(Integer.valueOf(sentMessagePackets), 1, 2);
 
-        statisticsTable.setValueAt(new Integer(receivedPresencePackets), 2, 1);
-        statisticsTable.setValueAt(new Integer(sentPresencePackets), 2, 2);
+        statisticsTable.setValueAt(Integer.valueOf(receivedPresencePackets), 2, 1);
+        statisticsTable.setValueAt(Integer.valueOf(sentPresencePackets), 2, 2);
 
-        statisticsTable.setValueAt(new Integer(receivedOtherPackets), 3, 1);
-        statisticsTable.setValueAt(new Integer(sentOtherPackets), 3, 2);
+        statisticsTable.setValueAt(Integer.valueOf(receivedOtherPackets), 3, 1);
+        statisticsTable.setValueAt(Integer.valueOf(sentOtherPackets), 3, 2);
 
-        statisticsTable.setValueAt(new Integer(receivedPackets), 4, 1);
-        statisticsTable.setValueAt(new Integer(sentPackets), 4, 2);
+        statisticsTable.setValueAt(Integer.valueOf(receivedPackets), 4, 1);
+        statisticsTable.setValueAt(Integer.valueOf(sentPackets), 4, 2);
     }
 
     /**
@@ -917,7 +936,7 @@ public class EnhancedDebugger implements SmackDebugger {
     void cancel() {
         connection.removeConnectionListener(connListener);
         connection.removePacketListener(packetReaderListener);
-        connection.removePacketWriterListener(packetWriterListener);
+        connection.removePacketSendingListener(packetWriterListener);
         ((ObservableReader) reader).removeReaderListener(readerListener);
         ((ObservableWriter) writer).removeWriterListener(writerListener);
         messagesTable = null;

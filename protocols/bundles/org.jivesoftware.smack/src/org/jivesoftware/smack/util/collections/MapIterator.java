@@ -41,7 +41,7 @@ import java.util.Iterator;
  * </pre>
  *
  * @author Matt Hall, John Watkinson, Stephen Colebourne
- * @version $Revision: 1.1 $ $Date: 2009/12/15 09:04:07 $
+ * @version $Revision: 1.1 $ $Date: 2005/10/11 17:05:19 $
  * @since Commons Collections 3.0
  */
 public interface MapIterator <K,V> extends Iterator<K> {

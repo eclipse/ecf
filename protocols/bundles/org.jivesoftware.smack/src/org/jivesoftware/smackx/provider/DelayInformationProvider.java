@@ -1,7 +1,7 @@
 /**
  * $RCSfile$
- * $Revision$
- * $Date$
+ * $Revision: 13432 $
+ * $Date: 2013-02-04 03:04:00 -0800 (Mon, 04 Feb 2013) $
  *
  * Copyright 2003-2007 Jive Software.
  *
@@ -20,56 +20,54 @@
 
 package org.jivesoftware.smackx.provider;
 
+import java.text.ParseException;
+import java.util.Date;
+
 import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smack.provider.PacketExtensionProvider;
+import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.packet.DelayInformation;
 import org.xmlpull.v1.XmlPullParser;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
-
 /**
  * The DelayInformationProvider parses DelayInformation packets.
- *
+ * 
  * @author Gaston Dombiak
+ * @author Henning Staib
  */
 public class DelayInformationProvider implements PacketExtensionProvider {
-
-    /**
-     * Creates a new DeliveryInformationProvider.
-     * ProviderManager requires that every PacketExtensionProvider has a public, no-argument
-     * constructor
-     */
-    public DelayInformationProvider() {
-    }
-
+    
     public PacketExtension parseExtension(XmlPullParser parser) throws Exception {
+        String stampString = (parser.getAttributeValue("", "stamp"));
         Date stamp = null;
+        
         try {
-            synchronized (DelayInformation.UTC_FORMAT) {
-                stamp = DelayInformation.UTC_FORMAT.parse(parser.getAttributeValue("", "stamp"));
-            }
-        } catch (ParseException e) {
-            // Try again but assuming that the date follows JEP-82 format
-            // (Jabber Date and Time Profiles) 
-            try {
-                synchronized (DelayInformation.NEW_UTC_FORMAT) {
-                    stamp = DelayInformation.NEW_UTC_FORMAT
-                            .parse(parser.getAttributeValue("", "stamp"));
-                }
-            } catch (ParseException e1) {
-                // Last attempt. Try parsing the date assuming that it does not include milliseconds
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-                formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-                stamp = formatter.parse(parser.getAttributeValue("", "stamp"));
+            stamp = StringUtils.parseDate(stampString);
+        }
+        catch (ParseException parseExc) {
+            /*
+             * if date could not be parsed but XML is valid, don't shutdown
+             * connection by throwing an exception instead set timestamp to epoch 
+             * so that it is obviously wrong. 
+             */
+            if (stamp == null) {
+                stamp = new Date(0);
             }
         }
+        
+        
         DelayInformation delayInformation = new DelayInformation(stamp);
         delayInformation.setFrom(parser.getAttributeValue("", "from"));
-        delayInformation.setReason(parser.nextText());
+        String reason = parser.nextText();
+
+        /*
+         * parser.nextText() returns empty string if there is no reason.
+         * DelayInformation API specifies that null should be returned in that
+         * case.
+         */
+        reason = "".equals(reason) ? null : reason;
+        delayInformation.setReason(reason);
+        
         return delayInformation;
     }
-
 }
