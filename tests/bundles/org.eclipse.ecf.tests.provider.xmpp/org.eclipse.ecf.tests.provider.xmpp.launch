@@ -29,7 +29,7 @@
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog -console -clean"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.eclipse.ecf.tests.provider.xmpp"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dsmack.debug=false&#10;-Dchat.room.name=ecf-test-chatroom&#10;-Dusername0=ecf-test1@ecf-project.org -Dpassword0=8yxbe3f89f&#10;-Dusername1=ecf-test2@ecf-project.org -Dpassword1=8yxbe3f89f&#10;-Dusername2=ecf-test3@ecf-project.org -Dpassword2=8yxbe3f89f"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dsmack.debug=false&#10;-Dchat.room.name=ecf-test-chatroom&#10;-Dusername0=ecf-test1@ecf-project.org;ecf-services.osuosl.org -Dpassword0=8yxbe3f89f&#10;-Dusername1=ecf-test2@ecf-project.org;ecf-services.osuosl.org -Dpassword1=8yxbe3f89f&#10;-Dusername2=ecf-test3@ecf-project.org;ecf-services.osuosl.org -Dpassword2=8yxbe3f89f"/>
 <stringAttribute key="pde.version" value="3.3"/>
 <stringAttribute key="product" value="mail.product"/>
 <booleanAttribute key="run_in_ui_thread" value="true"/>
