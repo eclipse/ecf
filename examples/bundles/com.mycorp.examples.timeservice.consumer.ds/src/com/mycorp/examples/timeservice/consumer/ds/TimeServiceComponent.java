@@ -6,21 +6,18 @@
  * 
  * Contributors: Scott Lewis - initial API and implementation
  ******************************************************************************/
-package com.mycorp.examples.timeservice;
+package com.mycorp.examples.timeservice.consumer.ds;
 
-/**
- * Example OSGi service for retrieving current time in milliseconds from January
- * 1, 1970.
- * 
- */
-public interface ITimeService {
+import com.mycorp.examples.timeservice.ITimeService;
 
-	/**
-	 * Get current time.
-	 * 
-	 * @return Long current time in milliseconds since Jan 1, 1970. Will not
-	 *         return <code>null</code>.
-	 */
-	public Long getCurrentTime();
+public class TimeServiceComponent {
 
+	void bindTimeService(ITimeService timeService) {
+		System.out.println("Calling ITimeService discovered via DS. timeService="
+				+ timeService);
+		// Call the service and print out result!
+		System.out
+				.println("Call Done.  Current time given by ITimeService.getCurrentTime() is: "
+						+ timeService.getCurrentTime());
+	}
 }
