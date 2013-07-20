@@ -13,11 +13,8 @@ import com.mycorp.examples.timeservice.ITimeService;
 public class TimeServiceComponent {
 
 	void bindTimeService(ITimeService timeService) {
-		System.out.println("Calling ITimeService discovered via DS. timeService="
-				+ timeService);
+		System.out.println("Discovered ITimeService via DS");
 		// Call the service and print out result!
-		System.out
-				.println("Call Done.  Current time given by ITimeService.getCurrentTime() is: "
-						+ timeService.getCurrentTime());
+		System.out.println("Current time is: " + timeService.getCurrentTime());
 	}
 }
