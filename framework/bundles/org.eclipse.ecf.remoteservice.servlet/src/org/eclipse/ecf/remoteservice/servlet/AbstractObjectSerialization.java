@@ -1,0 +1,54 @@
+/*******************************************************************************
+* Copyright (c) 2013 Composent, Inc. and others. All rights reserved. This
+* program and the accompanying materials are made available under the terms of
+* the Eclipse Public License v1.0 which accompanies this distribution, and is
+* available at http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*   Composent, Inc. - initial API and implementation
+******************************************************************************/
+package org.eclipse.ecf.remoteservice.servlet;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+
+public class AbstractObjectSerialization {
+
+	public final static int DEFAULT_BAOS_BUFFER_SIZE = 4096;
+	
+	private StreamUtil streamUtil = new StreamUtil(DEFAULT_BAOS_BUFFER_SIZE);
+	
+	protected byte[] readToByteArray(InputStream input) throws IOException {
+		return streamUtil.toByteArray(input);
+	}
+	
+	protected void writeByteArray(OutputStream outs, byte[] bytes) throws IOException {
+		streamUtil.writeByteArray(outs,bytes);
+	}
+	
+	protected Object deserializeFromBytes(byte[] bytes) throws IOException {
+		if (bytes.length == 0) return null;
+		ByteArrayInputStream bins = new ByteArrayInputStream(bytes);
+		ObjectInputStream oins = new ObjectInputStream(bins);
+		Object result = null;
+		try {
+			result = oins.readObject();
+		} catch (ClassNotFoundException e) {
+			throw new IOException("Class not found when deserializing object",e);
+		}
+		return result;
+	}
+	
+	protected byte[] serializeToBytes(Object object) throws IOException {
+		if (object == null) return new byte[0];
+		ByteArrayOutputStream bos = new ByteArrayOutputStream(DEFAULT_BAOS_BUFFER_SIZE);
+		ObjectOutputStream oos = new ObjectOutputStream(bos);
+		oos.writeObject(object);
+		return bos.toByteArray();
+	}
+}
