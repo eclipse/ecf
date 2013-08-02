@@ -143,7 +143,7 @@ public class RemoteServiceClientRegistry implements Serializable {
 
 	private boolean containsID(RemoteServiceClientRegistration reg, ID[] idFilter) {
 		for (int i = 0; i < idFilter.length; i++) {
-			if (reg.getID().equals(idFilter[i]))
+			if (reg.getID().equals(idFilter[i]) || reg.getContainerID().equals(idFilter[i]))
 				return true;
 		}
 		return false;

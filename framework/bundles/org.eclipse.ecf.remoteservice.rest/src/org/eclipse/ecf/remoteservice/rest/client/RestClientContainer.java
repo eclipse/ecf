@@ -9,8 +9,8 @@
  *******************************************************************************/
 package org.eclipse.ecf.remoteservice.rest.client;
 
-import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.Namespace;
+import java.util.Dictionary;
+import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.client.*;
 import org.eclipse.ecf.remoteservice.rest.identity.RestID;
@@ -26,6 +26,31 @@ public class RestClientContainer extends AbstractClientContainer implements IRem
 		// Set serializers
 		setParameterSerializer(new StringParameterSerializer());
 		setResponseDeserializer(new XMLRemoteResponseDeserializer());
+	}
+
+	protected class RestRemoteServiceClientRegistration extends RemoteServiceClientRegistration {
+
+		public RestRemoteServiceClientRegistration(Namespace namespace, IRemoteCallable[] restCalls, Dictionary properties, RemoteServiceClientRegistry registry) {
+			super(namespace, restCalls, properties, registry);
+			ID cID = getConnectedID();
+			if (cID != null)
+				this.containerId = cID;
+		}
+
+		public RestRemoteServiceClientRegistration(Namespace namespace, String[] classNames, IRemoteCallable[][] restCalls, Dictionary properties, RemoteServiceClientRegistry registry) {
+			super(namespace, classNames, restCalls, properties, registry);
+			ID cID = getConnectedID();
+			if (cID != null)
+				this.containerId = cID;
+		}
+	}
+
+	protected RemoteServiceClientRegistration createRestServiceRegistration(String[] clazzes, IRemoteCallable[][] callables, Dictionary properties) {
+		return new RestRemoteServiceClientRegistration(getRemoteServiceNamespace(), clazzes, callables, properties, registry);
+	}
+
+	protected RemoteServiceClientRegistration createRestServiceRegistration(IRemoteCallable[] callables, Dictionary properties) {
+		return new RestRemoteServiceClientRegistration(getRemoteServiceNamespace(), callables, properties, registry);
 	}
 
 	protected IRemoteService createRemoteService(RemoteServiceClientRegistration registration) {

@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-Vendor: %plugin.provider
 Bundle-SymbolicName: org.eclipse.ecf.remoteservice.rest;singleton:=true
-Bundle-Version: 2.2.200.qualifier
+Bundle-Version: 2.2.300.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.remoteservice.rest.Activator
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global
@@ -35,6 +35,7 @@ Import-Package: org.apache.http;version="4.1.2",
  org.osgi.service.log,
  org.osgi.util.tracker
 Require-Bundle: org.eclipse.equinox.common,
- org.eclipse.ecf
+ org.eclipse.ecf,
+ org.eclipse.ecf.identity
 Service-Component: META-INF/dspresent.xml
 Bundle-Localization: plugin
