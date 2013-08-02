@@ -39,7 +39,10 @@ public class RestNamespace extends Namespace {
 		super(name, desc);
 	}
 
-	private String getInitFromExternalForm(Object[] args) {
+	/**
+	 * @since 2.2.300
+	 */
+	protected String getInitFromExternalForm(Object[] args) {
 		if (args == null || args.length < 1 || args[0] == null)
 			return null;
 		if (args[0] instanceof String) {
