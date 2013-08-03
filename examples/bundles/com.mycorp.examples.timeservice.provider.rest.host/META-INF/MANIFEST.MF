@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ECF TimeService Rest Provider Host
+Bundle-SymbolicName: com.mycorp.examples.timeservice.provider.rest.host;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: MyCorp
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Require-Bundle: org.eclipse.equinox.common,
+ org.eclipse.ecf
+Import-Package: com.mycorp.examples.timeservice;version="1.0.0",
+ com.mycorp.examples.timeservice.provider.rest.common,
+ javax.servlet;version="2.6.0",
+ javax.servlet.http;version="2.6.0",
+ org.eclipse.ecf.core.sharedobject;version="2.2.100",
+ org.eclipse.ecf.provider.generic;version="4.3.0",
+ org.eclipse.ecf.provider.remoteservice.generic;version="4.0.0",
+ org.eclipse.ecf.remoteservice.servlet,
+ org.eclipse.ecf.remoteservice.util;version="8.1.0",
+ org.osgi.framework;version="1.7.0",
+ org.osgi.service.http;version="1.2.1"
+Service-Component: OSGI-INF/httpservicecomponent.xml
+Bundle-ActivationPolicy: lazy

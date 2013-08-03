@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ecf.containerFactory">
+      <containerFactory
+            class="com.mycorp.examples.timeservice.internal.provider.rest.consumer.TimeServiceRestClientContainerInstantiator"
+            hidden="false"
+            name="com.mycorp.examples.timeservice.rest.consumer"
+            server="false">
+      </containerFactory>
+   </extension>
+
+</plugin>

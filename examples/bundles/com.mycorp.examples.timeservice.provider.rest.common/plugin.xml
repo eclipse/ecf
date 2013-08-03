@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ecf.identity.namespace">
+      <namespace
+            class="com.mycorp.examples.timeservice.provider.rest.common.TimeServiceRestNamespace"
+            description="Timeservice Rest Namespace"
+            name="com.mycorp.examples.timeservice.provider.rest.namespace">
+      </namespace>
+   </extension>
+
+</plugin>

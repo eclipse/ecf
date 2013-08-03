@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" activate="activate" name="com.mycorp.examples.timeservice.provider.rest.host.httpservicecomponent">
+   <implementation class="com.mycorp.examples.timeservice.internal.provider.rest.host.TimeServiceHttpServiceComponent"/>
+   <reference bind="bindHttpService" cardinality="1..1" interface="org.osgi.service.http.HttpService" name="HttpService" policy="dynamic" unbind="unbindHttpService"/>
+</scr:component>
