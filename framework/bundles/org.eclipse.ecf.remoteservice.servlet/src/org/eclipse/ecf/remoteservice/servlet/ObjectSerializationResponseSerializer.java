@@ -15,8 +15,10 @@ import java.io.OutputStream;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.ecf.remoteservice.util.ObjectSerializationUtil;
+
 public class ObjectSerializationResponseSerializer extends
-		AbstractObjectSerialization implements IRemoteCallResponseSerializer {
+		ObjectSerializationUtil implements IRemoteCallResponseSerializer {
 
 	public void serializeResponse(HttpServletResponse resp,
 			Object responseObject) throws IOException, ServletException {
