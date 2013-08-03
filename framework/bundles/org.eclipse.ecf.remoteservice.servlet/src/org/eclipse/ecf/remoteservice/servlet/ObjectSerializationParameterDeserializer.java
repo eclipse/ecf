@@ -14,7 +14,9 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-public class ObjectSerializationParameterDeserializer extends AbstractObjectSerialization implements
+import org.eclipse.ecf.remoteservice.util.ObjectSerializationUtil;
+
+public class ObjectSerializationParameterDeserializer extends ObjectSerializationUtil implements
 		IRemoteCallParameterDeserializer {
 
 	public Object[] deserializeParameters(HttpServletRequest req)

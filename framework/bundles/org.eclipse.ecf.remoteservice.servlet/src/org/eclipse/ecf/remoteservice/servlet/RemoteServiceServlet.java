@@ -11,7 +11,7 @@ package org.eclipse.ecf.remoteservice.servlet;
 
 import javax.servlet.http.HttpServlet;
 
-public class AbstractRemoteServiceHttpServlet extends HttpServlet {
+public class RemoteServiceServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -871598533602636840L;
 
