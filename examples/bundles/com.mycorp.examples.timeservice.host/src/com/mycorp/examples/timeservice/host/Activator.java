@@ -21,20 +21,23 @@ import com.mycorp.examples.timeservice.ITimeService;
 
 public class Activator implements BundleActivator {
 
+	private static final String GENERIC_SERVER_CONFIG = "ecf.generic.server";
+	private static final String GENERIC_SERVER_IDPROP_NAME = GENERIC_SERVER_CONFIG+ ".id";
+	private static final String GENERIC_SERVER_IDPROP_VALUE = "ecftcp://localhost:3288/server";
+	
+	private static final String REST_SERVER_CONFIG = "com.mycorp.examples.timeservice.rest.host";
+	private static final String REST_SERVER_IDPROP_NAME = REST_SERVER_CONFIG + ".id";
+	private static final String REST_SERVER_IDPROP_VALUE = "http://localhost:8181";
+	
 	public void start(BundleContext context) throws Exception {
 		// If the verboseRemoteServiceAdmin system property is set
 		// then register debug listener
 		if (Boolean.getBoolean("verboseRemoteServiceAdmin"))
 			registerDebugListener(context);
 
+		// Create remote service properties...see createRemoteServiceProperties above
+		Dictionary<String, Object> props = createRemoteServiceProperties();
 		// Create MyTimeService impl and register as a remote service
-		Dictionary<String, Object> props = new Hashtable<String, Object>();
-		// This is the only required service property to trigger remote services
-		props.put("service.exported.interfaces", "*");
-		// set service.exported.configs
-		props.put("service.exported.configs",System.getProperty("service.exported.configs","ecf.generic.server"));
-		// Set the ecf-generic-provider-specific id
-		props.put("ecf.generic.server.id",System.getProperty("ecf.generic.server.id","ecftcp://localhost:3288/server"));
 		// register the remote service with the service registry. If ECF remote
 		// services/RSA impl is installed and started, it will export this
 		// service via the default distribution provider, which is
@@ -52,6 +55,29 @@ public class Activator implements BundleActivator {
 	public void stop(BundleContext context) throws Exception {
 		// do nothing
 	}
+
+	private Dictionary<String,Object> createRemoteServiceProperties() {
+		Dictionary<String, Object> props = new Hashtable<String, Object>();
+		// This is the only required service property to trigger remote services
+		props.put("service.exported.interfaces", "*");
+		// set service.exported.configs
+		String serviceExportedConfig = System.getProperty("service.exported.configs",GENERIC_SERVER_CONFIG);
+		props.put("service.exported.configs",serviceExportedConfig);
+		String idPropName = null;
+		String idPropValue = null;
+		if (GENERIC_SERVER_CONFIG.equals(serviceExportedConfig)) {
+			idPropName = GENERIC_SERVER_IDPROP_NAME;
+			idPropValue = GENERIC_SERVER_IDPROP_VALUE;
+		} else if (REST_SERVER_CONFIG.equals(serviceExportedConfig)) {
+			idPropName = REST_SERVER_IDPROP_NAME;
+			idPropValue = REST_SERVER_IDPROP_VALUE;
+		} else throw new NullPointerException("Unsuppored value for service.exported.config="+serviceExportedConfig);
+		
+		// Set the id propName and idPropValue
+		props.put(idPropName,idPropValue);
+		return props;
+	}
+	
 
 	// Register a RemoteServiceAdminListener so we can report to sdtout
 	// when a remote service has actually been successfully exported by
