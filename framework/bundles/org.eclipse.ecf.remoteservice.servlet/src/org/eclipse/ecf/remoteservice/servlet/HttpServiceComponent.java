@@ -17,6 +17,7 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.http.HttpContext;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
@@ -91,5 +92,12 @@ public abstract class HttpServiceComponent {
 	
 	public void unregisterServlet(@SuppressWarnings("rawtypes") Class service) {
 		unregisterServlet(SLASH + service.getName());
+	}
+	
+	public <T> T getService(Class<T> service) {
+		if (context == null) return null;
+		ServiceReference<T> ref = context.getServiceReference(service);
+		if (ref == null) return null;
+		return context.getService(ref);
 	}
 }
