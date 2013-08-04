@@ -35,6 +35,7 @@ public class RestClientContainer extends AbstractClientContainer implements IRem
 			ID cID = getConnectedID();
 			if (cID != null)
 				this.containerId = cID;
+			this.serviceID = new RemoteServiceID(namespace, containerId, registry.getNextServiceId());
 		}
 
 		public RestRemoteServiceClientRegistration(Namespace namespace, String[] classNames, IRemoteCallable[][] restCalls, Dictionary properties, RemoteServiceClientRegistry registry) {
@@ -42,6 +43,7 @@ public class RestClientContainer extends AbstractClientContainer implements IRem
 			ID cID = getConnectedID();
 			if (cID != null)
 				this.containerId = cID;
+			this.serviceID = new RemoteServiceID(namespace, containerId, registry.getNextServiceId());
 		}
 	}
 
