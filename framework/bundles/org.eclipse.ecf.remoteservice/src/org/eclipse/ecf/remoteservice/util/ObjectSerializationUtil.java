@@ -37,7 +37,9 @@ public class ObjectSerializationUtil {
 		try {
 			result = oins.readObject();
 		} catch (ClassNotFoundException e) {
-			throw new IOException("Class not found when deserializing object", e); //$NON-NLS-1$
+			IOException t = new IOException("Class not found when deserializing object"); //$NON-NLS-1$
+			t.setStackTrace(e.getStackTrace());
+			throw t;
 		}
 		return result;
 	}
