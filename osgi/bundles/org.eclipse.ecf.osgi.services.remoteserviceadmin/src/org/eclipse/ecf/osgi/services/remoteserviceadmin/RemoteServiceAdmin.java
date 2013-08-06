@@ -382,9 +382,8 @@ public class RemoteServiceAdmin implements
 		final IConsumerContainerSelector consumerContainerSelector = getConsumerContainerSelector();
 		// If there is none, then we can go no further
 		if (consumerContainerSelector == null) {
-			logError("importService", //$NON-NLS-1$
-					"No defaultConsumerContainerSelector available"); //$NON-NLS-1$
-			return null;
+			String errorMessage = "No consumerContainerSelector available"; //$NON-NLS-1$
+			return createErrorImportRegistration(ed, errorMessage, new SelectContainerException(errorMessage,null,null));
 		}
 		// Select the rsContainer to handle the endpoint description
 		IRemoteServiceContainer rsContainer = null;
@@ -398,25 +397,16 @@ public class RemoteServiceAdmin implements
 						}
 					});
 		} catch (PrivilegedActionException e) {
-			// If failed, create an error ImportRegistration
-			ImportRegistration errorRegistration = new ImportRegistration(ed,
-					e.getException());
-			// Add it to the set of imported registrations
-			synchronized (importedRegistrations) {
-				importedRegistrations.add(errorRegistration);
-			}
-			// publish import event
-			publishImportEvent(errorRegistration);
-			return errorRegistration;
+			return createErrorImportRegistration(ed, "Unexpected exception in selectConsumerContainer", e.getException()); //$NON-NLS-1$
 		}
 		// If none found, log a warning and we're done
 		if (rsContainer == null) {
-			logWarning(
-					"importService", "No remote service container selected for endpoint=" //$NON-NLS-1$ //$NON-NLS-2$
-							+ endpointDescription
-							+ ". Remote service NOT IMPORTED"); //$NON-NLS-1$
-			return null;
+			String errorMessage = "No remote service container selected for endpoint=" //$NON-NLS-1$
+					+ endpointDescription
+					+ ". Remote service NOT IMPORTED"; //$NON-NLS-1$
+			return createErrorImportRegistration(ed, errorMessage, new SelectContainerException(errorMessage,null,null));
 		}
+		
 		// If one selected then import the service to create an import
 		// registration
 		ImportRegistration importRegistration = null;
@@ -432,6 +422,18 @@ public class RemoteServiceAdmin implements
 		return importRegistration;
 	}
 
+	private ImportRegistration createErrorImportRegistration(EndpointDescription ed, String errorMessage, Throwable e) {
+		logError("importService",errorMessage,e); //$NON-NLS-1$
+		ImportRegistration errorRegistration = new ImportRegistration(ed,e);
+		// Add it to the set of imported registrations
+		synchronized (importedRegistrations) {
+			importedRegistrations.add(errorRegistration);
+		}
+		// publish import event
+		publishImportEvent(errorRegistration);
+		return errorRegistration;
+	}
+	
 	public Collection<org.osgi.service.remoteserviceadmin.ExportReference> getExportedServices() {
 		Collection<org.osgi.service.remoteserviceadmin.ExportReference> results = new ArrayList<org.osgi.service.remoteserviceadmin.ExportReference>();
 		synchronized (exportedRegistrations) {
