@@ -3,6 +3,7 @@
   <rm:locator pattern="^ch\.ethz\.iks(\..+)?" searchPathRef="org.eclipse.ecf"/>
   <rm:locator pattern="^org\.eclipse\.ecf(\..+)?" searchPathRef="org.eclipse.ecf"/>
   <rm:locator pattern="^org\.eclipse\.team\.ecf(\..+)?" searchPathRef="org.eclipse.ecf"/>
+  <rm:locator pattern="^com\.mycorp\.examples(\..+)?" searchPathRef="org.eclipse.ecf"/>
   <rm:locator pattern="^org\.jivesoftware\.smack$" searchPathRef="org.eclipse.ecf"/>
   <rm:locator pattern="^org\.eclipse\.osgi\.services\.remoteserviceadmin(\..+)?" searchPathRef="org.eclipse.ecf.rsa"/>
   <rm:locator pattern="^org\.eclipse\.emf(\..+)?" searchPathRef="org.eclipse.emf"/>
