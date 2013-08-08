@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.remoteservice.servlet.RemoteServiceServlet;
+import org.eclipse.ecf.remoteservice.servlet.RemoteServiceHttpServlet;
 import org.eclipse.ecf.remoteservice.servlet.ServletServerContainer;
 import org.eclipse.ecf.remoteservice.servlet.HttpServiceComponent;
 import org.eclipse.ecf.remoteservice.servlet.ObjectSerializationResponseSerializer;
@@ -60,7 +60,7 @@ public class TimeServiceServerContainer extends ServletServerContainer {
 				TimeServiceRestNamespace.NAME);
 	}
 
-	class TimeRemoteServiceHttpServlet extends RemoteServiceServlet {
+	class TimeRemoteServiceHttpServlet extends RemoteServiceHttpServlet {
 
 		private static final long serialVersionUID = 3906126401901826462L;
 
