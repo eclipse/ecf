@@ -22,6 +22,7 @@ import org.eclipse.ecf.remoteservice.servlet.RemoteServiceServlet;
 import org.eclipse.ecf.remoteservice.servlet.ServletServerContainer;
 import org.eclipse.ecf.remoteservice.servlet.HttpServiceComponent;
 import org.eclipse.ecf.remoteservice.servlet.ObjectSerializationResponseSerializer;
+import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 
 import com.mycorp.examples.timeservice.ITimeService;
@@ -31,17 +32,25 @@ public class TimeServiceServerContainer extends ServletServerContainer {
 
 	public static final String NAME = "com.mycorp.examples.timeservice.rest.host";
 
-	public TimeServiceServerContainer(ID id) throws ServletException,
+	private final String timeServiceServletName = "/" + ITimeService.class.getName();
+
+	private HttpService httpService;
+	
+	public TimeServiceServerContainer(ID id, HttpService httpService) throws ServletException,
 			NamespaceException {
 		super(id);
-		// Register our servlet as ITimeService.class
-		HttpServiceComponent.getDefault().registerServlet(ITimeService.class,
+		this.httpService = httpService;
+		// Register our servlet with 
+		this.httpService.registerServlet(timeServiceServletName,
 				new TimeRemoteServiceHttpServlet(), null, null);
 	}
 
 	@Override
 	public void dispose() {
-		HttpServiceComponent.getDefault().unregisterServlet(ITimeService.class);
+		if (httpService != null) {
+			httpService.unregister(timeServiceServletName);
+			httpService = null;
+		}
 		super.dispose();
 	}
 
@@ -51,7 +60,7 @@ public class TimeServiceServerContainer extends ServletServerContainer {
 				TimeServiceRestNamespace.NAME);
 	}
 
-	public class TimeRemoteServiceHttpServlet extends RemoteServiceServlet {
+	class TimeRemoteServiceHttpServlet extends RemoteServiceServlet {
 
 		private static final long serialVersionUID = 3906126401901826462L;
 
@@ -61,9 +70,14 @@ public class TimeServiceServerContainer extends ServletServerContainer {
 			setRemoteCallResponseSerializer(new ObjectSerializationResponseSerializer());
 		}
 
+		// Handle post call right here.
 		@Override
 		protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 				throws ServletException, IOException {
+			
+			// No arguments to getCurrentTime() method, so
+			// nothing to deserialize
+			
 			// Get local ITimeService
 			ITimeService timeService = HttpServiceComponent.getDefault()
 					.getService(ITimeService.class);
