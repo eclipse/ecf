@@ -26,6 +26,17 @@
     </cq:documentation>
 
     </cq:advisorNode>
+    <cq:advisorNode namePattern="^com\.mycorp\.examples(\..+)?" useTargetPlatform="false" useWorkspace="false">
+        
+    <cq:documentation xmlns="http://www.w3.org/1999/xhtml">This name pattern matchesorg.eclipse.ecf.anything.
+
+       The regex (\..+)? matches zero or more occurrences 
+       of . followed by one of more of any character.
+
+       Skip Component is not checked.
+    </cq:documentation>
+
+    </cq:advisorNode>
     <cq:advisorNode namePattern="^org\.eclipse\.team\.ecf(\..+)?" useTargetPlatform="false" useWorkspace="false">
     
     <cq:documentation xmlns="http://www.w3.org/1999/xhtml">This name pattern matches org.eclipse.team.ecf.anything.

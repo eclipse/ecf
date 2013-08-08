@@ -7,6 +7,7 @@
     <md:mspecNode namePattern="^ch\.ethz\.iks(\..+)?" materializer="workspace"/>
     <md:mspecNode namePattern="^org\.eclipse\.team\.ecf(\..+)?" materializer="workspace"/>
     <md:mspecNode namePattern="^org\.eclipse\.ecf(\..+)?" materializer="workspace"/>
+    <md:mspecNode namePattern="^com\.mycorp\.examples(\..+)?" materializer="workspace"/>
     <md:mspecNode namePattern="^org\.jivesoftware\.smack$" materializer="workspace"/>
     <md:mspecNode namePattern="^org\.eclipse\.osgi\.services\.remoteserviceadmin(\..+)?" materializer="workspace"/>
 
