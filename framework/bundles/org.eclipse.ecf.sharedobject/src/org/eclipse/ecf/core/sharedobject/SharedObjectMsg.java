@@ -290,6 +290,7 @@ public class SharedObjectMsg implements Serializable {
 		return doInvoke(target);
 	}
 
+	@SuppressWarnings("unchecked")
 	Object doInvoke(final Object target) // package scope for security
 			throws Exception {
 		if (target == null)

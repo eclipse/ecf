@@ -83,6 +83,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor, ISharedObj
 		return getSharedObject().getHomeContainerID();
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void addParticipants(ID[] ids) {
 		if (ids != null) {
 			for (int i = 0; i < ids.length; i++) {
@@ -100,6 +101,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor, ISharedObj
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void addFailed(ID remote, Throwable failure) {
 		if (remote != null && failure != null) {
 			trace("addFailed(" + remote + "," + failure + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$

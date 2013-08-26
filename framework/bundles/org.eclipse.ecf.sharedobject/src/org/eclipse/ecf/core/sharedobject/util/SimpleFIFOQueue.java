@@ -24,6 +24,7 @@ public class SimpleFIFOQueue implements ISimpleFIFOQueue {
 		stopped = false;
 	}
 
+	@SuppressWarnings("unchecked")
 	public synchronized boolean enqueue(final Object obj) {
 		if (isStopped() || obj == null) {
 			return false;

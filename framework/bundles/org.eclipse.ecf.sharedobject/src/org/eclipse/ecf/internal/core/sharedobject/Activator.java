@@ -66,6 +66,7 @@ public class Activator implements BundleActivator {
 	 * 
 	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
+	@SuppressWarnings("unchecked")
 	public void start(BundleContext ctxt) throws Exception {
 		this.context = ctxt;
 		plugin = this;
@@ -123,6 +124,7 @@ public class Activator implements BundleActivator {
 
 	private LogService systemLogService = null;
 
+	@SuppressWarnings("unchecked")
 	protected LogService getLogService() {
 		if (context == null) {
 			if (systemLogService == null)
@@ -143,6 +145,7 @@ public class Activator implements BundleActivator {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public IAdapterManager getAdapterManager() {
 		if (context == null)
 			return null;

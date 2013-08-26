@@ -63,10 +63,12 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 		return getDescriptions0();
 	}
 
+	@SuppressWarnings("unchecked")
 	protected List getDescriptions0() {
 		return new ArrayList(sharedobjectdescriptions.values());
 	}
 
+	@SuppressWarnings("unchecked")
 	protected SharedObjectTypeDescription addDescription0(SharedObjectTypeDescription n) {
 		if (n == null)
 			return null;

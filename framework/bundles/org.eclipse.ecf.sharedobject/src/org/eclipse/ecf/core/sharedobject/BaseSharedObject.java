@@ -132,6 +132,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 * @param proc the event processor to add.  Must not be <code>null</code>.
 	 * @return <code>true</code> if actually added, <code>false</code> otherwise.
 	 */
+	@SuppressWarnings("unchecked")
 	public boolean addEventProcessor(IEventProcessor proc) {
 		Assert.isNotNull(proc);
 		synchronized (eventProcessors) {
@@ -173,6 +174,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 * Fire the current set of event processors with given event.
 	 * @param event the event to deliver to event processors.
 	 */
+	@SuppressWarnings("unchecked")
 	protected void fireEventProcessors(Event event) {
 		if (event == null)
 			return;
@@ -452,10 +454,17 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 		else {
 			SharedObjectMsg msg = getSharedObjectMsgFromEvent(event);
 			if (msg != null)
-				result = handleSharedObjectMsg(msg);
+				result = handleSharedObjectMsg(event.getRemoteContainerID(), msg);
 		}
 		traceExiting("handleSharedObjectMsgEvent", result ? Boolean.TRUE : Boolean.FALSE); //$NON-NLS-1$
 		return result;
+	}
+
+	/**
+	 * @since 2.4
+	 */
+	protected boolean handleSharedObjectMsg(ID fromID, SharedObjectMsg msg) {
+		return handleSharedObjectMsg(msg);
 	}
 
 	/**
