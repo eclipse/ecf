@@ -1,21 +1,21 @@
 Manifest-Version: 1.0
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.sharedobject;singleton:=true
-Bundle-Version: 2.3.0.qualifier
+Bundle-Version: 2.4.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.core.sharedobject.Activator
 Bundle-Localization: plugin
 Bundle-Vendor: %plugin.provider
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.core.sharedobject;version="2.2.100",
  org.eclipse.ecf.core.sharedobject.events;version="2.2.100",
+ org.eclipse.ecf.core.sharedobject.model;version="1.0.0",
  org.eclipse.ecf.core.sharedobject.provider;version="2.2.100",
  org.eclipse.ecf.core.sharedobject.security;version="2.2.100",
  org.eclipse.ecf.core.sharedobject.util;version="2.2.100",
  org.eclipse.ecf.core.util.reflection;version="2.2.100",
  org.eclipse.ecf.internal.core.sharedobject;version="2.2.100";x-internal:=true
 Bundle-ManifestVersion: 2
-Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
- J2SE-1.3
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.equinox.registry,
  org.eclipse.ecf
