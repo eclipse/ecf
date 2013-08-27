@@ -13,5 +13,5 @@ package org.eclipse.ecf.core.sharedobject.model;
  */
 public interface ISharedModelEvent {
 
-	public SharedModel getSourceModel();
+	public SharedModel getSource();
 }

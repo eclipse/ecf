@@ -64,8 +64,7 @@ public interface ISharedObjectContext extends IAdaptable {
 	 * 
 	 * @see org.eclipse.ecf.core.IContainer#connect(ID,IConnectContext)
 	 */
-	public void connect(ID targetID, IConnectContext connectContext)
-			throws ContainerConnectException;
+	public void connect(ID targetID, IConnectContext connectContext) throws ContainerConnectException;
 
 	/**
 	 * (non-Javadoc)
@@ -115,8 +114,7 @@ public interface ISharedObjectContext extends IAdaptable {
 	 * @throws IOException
 	 *             thrown if message cannot be sent by container
 	 */
-	public void sendCreate(ID targetID, ReplicaSharedObjectDescription sd)
-			throws IOException;
+	public void sendCreate(ID targetID, ReplicaSharedObjectDescription sd) throws IOException;
 
 	/**
 	 * Send create response back to an ISharedObject with the same ID as this
@@ -136,8 +134,7 @@ public interface ISharedObjectContext extends IAdaptable {
 	 * @exception IOException
 	 *                thrown if the create response cannot be sent
 	 */
-	public void sendCreateResponse(ID targetID, Throwable throwable,
-			long identifier) throws IOException;
+	public void sendCreateResponse(ID targetID, Throwable throwable, long identifier) throws IOException;
 
 	/**
 	 * Send message to dispose of a remote instance of the ISharedObject with
@@ -192,5 +189,5 @@ public interface ISharedObjectContext extends IAdaptable {
 	 * @return Map of properties available to calling shared object. Map
 	 *         returned must not be null.
 	 */
-	public Map getLocalContainerProperties();
+	public Map<String, ?> getLocalContainerProperties();
 }

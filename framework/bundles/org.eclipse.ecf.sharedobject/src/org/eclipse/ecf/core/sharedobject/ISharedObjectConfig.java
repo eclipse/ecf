@@ -55,5 +55,5 @@ public interface ISharedObjectConfig {
 	 * @return Map with properties associated with this ISharedObject instance.
 	 *         Will not be null.
 	 */
-	public Map getProperties();
+	public Map<String, ?> getProperties();
 }
