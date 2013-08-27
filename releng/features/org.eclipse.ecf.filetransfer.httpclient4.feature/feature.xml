@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.filetransfer.httpclient4.feature"
       label="ECF Httpclient4 Filetransfer Provider"
-      version="3.6.1.qualifier"
+      version="3.7.0.qualifier"
       provider-name="Eclipse.org - ECF">
 
    <description url="http://www.eclipse.org/ecf">
@@ -54,6 +54,13 @@ Contributors: Composent, Inc. - initial API and implementation
 
    <plugin
          id="org.apache.commons.logging"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.commons.codec"
          download-size="0"
          install-size="0"
          version="0.0.0"
