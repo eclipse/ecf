@@ -39,23 +39,23 @@ public class ReplicaSharedObjectDescription extends SharedObjectDescription impl
 	/**
 	 * @since 2.3
 	 */
-	public ReplicaSharedObjectDescription(SharedObjectTypeDescription type, ID soID, ID homeID, Map props) {
+	public ReplicaSharedObjectDescription(SharedObjectTypeDescription type, ID soID, ID homeID, Map<String, ?> props) {
 		this(type, soID, homeID, props, getNextUniqueIdentifier());
 	}
 
-	public ReplicaSharedObjectDescription(SharedObjectTypeDescription type, ID objectID, ID homeID, Map props, long ident) {
+	public ReplicaSharedObjectDescription(SharedObjectTypeDescription type, ID objectID, ID homeID, Map<String, ?> props, long ident) {
 		super(type, objectID, props);
 		this.homeID = homeID;
 		this.identifier = ident;
 	}
 
-	public ReplicaSharedObjectDescription(String typeName, ID objectID, ID homeID, Map props, long ident) {
+	public ReplicaSharedObjectDescription(String typeName, ID objectID, ID homeID, Map<String, ?> props, long ident) {
 		super(new SharedObjectTypeDescription(typeName, null, null, null), objectID, props);
 		this.homeID = homeID;
 		this.identifier = ident;
 	}
 
-	public ReplicaSharedObjectDescription(String typeName, ID objectID, ID homeID, Map props) {
+	public ReplicaSharedObjectDescription(String typeName, ID objectID, ID homeID, Map<String, ?> props) {
 		this(typeName, objectID, homeID, props, getNextUniqueIdentifier());
 	}
 
@@ -63,13 +63,13 @@ public class ReplicaSharedObjectDescription extends SharedObjectDescription impl
 		this(typeName, objectID, homeID, null);
 	}
 
-	public ReplicaSharedObjectDescription(Class clazz, ID objectID, ID homeID, Map props, long ident) {
+	public ReplicaSharedObjectDescription(Class clazz, ID objectID, ID homeID, Map<String, ?> props, long ident) {
 		super(new SharedObjectTypeDescription(clazz.getName(), null), objectID, props);
 		this.homeID = homeID;
 		this.identifier = ident;
 	}
 
-	public ReplicaSharedObjectDescription(Class clazz, ID objectID, ID homeID, Map props) {
+	public ReplicaSharedObjectDescription(Class clazz, ID objectID, ID homeID, Map<String, ?> props) {
 		this(clazz, objectID, homeID, props, getNextUniqueIdentifier());
 	}
 

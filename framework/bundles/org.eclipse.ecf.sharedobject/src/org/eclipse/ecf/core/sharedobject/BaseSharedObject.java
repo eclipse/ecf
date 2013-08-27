@@ -285,7 +285,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 * @return Map any properties associated with this shared object via the ISharedObjectConfig provided
 	 * upon {@link #init(ISharedObjectConfig)}.
 	 */
-	protected final Map getProperties() {
+	protected final Map<String, ?> getProperties() {
 		return getConfig().getProperties();
 	}
 

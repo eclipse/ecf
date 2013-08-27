@@ -9,7 +9,6 @@
 package org.eclipse.ecf.core.sharedobject;
 
 import java.util.Map;
-
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.IIdentifiable;
 
@@ -23,6 +22,6 @@ public interface ISharedObjectContainerConfig extends IIdentifiable, IAdaptable 
 	 * 
 	 * @return Map the properties associated with owner ISharedObjectContainer
 	 */
-	public Map getProperties();
+	public Map<String, ?> getProperties();
 
 }
