@@ -384,6 +384,7 @@ public class RemoteServiceAdmin implements
 		if (consumerContainerSelector == null) {
 			String errorMessage = "No consumerContainerSelector available"; //$NON-NLS-1$
 			logError("importService",errorMessage,new SelectContainerException(errorMessage,null,null)); //$NON-NLS-1$
+			// As specified in section 122.5.2, return null
 			return null;
 		}
 		// Select the rsContainer to handle the endpoint description
@@ -399,6 +400,7 @@ public class RemoteServiceAdmin implements
 					});
 		} catch (PrivilegedActionException e) {
 			logError("importService","Unexpected exception in selectConsumerContainer",e.getException()); //$NON-NLS-1$ //$NON-NLS-2$
+			// As specified in section 122.5.2, return null
 			return null;
 		}
 		// If none found, log an error and return null
@@ -407,6 +409,7 @@ public class RemoteServiceAdmin implements
 					+ endpointDescription
 					+ ". Remote service NOT IMPORTED"; //$NON-NLS-1$
 			logError("importService",errorMessage,new SelectContainerException(errorMessage,null,null)); //$NON-NLS-1$
+			// As specified in section 122.5.2, return null
 			return null;
 		}
 		
