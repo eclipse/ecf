@@ -383,7 +383,8 @@ public class RemoteServiceAdmin implements
 		// If there is none, then we can go no further
 		if (consumerContainerSelector == null) {
 			String errorMessage = "No consumerContainerSelector available"; //$NON-NLS-1$
-			return createErrorImportRegistration(ed, errorMessage, new SelectContainerException(errorMessage,null,null));
+			logError("importService",errorMessage,new SelectContainerException(errorMessage,null,null)); //$NON-NLS-1$
+			return null;
 		}
 		// Select the rsContainer to handle the endpoint description
 		IRemoteServiceContainer rsContainer = null;
@@ -397,14 +398,16 @@ public class RemoteServiceAdmin implements
 						}
 					});
 		} catch (PrivilegedActionException e) {
-			return createErrorImportRegistration(ed, "Unexpected exception in selectConsumerContainer", e.getException()); //$NON-NLS-1$
+			logError("importService","Unexpected exception in selectConsumerContainer",e.getException()); //$NON-NLS-1$ //$NON-NLS-2$
+			return null;
 		}
-		// If none found, log a warning and we're done
+		// If none found, log an error and return null
 		if (rsContainer == null) {
 			String errorMessage = "No remote service container selected for endpoint=" //$NON-NLS-1$
 					+ endpointDescription
 					+ ". Remote service NOT IMPORTED"; //$NON-NLS-1$
-			return createErrorImportRegistration(ed, errorMessage, new SelectContainerException(errorMessage,null,null));
+			logError("importService",errorMessage,new SelectContainerException(errorMessage,null,null)); //$NON-NLS-1$
+			return null;
 		}
 		
 		// If one selected then import the service to create an import
@@ -422,18 +425,6 @@ public class RemoteServiceAdmin implements
 		return importRegistration;
 	}
 
-	private ImportRegistration createErrorImportRegistration(EndpointDescription ed, String errorMessage, Throwable e) {
-		logError("importService",errorMessage,e); //$NON-NLS-1$
-		ImportRegistration errorRegistration = new ImportRegistration(ed,e);
-		// Add it to the set of imported registrations
-		synchronized (importedRegistrations) {
-			importedRegistrations.add(errorRegistration);
-		}
-		// publish import event
-		publishImportEvent(errorRegistration);
-		return errorRegistration;
-	}
-	
 	public Collection<org.osgi.service.remoteserviceadmin.ExportReference> getExportedServices() {
 		Collection<org.osgi.service.remoteserviceadmin.ExportReference> results = new ArrayList<org.osgi.service.remoteserviceadmin.ExportReference>();
 		synchronized (exportedRegistrations) {
