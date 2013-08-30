@@ -12,7 +12,8 @@ import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 public class GenericServerCreateTest extends ContainerAbstractTestCase {
 
 	private IContainerFactory containerFactory;
-
+	private IContainer container;
+	
 	protected void setUp() throws Exception {
 		super.setUp();
 		containerFactory = ContainerFactory.getDefault();
@@ -20,19 +21,24 @@ public class GenericServerCreateTest extends ContainerAbstractTestCase {
 
 	protected void tearDown() throws Exception {
 		super.tearDown();
+		if (container != null) {
+			container.disconnect();
+			container.dispose();
+			removeFromContainerManager(container);
+		}
 		containerFactory = null;
 	}
 
 	public void testServerCreateParam1() throws Exception {
 		String id = getServerIdentity();
-		IContainer container = containerFactory.createContainer(
+		container = containerFactory.createContainer(
 				getServerContainerName(), new Object[] { id });
 		assertNotNull(container);
 		assertEquals(id, container.getID().getName());
 	}
 
 	public void testServerCreateParam2() throws Exception {
-		IContainer container = containerFactory
+		container = containerFactory
 				.createContainer(getServerContainerName());
 		assertNotNull(container);
 	}
@@ -41,7 +47,7 @@ public class GenericServerCreateTest extends ContainerAbstractTestCase {
 		String serverId = getServerIdentity();
 		Map map = new HashMap();
 		map.put("id", serverId);
-		IContainer container = containerFactory.createContainer(
+		container = containerFactory.createContainer(
 				getServerContainerName(), map);
 		assertNotNull(container);
 	}
@@ -49,9 +55,9 @@ public class GenericServerCreateTest extends ContainerAbstractTestCase {
 	public void testServerCreateMapParam2() throws Exception {
 		Map map = new HashMap();
 		map.put("hostname", "localhost");
-		map.put("port", "2222");
+		map.put("port", ""+genericServerPort);
 		map.put("path", "/foo");
-		IContainer container = containerFactory.createContainer(
+		container = containerFactory.createContainer(
 				getServerContainerName(), map);
 		assertNotNull(container);
 	}
