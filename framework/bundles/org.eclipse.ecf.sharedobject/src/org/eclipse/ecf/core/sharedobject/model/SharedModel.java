@@ -8,12 +8,13 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.sharedobject.model;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.eclipse.core.runtime.ISafeRunnable;
-import org.eclipse.core.runtime.SafeRunner;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.*;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.OptimisticSharedObject;
+import org.eclipse.ecf.core.sharedobject.SharedObjectMsg;
 
 /**
  * @since 2.4
@@ -62,4 +63,122 @@ public class SharedModel extends OptimisticSharedObject {
 		super.dispose(containerID);
 		listeners.clear();
 	}
+
+	private Map<String, Property> properties = new HashMap<String, Property>();
+
+	protected <T> Property addProperty(String name, T value) {
+		synchronized (properties) {
+			Property p = getProperty(name);
+			if (p != null)
+				return null;
+			p = new Property<T>(this, name, value);
+			addProperty(p);
+			return p;
+		}
+	}
+
+	protected Property addProperty(Property property) {
+		if (property == null)
+			return null;
+		synchronized (properties) {
+			return properties.put(property.getName(), property);
+		}
+	}
+
+	protected Property removeProperty(String propertyName) {
+		if (propertyName == null)
+			return null;
+		synchronized (properties) {
+			return properties.remove(propertyName);
+		}
+	}
+
+	protected Property getProperty(String propertyName) {
+		if (propertyName == null)
+			return null;
+		synchronized (properties) {
+			return properties.get(propertyName);
+		}
+	}
+
+	protected void removeAllProperties() {
+		synchronized (properties) {
+			properties.clear();
+		}
+	}
+
+	protected Map<String, ?> getMapFromProperties() {
+		Map<String, Object> result = new HashMap<String, Object>();
+		synchronized (properties) {
+			for (String key : properties.keySet()) {
+				Property p = getProperty(key);
+				if (p != null)
+					result.put(key, p.getValue());
+			}
+		}
+		return result;
+	}
+
+	protected final String SEND_PROPERTY_TO_MSG = ".sendPropertyTo."; //$NON-NLS-1$
+
+	public class Property<T> implements Serializable {
+
+		private static final long serialVersionUID = -716933143243026805L;
+
+		private SharedModel model;
+		private String name;
+		private T value;
+
+		public Property(SharedModel model, String name, T value) {
+			Assert.isNotNull(model);
+			this.model = model;
+			Assert.isNotNull(name);
+			this.name = null;
+			this.value = value;
+		}
+
+		public SharedModel getModel() {
+			return model;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public T getValue() {
+			return value;
+		}
+
+		public String toString() {
+			StringBuffer buf = new StringBuffer("SharedModel.Property["); //$NON-NLS-1$
+			buf.append("sharedmodel id=" + getModel().getID()); //$NON-NLS-1$
+			buf.append(";name=" + getName()); //$NON-NLS-1$
+			buf.append(";valud=" + getValue()); //$NON-NLS-1$
+			return buf.toString();
+		}
+	}
+
+	protected final void sendPropertyTo(ID target, String msg, Property property) throws IOException {
+		if (property == null)
+			throw new IOException("property to send cannot be null"); //$NON-NLS-1$
+		sendSharedObjectMsgTo(target, SharedObjectMsg.createMsg(SharedModel.class.getName(), SEND_PROPERTY_TO_MSG + msg, property));
+	}
+
+	protected final void sendPropertyTo(ID target, Property property) throws IOException {
+		sendPropertyTo(target, property.getName(), property);
+	}
+
+	protected boolean handleSharedObjectMsg(ID fromID, SharedObjectMsg msg) {
+		if (SharedModel.class.getName().equals(msg.getClassName())) {
+			String methodName = msg.getMethod();
+			if (methodName != null && methodName.startsWith(SEND_PROPERTY_TO_MSG))
+				return handlePropertyTo(fromID, methodName.substring(0, SEND_PROPERTY_TO_MSG.length() - 1), (Property) msg.getParameters()[0]);
+		}
+		return super.handleSharedObjectMsg(fromID, msg);
+	}
+
+	protected boolean handlePropertyTo(ID fromID, String msg, Property property) {
+		return false;
+	}
+
 }
