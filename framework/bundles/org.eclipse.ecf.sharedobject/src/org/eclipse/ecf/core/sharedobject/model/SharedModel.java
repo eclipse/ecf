@@ -71,12 +71,12 @@ public class SharedModel extends OptimisticSharedObject {
 		return addProperty(name, null);
 	}
 
-	protected <T> Property addProperty(String name, T value) {
+	protected Property addProperty(String name, Object value) {
 		synchronized (properties) {
 			Property p = getProperty(name);
 			if (p != null)
 				return null;
-			p = new Property<T>(this, name, value);
+			p = new Property(this, name, value);
 			addProperty(p);
 			return p;
 		}
@@ -84,7 +84,7 @@ public class SharedModel extends OptimisticSharedObject {
 
 	protected Property addProperty(Property property) {
 		if (property == null)
-			return null;
+			throw new NullPointerException("property cannot be null"); //$NON-NLS-1$
 		synchronized (properties) {
 			return properties.put(property.getName(), property);
 		}
@@ -92,7 +92,7 @@ public class SharedModel extends OptimisticSharedObject {
 
 	protected Property removeProperty(String propertyName) {
 		if (propertyName == null)
-			return null;
+			throw new NullPointerException("propertyName cannot be null"); //$NON-NLS-1$
 		synchronized (properties) {
 			return properties.remove(propertyName);
 		}
@@ -100,9 +100,33 @@ public class SharedModel extends OptimisticSharedObject {
 
 	protected Property getProperty(String propertyName) {
 		if (propertyName == null)
-			return null;
+			throw new NullPointerException("propertyName cannot be null"); //$NON-NLS-1$
 		synchronized (properties) {
 			return properties.get(propertyName);
+		}
+	}
+
+	protected Property getOrAddProperty(String propertyName) {
+		if (propertyName == null)
+			throw new NullPointerException("propertyName cannot be null"); //$NON-NLS-1$
+		synchronized (properties) {
+			Property p = getProperty(propertyName);
+			if (p != null)
+				return p;
+			return addProperty(propertyName);
+		}
+	}
+
+	protected Property setOrAddProperty(String propertyName, Object value) {
+		if (propertyName == null)
+			throw new NullPointerException("propertyName cannot be null"); //$NON-NLS-1$
+		synchronized (properties) {
+			Property p = getProperty(propertyName);
+			if (p != null) {
+				p.setValue(value);
+				return p;
+			}
+			return addProperty(propertyName, value);
 		}
 	}
 
@@ -126,15 +150,15 @@ public class SharedModel extends OptimisticSharedObject {
 
 	protected final String SEND_PROPERTY_TO_MSG = ".sendPropertyTo."; //$NON-NLS-1$
 
-	public class Property<T> implements Serializable {
+	public class Property implements Serializable {
 
 		private static final long serialVersionUID = -716933143243026805L;
 
 		private SharedModel model;
 		private String name;
-		private T value;
+		private Object value;
 
-		public Property(SharedModel model, String name, T value) {
+		public Property(SharedModel model, String name, Object value) {
 			Assert.isNotNull(model);
 			this.model = model;
 			Assert.isNotNull(name);
@@ -154,12 +178,12 @@ public class SharedModel extends OptimisticSharedObject {
 			return name;
 		}
 
-		public T getValue() {
+		public Object getValue() {
 			return value;
 		}
 
-		public T setValue(T newValue) {
-			T oldValue = this.value;
+		public Object setValue(Object newValue) {
+			Object oldValue = this.value;
 			this.value = newValue;
 			return oldValue;
 		}
