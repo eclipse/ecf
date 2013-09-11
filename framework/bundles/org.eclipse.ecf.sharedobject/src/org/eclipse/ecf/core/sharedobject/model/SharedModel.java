@@ -62,9 +62,14 @@ public class SharedModel extends OptimisticSharedObject {
 	public void dispose(ID containerID) {
 		super.dispose(containerID);
 		listeners.clear();
+		removeAllProperties();
 	}
 
 	private Map<String, Property> properties = new HashMap<String, Property>();
+
+	protected Property addProperty(String name) {
+		return addProperty(name, null);
+	}
 
 	protected <T> Property addProperty(String name, T value) {
 		synchronized (properties) {
@@ -137,6 +142,10 @@ public class SharedModel extends OptimisticSharedObject {
 			this.value = value;
 		}
 
+		public Property(SharedModel model, String name) {
+			this(model, name, null);
+		}
+
 		public SharedModel getModel() {
 			return model;
 		}
@@ -149,11 +158,17 @@ public class SharedModel extends OptimisticSharedObject {
 			return value;
 		}
 
+		public T setValue(T newValue) {
+			T oldValue = this.value;
+			this.value = newValue;
+			return oldValue;
+		}
+
 		public String toString() {
 			StringBuffer buf = new StringBuffer("SharedModel.Property["); //$NON-NLS-1$
-			buf.append("sharedmodel id=" + getModel().getID()); //$NON-NLS-1$
+			buf.append("modelid=" + getModel().getID()); //$NON-NLS-1$
 			buf.append(";name=" + getName()); //$NON-NLS-1$
-			buf.append(";valud=" + getValue()); //$NON-NLS-1$
+			buf.append(";value=" + getValue()); //$NON-NLS-1$
 			return buf.toString();
 		}
 	}
