@@ -67,6 +67,15 @@ public class SharedModel extends OptimisticSharedObject {
 
 	private Map<String, Property> properties = new HashMap<String, Property>();
 
+	protected Collection<Property> copyProperties() {
+		List<Property> results = new ArrayList<Property>();
+		synchronized (properties) {
+			for (String name : properties.keySet())
+				results.add(properties.get(name));
+		}
+		return results;
+	}
+
 	protected Property addProperty(String name) {
 		return addProperty(name, null);
 	}
@@ -143,9 +152,29 @@ public class SharedModel extends OptimisticSharedObject {
 				Property p = getProperty(key);
 				if (p != null)
 					result.put(key, p.getValue());
+				else
+					result.put(key, null);
 			}
 		}
 		return result;
+	}
+
+	protected void setPropertiesFromMap(Map<String, ?> map) {
+		if (map == null)
+			return;
+		synchronized (properties) {
+			for (String key : map.keySet()) {
+				Property p = getProperty(key);
+				// If the property already exists, change/set it's value
+				Object val = map.get(key);
+				if (p != null) {
+					p.setValue(val);
+				} else {
+					// add property
+					addProperty(key, val);
+				}
+			}
+		}
 	}
 
 	protected final String SEND_PROPERTY_TO_MSG = ".sendPropertyTo."; //$NON-NLS-1$
