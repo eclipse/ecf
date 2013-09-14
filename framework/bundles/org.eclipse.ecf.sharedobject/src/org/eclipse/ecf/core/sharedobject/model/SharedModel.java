@@ -91,20 +91,48 @@ public class SharedModel extends OptimisticSharedObject {
 		}
 	}
 
-	protected Property addProperty(Property property) {
+	protected Property addProperty(final Property property) {
 		if (property == null)
 			throw new NullPointerException("property cannot be null"); //$NON-NLS-1$
+		Property oldProperty = null;
 		synchronized (properties) {
-			return properties.put(property.getName(), property);
+			oldProperty = properties.put(property.getName(), property);
 		}
+		final Property op = oldProperty;
+		fireListeners(new ISharedModelPropertyAddEvent() {
+			public SharedModel getSource() {
+				return SharedModel.this;
+			}
+
+			public Property getAddedProperty() {
+				return property;
+			}
+
+			public Property getPreAddedProperty() {
+				return op;
+			}
+		});
+		return op;
 	}
 
 	protected Property removeProperty(String propertyName) {
 		if (propertyName == null)
 			throw new NullPointerException("propertyName cannot be null"); //$NON-NLS-1$
+		Property oldProperty = null;
 		synchronized (properties) {
-			return properties.remove(propertyName);
+			oldProperty = properties.remove(propertyName);
 		}
+		final Property op = oldProperty;
+		fireListeners(new ISharedModelPropertyRemoveEvent() {
+			public SharedModel getSource() {
+				return SharedModel.this;
+			}
+
+			public Property getRemovedProperty() {
+				return op;
+			}
+		});
+		return op;
 	}
 
 	protected Property getProperty(String propertyName) {
@@ -191,7 +219,7 @@ public class SharedModel extends OptimisticSharedObject {
 			Assert.isNotNull(model);
 			this.model = model;
 			Assert.isNotNull(name);
-			this.name = null;
+			this.name = name;
 			this.value = value;
 		}
 
@@ -212,9 +240,27 @@ public class SharedModel extends OptimisticSharedObject {
 		}
 
 		public Object setValue(Object newValue) {
-			Object oldValue = this.value;
+			final Object previousValue = this.value;
 			this.value = newValue;
-			return oldValue;
+			getModel().fireListeners(new ISharedModelPropertyValueChangeEvent() {
+
+				public SharedModel getSource() {
+					return getModel();
+				}
+
+				public Property getProperty() {
+					return SharedModel.Property.this;
+				}
+
+				public Object getPreviousValue() {
+					return previousValue;
+				}
+
+				public Object getValue() {
+					return SharedModel.Property.this.getValue();
+				}
+			});
+			return previousValue;
 		}
 
 		public String toString() {
