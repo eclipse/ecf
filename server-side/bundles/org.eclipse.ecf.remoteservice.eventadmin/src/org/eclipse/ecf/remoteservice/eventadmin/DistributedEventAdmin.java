@@ -224,6 +224,7 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	 */
 	public void sendEvent(Event event) {
 		localDispatch(event, false);
+		// see bug https://bugs.eclipse.org/412303
 	}
 
 	/**
