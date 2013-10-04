@@ -162,24 +162,44 @@ public final class Client implements ISynchAsynchConnection {
 		}
 	}
 
-	public synchronized Object connect(ID remote, Object data, int timeout) throws ECFException {
-		debug("connect(" + remote + "," + data + "," + timeout + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		if (socket != null)
-			throw new ECFException("Already connected"); //$NON-NLS-1$
-		// parse URI
-		URI anURI = null;
-		try {
-			anURI = new URI(remote.getName());
-		} catch (final URISyntaxException e) {
-			throw new ECFException("Invalid URI for remoteID=" + remote, e); //$NON-NLS-1$
-		}
+	/**
+	 * @since 4.4
+	 */
+	protected Socket createConnectSocket(URI remote, int timeout) throws ECFException {
 		// Get socket factory and create/connect socket
 		SocketFactory fact = SocketFactory.getSocketFactory();
 		if (fact == null)
 			fact = SocketFactory.getDefaultSocketFactory();
+		try {
+			return fact.createSocket(remote.getHost(), remote.getPort(), timeout);
+		} catch (IOException e) {
+			throw new ECFException("Could not create socket to connect to id=" + remote); //$NON-NLS-1$
+		}
+	}
+
+	/**
+	 * @since 4.4
+	 */
+	protected URI parseRemoteID(ID remote) throws ECFException {
+		try {
+			return new URI(remote.getName());
+		} catch (final URISyntaxException e) {
+			throw new ECFException("Invalid URI for remoteID=" + remote, e); //$NON-NLS-1$
+		}
+	}
+
+	public synchronized Object connect(ID remote, Object data, int timeout) throws ECFException {
+		debug("connect(" + remote + "," + data + "," + timeout + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		if (socket != null)
+			throw new ECFException("Already connected"); //$NON-NLS-1$
+		if (remote == null)
+			throw new ECFException("remote cannot be null"); //$NON-NLS-1$
+		// parse remote ID to URI
+		URI anURI = parseRemoteID(remote);
+		// Create socket by calling createSocket
+		final Socket s = createConnectSocket(anURI, timeout);
 		ConnectResultMessage res = null;
 		try {
-			final Socket s = fact.createSocket(anURI.getHost(), anURI.getPort(), timeout);
 			// Set socket options
 			setSocketOptions(s);
 			// Now we've got a connection so set our socket
@@ -191,10 +211,12 @@ public final class Client implements ISynchAsynchConnection {
 			// send connect data and get synchronous response
 			send(new ConnectRequestMessage(anURI, (Serializable) data));
 			res = (ConnectResultMessage) readObject();
-		} catch (final Exception e) {
+		} catch (final IOException e) {
 			throw new ECFException("Exception during connection to " + remote.getName(), e); //$NON-NLS-1$
 		}
 		debug("connect;rcv:" + res); //$NON-NLS-1$
+		if (res == null)
+			throw new ECFException("Result cannot be null"); //$NON-NLS-1$
 		// Setup threads
 		setupThreads();
 		// Return results.
