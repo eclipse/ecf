@@ -25,6 +25,8 @@ public class Activator implements BundleActivator {
 	private static final String GENERIC_SERVER_IDPROP_NAME = GENERIC_SERVER_CONFIG+ ".id";
 	private static final String GENERIC_SERVER_IDPROP_VALUE = "ecftcp://localhost:3288/server";
 	
+	private static final String R_OSGI_SERVER_CONFIG = "ecf.r_osgi.peer";
+
 	private static final String REST_SERVER_CONFIG = "com.mycorp.examples.timeservice.rest.host";
 	private static final String REST_SERVER_IDPROP_NAME = REST_SERVER_CONFIG + ".id";
 	private static final String REST_SERVER_IDPROP_VALUE = "http://localhost:8181";
@@ -43,7 +45,7 @@ public class Activator implements BundleActivator {
 		// service via the default distribution provider, which is
 		// 'ecf.generic.server'
 		// To change which provider is used (e.g.) r-OSGi:
-		// props.put("service.exported.configs","ecf.r-osgi.peer");
+		// props.put("service.exported.configs","ecf.r_osgi.peer");
 		ServiceRegistration<ITimeService> timeServiceRegistration = context
 				.registerService(ITimeService.class, new TimeServiceImpl(),
 						props);
@@ -71,6 +73,9 @@ public class Activator implements BundleActivator {
 		} else if (REST_SERVER_CONFIG.equals(serviceExportedConfig)) {
 			idPropName = REST_SERVER_IDPROP_NAME;
 			idPropValue = REST_SERVER_IDPROP_VALUE;
+		} else if (R_OSGI_SERVER_CONFIG.equals(serviceExportedConfig)) {
+			// r-osgi does not require the server to define its endpoint
+			return props;
 		} else throw new NullPointerException("Unsuppored value for service.exported.config="+serviceExportedConfig);
 		
 		// Set the id propName and idPropValue
