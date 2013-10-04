@@ -68,7 +68,7 @@ public class GenericServerCreateTest extends ContainerAbstractTestCase {
 		String serverId = getServerIdentity();
 		Map map = new HashMap();
 		map.put("id", serverId);
-		map.put("bindAddress", InetAddress.getLoopbackAddress());
+		map.put("bindAddress", new InetSocketAddress((InetAddress) null,0).getAddress());
 		container = containerFactory.createContainer(
 				getServerContainerName(), map);
 		assertNotNull(container);
