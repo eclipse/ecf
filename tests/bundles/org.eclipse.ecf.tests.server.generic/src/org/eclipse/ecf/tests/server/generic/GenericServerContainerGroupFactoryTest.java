@@ -9,6 +9,8 @@
 ******************************************************************************/
 package org.eclipse.ecf.tests.server.generic;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.URI;
 
 import org.eclipse.ecf.server.generic.IGenericServerContainerGroup;
@@ -20,12 +22,14 @@ public class GenericServerContainerGroupFactoryTest extends TestCase {
 
 	private static final String hostname = "localhost";
 	private static final int port = 4000;
+	private InetAddress allAddress;
 	
 	private IGenericServerContainerGroupFactory gscgFactory;
 	
 	protected void setUp() throws Exception {
 		super.setUp();
 		gscgFactory = Activator.getDefault().getGenericServerContainerGroupFactory();
+		allAddress = new InetSocketAddress((InetAddress) null,0).getAddress();
 	}
 	
 	protected void tearDown() throws Exception {
@@ -33,8 +37,12 @@ public class GenericServerContainerGroupFactoryTest extends TestCase {
 		gscgFactory = null;
 	}
 	
+	protected IGenericServerContainerGroup createContainerGroup(InetAddress bindAddress) throws Exception {
+		return gscgFactory.createContainerGroup(hostname, port, bindAddress, null);
+	}
+	
 	protected IGenericServerContainerGroup createContainerGroup() throws Exception {
-		return gscgFactory.createContainerGroup(hostname, port);
+		return createContainerGroup(null);
 	}
 	
 	protected void removeContainerGroup() throws Exception {
@@ -42,7 +50,7 @@ public class GenericServerContainerGroupFactoryTest extends TestCase {
 	}
 	
 	public void testCreateContainerGroup() throws Exception {
-		IGenericServerContainerGroup containerGroup = createContainerGroup();
+		IGenericServerContainerGroup containerGroup = createContainerGroup(null);
 		assertNotNull(containerGroup);
 		URI groupEndpoint = containerGroup.getGroupEndpoint();
 		assertNotNull(groupEndpoint);
@@ -51,6 +59,48 @@ public class GenericServerContainerGroupFactoryTest extends TestCase {
 		removeContainerGroup();
 	}
 	
+	public void testCreateContainerGroupListen() throws Exception {
+		IGenericServerContainerGroup containerGroup = createContainerGroup(null);
+		assertNotNull(containerGroup);
+		URI groupEndpoint = containerGroup.getGroupEndpoint();
+		assertNotNull(groupEndpoint);
+		assertTrue(groupEndpoint.getHost().equals(hostname));
+		assertTrue(groupEndpoint.getPort()==port);
+		assertTrue(!containerGroup.isListening());
+		containerGroup.startListening();
+		assertTrue(containerGroup.isListening());
+		containerGroup.stopListening();
+		assertTrue(!containerGroup.isListening());
+		removeContainerGroup();
+	}
+	
+
+	public void testCreateContainerGroupWithBindAddress() throws Exception {
+		IGenericServerContainerGroup containerGroup = createContainerGroup(this.allAddress);
+		assertNotNull(containerGroup);
+		URI groupEndpoint = containerGroup.getGroupEndpoint();
+		assertNotNull(groupEndpoint);
+		assertTrue(groupEndpoint.getHost().equals(hostname));
+		assertTrue(groupEndpoint.getPort()==port);
+		removeContainerGroup();
+	}
+	
+	public void testCreateContainerGroupWithBindAddressListen() throws Exception {
+		IGenericServerContainerGroup containerGroup = createContainerGroup(this.allAddress);
+		assertNotNull(containerGroup);
+		URI groupEndpoint = containerGroup.getGroupEndpoint();
+		assertNotNull(groupEndpoint);
+		assertTrue(groupEndpoint.getHost().equals(hostname));
+		assertTrue(groupEndpoint.getPort()==port);
+		assertTrue(!containerGroup.isListening());
+		containerGroup.startListening();
+		assertTrue(containerGroup.isListening());
+		containerGroup.stopListening();
+		assertTrue(!containerGroup.isListening());
+		removeContainerGroup();
+	}
+	
+
 	public void testGetContainerGroup() throws Exception {
 		IGenericServerContainerGroup gscg = gscgFactory.getContainerGroup(hostname, port);
 		assertNull(gscg);
