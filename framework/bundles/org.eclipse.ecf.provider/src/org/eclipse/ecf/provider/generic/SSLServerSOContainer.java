@@ -17,6 +17,7 @@ import java.net.*;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
 import org.eclipse.ecf.provider.comm.IConnectRequestHandler;
 import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
+import org.eclipse.ecf.provider.comm.tcp.Server;
 
 /**
  * @since 4.3
@@ -64,20 +65,50 @@ public class SSLServerSOContainer extends ServerSOContainer implements IConnectR
 		return getServerURL("localhost", DEFAULT_NAME); //$NON-NLS-1$
 	}
 
+	/**
+	 * @since 4.4
+	 */
+	public SSLServerSOContainer(ISharedObjectContainerConfig config, int port, InetAddress bindAddress, String path, int keepAlive) throws IOException {
+		super(config);
+		isSingle = true;
+		if (path == null)
+			throw new NullPointerException("path cannot be null"); //$NON-NLS-1$
+		this.group = new SSLServerSOContainerGroup(SSLServerSOContainerGroup.DEFAULT_GROUP_NAME, null, Server.DEFAULT_BACKLOG, port, bindAddress);
+		this.group.add(path, this);
+		this.group.putOnTheAir();
+	}
+
+	/**
+	 * @since 4.4
+	 */
+	public SSLServerSOContainer(ISharedObjectContainerConfig config, InetAddress bindAddress, int keepAlive) throws IOException, URISyntaxException {
+		super(config);
+		isSingle = true;
+		URI actualURI = new URI(getID().getName());
+		int port = actualURI.getPort();
+		String path = actualURI.getPath();
+		if (path == null)
+			throw new NullPointerException("path cannot be null"); //$NON-NLS-1$
+		this.group = new SSLServerSOContainerGroup(SSLServerSOContainerGroup.DEFAULT_GROUP_NAME, null, port, Server.DEFAULT_BACKLOG, bindAddress);
+		this.group.add(path, this);
+		this.group.putOnTheAir();
+	}
+
 	public SSLServerSOContainer(ISharedObjectContainerConfig config, SSLServerSOContainerGroup grp, int keepAlive) throws IOException, URISyntaxException {
 		super(config);
 		this.keepAlive = keepAlive;
 		// Make sure URI syntax is followed.
 		URI actualURI = new URI(getID().getName());
 		int urlPort = actualURI.getPort();
+		String path = actualURI.getPath();
 		if (grp == null) {
 			isSingle = true;
 			this.group = new SSLServerSOContainerGroup(urlPort);
-			this.group.putOnTheAir();
 		} else
 			this.group = grp;
-		String path = actualURI.getPath();
 		group.add(path, this);
+		if (grp == null)
+			this.group.putOnTheAir();
 	}
 
 	public SSLServerSOContainer(ISharedObjectContainerConfig config, SSLServerSOContainerGroup listener, String path, int keepAlive) {
@@ -105,11 +136,11 @@ public class SSLServerSOContainer extends ServerSOContainer implements IConnectR
 	}
 
 	public SSLServerSOContainer(ISharedObjectContainerConfig config) throws IOException, URISyntaxException {
-		this(config, null, DEFAULT_KEEPALIVE);
+		this(config, (SSLServerSOContainerGroup) null, DEFAULT_KEEPALIVE);
 	}
 
 	public SSLServerSOContainer(ISharedObjectContainerConfig config, int keepAlive) throws IOException, URISyntaxException {
-		this(config, null, keepAlive);
+		this(config, (SSLServerSOContainerGroup) null, keepAlive);
 	}
 
 	public Serializable handleConnectRequest(Socket socket, String target, Serializable data, ISynchAsynchConnection conn) {

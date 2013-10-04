@@ -12,8 +12,7 @@
 package org.eclipse.ecf.provider.comm.tcp;
 
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.util.Trace;
@@ -36,14 +35,35 @@ public class Server extends ServerSocket {
 		Trace.catching(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.EXCEPTIONS_CATCHING, Server.class, msg, e);
 	}
 
-	public Server(ThreadGroup group, int port, ISocketAcceptHandler handler) throws IOException {
-		super(port, DEFAULT_BACKLOG);
+	/**
+	 * @since 4.4
+	 */
+	public Server(ThreadGroup group, int port, int backlog, InetAddress bindAddress, ISocketAcceptHandler handler) throws IOException {
+		super(port, backlog, bindAddress);
 		if (handler == null)
 			throw new NullPointerException("Socket accept handler cannot be null"); //$NON-NLS-1$
 		acceptHandler = handler;
 		threadGroup = group;
 		listenerThread = setupListener();
 		listenerThread.start();
+	}
+
+	/**
+	 * @since 4.4
+	 */
+	public Server(ThreadGroup group, int port, InetAddress bindAddress, ISocketAcceptHandler handler) throws IOException {
+		this(group, port, DEFAULT_BACKLOG, bindAddress, handler);
+	}
+
+	/**
+	 * @since 4.4
+	 */
+	public Server(ThreadGroup group, int port, int backlog, ISocketAcceptHandler handler) throws IOException {
+		this(null, port, backlog, null, handler);
+	}
+
+	public Server(ThreadGroup group, int port, ISocketAcceptHandler handler) throws IOException {
+		this(group, port, DEFAULT_BACKLOG, handler);
 	}
 
 	public Server(int port, ISocketAcceptHandler handler) throws IOException {

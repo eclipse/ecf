@@ -26,10 +26,29 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements ISock
 	private boolean isOnTheAir = false;
 	private final ThreadGroup threadGroup;
 
-	public TCPServerSOContainerGroup(String name, ThreadGroup group, int port) {
+	private int backlog = Server.DEFAULT_BACKLOG;
+	private InetAddress bindAddress;
+
+	/**
+	 * @since 4.4
+	 */
+	public TCPServerSOContainerGroup(String name, ThreadGroup group, int port, int backlog, InetAddress bindAddress) {
 		super(name);
 		threadGroup = group;
 		this.port = port;
+		this.backlog = backlog;
+		this.bindAddress = bindAddress;
+	}
+
+	/**
+	 * @since 4.4
+	 */
+	public TCPServerSOContainerGroup(String name, ThreadGroup group, int port, InetAddress bindAddress) {
+		this(name, group, port, Server.DEFAULT_BACKLOG, bindAddress);
+	}
+
+	public TCPServerSOContainerGroup(String name, ThreadGroup group, int port) {
+		this(name, group, port, Server.DEFAULT_BACKLOG, null);
 	}
 
 	public TCPServerSOContainerGroup(String name, int port) {
@@ -37,7 +56,7 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements ISock
 	}
 
 	public TCPServerSOContainerGroup(int port) {
-		this(DEFAULT_GROUP_NAME, null, port);
+		this(DEFAULT_GROUP_NAME, port);
 	}
 
 	protected void trace(String msg) {
@@ -50,7 +69,7 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements ISock
 
 	public synchronized void putOnTheAir() throws IOException {
 		trace("TCPServerSOContainerGroup at port " + port + " on the air"); //$NON-NLS-1$ //$NON-NLS-2$
-		listener = new Server(threadGroup, port, this);
+		listener = new Server(threadGroup, port, backlog, bindAddress, this);
 		port = listener.getLocalPort();
 		isOnTheAir = true;
 	}

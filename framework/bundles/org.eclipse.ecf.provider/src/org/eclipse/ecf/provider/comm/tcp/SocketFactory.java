@@ -34,6 +34,16 @@ public class SocketFactory implements IClientSocketFactory, IServerSocketFactory
 		return new ServerSocket(port, backlog);
 	}
 
+	/**
+	 * @since 4.4
+	 */
+	public ServerSocket createServerSocket(int port, int backlog, InetAddress bindAddress) throws IOException {
+		if (factory != null) {
+			return factory.createServerSocket(port, backlog, bindAddress);
+		}
+		return new ServerSocket(port, backlog, bindAddress);
+	}
+
 	public static synchronized SocketFactory getSocketFactory() {
 		return factory;
 	}

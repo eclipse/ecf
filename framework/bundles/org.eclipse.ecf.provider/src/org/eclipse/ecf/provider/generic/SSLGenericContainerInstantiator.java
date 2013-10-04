@@ -11,8 +11,7 @@
 package org.eclipse.ecf.provider.generic;
 
 import java.io.IOException;
-import java.net.BindException;
-import java.net.ServerSocket;
+import java.net.*;
 import java.util.*;
 import javax.net.ssl.SSLServerSocketFactory;
 import org.eclipse.core.runtime.*;
@@ -40,6 +39,14 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 	private static final String ID_PROP = "id"; //$NON-NLS-1$
 
 	private static final String KEEPALIVE_PROP = "keepAlive"; //$NON-NLS-1$
+
+	private static final String HOSTNAME_PROP = "hostname"; //$NON-NLS-1$
+
+	private static final String PORT_PROP = "port"; //$NON-NLS-1$
+
+	private static final String PATH_PROP = "path"; //$NON-NLS-1$
+
+	private static final String BINDADDRESS_PROP = "bindAddress"; //$NON-NLS-1$
 
 	public SSLGenericContainerInstantiator() {
 		super();
@@ -79,12 +86,18 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 
 	protected class GenericContainerArgs {
 		ID id;
-
 		Integer keepAlive;
+		InetAddress bindAddress;
 
 		public GenericContainerArgs(ID id, Integer keepAlive) {
 			this.id = id;
 			this.keepAlive = keepAlive;
+		}
+
+		public GenericContainerArgs(ID id, Integer keepAlive, InetAddress bindAddress) {
+			this.id = id;
+			this.keepAlive = keepAlive;
+			this.bindAddress = bindAddress;
 		}
 
 		public ID getID() {
@@ -93,6 +106,10 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 
 		public Integer getKeepAlive() {
 			return keepAlive;
+		}
+
+		InetAddress getBindAddress() {
+			return bindAddress;
 		}
 	}
 
@@ -137,14 +154,47 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 	protected GenericContainerArgs getServerArgs(Object[] args) throws IDCreateException {
 		ID newID = null;
 		Integer ka = null;
+		InetAddress bindAddress = null;
 		if (args != null && args.length > 0) {
 			if (args[0] instanceof Map) {
 				Map map = (Map) args[0];
 				Object idVal = map.get(ID_PROP);
-				if (idVal == null)
-					throw new IDCreateException("Cannot create ID.  No property with key=" + ID_PROP + " found in configuration=" + map); //$NON-NLS-1$ //$NON-NLS-2$
-				newID = getIDFromArg(idVal);
-				ka = getIntegerFromArg(map.get(KEEPALIVE_PROP));
+				if (idVal != null) {
+					newID = getIDFromArg(idVal);
+				} else {
+					String hostname = SSLServerSOContainer.DEFAULT_HOST;
+					Object hostVal = map.get(HOSTNAME_PROP);
+					if (hostVal != null) {
+						if (!(hostVal instanceof String))
+							throw new IllegalArgumentException("hostname value must be of type String"); //$NON-NLS-1$
+						hostname = (String) hostVal;
+					}
+					int port = -1;
+					Object portVal = map.get(PORT_PROP);
+					if (portVal != null)
+						port = getIntegerFromArg(portVal).intValue();
+					if (port < 0)
+						port = getSSLServerPort(port);
+					String path = SSLServerSOContainer.DEFAULT_NAME;
+					Object pathVal = map.get(PATH_PROP);
+					if (pathVal != null) {
+						if (!(pathVal instanceof String))
+							throw new IllegalArgumentException("path value must be of type String"); //$NON-NLS-1$
+						path = (String) pathVal;
+					}
+					newID = createSSLServerID(hostname, port, path);
+				}
+				Object bindAddressVal = map.get(BINDADDRESS_PROP);
+				if (bindAddressVal != null) {
+					if (bindAddressVal instanceof InetAddress) {
+						bindAddress = (InetAddress) bindAddressVal;
+					} else
+						throw new IllegalArgumentException("bindAddress must be of type InetAddress"); //$NON-NLS-1$
+				}
+				Object o = map.get(KEEPALIVE_PROP);
+				if (o == null)
+					o = map.get(KEEPALIVE_PROP.toLowerCase());
+				ka = getIntegerFromArg(o);
 			} else if (args.length > 1) {
 				if (args[0] instanceof String || args[0] instanceof ID)
 					newID = getIDFromArg(args[0]);
@@ -166,7 +216,21 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 		}
 		if (ka == null)
 			ka = new Integer(SSLServerSOContainer.DEFAULT_KEEPALIVE);
-		return new GenericContainerArgs(newID, ka);
+		return new GenericContainerArgs(newID, ka, bindAddress);
+	}
+
+	private ID createSSLServerID(String hostname, int port, String path) {
+		return IDFactory.getDefault().createStringID(SSLServerSOContainer.DEFAULT_PROTOCOL + "://" + hostname + ":" + port + path); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+
+	private int getSSLServerPort(int input) {
+		if (SSLServerSOContainer.DEFAULT_FALLBACK_PORT)
+			input = getFreePort();
+		else if (portIsFree(SSLServerSOContainer.DEFAULT_PORT))
+			input = SSLServerSOContainer.DEFAULT_PORT;
+		if (input < 0)
+			throw new IDCreateException("No server port is available for generic secure server creation.  org.eclipse.ecf.provider.generic.port.fallback=" + TCPServerSOContainer.DEFAULT_FALLBACK_PORT + " and org.eclipse.ecf.provider.generic.port=" + TCPServerSOContainer.DEFAULT_PORT); //$NON-NLS-1$ //$NON-NLS-2$
+		return input;
 	}
 
 	private SSLServerSocketFactory getServerSocketFactory() {
@@ -220,7 +284,7 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 			// multithreaded access to ServerPort (to find available port)
 			synchronized (this) {
 				gcargs = getServerArgs(args);
-				return new SSLServerSOContainer(new SOContainerConfig(gcargs.getID()), gcargs.getKeepAlive().intValue());
+				return new SSLServerSOContainer(new SOContainerConfig(gcargs.getID()), gcargs.getBindAddress(), gcargs.getKeepAlive().intValue());
 			}
 		} catch (Exception e) {
 			Trace.catching(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "createInstance", e); //$NON-NLS-1$

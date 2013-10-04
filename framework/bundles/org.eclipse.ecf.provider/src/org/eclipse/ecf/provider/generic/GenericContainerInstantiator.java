@@ -11,8 +11,7 @@
 package org.eclipse.ecf.provider.generic;
 
 import java.io.IOException;
-import java.net.BindException;
-import java.net.ServerSocket;
+import java.net.*;
 import java.util.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.*;
@@ -40,11 +39,13 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 
 	private static final String KEEPALIVE_PROP = "keepAlive"; //$NON-NLS-1$
 
-	private static final Object HOSTNAME_PROP = "hostname"; //$NON-NLS-1$
+	private static final String HOSTNAME_PROP = "hostname"; //$NON-NLS-1$
 
-	private static final Object PORT_PROP = "port"; //$NON-NLS-1$
+	private static final String PORT_PROP = "port"; //$NON-NLS-1$
 
-	private static final Object PATH_PROP = "path"; //$NON-NLS-1$
+	private static final String PATH_PROP = "path"; //$NON-NLS-1$
+
+	private static final String BINDADDRESS_PROP = "bindAddress"; //$NON-NLS-1$
 
 	public GenericContainerInstantiator() {
 		super();
@@ -84,12 +85,18 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 
 	protected class GenericContainerArgs {
 		ID id;
-
 		Integer keepAlive;
+		InetAddress bindAddress;
 
 		public GenericContainerArgs(ID id, Integer keepAlive) {
 			this.id = id;
 			this.keepAlive = keepAlive;
+		}
+
+		public GenericContainerArgs(ID id, Integer keepAlive, InetAddress bindAddress) {
+			this.id = id;
+			this.keepAlive = keepAlive;
+			this.bindAddress = bindAddress;
 		}
 
 		public ID getID() {
@@ -98,6 +105,10 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 
 		public Integer getKeepAlive() {
 			return keepAlive;
+		}
+
+		InetAddress getBindAddress() {
+			return bindAddress;
 		}
 	}
 
@@ -146,6 +157,8 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 	protected GenericContainerArgs getServerArgs(Object[] args) throws IDCreateException {
 		ID newID = null;
 		Integer ka = null;
+		InetAddress bindAddress = null;
+
 		if (args != null && args.length > 0) {
 			if (args[0] instanceof Map) {
 				Map map = (Map) args[0];
@@ -175,6 +188,13 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 					}
 					newID = createTCPServerID(hostname, port, path);
 				}
+				Object bindAddressVal = map.get(BINDADDRESS_PROP);
+				if (bindAddressVal != null) {
+					if (bindAddressVal instanceof InetAddress) {
+						bindAddress = (InetAddress) bindAddressVal;
+					} else
+						throw new IllegalArgumentException("bindAddress must be of type InetAddress"); //$NON-NLS-1$
+				}
 				Object o = map.get(KEEPALIVE_PROP);
 				if (o == null)
 					o = map.get(KEEPALIVE_PROP.toLowerCase());
@@ -193,7 +213,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 		}
 		if (ka == null)
 			ka = new Integer(TCPServerSOContainer.DEFAULT_KEEPALIVE);
-		return new GenericContainerArgs(newID, ka);
+		return new GenericContainerArgs(newID, ka, bindAddress);
 	}
 
 	private ID createTCPServerID(String hostname, int port, String path) {
@@ -257,7 +277,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 			// multithreaded access to ServerPort (to find available port)
 			synchronized (this) {
 				gcargs = getServerArgs(args);
-				return new TCPServerSOContainer(new SOContainerConfig(gcargs.getID()), gcargs.getKeepAlive().intValue());
+				return new TCPServerSOContainer(new SOContainerConfig(gcargs.getID()), gcargs.getBindAddress(), gcargs.getKeepAlive().intValue());
 			}
 		} catch (Exception e) {
 			Trace.catching(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "createInstance", e); //$NON-NLS-1$

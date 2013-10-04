@@ -1,5 +1,7 @@
 package org.eclipse.ecf.tests.core;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,6 +63,17 @@ public class GenericServerCreateTest extends ContainerAbstractTestCase {
 				getServerContainerName(), map);
 		assertNotNull(container);
 	}
+
+	public void testServerCreateMapParam3() throws Exception {
+		String serverId = getServerIdentity();
+		Map map = new HashMap();
+		map.put("id", serverId);
+		map.put("bindAddress", InetAddress.getLoopbackAddress());
+		container = containerFactory.createContainer(
+				getServerContainerName(), map);
+		assertNotNull(container);
+	}
+
 
 	public void testServerCreateMapParam1Fail() throws Exception {
 		Map map = new HashMap();
