@@ -70,7 +70,7 @@ public class GenericServerContainerGroupFactory implements IGenericServerContain
 			if (sslTransportPropValue instanceof Boolean)
 				sslTransport = ((Boolean) sslTransportPropValue).booleanValue();
 			else if (sslTransportPropValue instanceof String)
-				sslTransport = Boolean.parseBoolean((String) sslTransportPropValue);
+				sslTransport = Boolean.valueOf((String) sslTransportPropValue).booleanValue();
 
 		}
 		return sslTransport;
