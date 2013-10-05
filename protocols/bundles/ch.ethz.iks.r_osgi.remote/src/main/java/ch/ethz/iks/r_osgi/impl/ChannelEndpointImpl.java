@@ -184,8 +184,13 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	 * filter for events to prevent loops in the remote delivery if the peers
 	 * connected by this channel have non-disjoint topic spaces.
 	 */
-	private static final String NO_LOOPS = "(!(" //$NON-NLS-1$
-			+ RemoteEventMessage.EVENT_SENDER_URI + "=*))"; //$NON-NLS-1$
+	private static final String NO_LOOPS = "(|(!(" //$NON-NLS-1$
+			+ RemoteEventMessage.EVENT_SENDER_URI + "=*)" //$NON-NLS-1$
+					// [TCK][r-OSGi] NonSerializableException when running remoteserviceadmin ct
+					// https://bugs.eclipse.org/418740
+					+ "(!(" + EventConstants.EVENT_TOPIC
+							+ "=org/osgi/service/remoteserviceadmin/*))" //$NON-NLS-1$
+					+ "))"; //$NON-NLS-1$
 
 	private ArrayList workQueue = new ArrayList();
 

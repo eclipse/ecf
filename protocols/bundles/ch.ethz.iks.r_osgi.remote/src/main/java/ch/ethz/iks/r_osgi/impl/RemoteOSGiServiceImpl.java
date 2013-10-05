@@ -356,10 +356,18 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 		}
 
 		try {
-			eventHandlerTracker = new ServiceTracker(context, context
-					.createFilter("(&(" + Constants.OBJECTCLASS + "=" //$NON-NLS-1$ //$NON-NLS-2$
-							+ EventHandler.class.getName() + ")(!(" //$NON-NLS-1$
-							+ R_OSGi_INTERNAL + "=*)))"), //$NON-NLS-1$
+			eventHandlerTracker = new ServiceTracker(
+					context,
+					context.createFilter("(&(" + Constants.OBJECTCLASS + "=" //$NON-NLS-1$ //$NON-NLS-2$
+							+ EventHandler.class.getName()
+							+ ")(|(!(" //$NON-NLS-1$
+							+ R_OSGi_INTERNAL
+							+ "=*))" //$NON-NLS-1$
+							// [TCK][r-OSGi] NonSerializableException when running remoteserviceadmin ct
+							// https://bugs.eclipse.org/418740
+							+ "(!(" //$NON-NLS-1$
+							+ EventConstants.EVENT_TOPIC
+							+ "=org/osgi/service/remoteserviceadmin/*))))"), //$NON-NLS-1$
 					new ServiceTrackerCustomizer() {
 
 						public Object addingService(
