@@ -22,8 +22,8 @@ import com.mycorp.examples.timeservice.ITimeService;
 public class Activator implements BundleActivator {
 
 	private static final String GENERIC_SERVER_CONFIG = "ecf.generic.server";
-	private static final String GENERIC_SERVER_IDPROP_NAME = GENERIC_SERVER_CONFIG+ ".id";
-	private static final String GENERIC_SERVER_IDPROP_VALUE = "ecftcp://localhost:3288/server";
+	private static final String GENERIC_SERVER_PORTPROP_NAME = GENERIC_SERVER_CONFIG+ ".port";
+	private static final String GENERIC_SERVER_PORTPROP_VALUE = "3288";
 	
 	private static final String R_OSGI_SERVER_CONFIG = "ecf.r_osgi.peer";
 
@@ -65,21 +65,21 @@ public class Activator implements BundleActivator {
 		// set service.exported.configs
 		String serviceExportedConfig = System.getProperty("service.exported.configs",GENERIC_SERVER_CONFIG);
 		props.put("service.exported.configs",serviceExportedConfig);
-		String idPropName = null;
-		String idPropValue = null;
+		String propName = null;
+		String propValue = null;
 		if (GENERIC_SERVER_CONFIG.equals(serviceExportedConfig)) {
-			idPropName = GENERIC_SERVER_IDPROP_NAME;
-			idPropValue = GENERIC_SERVER_IDPROP_VALUE;
+			propName = GENERIC_SERVER_PORTPROP_NAME;
+			propValue = GENERIC_SERVER_PORTPROP_VALUE;
 		} else if (REST_SERVER_CONFIG.equals(serviceExportedConfig)) {
-			idPropName = REST_SERVER_IDPROP_NAME;
-			idPropValue = REST_SERVER_IDPROP_VALUE;
+			propName = REST_SERVER_IDPROP_NAME;
+			propValue = REST_SERVER_IDPROP_VALUE;
 		} else if (R_OSGI_SERVER_CONFIG.equals(serviceExportedConfig)) {
 			// r-osgi does not require the server to define its endpoint
 			return props;
 		} else throw new NullPointerException("Unsuppored value for service.exported.config="+serviceExportedConfig);
 		
-		// Set the id propName and idPropValue
-		props.put(idPropName,idPropValue);
+		// Set the propName and idPropValue
+		props.put(propName,propValue);
 		return props;
 	}
 	
