@@ -10,8 +10,7 @@
 package org.eclipse.ecf.server.generic;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.*;
 import java.util.*;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.ID;
@@ -30,8 +29,8 @@ public class GenericServerContainerGroup implements IGenericServerContainerGroup
 
 	class GenericServerSOContainerGroup extends TCPServerSOContainerGroup {
 
-		public GenericServerSOContainerGroup(String name, int port) {
-			super(name, port);
+		public GenericServerSOContainerGroup(String name, int port, InetAddress bindAddress) {
+			super(name, null, port, bindAddress);
 		}
 
 		public Map getMap() {
@@ -40,7 +39,14 @@ public class GenericServerContainerGroup implements IGenericServerContainerGroup
 	}
 
 	public GenericServerContainerGroup(String hostname, int port, Map defaultContainerProperties) {
-		this.serverGroup = new GenericServerSOContainerGroup(hostname, port);
+		this(hostname, port, null, defaultContainerProperties);
+	}
+
+	/**
+	 * @since 7.0
+	 */
+	public GenericServerContainerGroup(String hostname, int port, InetAddress bindAddress, Map defaultContainerProperties) {
+		this.serverGroup = new GenericServerSOContainerGroup(hostname, port, bindAddress);
 		this.defaultContainerProperties = defaultContainerProperties;
 	}
 

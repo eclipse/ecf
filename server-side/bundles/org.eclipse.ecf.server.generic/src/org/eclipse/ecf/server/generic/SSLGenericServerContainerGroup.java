@@ -10,8 +10,7 @@
 package org.eclipse.ecf.server.generic;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.*;
 import java.util.*;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.ID;
@@ -30,8 +29,8 @@ public class SSLGenericServerContainerGroup implements IGenericServerContainerGr
 
 	class SSLGenericServerSOContainerGroup extends SSLServerSOContainerGroup {
 
-		public SSLGenericServerSOContainerGroup(String name, int port) {
-			super(name, port);
+		public SSLGenericServerSOContainerGroup(String name, int port, InetAddress bindAddress) {
+			super(name, null, port, bindAddress);
 		}
 
 		public Map getMap() {
@@ -39,9 +38,16 @@ public class SSLGenericServerContainerGroup implements IGenericServerContainerGr
 		}
 	}
 
-	public SSLGenericServerContainerGroup(String hostname, int port, Map defaultContainerProperties) {
-		this.serverGroup = new SSLGenericServerSOContainerGroup(hostname, port);
+	/**
+	 * @since 7.0
+	 */
+	public SSLGenericServerContainerGroup(String hostname, int port, InetAddress bindAddress, Map defaultContainerProperties) {
+		this.serverGroup = new SSLGenericServerSOContainerGroup(hostname, port, bindAddress);
 		this.defaultContainerProperties = defaultContainerProperties;
+	}
+
+	public SSLGenericServerContainerGroup(String hostname, int port, Map defaultContainerProperties) {
+		this(hostname, port, null, defaultContainerProperties);
 	}
 
 	private String getHost() {

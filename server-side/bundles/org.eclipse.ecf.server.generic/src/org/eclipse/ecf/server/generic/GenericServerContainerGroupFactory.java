@@ -9,6 +9,7 @@
 ******************************************************************************/
 package org.eclipse.ecf.server.generic;
 
+import java.net.InetAddress;
 import java.util.*;
 import org.eclipse.core.runtime.Assert;
 
@@ -20,12 +21,17 @@ public class GenericServerContainerGroupFactory implements IGenericServerContain
 	protected class SCGData {
 		private String hostname;
 		private int port;
+		private InetAddress bindAddress;
 
-		public SCGData(String hostname, int port) {
+		/**
+		 * @since 7.0
+		 */
+		public SCGData(String hostname, int port, InetAddress bindAddress) {
 			Assert.isNotNull(hostname);
 			Assert.isTrue(port > 0);
 			this.hostname = hostname;
 			this.port = port;
+			this.bindAddress = bindAddress;
 		}
 
 		public String getHostname() {
@@ -48,19 +54,33 @@ public class GenericServerContainerGroupFactory implements IGenericServerContain
 		public int hashCode() {
 			return this.hostname.hashCode() ^ this.port;
 		}
+
+		/**
+		 * @since 7.0
+		 */
+		public InetAddress getBindAddress() {
+			return bindAddress;
+		}
 	}
 
 	private Hashtable serverContainerGroups = new Hashtable();
 
-	public IGenericServerContainerGroup createContainerGroup(String hostname, int port, Map defaultContainerProperties) throws GenericServerContainerGroupCreateException {
+	/**
+	 * @since 7.0
+	 */
+	public IGenericServerContainerGroup createContainerGroup(String hostname, int port, InetAddress bindAddress, Map defaultContainerProperties) throws GenericServerContainerGroupCreateException {
 		synchronized (serverContainerGroups) {
-			SCGData scgdata = new SCGData(hostname, port);
+			SCGData scgdata = new SCGData(hostname, port, bindAddress);
 			if (serverContainerGroups.contains(scgdata))
 				throw new GenericServerContainerGroupCreateException("Cannot container group hostname=" + hostname + " port=" + port + " already exists"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			IGenericServerContainerGroup scg = createGenericServerContainerGroup(scgdata, defaultContainerProperties);
 			serverContainerGroups.put(scgdata, scg);
 			return scg;
 		}
+	}
+
+	public IGenericServerContainerGroup createContainerGroup(String hostname, int port, Map defaultContainerProperties) throws GenericServerContainerGroupCreateException {
+		return createContainerGroup(hostname, port, null, defaultContainerProperties);
 	}
 
 	protected boolean isSSLTransportSpecified(Map defaultContainerProperties) {
@@ -81,8 +101,8 @@ public class GenericServerContainerGroupFactory implements IGenericServerContain
 	 */
 	protected IGenericServerContainerGroup createGenericServerContainerGroup(SCGData scgdata, Map defaultContainerProperties) throws GenericServerContainerGroupCreateException {
 		if (isSSLTransportSpecified(defaultContainerProperties))
-			return new SSLGenericServerContainerGroup(scgdata.getHostname(), scgdata.getPort(), defaultContainerProperties);
-		return new GenericServerContainerGroup(scgdata.getHostname(), scgdata.getPort(), defaultContainerProperties);
+			return new SSLGenericServerContainerGroup(scgdata.getHostname(), scgdata.getPort(), scgdata.getBindAddress(), defaultContainerProperties);
+		return new GenericServerContainerGroup(scgdata.getHostname(), scgdata.getPort(), scgdata.getBindAddress(), defaultContainerProperties);
 	}
 
 	public IGenericServerContainerGroup createContainerGroup(String hostname, int port) throws GenericServerContainerGroupCreateException {
@@ -108,7 +128,7 @@ public class GenericServerContainerGroupFactory implements IGenericServerContain
 	public IGenericServerContainerGroup getContainerGroup(String hostname, int port) {
 		if (hostname == null)
 			return null;
-		SCGData scgdata = new SCGData(hostname, port);
+		SCGData scgdata = new SCGData(hostname, port, null);
 		synchronized (serverContainerGroups) {
 			return (IGenericServerContainerGroup) serverContainerGroups.get(scgdata);
 		}
@@ -130,7 +150,7 @@ public class GenericServerContainerGroupFactory implements IGenericServerContain
 	public IGenericServerContainerGroup removeContainerGroup(String hostname, int port) {
 		if (hostname == null)
 			return null;
-		SCGData scgdata = new SCGData(hostname, port);
+		SCGData scgdata = new SCGData(hostname, port, null);
 		synchronized (serverContainerGroups) {
 			return (IGenericServerContainerGroup) serverContainerGroups.remove(scgdata);
 		}

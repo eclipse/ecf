@@ -49,6 +49,13 @@ public class SSLServerSOContainerGroup extends SOContainerGroup implements ISock
 		this(name, group, port, backlog, null);
 	}
 
+	/**
+	 * @since 4.4
+	 */
+	public SSLServerSOContainerGroup(String name, ThreadGroup group, int port, InetAddress bindAddress) {
+		this(name, group, port, Server.DEFAULT_BACKLOG, bindAddress);
+	}
+
 	public SSLServerSOContainerGroup(String name, ThreadGroup group, int port) {
 		this(name, group, port, DEFAULT_BACKLOG);
 	}

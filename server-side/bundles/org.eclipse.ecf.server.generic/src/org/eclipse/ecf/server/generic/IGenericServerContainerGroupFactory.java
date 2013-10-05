@@ -9,6 +9,7 @@
 ******************************************************************************/
 package org.eclipse.ecf.server.generic;
 
+import java.net.InetAddress;
 import java.util.Map;
 import org.eclipse.ecf.core.IContainer;
 
@@ -33,6 +34,22 @@ public interface IGenericServerContainerGroupFactory {
 	 * @since 6.0
 	 */
 	public static final String SSLTRANSPORT_CONTAINER_PROP = "org.eclipse.ecf.server.generic.containerProp.sslTransport"; //$NON-NLS-1$
+
+	/**
+	 * Create a new container group given a hostname, port, and a Map of default container properties.
+	 * @param hostname the hostname associated with the new container group.  Must not be <code>null</code>.
+	 * @param port the port that the new container group will listen on (once {@link IGenericServerContainerGroup#startListening()}
+	 * is called).  Should be a valid tcp port, openable for listening by this process via {@link IGenericServerContainerGroup#startListening()}.
+	 * @param bindAddress an InetAddress specifying what the resulting container group will bind the ServerSocket to when {@link IGenericServerContainerGroup#startListening()}
+	 * is called.   May be <code>null</code>.  If <code>null</code> then the ServerSocket binding will occur for any/all available addresses
+	 * @param defaultContainerProperties a Map of default properties passed to any IContainer instances created within the resulting group.
+	 * @return new generic server container group.  Will not return <code>null</code>.
+	 * @throws GenericServerContainerGroupCreateException if a container group exists for the given hostname and port combination.
+	 * 
+	 * @see IGenericServerContainerGroup
+	 * @since 7.0
+	 */
+	public IGenericServerContainerGroup createContainerGroup(String hostname, int port, InetAddress bindAddress, Map defaultContainerProperties) throws GenericServerContainerGroupCreateException;
 
 	/**
 	 * Create a new container group given a hostname, port, and a Map of default container properties.
