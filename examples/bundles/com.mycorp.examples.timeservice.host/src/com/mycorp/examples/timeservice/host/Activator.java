@@ -24,6 +24,8 @@ public class Activator implements BundleActivator {
 	private static final String GENERIC_SERVER_CONFIG = "ecf.generic.server";
 	private static final String GENERIC_SERVER_PORTPROP_NAME = GENERIC_SERVER_CONFIG+ ".port";
 	private static final String GENERIC_SERVER_PORTPROP_VALUE = "3288";
+	private static final String GENERIC_SERVER_HOSTPROP_NAME = GENERIC_SERVER_CONFIG+ ".hostname";
+	private static final String GENERIC_SERVER_HOSTPROP_VALUE = "localhost";
 	
 	private static final String R_OSGI_SERVER_CONFIG = "ecf.r_osgi.peer";
 
@@ -70,6 +72,7 @@ public class Activator implements BundleActivator {
 		if (GENERIC_SERVER_CONFIG.equals(serviceExportedConfig)) {
 			propName = GENERIC_SERVER_PORTPROP_NAME;
 			propValue = GENERIC_SERVER_PORTPROP_VALUE;
+			props.put(GENERIC_SERVER_HOSTPROP_NAME, GENERIC_SERVER_HOSTPROP_VALUE);
 		} else if (REST_SERVER_CONFIG.equals(serviceExportedConfig)) {
 			propName = REST_SERVER_IDPROP_NAME;
 			propValue = REST_SERVER_IDPROP_VALUE;
