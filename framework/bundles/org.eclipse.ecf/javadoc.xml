@@ -15,7 +15,7 @@
         	author="false" 
         	classpathref="files.classpath" 
         	destdir="${output}" 
-        	doctitle="Eclipse Communication Framework (ECF) 3.6.1" 
+        	doctitle="Eclipse Communication Framework (ECF) 3.7.0" 
         	nodeprecated="false" 
         	nodeprecatedlist="false" 
         	noindex="false" 
@@ -42,6 +42,8 @@
 	        	<exclude name="**/pubsub/**"/>
 	        	<exclude name="**/collab/**"/>
 	        	<exclude name="**/osgi/services/discovery/**"/>
+	        	<exclude name="**/com/mycorp/examples/timeservice/**"/>
+	        	<exclude name="**/org.eclipse.ecf.remoteservices.tooling.pde/templates/**"/>
         	</fileset>
     	</javadoc>
     </target>
