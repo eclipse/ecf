@@ -1468,7 +1468,14 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 			final String[] topicsRemoved) {
 
 		if (handlerReg == null) {
-			if (topicsAdded.length > 0) {
+			// Remote might send a
+			// ch.ethz.iks.r_osgi.messages.LeaseUpdateMessage.TOPIC_UPDATE
+			// message
+			// (see
+			// ch.ethz.iks.r_osgi.impl.RemoteOSGiServiceImpl.setupTrackers(...).new
+			// ServiceTrackerCustomizer() {...}.removedService(ServiceReference,
+			// Object)) with null as the topicsAdded list. Thus, ignore null.
+			if (topicsAdded != null && topicsAdded.length > 0) {
 				// register handler
 				final Dictionary properties = new Hashtable();
 				properties.put(EventConstants.EVENT_TOPIC, topicsAdded);
