@@ -1036,13 +1036,12 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 	 */
 	static String[] getTopics() {
 		final Object[] topicLists = eventHandlerTracker.getServices();
-		List topics = new ArrayList();
+		final List topics = new ArrayList();
 		if (topicLists != null) {
 			for (int i = 0; i < topicLists.length; i++) {
 				topics.addAll((List) topicLists[i]);
 			}
 		}
-//		topics = (List) FilterUtils.rightDifference(topicFilters, topics);
 		return (String[]) topics.toArray(new String[topics.size()]);
 	}
 
