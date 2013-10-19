@@ -82,6 +82,7 @@ import ch.ethz.iks.r_osgi.channels.NetworkChannelFactory;
 import ch.ethz.iks.r_osgi.messages.LeaseUpdateMessage;
 import ch.ethz.iks.r_osgi.service_discovery.ServiceDiscoveryHandler;
 import ch.ethz.iks.util.CollectionUtils;
+import ch.ethz.iks.util.StringUtils;
 
 /**
  * <p>
@@ -270,6 +271,11 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 	 * Channel ID --> ChannelEndpointMultiplexer
 	 */
 	private static Map multiplexers = new HashMap(0);
+	
+	/**
+	 * Event topics this instance is going to ignore and not remote
+	 */
+	private static final Set topicFilters = new HashSet(0);
 
 	/**
 	 * The package admin
@@ -283,6 +289,17 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 	 *             in case of IO problems.
 	 */
 	RemoteOSGiServiceImpl() throws IOException {
+		// [R_OSGi] Event Admin problems
+		// https://bugs.eclipse.org/419327
+		final String topics = System.getProperty("ch.ethz.iks.r_osgi.topic.filter", "");
+		final String[] strings = StringUtils.stringToArray(topics, ",");
+		for (int i = 0; i < strings.length; i++) {
+			topicFilters.add(strings[i]);
+		}
+		// [TCK][r-OSGi] NonSerializableException when running remoteserviceadmin ct
+		// https://bugs.eclipse.org/418740
+		topicFilters.add("org/osgi/service/remoteserviceadmin/*");
+		
 		// find out own IP address
 		try {
 			MY_ADDRESS = InetAddress.getAllByName(InetAddress.getLocalHost()
@@ -374,21 +391,27 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 								final ServiceReference reference) {
 
 							// https://bugs.eclipse.org/bugs/show_bug.cgi?id=326033
-							final String[] theTopics;
+							Collection theTopics;
 							Object topic = reference
 									.getProperty(EventConstants.EVENT_TOPIC);
 							if (topic instanceof String)
-								theTopics = new String[] { (String) topic };
+								theTopics = Arrays
+										.asList(new String[] { (String) topic });
 							else
-								theTopics = (String[]) topic;
+								theTopics = Arrays.asList((String[]) topic);
 
+							// Remove filtered topics
+							theTopics = StringUtils.rightDifference(
+									topicFilters, theTopics);
+
+							
 							final LeaseUpdateMessage lu = new LeaseUpdateMessage();
 							lu.setType(LeaseUpdateMessage.TOPIC_UPDATE);
 							lu.setServiceID(""); //$NON-NLS-1$
 							lu.setPayload(new Object[] { theTopics, null });
 							updateLeases(lu);
 
-							return Arrays.asList(theTopics);
+							return theTopics;
 						}
 
 						public void modifiedService(
@@ -398,7 +421,7 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 							final List oldTopicList = (List) oldTopics;
 
 							// https://bugs.eclipse.org/bugs/show_bug.cgi?id=326033
-							final List newTopicList;
+							Collection newTopicList;
 							Object topic = reference
 									.getProperty(EventConstants.EVENT_TOPIC);
 							if (topic instanceof String)
@@ -406,6 +429,10 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 										.asList(new String[] { (String) topic });
 							else
 								newTopicList = Arrays.asList((String[]) topic);
+							
+							// Remove filtered topics
+							newTopicList = StringUtils.rightDifference(
+									topicFilters, newTopicList);
 
 							final Collection removed = CollectionUtils
 									.rightDifference(newTopicList, oldTopicList);
@@ -1009,12 +1036,13 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 	 */
 	static String[] getTopics() {
 		final Object[] topicLists = eventHandlerTracker.getServices();
-		final List topics = new ArrayList();
+		List topics = new ArrayList();
 		if (topicLists != null) {
 			for (int i = 0; i < topicLists.length; i++) {
 				topics.addAll((List) topicLists[i]);
 			}
 		}
+//		topics = (List) FilterUtils.rightDifference(topicFilters, topics);
 		return (String[]) topics.toArray(new String[topics.size()]);
 	}
 

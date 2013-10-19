@@ -28,6 +28,10 @@
  */
 package ch.ethz.iks.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import java.util.StringTokenizer;
 
 /**
@@ -63,5 +67,44 @@ public final class StringUtils {
 		}
 
 		return tokens;
+	}
+
+	/**
+	 * R \ L (comparison operation allows wildcards)
+	 * @param left A set of matchers (supports wildcard at end)
+	 * @param right A set of inputs
+	 * @return The subset of right with all elements removed matching left 
+	 * @since 1.0
+	 */
+	public static Collection rightDifference(Collection left, Collection right) {
+		// This is O(n²) due to substring (wildcard) matching
+		// It's also quick and dirty (better use pattern matcher instead)
+		// TODO use pattern matcher
+		// (pattern matcher would increase the BREE dependency, but we could hide
+		// the FilterUtils implementation behind an interface and provide different
+		// service implementations)
+		// A trie would also allow for faster lookup.
+
+		
+		// Have to convert c1 into List to support remove operation
+		final List result = new ArrayList(right);
+
+		for (Iterator iterator = right.iterator(); iterator.hasNext();) {
+			final String f1 = (String) iterator.next();
+			for (Iterator itr2 = left.iterator(); itr2.hasNext();) {
+				String f2 = (String) itr2.next();
+				if (f2.endsWith("*")) {
+					f2 = f2.substring(0, f2.length() - 1);
+					if (f1.startsWith(f2)) {
+						result.remove(f1);
+					}
+				} else {
+					if (f1.equals(f2)) {
+						result.remove(f1);
+					}
+				}
+			}
+		}
+		return result;
 	}
 }
