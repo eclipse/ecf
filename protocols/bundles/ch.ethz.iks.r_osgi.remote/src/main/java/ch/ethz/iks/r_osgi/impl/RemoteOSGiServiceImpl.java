@@ -408,7 +408,9 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 							final LeaseUpdateMessage lu = new LeaseUpdateMessage();
 							lu.setType(LeaseUpdateMessage.TOPIC_UPDATE);
 							lu.setServiceID(""); //$NON-NLS-1$
-							lu.setPayload(new Object[] { theTopics, null });
+							lu.setPayload(new Object[] {
+									theTopics.toArray(new String[theTopics
+											.size()]), null });
 							updateLeases(lu);
 
 							return theTopics;
