@@ -1055,12 +1055,15 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 			case LeaseUpdateMessage.TOPIC_UPDATE: {
 				// There is an older r-OSGi version that incorrectly sends an ArrayList
 				// (1.0.0.RC4_v20131016-1848)
-				Object object = suMsg.getPayload()[0];
-				if (object instanceof List) {
-					object = ((List) object).toArray(new String[0]);
+				Object topicsAdded = suMsg.getPayload()[0];
+				if (topicsAdded instanceof List) {
+					topicsAdded = ((List) topicsAdded).toArray(new String[0]);
 				}
-				updateTopics((String[]) suMsg.getPayload()[0], (String[]) suMsg
-						.getPayload()[1]);
+				Object topicsRemoved = suMsg.getPayload()[1];
+				if (topicsRemoved instanceof List) {
+					topicsRemoved = ((List) topicsRemoved).toArray(new String[0]);
+				}
+				updateTopics((String[]) topicsAdded, (String[]) topicsRemoved);
 				return null;
 			}
 			case LeaseUpdateMessage.SERVICE_ADDED: {
