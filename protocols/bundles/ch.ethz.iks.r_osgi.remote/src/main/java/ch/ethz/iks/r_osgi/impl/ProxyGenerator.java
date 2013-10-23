@@ -374,9 +374,19 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 					final ClassReader reader;
 					if (bytes == null) {
 						try {
-							reader = new ClassReader(Class.forName(
-									superIface.replace('/', '.'))
-									.getClassLoader().getResourceAsStream(
+							final Class clazz = Class.forName(
+									superIface.replace('/', '.'));
+							ClassLoader classLoader = clazz
+									.getClassLoader();
+							if (classLoader == null) {
+								// For classes loaded by the bootstrap CL, the
+								// CL will be null. This happens e.g. on classes
+								// like java.io.Serializable (or other classes
+								// provided by the JRE).
+								// (see https://bugs.eclipse.org/420112)
+								classLoader = getClass().getClassLoader();
+							}
+							reader = new ClassReader(classLoader.getResourceAsStream(
 											superIface + ".class")); //$NON-NLS-1$
 						} catch (final IOException ioe) {
 							throw new IOException("While processing " //$NON-NLS-1$
