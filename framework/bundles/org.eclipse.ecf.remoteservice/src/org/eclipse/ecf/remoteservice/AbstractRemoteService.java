@@ -16,8 +16,7 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.jobs.JobsExecutor;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.remoteservice.Activator;
-import org.eclipse.equinox.concurrent.future.IFuture;
-import org.eclipse.equinox.concurrent.future.IProgressRunnable;
+import org.eclipse.equinox.concurrent.future.*;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceException;
 import org.osgi.util.tracker.ServiceTracker;
@@ -32,6 +31,57 @@ import org.osgi.util.tracker.ServiceTracker;
 public abstract class AbstractRemoteService implements IRemoteService, InvocationHandler {
 
 	protected static final Object[] EMPTY_ARGS = new Object[0];
+
+	/**
+	 * @since 8.2
+	 */
+	protected int futureExecutorServiceMaxThreads = Integer.parseInt(System.getProperty("ecf.remoteservice.futureExecutorServiceMaxThreads", "10")); //$NON-NLS-1$ //$NON-NLS-2$
+
+	/**
+	 * @since 8.2
+	 */
+	protected ExecutorService futureExecutorService;
+
+	/**
+	 * @since 8.2
+	 */
+	protected ExecutorService getFutureExecutorService(IRemoteCall call) {
+		synchronized (this) {
+			if (futureExecutorService == null)
+				futureExecutorService = Executors.newFixedThreadPool(futureExecutorServiceMaxThreads);
+		}
+		return futureExecutorService;
+	}
+
+	/**
+	 * @since 8.2
+	 */
+	protected void setFutureExecutorService(ExecutorService executorService) {
+		this.futureExecutorService = executorService;
+	}
+
+	/**
+	 * @since 8.2
+	 */
+	protected IExecutor iFutureExecutor;
+
+	/**
+	 * @since 8.2
+	 */
+	protected IExecutor getIFutureExecutor(IRemoteCall call) {
+		synchronized (this) {
+			if (iFutureExecutor == null)
+				iFutureExecutor = new JobsExecutor("RSJobs[rsID=" + getRemoteServiceID() + "]"); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		return iFutureExecutor;
+	}
+
+	/**
+	 * @since 8.2
+	 */
+	protected void setIFutureExecutor(IExecutor executor) {
+		this.iFutureExecutor = executor;
+	}
 
 	protected abstract String[] getInterfaceClassNames();
 
@@ -59,7 +109,9 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 	}
 
 	public IFuture callAsync(final IRemoteCall call) {
-		JobsExecutor executor = new JobsExecutor("callAsynch " + call.getMethod()); //$NON-NLS-1$
+		IExecutor executor = getIFutureExecutor(call);
+		if (executor == null)
+			throw new ServiceException("iFuture executor is null.  Cannot callAsync remote method=" + call.getMethod()); //$NON-NLS-1$
 		return executor.execute(new IProgressRunnable() {
 			public Object run(IProgressMonitor monitor) throws Exception {
 				return callSync(call);
@@ -384,35 +436,14 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 	 * @since 8.2
 	 */
 	protected Future callFutureAsync(final IRemoteCall call) {
-		ExecutorService executorService = getFutureExecutorService();
+		ExecutorService executorService = getFutureExecutorService(call);
 		if (executorService == null)
-			throw new ServiceException("Future executor service is null.  Cannot call method=" + call.getMethod()); //$NON-NLS-1$
+			throw new ServiceException("future executor service is null.  .  Cannot callAsync remote method=" + call.getMethod()); //$NON-NLS-1$
 		return executorService.submit(new Callable() {
 			public Object call() throws Exception {
 				return callSync(call);
 			}
 		});
-	}
-
-	/**
-	 * @since 8.2
-	 */
-	protected int futureExecutorServiceMaxThreads = 10;
-
-	/**
-	 * @since 8.2
-	 */
-	protected ExecutorService futureExecutorService;
-
-	/**
-	 * @since 8.2
-	 */
-	protected ExecutorService getFutureExecutorService() {
-		synchronized (this) {
-			if (futureExecutorService == null)
-				futureExecutorService = Executors.newFixedThreadPool(futureExecutorServiceMaxThreads);
-		}
-		return futureExecutorService;
 	}
 
 	/**
@@ -466,5 +497,18 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 		Activator a = Activator.getDefault();
 		if (a != null)
 			a.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, string, e));
+	}
+
+	/**
+	 * @since 8.2
+	 */
+	public void close() {
+		synchronized (this) {
+			if (futureExecutorService != null) {
+				futureExecutorService.shutdownNow();
+				futureExecutorService = null;
+			}
+			iFutureExecutor = null;
+		}
 	}
 }
