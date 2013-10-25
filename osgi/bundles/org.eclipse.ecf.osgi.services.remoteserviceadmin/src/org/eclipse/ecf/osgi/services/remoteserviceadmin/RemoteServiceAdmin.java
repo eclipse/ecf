@@ -1506,15 +1506,15 @@ public class RemoteServiceAdmin implements
 
 	private ImportEndpoint createAndRegisterProxy(
 			final EndpointDescription endpointDescription,
-			IRemoteServiceContainer rsContainer,
-			IRemoteServiceReference selectedRsReference) throws Exception {
+			final IRemoteServiceContainer rsContainer,
+			final IRemoteServiceReference selectedRsReference) throws Exception {
 
 		final BundleContext proxyServiceFactoryContext = getProxyServiceFactoryContext(endpointDescription);
 		if (proxyServiceFactoryContext == null)
 			throw new NullPointerException(
 					"getProxyServiceFactoryContext returned null.  Cannot register proxy service factory"); //$NON-NLS-1$
 
-		IRemoteServiceContainerAdapter containerAdapter = rsContainer
+		final IRemoteServiceContainerAdapter containerAdapter = rsContainer
 				.getContainerAdapter();
 		ID rsContainerID = rsContainer.getContainer().getID();
 		// First get IRemoteService for selectedRsReference
@@ -1540,7 +1540,7 @@ public class RemoteServiceAdmin implements
 						return proxyServiceFactoryContext.registerService(
 								(String[]) serviceTypes
 										.toArray(new String[serviceTypes.size()]),
-								createProxyServiceFactory(endpointDescription,
+								createProxyServiceFactory(endpointDescription,containerAdapter,selectedRsReference,
 										rs),
 								(Dictionary) PropertiesUtil
 										.createDictionaryFromMap(proxyProperties));
@@ -1593,9 +1593,9 @@ public class RemoteServiceAdmin implements
 
 	private ServiceFactory createProxyServiceFactory(
 			EndpointDescription endpointDescription,
-			IRemoteService remoteService) {
+			IRemoteServiceContainerAdapter containerAdapter, IRemoteServiceReference selectedRsReference, IRemoteService remoteService) {
 		return new ProxyServiceFactory(
-				endpointDescription.getInterfaceVersions(), remoteService);
+				endpointDescription.getInterfaceVersions(), containerAdapter, selectedRsReference, remoteService);
 	}
 
 	private Collection<Class> loadServiceInterfacesViaBundle(Bundle bundle,
@@ -1623,22 +1623,32 @@ public class RemoteServiceAdmin implements
 	}
 
 	class ProxyServiceFactory implements ServiceFactory {
+		private final IRemoteServiceContainerAdapter containerAdapter;
+		private final IRemoteServiceReference rsReference;
 		private IRemoteService remoteService;
 		private Map<String, Version> interfaceVersions;
-
+		private long remoteProxyCount = 0L;
+		
 		public ProxyServiceFactory(Map<String, Version> interfaceVersions,
-				IRemoteService remoteService) {
+				IRemoteServiceContainerAdapter containerAdapter, IRemoteServiceReference rsReference, IRemoteService remoteService) {
+			this.containerAdapter = containerAdapter;
+			this.rsReference = rsReference;
 			this.interfaceVersions = interfaceVersions;
 			this.remoteService = remoteService;
 		}
 
 		public Object getService(Bundle bundle, ServiceRegistration registration) {
-			return createProxy(bundle, registration.getReference(),
+			Object proxy = createProxy(bundle, registration.getReference(),
 					remoteService, interfaceVersions);
+			remoteProxyCount++;
+			return proxy;
 		}
 
 		public void ungetService(Bundle bundle,
 				ServiceRegistration registration, Object service) {
+			if (remoteProxyCount == 1L) 
+				containerAdapter.ungetRemoteService(rsReference);
+			remoteProxyCount--;
 			ungetProxyClassLoader(bundle);
 		}
 	}

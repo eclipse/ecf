@@ -502,7 +502,7 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 	/**
 	 * @since 8.2
 	 */
-	public void close() {
+	public void dispose() {
 		synchronized (this) {
 			if (futureExecutorService != null) {
 				futureExecutorService.shutdownNow();

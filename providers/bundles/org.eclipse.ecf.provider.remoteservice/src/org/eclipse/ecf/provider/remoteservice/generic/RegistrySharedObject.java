@@ -208,6 +208,13 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		if (registration == null)
 			return null;
 		final RemoteServiceImpl remoteService = new RemoteServiceImpl(this, registration);
+		synchronized (refToImplMap) {
+			List remoteServiceImplList = (List) refToImplMap.get(reference);
+			if (remoteServiceImplList == null)
+				remoteServiceImplList = new ArrayList();
+			remoteServiceImplList.add(remoteService);
+			refToImplMap.put(reference, remoteServiceImplList);
+		}
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "getRemoteService", remoteService); //$NON-NLS-1$
 		return remoteService;
 	}
@@ -257,6 +264,9 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		return reg;
 	}
 
+	// <IRemoteServiceReference,List<RemoteServiceImpl>>
+	private Map refToImplMap = new HashMap();
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter#ungetRemoteService(org.eclipse.ecf.remoteservice.IRemoteServiceReference)
 	 */
@@ -266,15 +276,17 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		IRemoteServiceID serviceID = ref.getID();
 		if (serviceID == null)
 			return false;
-		synchronized (localRegistry) {
-			RemoteServiceRegistrationImpl registry = localRegistry.findRegistrationForRemoteServiceId(serviceID);
-			if (registry != null)
+		synchronized (refToImplMap) {
+			List remoteServiceImplList = (List) refToImplMap.remove(ref);
+			if (remoteServiceImplList != null) {
+				for (Iterator i = remoteServiceImplList.iterator(); i.hasNext();) {
+					RemoteServiceImpl rsImpl = (RemoteServiceImpl) i.next();
+					if (rsImpl != null)
+						rsImpl.dispose();
+					i.remove();
+				}
 				return true;
-		}
-		synchronized (remoteRegistrys) {
-			final RemoteServiceRegistryImpl registry = (RemoteServiceRegistryImpl) remoteRegistrys.get(serviceID.getContainerID());
-			if (registry != null)
-				return true;
+			}
 		}
 		return false;
 	}
@@ -432,6 +444,9 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 				rsListenerDispatchEventManager = null;
 				rsListenerDispatchQueue = null;
 			}
+		}
+		synchronized (refToImplMap) {
+			refToImplMap.clear();
 		}
 		synchronized (remoteRegistrys) {
 			remoteRegistrys.clear();

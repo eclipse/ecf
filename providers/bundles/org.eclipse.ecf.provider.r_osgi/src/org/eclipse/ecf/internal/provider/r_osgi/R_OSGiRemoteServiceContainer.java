@@ -198,8 +198,19 @@ final class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerA
 		Object rs = remoteService.getRemoteService(impl.getR_OSGiServiceReference());
 		if (rs == null)
 			return null;
-		return new RemoteServiceImpl(impl, rs);
+		final RemoteServiceImpl rsImpl = new RemoteServiceImpl(impl, rs);
+		synchronized (refToImplMap) {
+			List remoteServiceImplList = (List) refToImplMap.get(reference);
+			if (remoteServiceImplList == null)
+				remoteServiceImplList = new ArrayList();
+			remoteServiceImplList.add(rsImpl);
+			refToImplMap.put(reference, remoteServiceImplList);
+		}
+		return rsImpl;
 	}
+
+	// <IRemoteServiceReference,List<RemoteServiceImpl>>
+	private Map refToImplMap = new HashMap();
 
 	public IRemoteServiceReference[] getRemoteServiceReferences(ID target, ID[] idFilter, String clazz, String filter) throws InvalidSyntaxException, ContainerConnectException {
 		// r-osgi does not support the idFilter, since it does not support pub/sub
@@ -427,6 +438,17 @@ final class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerA
 		if (!rsr.isActive())
 			return false;
 		remoteService.ungetRemoteService(rsr);
+		synchronized (refToImplMap) {
+			List remoteServiceImplList = (List) refToImplMap.remove(reference);
+			if (remoteServiceImplList != null) {
+				for (Iterator i = remoteServiceImplList.iterator(); i.hasNext();) {
+					RemoteServiceImpl rsImpl = (RemoteServiceImpl) i.next();
+					if (rsImpl != null)
+						rsImpl.dispose();
+					i.remove();
+				}
+			}
+		}
 		return true;
 	}
 
@@ -580,6 +602,10 @@ final class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerA
 
 		if (connectedID != null) {
 			disconnect();
+		}
+
+		synchronized (refToImplMap) {
+			refToImplMap.clear();
 		}
 
 		fireListeners(new ContainerDisposeEvent(containerID));
