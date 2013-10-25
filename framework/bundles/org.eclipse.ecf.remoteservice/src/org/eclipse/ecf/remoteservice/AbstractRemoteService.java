@@ -367,7 +367,7 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 		if (listener == null) {
 			if (asyncArgs.isIFuture())
 				return callAsync(call);
-			return callJREAsync(call);
+			return callFutureAsync(call);
 		}
 		return callAsyncWithResult(call, listener);
 	}
@@ -383,7 +383,7 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 	/**
 	 * @since 8.2
 	 */
-	protected Future callJREAsync(final IRemoteCall call) {
+	protected Future callFutureAsync(final IRemoteCall call) {
 		ExecutorService executorService = getFutureExecutorService();
 		if (executorService == null)
 			throw new ServiceException("Future executor service is null.  Cannot call method=" + call.getMethod()); //$NON-NLS-1$
