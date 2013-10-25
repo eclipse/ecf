@@ -11,6 +11,7 @@ package org.eclipse.ecf.remoteservice;
 
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.concurrent.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.jobs.JobsExecutor;
 import org.eclipse.ecf.core.util.ECFException;
@@ -27,6 +28,7 @@ import org.osgi.util.tracker.ServiceTracker;
  * 
  * @since 4.1
  */
+//@ProviderType
 public abstract class AbstractRemoteService implements IRemoteService, InvocationHandler {
 
 	protected static final Object[] EMPTY_ARGS = new Object[0];
@@ -307,6 +309,13 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 	protected class AsyncArgs {
 		private IRemoteCallListener listener;
 		private Object[] args;
+		private boolean isIFuture;
+
+		public AsyncArgs(Object[] originalArgs, boolean isIFuture) {
+			this.listener = null;
+			this.args = originalArgs;
+			this.isIFuture = isIFuture;
+		}
 
 		public AsyncArgs(IRemoteCallListener listener, Object[] originalArgs) {
 			this.listener = listener;
@@ -324,6 +333,13 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 
 		public Object[] getArgs() {
 			return args;
+		}
+
+		/**
+		 * @since 8.2
+		 */
+		public boolean isIFuture() {
+			return isIFuture;
 		}
 	}
 
@@ -347,10 +363,56 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 				return DEFAULT_TIMEOUT;
 			}
 		};
-		if (listener == null)
-			return callAsync(call);
+		// IFuture or Future will have listener == null
+		if (listener == null) {
+			if (asyncArgs.isIFuture())
+				return callAsync(call);
+			return callJREAsync(call);
+		}
+		return callAsyncWithResult(call, listener);
+	}
+
+	/**
+	 * @since 8.2
+	 */
+	protected Object callAsyncWithResult(IRemoteCall call, IRemoteCallListener listener) {
 		callAsync(call, listener);
 		return null;
+	}
+
+	/**
+	 * @since 8.2
+	 */
+	protected Future callJREAsync(final IRemoteCall call) {
+		ExecutorService executorService = getFutureExecutorService();
+		if (executorService == null)
+			throw new ServiceException("Future executor service is null.  Cannot call method=" + call.getMethod()); //$NON-NLS-1$
+		return executorService.submit(new Callable() {
+			public Object call() throws Exception {
+				return callSync(call);
+			}
+		});
+	}
+
+	/**
+	 * @since 8.2
+	 */
+	protected int futureExecutorServiceMaxThreads = 10;
+
+	/**
+	 * @since 8.2
+	 */
+	protected ExecutorService futureExecutorService;
+
+	/**
+	 * @since 8.2
+	 */
+	protected ExecutorService getFutureExecutorService() {
+		synchronized (this) {
+			if (futureExecutorService == null)
+				futureExecutorService = Executors.newFixedThreadPool(futureExecutorServiceMaxThreads);
+		}
+		return futureExecutorService;
 	}
 
 	/**
@@ -359,9 +421,12 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 	protected AsyncArgs getAsyncArgs(Method method, Object[] args) {
 		IRemoteCallListener listener = null;
 		Class returnType = method.getReturnType();
-		// If the return type is declared to be *anything* except an IFuture, then 
-		// we are expecting the last argument to be an IRemoteCallListener
-		if (!returnType.equals(IFuture.class)) {
+		// If the return type is of type java.util.concurrent.Future, then we return
+		if (returnType.equals(Future.class)) {
+			return new AsyncArgs(args, false);
+		} else if (returnType.equals(IFuture.class)) {
+			return new AsyncArgs(args, true);
+		} else {
 			// If the provided args do *not* include an IRemoteCallListener then we have a problem
 			if (args == null || args.length == 0)
 				throw new IllegalArgumentException("Async calls must include a IRemoteCallListener instance as the last argument"); //$NON-NLS-1$
@@ -379,8 +444,8 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 			// If the last are is not an instance of IRemoteCallListener then there is a problem
 			if (listener == null)
 				throw new IllegalArgumentException("Last argument must be an instance of IRemoteCallListener"); //$NON-NLS-1$
+			return new AsyncArgs(listener, args);
 		}
-		return new AsyncArgs(listener, args);
 	}
 
 	/**
