@@ -10,6 +10,7 @@
 package org.eclipse.ecf.tests.osgi.services.remoteserviceadmin;
 
 import java.util.Properties;
+import java.util.concurrent.Future;
 
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
@@ -143,6 +144,23 @@ public abstract class AbstractRemoteServiceAccessTest extends
 		assertTrue(TestServiceInterface1.TEST_SERVICE_STRING1.equals(result));
 	}
 
+	public void testUngetProxy() throws Exception {
+		createServiceTrackerAndRegister();
+		
+		// Client - Get service references from service tracker
+		final ServiceReference[] remoteReferences = st.getServiceReferences();
+		assertReferencesValidAndFirstHasCorrectType(remoteReferences, classname);
+
+		// Get proxy/service
+		final TestServiceInterface1 proxy = (TestServiceInterface1) getContext()
+				.getService(remoteReferences[0]);
+		assertNotNull(proxy);
+		
+		boolean unget = getContext().ungetService(remoteReferences[0]);
+		assertTrue(unget);
+	}
+
+
 	public void testCallSyncFromProxy() throws Exception {
 		createServiceTrackerAndRegister();
 		
@@ -246,4 +264,26 @@ public abstract class AbstractRemoteServiceAccessTest extends
 		rs.fireAsync(createRemoteCall());
 		Thread.sleep(REGISTER_WAIT);
 	}
+	
+	public void testAsyncProxyFuture() throws Exception {
+		createServiceTrackerAndRegister();
+		
+		// Client - Get service references from service tracker
+		final ServiceReference[] remoteReferences = st.getServiceReferences();
+		assertReferencesValid(remoteReferences);
+
+		Object svc = st.getService();
+		assertNotNull(svc);
+		
+		if (!(svc instanceof TestServiceInterface1Async)) fail("remote svc is not instance of TestServiceInterface1Async");
+		
+		TestServiceInterface1Async asyncSvc = (TestServiceInterface1Async) svc;
+		// Call method to get Future
+		Future f = asyncSvc.doStuff1Async();
+		// now get result from futureResult
+		final Object result = f.get();
+		Trace.trace(Activator.PLUGIN_ID, "callSync.doStuff1 result=" + result);
+		assertStringResultValid(result, TestServiceInterface1.TEST_SERVICE_STRING1);
+	}
+
 }
