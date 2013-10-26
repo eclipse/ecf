@@ -1091,6 +1091,13 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 				}
 
 				final RemoteServiceReferenceImpl ref = getRemoteReference(serviceURI); //$NON-NLS-1$
+				// If r-OSGi receives a SERVICE_MODIFIED for service X before it
+				// knows about X (SERVICE_ADDED), there is no point in updating
+				// the local service instance. It will fail with an NPE anyway.
+				// (see https://bugs.eclipse.org/420433)
+				if (ref == null && reg == null) {
+					return null;
+				}
 				ref.setProperties(properties);
 				RemoteOSGiServiceImpl
 						.notifyRemoteServiceListeners(new RemoteServiceEvent(
