@@ -32,9 +32,9 @@ package ch.ethz.iks.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.Method;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Smart object input stream that is able to deserialize classes which do not
@@ -46,251 +46,50 @@ import java.lang.reflect.Modifier;
  */
 public final class SmartObjectInputStream extends ObjectInputStream {
 
-	private final ObjectInputStream in;
+	private Object handles;
+	private Field handle;
+	private Method setHandle;
 
 	public SmartObjectInputStream(final InputStream in) throws IOException {
-		// implicitly: super();
-		// thereby, enableOverride is set
-		this.in = new ObjectInputStream(in);
-	}
-
-	protected final Object readObjectOverride() throws IOException,
-			ClassNotFoundException {
-
-		final byte cat = in.readByte();
-		switch (cat) {
-		case 0:
-			// null
-			return null;
-		case 1:
-			// string serialized object
-			// TODO: cache constructors
-			try {
-				final String type = in.readUTF();
-				final Class test = (Class) SmartConstants.idToClass.get(type);
-				final Class clazz = test != null ? test : Class.forName(type);
-				final Constructor constr = clazz
-						.getConstructor(new Class[] { String.class });
-				return constr.newInstance(new Object[] { in.readUTF() });
-			} catch (final Exception e) {
-				e.printStackTrace();
-				throw new IOException(e.getMessage());
-			}
-		case 2:
-			// java serialized object
-			return in.readObject();
-		case 3:
-			return readSmartSerializedObject();
-		case 4:
-			final int length = in.readByte();
-			final String clazzName = in.readUTF();
-			final Class clazz = Class.forName(clazzName);
-			final Object[] array = (Object[]) java.lang.reflect.Array
-					.newInstance(clazz, length);
-			for (int i = 0; i < length; i++) {
-				final byte b = in.readByte();
-				if(b == -1) {
-					array[i] = null;
-				} else {
-					array[i] = readSmartSerializedObject();
-				}
-			}
-			return array;
-		default:
-			throw new IllegalStateException("Unhandled case " + cat); //$NON-NLS-1$
-		}
-	}
-
-	private Object readSmartSerializedObject() throws IOException, ClassNotFoundException {
-		// smart serialized object
-		final String clazzName = in.readUTF();
-
-		// TODO: cache this information...
-		Class clazz = Class.forName(clazzName);
-
+		super(new GZIPInputStream(in));
+		enableResolveObject(true);
 		try {
-			final Constructor constr = clazz.getDeclaredConstructor(null);
-			constr.setAccessible(true);
-			final Object newInstance = constr.newInstance(null);
-
-			int fieldCount = in.readInt();
-			while (fieldCount > -1) {
-				for (int i = 0; i < fieldCount; i++) {
-					final String fieldName = in.readUTF();
-					final Object value = readObjectOverride();
-					final Field field = clazz.getDeclaredField(fieldName);
-
-					final int mod = field.getModifiers();
-					if (!Modifier.isPublic(mod)) {
-						field.setAccessible(true);
-					}
-
-					field.set(newInstance, value);
-				}
-				clazz = clazz.getSuperclass();
-				fieldCount = in.readInt();
-			}
-			return newInstance;
-		} catch (final Exception e) {
-			e.printStackTrace();
-			throw new IOException("Error while deserializing " + clazzName //$NON-NLS-1$
-					+ ": " + e.getMessage()); //$NON-NLS-1$
+			final Field field = getClass().getSuperclass().getDeclaredField(
+					"handles");
+			field.setAccessible(true);
+			handles = field.get(this);
+			handle = getClass().getSuperclass().getDeclaredField("passHandle");
+			handle.setAccessible(true);
+			setHandle = handles.getClass().getDeclaredMethod("setObject",
+					new Class[] { Integer.TYPE, Object.class });
+			setHandle.setAccessible(true);
+		} catch (Exception e) {
+			// handle replacement won't work.
 		}
 	}
 
-	/**
-	 * 
-	 * @see java.io.ObjectInputStream#read()
-	 */
-	public final int read() throws IOException {
-		return in.read();
+	protected Object resolveObject(final Object obj) throws IOException {
+		if (obj instanceof SmartObjectStreamClass) {
+			try {
+				return ((SmartObjectStreamClass) obj).restoreObject();
+			} catch (Exception e) {
+				final IOException f = new IOException(
+						"Exception while resolving object");
+				f.initCause(e);
+				throw f;
+			}
+		}
+		return obj;
 	}
 
-	/**
-	 * 
-	 * @see java.io.ObjectInputStream#read(byte[], int, int)
-	 */
-	public final int read(final byte[] buf, final int off, final int len)
-			throws IOException {
-		return in.read(buf, off, len);
+	void fixHandle(final Object obj) {
+		if (setHandle == null) {
+			return;
+		}
+		try {
+			setHandle.invoke(handles, new Object[] { handle.get(this), obj });
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
-
-	/**
-	 * 
-	 * @see java.io.ObjectInputStream#available()
-	 */
-	public final int available() throws IOException {
-		return in.available();
-	}
-
-	/**
-	 * 
-	 * @see java.io.ObjectInputStream#close()
-	 */
-	public final void close() throws IOException {
-		in.close();
-	}
-
-	/**
-	 * 
-	 * @see java.io.ObjectInputStream#readBoolean()
-	 */
-	public final boolean readBoolean() throws IOException {
-		return in.readBoolean();
-	}
-
-	/**
-	 * 
-	 * @see java.io.ObjectInputStream#readByte()
-	 */
-	public final byte readByte() throws IOException {
-		return in.readByte();
-	}
-
-	/**
-	 * 
-	 * @see java.io.ObjectInputStream#readUnsignedByte()
-	 */
-	public final int readUnsignedByte() throws IOException {
-		return in.readUnsignedByte();
-	}
-
-	/**
-	 * 
-	 * @see java.io.ObjectInputStream#readChar()
-	 */
-	public final char readChar() throws IOException {
-		return in.readChar();
-	}
-
-	/**
-	 * 
-	 * @see java.io.ObjectInputStream#readShort()
-	 */
-	public final short readShort() throws IOException {
-		return in.readShort();
-	}
-
-	/**
-	 * 
-	 * @see java.io.ObjectInputStream#readUnsignedShort()
-	 */
-	public final int readUnsignedShort() throws IOException {
-		return in.readUnsignedShort();
-	}
-
-	/**
-	 * 
-	 * @see java.io.ObjectInputStream#readInt()
-	 */
-	public final int readInt() throws IOException {
-		return in.readInt();
-	}
-
-	/**
-	 * 
-	 * @see java.io.ObjectInputStream#readLong()
-	 */
-	public final long readLong() throws IOException {
-		return in.readLong();
-	}
-
-	/**
-	 * 
-	 * @see java.io.ObjectInputStream#readFloat()
-	 */
-	public final float readFloat() throws IOException {
-		return in.readFloat();
-	}
-
-	/**
-	 * 
-	 * @see java.io.ObjectInputStream#readDouble()
-	 */
-	public final double readDouble() throws IOException {
-		return in.readDouble();
-	}
-
-	/**
-	 * 
-	 * @see java.io.ObjectInputStream#readFully(byte[])
-	 */
-	public final void readFully(final byte[] buf) throws IOException {
-		in.readFully(buf);
-	}
-
-	/**
-	 * 
-	 * @see java.io.ObjectInputStream#readFully(byte[], int, int)
-	 */
-	public final void readFully(final byte[] buf, final int off, final int len)
-			throws IOException {
-		in.readFully(buf, off, len);
-	}
-
-	/**
-	 * 
-	 * @see java.io.ObjectInputStream#skipBytes(int)
-	 */
-	public final int skipBytes(final int len) throws IOException {
-		return in.skipBytes(len);
-	}
-
-	/**
-	 * @return String
-	 * @throws IOException 
-	 * @deprecated
-	 */
-	public final String readLine() throws IOException {
-		return in.readLine();
-	}
-
-	/**
-	 * 
-	 * @see java.io.ObjectInputStream#readUTF()
-	 */
-	public final String readUTF() throws IOException {
-		return in.readUTF();
-	}
-
 }
