@@ -12,7 +12,6 @@
 package org.eclipse.ecf.provider.zookeeper.core;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,8 +20,7 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.zookeeper.server.NIOServerCnxn;
-import org.apache.zookeeper.server.NIOServerCnxn.Factory;
+import org.apache.zookeeper.server.NIOServerCnxnFactory;
 import org.apache.zookeeper.server.PurgeTxnLog;
 import org.apache.zookeeper.server.ServerConfig;
 import org.apache.zookeeper.server.ZooKeeperServer;
@@ -197,7 +195,8 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 			FileTxnSnapLog fileTxnSnapLog = new FileTxnSnapLog(conf.getZookeeperDataFile(), conf.getZookeeperDataFile());
 			ZooDiscoveryContainer.zooKeeperServer.setTxnLogFactory(fileTxnSnapLog);
 			ZooDiscoveryContainer.zooKeeperServer.setTickTime(conf.getTickTime());
-			Factory cnxnFactory = new NIOServerCnxn.Factory(new InetSocketAddress(conf.getClientPort()));
+			NIOServerCnxnFactory cnxnFactory = new NIOServerCnxnFactory();
+			cnxnFactory.configure(new InetSocketAddress(conf.getClientPort()), 0);
 			cnxnFactory.startup(ZooDiscoveryContainer.zooKeeperServer);
 		} catch (Exception e) {
 			Logger.log(LogService.LOG_ERROR,
@@ -223,23 +222,17 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 		try {
 			final QuorumPeerConfig quorumPeerConfig = new QuorumPeerConfig();
 			quorumPeerConfig.parse(conf.getConfFile());
-			QuorumPeer.Factory qpFactory = new QuorumPeer.Factory() {
-				public QuorumPeer create(NIOServerCnxn.Factory cnxnFactory) throws IOException {
-					ServerConfig serverConfig = new ServerConfig();
-					serverConfig.readFrom(quorumPeerConfig);
-					QuorumPeer peer = new QuorumPeer(quorumPeerConfig.getServers(), new File(serverConfig.getDataDir()), new File(
-							serverConfig.getDataLogDir()), quorumPeerConfig.getElectionAlg(), quorumPeerConfig.getServerId(),
-							quorumPeerConfig.getTickTime(), quorumPeerConfig.getInitLimit(), quorumPeerConfig.getSyncLimit(), cnxnFactory,
-							quorumPeerConfig.getQuorumVerifier());
-					ZooDiscoveryContainer.this.quorumPeer = peer;
-					return peer;
-				}
 
-				public NIOServerCnxn.Factory createConnectionFactory() throws IOException {
-					return new NIOServerCnxn.Factory(quorumPeerConfig.getClientPortAddress());
-				}
-			};
-			quorumPeer = qpFactory.create(qpFactory.createConnectionFactory());
+			ServerConfig serverConfig = new ServerConfig();
+			serverConfig.readFrom(quorumPeerConfig);
+			
+			NIOServerCnxnFactory cnxnFactory = new NIOServerCnxnFactory();
+			cnxnFactory.configure(new InetSocketAddress(conf.getClientPort()), 0);
+			quorumPeer = new QuorumPeer(quorumPeerConfig.getServers(), new File(serverConfig.getDataDir()), new File(
+					serverConfig.getDataLogDir()), quorumPeerConfig.getElectionAlg(), quorumPeerConfig.getServerId(),
+					quorumPeerConfig.getTickTime(), quorumPeerConfig.getInitLimit(), quorumPeerConfig.getSyncLimit(), cnxnFactory,
+					quorumPeerConfig.getQuorumVerifier());
+
 			quorumPeer.start();
 			quorumPeer.setDaemon(true);
 			isQuorumPeerReady = true;
