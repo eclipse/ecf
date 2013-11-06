@@ -53,7 +53,7 @@ import org.osgi.service.log.LogService;
 public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 
 	private static ZooDiscoveryContainer discovery;
-	public static ExecutorService CACHED_THREAD_POOL = Executors.newSingleThreadExecutor();
+	public static ExecutorService CACHED_THREAD_POOL = Executors.newCachedThreadPool();
 	private QuorumPeer quorumPeer;
 	private Properties DiscoveryProperties;
 	protected Advertiser advertiser;
