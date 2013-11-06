@@ -29,7 +29,6 @@
 package ch.ethz.iks.r_osgi;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 
 import org.osgi.framework.Filter;
 
@@ -252,21 +251,6 @@ public interface RemoteOSGiService {
 	 *            a callback to be called when the result is available
 	 */
 	void asyncRemoteCall(final URI service, final String methodSignature,
-			final Object[] args, final AsyncRemoteCallCallback callback);
-
-	/**
-	 * make an asynchronous remote call to a service
-	 * 
-	 * @param service
-	 *            the URI of the service
-	 * @param method
-	 * 			  the method to call
-	 * @param args
-	 *            the arguments to pass
-	 * @param callback
-	 *            a callback to be called when the result is available
-	 */
-	void asyncRemoteCall(final URI service, final Method method,
 			final Object[] args, final AsyncRemoteCallCallback callback);
 
 	/**

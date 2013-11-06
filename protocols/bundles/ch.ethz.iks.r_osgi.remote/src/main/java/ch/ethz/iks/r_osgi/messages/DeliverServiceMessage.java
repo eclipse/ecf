@@ -173,6 +173,7 @@ public final class DeliverServiceMessage extends RemoteOSGiMessage {
 								+ pkgName + ";resolution:=optional";
 			}
 		}
+
 	}
 
 	/**
