@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2010 Jan S. Rellermeyer
+/* Copyright (c) 2006-2009 Jan S. Rellermeyer
  * Systems Group,
  * Department of Computer Science, ETH Zurich.
  * All rights reserved.
@@ -33,7 +33,9 @@ import java.util.Hashtable;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.log.LogService;
+
 import ch.ethz.iks.r_osgi.RemoteOSGiService;
 import ch.ethz.iks.r_osgi.Remoting;
 import ch.ethz.iks.r_osgi.channels.NetworkChannelFactory;
@@ -73,35 +75,35 @@ public final class RemoteOSGiActivator implements BundleActivator {
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(final BundleContext context) throws Exception {
-		try {
-			instance = this;
-			this.context = context;
+		instance = this;
+		this.context = context;
 
-			if (remoting == null) {
-				// get the instance of RemoteOSGiServiceImpl
-				remoting = new RemoteOSGiServiceImpl();
-			}
+		// get the log service, if present
+		final ServiceReference logRef = context
+				.getServiceReference("org.osgi.service.log.LogService"); //$NON-NLS-1$
+		if (logRef != null) {
+			RemoteOSGiServiceImpl.log = (LogService) context.getService(logRef);
+		}
 
-			// register the default tcp channel
-			if (!"false" //$NON-NLS-1$
-			.equals(context
-					.getProperty(RemoteOSGiServiceImpl.REGISTER_DEFAULT_TCP_CHANNEL))) {
-				final Dictionary properties = new Hashtable();
-				properties.put(NetworkChannelFactory.PROTOCOL_PROPERTY,
-						TCPChannelFactory.PROTOCOL);
-				context.registerService(NetworkChannelFactory.class.getName(),
-						new TCPChannelFactory(), properties);
-			}
+		if (remoting == null) {
+			// get the instance of RemoteOSGiServiceImpl
+			remoting = new RemoteOSGiServiceImpl();
+		}
 
-			final Hashtable props = new Hashtable();
+		// and register the service
+		context.registerService(new String[] {
+				RemoteOSGiService.class.getName(), Remoting.class.getName() }, remoting, null);
 
-			// and register the service
-			context.registerService(
-					new String[] { RemoteOSGiService.class.getName(),
-							Remoting.class.getName() }, remoting, props);
-		} catch (final Throwable t) {
-			t.printStackTrace();
-			throw new BundleException("Exception while starting R-OSGi", t);
+		// register the default tcp channel
+		if (!"false" //$NON-NLS-1$
+				.equals(context
+						.getProperty(RemoteOSGiServiceImpl.REGISTER_DEFAULT_TCP_CHANNEL))) {
+			final Dictionary properties = new Hashtable();
+			properties.put(NetworkChannelFactory.PROTOCOL_PROPERTY,
+					TCPChannelFactory.PROTOCOL);
+			context.registerService(NetworkChannelFactory.class.getName(),
+					new TCPChannelFactory(), properties);
+			// TODO: add default transport supported intents
 		}
 	}
 

@@ -75,11 +75,6 @@ final class CodeAnalyzer implements ClassVisitor {
 	private final ClassLoader loader;
 
 	/**
-	 * the class loader of the smart proxy
-	 */
-	private ClassLoader smartProxyLoader;
-
-	/**
 	 * the closure list.
 	 */
 	private final ArrayList closure = new ArrayList();
@@ -136,7 +131,7 @@ final class CodeAnalyzer implements ClassVisitor {
 		this.loader = loader;
 
 		if (imports != null) {
-			final String[] tokens = StringUtils.splitString(imports, ","); //$NON-NLS-1$
+			final String[] tokens = StringUtils.stringToArray(imports, ","); //$NON-NLS-1$
 			importsMap = new HashMap(tokens.length);
 			for (int i = 0; i < tokens.length; i++) {
 				final int pos = tokens[i].indexOf(";"); //$NON-NLS-1$
@@ -152,7 +147,7 @@ final class CodeAnalyzer implements ClassVisitor {
 		}
 
 		if (exports != null) {
-			final String[] tokens = StringUtils.splitString(exports, ","); //$NON-NLS-1$
+			final String[] tokens = StringUtils.stringToArray(exports, ","); //$NON-NLS-1$
 			exportsMap = new HashMap(tokens.length);
 			for (int i = 0; i < tokens.length; i++) {
 				final int pos = tokens[i].indexOf(";"); //$NON-NLS-1$
@@ -195,14 +190,6 @@ final class CodeAnalyzer implements ClassVisitor {
 
 		if (smartProxy != null) {
 			closure.add(smartProxy);
-			try {
-				smartProxyLoader = Class.forName(smartProxy).getClassLoader();
-			} catch (final ClassNotFoundException c) {
-				smartProxyLoader = null;
-			}
-			if (smartProxyLoader == loader) {
-				smartProxyLoader = null;
-			}
 		}
 		if (presentation != null) {
 			closure.add(presentation);
@@ -210,8 +197,7 @@ final class CodeAnalyzer implements ClassVisitor {
 		if (explicitInjections != null) {
 			closure.addAll(Arrays.asList(explicitInjections));
 		}
-
-		// do the real work
+		
 		while (!closure.isEmpty()) {
 			visit((String) closure.remove(0));
 		}
@@ -306,24 +292,7 @@ final class CodeAnalyzer implements ClassVisitor {
 			}
 			reader.accept(this, ClassReader.SKIP_DEBUG 
 					+ ClassReader.SKIP_FRAMES);
-			return;
 		} catch (final IOException ioe) {
-			if (smartProxyLoader != null) {
-				try {
-					final ClassReader reader = new ClassReader(
-							smartProxyLoader.getResourceAsStream(classFile));
-
-					injections.put(classFile, reader.b);
-					if (exportsMap.containsKey(pkg)) {
-						proxyExports.add(pkg);
-					}
-					reader.accept(this, ClassReader.SKIP_DEBUG
-							+ ClassReader.SKIP_FRAMES);
-					return;
-				} catch (final IOException ioe2) {
-					throw new ClassNotFoundException(className);
-				}
-			}
 			throw new ClassNotFoundException(className);
 		}
 	}

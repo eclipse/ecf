@@ -146,8 +146,7 @@ final class ChannelEndpointMultiplexer implements ChannelEndpoint,
 							primary.untrackRegistration(serviceURI);
 							primary = next;
 							primary.trackRegistration(serviceURI, reg);
-							if (RemoteOSGiServiceImpl.DEBUG
-									&& RemoteOSGiServiceImpl.log != null) {
+							if (RemoteOSGiServiceImpl.DEBUG) {
 								RemoteOSGiServiceImpl.log.log(
 										LogService.LOG_INFO,
 										"DOING FAILOVER TO " //$NON-NLS-1$
@@ -174,8 +173,7 @@ final class ChannelEndpointMultiplexer implements ChannelEndpoint,
 								primary.untrackRegistration(serviceURI);
 								primary = next;
 								primary.trackRegistration(serviceURI, reg);
-								if (RemoteOSGiServiceImpl.DEBUG
-										&& RemoteOSGiServiceImpl.log != null) {
+								if (RemoteOSGiServiceImpl.DEBUG) {
 									RemoteOSGiServiceImpl.log
 											.log(
 													LogService.LOG_INFO,

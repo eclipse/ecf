@@ -39,9 +39,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
@@ -81,7 +84,7 @@ import ch.ethz.iks.r_osgi.streams.InputStreamHandle;
 import ch.ethz.iks.r_osgi.streams.InputStreamProxy;
 import ch.ethz.iks.r_osgi.streams.OutputStreamHandle;
 import ch.ethz.iks.r_osgi.streams.OutputStreamProxy;
-import ch.ethz.iks.r_osgi.types.BoxedPrimitive;
+import ch.ethz.iks.util.CollectionUtils;
 
 /**
  * <p>
@@ -113,8 +116,6 @@ import ch.ethz.iks.r_osgi.types.BoxedPrimitive;
 public final class ChannelEndpointImpl implements ChannelEndpoint {
 
 	int usageCounter = 1;
-
-	private static final boolean USE_THREAD_POOL = true;
 
 	/**
 	 * the channel.
@@ -190,11 +191,6 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 					+ "(!(" + EventConstants.EVENT_TOPIC
 							+ "=org/osgi/service/remoteserviceadmin/*))" //$NON-NLS-1$
 					+ ")"; //$NON-NLS-1$
-	
-	/**
-	 * 
-	 */
-	private ThreadGroup threadPool;
 
 	private ArrayList workQueue = new ArrayList();
 
@@ -219,13 +215,11 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	ChannelEndpointImpl(final NetworkChannelFactory factory,
 			final URI endpointAddress) throws RemoteOSGiException, IOException {
 		networkChannel = factory.getConnection(this, endpointAddress);
-		if (RemoteOSGiServiceImpl.DEBUG && RemoteOSGiServiceImpl.log != null) {
+		if (RemoteOSGiServiceImpl.DEBUG) {
 			RemoteOSGiServiceImpl.log.log(LogService.LOG_DEBUG,
 					"opening new channel " + getRemoteAddress()); //$NON-NLS-1$
 		}
-		if (USE_THREAD_POOL) {
-			initThreadPool();
-		}
+		initThreadPool();
 		RemoteOSGiServiceImpl.registerChannelEndpoint(this);
 	}
 
@@ -238,9 +232,7 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	ChannelEndpointImpl(final NetworkChannel channel) {
 		networkChannel = channel;
 		channel.bind(this);
-		if (USE_THREAD_POOL) {
-			initThreadPool();
-		}
+		initThreadPool();
 		RemoteOSGiServiceImpl.registerChannelEndpoint(this);
 	}
 
@@ -249,35 +241,33 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	 */
 	private void initThreadPool() {
 		// TODO: tradeoff, could as well be central for all endpoints...
-		// could also be instantiated lazily...
-		if (USE_THREAD_POOL) {
-			threadPool = new ThreadGroup("WorkerThreads" + toString());
-			for (int i = 0; i < RemoteOSGiServiceImpl.MAX_THREADS_PER_ENDPOINT; i++) {
-				final Thread t = new Thread(threadPool, "WorkerThread" + i) {
-					public void run() {
-						try {
-							while (!isInterrupted()) {
-								final Runnable r;
-								synchronized (workQueue) {
-									while (workQueue.isEmpty()) {
-										workQueue.wait();
-									}
-									r = (Runnable) workQueue.remove(0);
+		final ThreadGroup threadPool = new ThreadGroup("WorkerThreads"
+				+ toString());
+		for (int i = 0; i < RemoteOSGiServiceImpl.MAX_THREADS_PER_ENDPOINT; i++) {
+			final Thread t = new Thread(threadPool, "r-OSGi ChannelWorkerThread" + i) {
+				public void run() {
+					try {
+						while (!isInterrupted()) {
+							final Runnable r;
+							synchronized (workQueue) {
+								while (workQueue.isEmpty()) {
+									workQueue.wait();
 								}
-								r.run();
+								r = (Runnable) workQueue.remove(0);
 							}
-						} catch (final InterruptedException ie) {
-							// that's fine
+							r.run();
 						}
+					} catch (InterruptedException ie) {
+						ie.printStackTrace();
 					}
-				};
-				t.start();
-			}
+				}
+			};
+			t.start();
 		}
 	}
 
 	/**
-	 * process a received message. Called by the channel.
+	 * process a recieved message. Called by the channel.
 	 * 
 	 * @param msg
 	 *            the received message.
@@ -290,47 +280,35 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 			return;
 		}
 		final Integer xid = new Integer(msg.getXID());
-		final AsyncCallback callback;
+		final WaitingCallback callback;
 		synchronized (callbacks) {
-			callback = (AsyncCallback) callbacks.remove(xid);
+			callback = (WaitingCallback) callbacks.remove(xid);
 		}
 		if (callback != null) {
 			callback.result(msg);
 			return;
 		} else {
-			if (USE_THREAD_POOL) {
-				final Runnable r = new Runnable() {
-					public void run() {
-						final RemoteOSGiMessage reply = handleMessage(msg);
-						if (reply != null) {
-							try {
-								networkChannel.sendMessage(reply);
-							} catch (final NotSerializableException nse) {
-								throw new RemoteOSGiException("Error sending " //$NON-NLS-1$
-										+ reply, nse);
-							} catch (final IOException e) {
-								dispose();
-							}
+			final Runnable r = new Runnable() {
+				public void run() {
+					final RemoteOSGiMessage reply = handleMessage(msg);
+					if (reply != null) {
+
+						try {
+							networkChannel.sendMessage(reply);
+						} catch (final NotSerializableException nse) {
+							throw new RemoteOSGiException("Error sending " //$NON-NLS-1$
+									+ reply, nse);
+						} catch (NullPointerException npe) {
+							// channel got closed							
+						} catch (final IOException e) {
+							dispose();
 						}
 					}
-				};
-				synchronized (workQueue) {
-					workQueue.add(r);
-					workQueue.notify();
 				}
-			} else {
-				final RemoteOSGiMessage reply = handleMessage(msg);
-				if (reply != null) {
-
-					try {
-						networkChannel.sendMessage(reply);
-					} catch (final NotSerializableException nse) {
-						throw new RemoteOSGiException("Error sending " //$NON-NLS-1$
-								+ reply, nse);
-					} catch (final IOException e) {
-						dispose();
-					}
-				}
+			};
+			synchronized (workQueue) {
+				workQueue.add(r);
+				workQueue.notify();
 			}
 		}
 	}
@@ -460,8 +438,7 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	 * @category ChannelEndpoint
 	 */
 	public Dictionary getProperties(final String serviceID) {
-		final RemoteServiceReferenceImpl rref = getRemoteReference(serviceID);
-		return rref == null ? null : rref.getProperties();
+		return getRemoteReference(serviceID).getProperties();
 	}
 
 	/**
@@ -474,14 +451,10 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	 * @category ChannelEndpoint
 	 */
 	public Dictionary getPresentationProperties(final String serviceID) {
-		final RemoteServiceReferenceImpl rref = getRemoteReference(serviceID);
-
 		final Dictionary attribs = new Hashtable();
 		attribs.put(RemoteOSGiService.SERVICE_URI, serviceID);
-		attribs.put(
-				RemoteOSGiService.PRESENTATION,
-				rref == null ? null : rref
-						.getProperty(RemoteOSGiService.PRESENTATION));
+		attribs.put(RemoteOSGiService.PRESENTATION, getRemoteReference(
+				serviceID).getProperty(RemoteOSGiService.PRESENTATION));
 		return attribs;
 	}
 
@@ -549,7 +522,7 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 			return;
 		}
 
-		if (RemoteOSGiServiceImpl.DEBUG && RemoteOSGiServiceImpl.log != null) {
+		if (RemoteOSGiServiceImpl.DEBUG) {
 			RemoteOSGiServiceImpl.log.log(LogService.LOG_DEBUG,
 					"DISPOSING ENDPOINT " + getRemoteAddress()); //$NON-NLS-1$
 		}
@@ -593,21 +566,6 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 
 				}
 			}
-		}
-
-		// dispose off the thread pool
-		if (threadPool != null) {
-			final Thread[] threads = new Thread[RemoteOSGiServiceImpl.MAX_THREADS_PER_ENDPOINT];
-			final int count = threadPool.enumerate(threads);
-			for (int i = 0; i < count; i++) {
-				threads[i].interrupt();
-				try {
-					threads[i].join();
-				} catch (InterruptedException e) {
-					//
-				}
-			}
-			threadPool.destroy();
 		}
 
 		remoteServices = null;
@@ -853,11 +811,9 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 			final Bundle bundle = RemoteOSGiActivator.getActivator()
 					.getContext().installBundle(ref.getURI().toString(), in);
 
-			/*
-			 * retrieveDependencies((String) bundle.getHeaders().get(
-			 * Constants.IMPORT_PACKAGE), (String) bundle.getHeaders()
-			 * .get(Constants.EXPORT_PACKAGE));
-			 */
+			retrieveDependencies((String) bundle.getHeaders().get(
+					Constants.IMPORT_PACKAGE), (String) bundle.getHeaders()
+					.get(Constants.EXPORT_PACKAGE));
 
 			if (isProxy) {
 				// store the bundle for state updates and cleanup
@@ -902,6 +858,65 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	}
 
 	/**
+	 * tokenize a package import/export string
+	 * 
+	 * @param str
+	 *            the string
+	 * @return the tokens
+	 */
+	private String[] getTokens(final String str) {
+		final ArrayList result = new ArrayList();
+		final StringTokenizer tokenizer = new StringTokenizer(str, ",");
+		while (tokenizer.hasMoreTokens()) {
+			final String token = tokenizer.nextToken();
+			final int pos;
+			// TODO: handle versions for R4!
+			final String pkg = (pos = token.indexOf(";")) > -1 ? token
+					.substring(0, pos).trim() : token.trim();
+			if (!RemoteOSGiServiceImpl.checkPackageImport(pkg)) {
+				result.add(pkg);
+			}
+		}
+
+		return (String[]) result.toArray(new String[result.size()]);
+	}
+
+	/**
+	 * get the missing dependencies from remote for a given bundle defined by
+	 * its declared package import and exports.
+	 * 
+	 * @param importString
+	 *            the declared package imports
+	 * @param exportString
+	 *            the declared package exports
+	 */
+	private void retrieveDependencies(final String importString,
+			final String exportString) {
+
+		final Set exports = new HashSet(Arrays.asList(getTokens(exportString)));
+		final Set imports = new HashSet(Arrays.asList(getTokens(importString)));
+
+		final String[] missing = (String[]) CollectionUtils.rightDifference(
+				imports, exports).toArray(new String[0]);
+
+		if (missing.length > 0) {
+			final RequestDependenciesMessage req = new RequestDependenciesMessage();
+			req.setPackages(missing);
+			final DeliverBundlesMessage deps = (DeliverBundlesMessage) sendAndWait(req);
+			final byte[][] depBytes = deps.getDependencies();
+			for (int i = 0; i < depBytes.length; i++) {
+				try {
+					RemoteOSGiActivator.getActivator().getContext()
+							.installBundle("r-osgi://dep/" + missing[i],
+									new ByteArrayInputStream(depBytes[i]));
+				} catch (BundleException be) {
+					be.printStackTrace();
+				}
+			}
+		}
+	}
+
+	/**
 	 * get the remote reference for a given serviceID.
 	 * 
 	 * @param serviceID
@@ -909,9 +924,6 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	 * @return the remote service reference, or <code>null</code>.
 	 */
 	RemoteServiceReferenceImpl getRemoteReference(final String uri) {
-		if (remoteServices == null) {
-			throw new RemoteOSGiException("Channel is closed."); //$NON-NLS-1$
-		}
 		return (RemoteServiceReferenceImpl) remoteServices.get(uri);
 	}
 
@@ -1122,12 +1134,7 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 						be.printStackTrace();
 					}
 					proxiedServices.remove(serviceID);
-					try {
-						remoteServices.remove(getRemoteAddress().resolve(
-								"#" + serviceID).toString()); //$NON-NLS-1$
-					} catch (final RemoteOSGiException r) {
-						// channel was already closed.
-					}
+					remoteServices.remove(serviceURI); //$NON-NLS-1$
 				}
 				return null;
 			}
@@ -1166,24 +1173,16 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 
 				// invoke method
 				try {
-					if (!TCPChannelFactory.beSmart) {
-						if (arguments != null) {
-							for (int i = 0; i < arguments.length; i++) {
-								if (arguments[i] instanceof BoxedPrimitive) {
-									arguments[i] = ((BoxedPrimitive) arguments[i])
-											.getBoxed();
-								}
-							}
-						}
-					}
-					final Object result = method.invoke(
-							serv.getServiceObject(), arguments);
+					Object result = method.invoke(serv.getServiceObject(),
+							arguments);
 					final RemoteCallResultMessage m = new RemoteCallResultMessage();
 					m.setXID(invMsg.getXID());
 					if (result instanceof InputStream) {
-						m.setResult(getInputStreamPlaceholder((InputStream) result));
+						m
+								.setResult(getInputStreamPlaceholder((InputStream) result));
 					} else if (result instanceof OutputStream) {
-						m.setResult(getOutputStreamPlaceholder((OutputStream) result));
+						m
+								.setResult(getOutputStreamPlaceholder((OutputStream) result));
 					} else {
 						m.setResult(result);
 					}
@@ -1431,8 +1430,12 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 
 		final RemoteServiceReferenceImpl[] refs = new RemoteServiceReferenceImpl[serviceIDs.length];
 		for (short i = 0; i < serviceIDs.length; i++) {
+			final String serviceID = serviceIDs[i];
+			final String serviceURI = getRemoteAddress().resolve("#" + serviceID).toString();
+			final Dictionary properties = serviceProperties[i];
+			sanitizeServiceProperties(properties, serviceURI);
 			refs[i] = new RemoteServiceReferenceImpl(serviceInterfaces[i],
-					serviceIDs[i], serviceProperties[i], this);
+					serviceID, properties, this);
 
 			remoteServices.put(refs[i].getURI().toString(), refs[i]);
 			RemoteOSGiServiceImpl
@@ -1534,8 +1537,7 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 			}
 		}
 
-		if (RemoteOSGiServiceImpl.MSG_DEBUG
-				&& RemoteOSGiServiceImpl.log != null) {
+		if (RemoteOSGiServiceImpl.MSG_DEBUG) {
 			RemoteOSGiServiceImpl.log.log(LogService.LOG_DEBUG,
 					"NEW REMOTE TOPIC SPACE for " + getRemoteAddress() + " is " //$NON-NLS-1$ //$NON-NLS-2$
 							+ remoteTopics);
@@ -1619,12 +1621,9 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 				} else if (s[i] instanceof OutputStream) {
 					((OutputStream) s[i]).close();
 				} else {
-					if (RemoteOSGiServiceImpl.DEBUG
-							&& RemoteOSGiServiceImpl.log != null) {
-						RemoteOSGiServiceImpl.log
-								.log(LogService.LOG_WARNING,
-										"Object in input streams map was not an instance of a stream."); //$NON-NLS-1$
-					}
+					RemoteOSGiServiceImpl.log
+							.log(LogService.LOG_WARNING,
+									"Object in input streams map was not an instance of a stream."); //$NON-NLS-1$
 				}
 			}
 		} catch (final IOException e) {

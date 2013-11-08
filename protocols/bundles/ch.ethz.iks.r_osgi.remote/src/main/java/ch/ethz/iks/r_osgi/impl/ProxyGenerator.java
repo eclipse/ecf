@@ -30,8 +30,6 @@ package ch.ethz.iks.r_osgi.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -58,7 +56,6 @@ import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import org.osgi.framework.Constants;
 import org.osgi.service.log.LogService;
 
 import ch.ethz.iks.r_osgi.RemoteOSGiService;
@@ -222,17 +219,20 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 		final Attributes attr = mf.getMainAttributes();
 		attr.putValue("Manifest-Version", "1.0"); //$NON-NLS-1$ //$NON-NLS-2$
 		attr.putValue("Created-By", "R-OSGi Proxy Generator"); //$NON-NLS-1$ //$NON-NLS-2$
-		attr.putValue(Constants.BUNDLE_ACTIVATOR, className);
-		attr.putValue(Constants.BUNDLE_CLASSPATH, "."); //$NON-NLS-1$ 
-		attr.putValue(
-				Constants.IMPORT_PACKAGE,
-				"org.osgi.framework, ch.ethz.iks.r_osgi, ch.ethz.iks.r_osgi.types, ch.ethz.iks.r_osgi.channels" //$NON-NLS-1$
-						+ ("".equals(deliv.getImports()) ? "" : ", ") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-						+ deliv.getImports());
+		attr.putValue("Bundle-Activator", className); //$NON-NLS-1$
+		attr.putValue("Bundle-Classpath", "."); //$NON-NLS-1$ //$NON-NLS-2$
+		attr.putValue("Bundle-SymbolicName", "R-OSGi Proxy Bundle generated for Endpoint " + uri.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+		attr
+				.putValue(
+						"Import-Package", //$NON-NLS-1$
+						"org.osgi.framework, ch.ethz.iks.r_osgi, ch.ethz.iks.r_osgi.types, ch.ethz.iks.r_osgi.channels" //$NON-NLS-1$
+								+ ("".equals(deliv.getOptionalImports()) ? "" : ", " //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+								+ deliv.getOptionalImports())
+								+ ("".equals(deliv.getImports()) ? "" : ", ") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+								+ deliv.getImports());
 		if (!"".equals(deliv.getExports())) { //$NON-NLS-1$
-			attr.putValue(Constants.EXPORT_PACKAGE, deliv.getExports());
+			attr.putValue("Export-Package", deliv.getExports()); //$NON-NLS-1$
 		}
-		attr.putValue(Constants.BUNDLE_SYMBOLICNAME, "R-OSGi Proxy Bundle generated for Endpoint " + uri.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 		final ByteArrayOutputStream bout = new ByteArrayOutputStream();
 		final JarOutputStream out = new JarOutputStream(bout, mf);
 
@@ -294,14 +294,12 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 		out.close();
 
 		if (RemoteOSGiServiceImpl.PROXY_DEBUG) {
-			final File file = RemoteOSGiActivator.getActivator().getContext()
-					.getDataFile("bundle_" + sourceID + ".jar");
+			// final File file =
+			// RemoteOSGiActivator.context.getDataFile(fileName
+			// + "_" + sourceID + ".jar");
 
-			final FileOutputStream fout = new FileOutputStream(file);
-			fout.write(bout.toByteArray());
-			fout.close();
-			System.err.println("Wrote proxy bundle to "
-					+ file.getAbsolutePath());
+			// RemoteOSGiServiceImpl.log.log(LogService.LOG_DEBUG,
+			// "Created Proxy Bundle " + file);
 		}
 
 		return new ByteArrayInputStream(bout.toByteArray());
@@ -386,7 +384,7 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 								// like java.io.Serializable (or other classes
 								// provided by the JRE).
 								// (see https://bugs.eclipse.org/420112)
-								classLoader = ClassLoader.getSystemClassLoader();
+								classLoader = getClass().getClassLoader();
 							}
 							reader = new ClassReader(classLoader.getResourceAsStream(
 											superIface + ".class")); //$NON-NLS-1$
@@ -435,8 +433,7 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 				|| (smartProxyClassName == null && name
 						.equals(serviceInterfaceNames[0].replace('.', '/')))) {
 
-			if (RemoteOSGiServiceImpl.PROXY_DEBUG
-					&& RemoteOSGiServiceImpl.log != null) {
+			if (RemoteOSGiServiceImpl.PROXY_DEBUG) {
 				RemoteOSGiServiceImpl.log.log(LogService.LOG_DEBUG,
 						"creating proxy class " + implName); //$NON-NLS-1$
 			}
@@ -470,11 +467,13 @@ class ProxyGenerator implements ClassVisitor, Opcodes {
 			} else {
 
 				// we have an interface
-				writer.visit(
-						(version >= V1_5 && RemoteOSGiServiceImpl.IS_JAVA5) ? V1_5
-								: V1_2, ACC_PUBLIC + ACC_SUPER, implName, null,
-						"java/lang/Object", serviceInterfaces); //$NON-NLS-1$
-				if (RemoteOSGiServiceImpl.PROXY_DEBUG && RemoteOSGiServiceImpl.log != null) {
+				writer
+						.visit(
+								(version >= V1_5 && RemoteOSGiServiceImpl.IS_JAVA5) ? V1_5
+										: V1_2, ACC_PUBLIC + ACC_SUPER,
+								implName, null,
+								"java/lang/Object", serviceInterfaces); //$NON-NLS-1$
+				if (RemoteOSGiServiceImpl.PROXY_DEBUG) {
 					RemoteOSGiServiceImpl.log.log(LogService.LOG_DEBUG,
 							"Creating Proxy Bundle from Interfaces " //$NON-NLS-1$
 									+ Arrays.asList(serviceInterfaceNames));

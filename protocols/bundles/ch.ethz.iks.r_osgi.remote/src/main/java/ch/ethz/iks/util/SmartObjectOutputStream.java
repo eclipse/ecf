@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2011 Jan S. Rellermeyer
- * Systems Group, ETH Zurich.
+/* Copyright (c) 2006-2009 Jan S. Rellermeyer
+ * Systems Group,
+ * Institute for Pervasive Computing, ETH Zurich.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,10 +34,9 @@ import java.io.NotSerializableException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.zip.Deflater;
-import java.util.zip.GZIPOutputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import ch.ethz.iks.r_osgi.types.BoxedPrimitive;
 
@@ -46,80 +46,269 @@ import ch.ethz.iks.r_osgi.types.BoxedPrimitive;
  * and the OSGi ServiceReference and ServiceRegistration classes.
  * 
  * @author Jan S. Rellermeyer
+ * 
  */
 public final class SmartObjectOutputStream extends ObjectOutputStream {
 
-	static Set blackList = new HashSet();
-	static {
-		blackList.add("org.osgi.framework.ServiceReference"); //$NON-NLS-1$
-		blackList.add("org.osgi.framework.ServiceRegistration"); //$NON-NLS-1$
-	}
+	private final ObjectOutputStream out;
 
 	public SmartObjectOutputStream(final OutputStream out) throws IOException {
-		super(new EnhancedGZIPOutputStream(out));
-		this.enableReplaceObject(true);
+		// implicitly: super();
+		// thereby, enableOverride is set
+		this.out = new ObjectOutputStream(out);
 	}
 
-	protected Object replaceObject(final Object obj) throws IOException {
-		if (obj instanceof BoxedPrimitive) {
-			return ((BoxedPrimitive) obj).getBoxed();
+	protected final void writeObjectOverride(final Object o) throws IOException {
+		if (o == null) {
+			out.writeByte(0);
+			return;
 		}
 
-		if (obj instanceof Serializable) {
-			return obj;
-		}
+		final Object obj = o instanceof BoxedPrimitive ? ((BoxedPrimitive) o)
+				.getBoxed() : o;
 
-		final Class clazz = obj.getClass();
-		if (blackList.contains(clazz.getName())) {
-			throw new NotSerializableException(clazz.getName());
-		}
-
-		return new SmartObjectStreamClass(obj, clazz);
-	}
-
-	static class EnhancedGZIPOutputStream extends GZIPOutputStream {
-
-		private static final byte[] NOTHING = new byte[0];
-		private boolean hasPendingBytes = false;
-
-		public EnhancedGZIPOutputStream(final OutputStream out)
-				throws IOException {
-			super(out);
-			def.setLevel(Deflater.BEST_SPEED);
-		}
-
-		public void write(final byte[] bytes, final int i, final int i1)
-				throws IOException {
-			super.write(bytes, i, i1);
-			hasPendingBytes = true;
-		}
-
-		protected void deflate() throws IOException {
-			int len;
-			do {
-				len = def.deflate(buf, 0, buf.length);
-				if (len == 0) {
-					break;
+		final String clazzName = obj.getClass().getName();
+		if (SmartConstants.positiveList.contains(clazzName)) {
+			// string serializable classes
+			out.writeByte(1);
+			final String id = (String) SmartConstants.classToId.get(clazzName);
+			out.writeUTF(id != null ? id : clazzName);
+			out.writeUTF(obj.toString());
+			return;
+		} else if (isNestedSmartSerializedObject(obj)) {
+			final Object[] objArray = (Object[]) obj;
+			final String clazzname = objArray.getClass().getName();
+			out.write(4);
+			out.writeByte(objArray.length);
+			out.writeUTF(clazzname.substring(2, clazzname.length() - 1));
+			for (int i = 0; i < objArray.length; i++) {
+				final Object elem = objArray[i];
+				if(elem == null) {
+					out.writeByte(-1);
+				} else {
+					writeSmartSerializedObject(elem);
 				}
-				this.out.write(buf, 0, len);
-			} while (true);
-		}
-
-		public void flush() throws IOException {
-			if (!hasPendingBytes) {
-				return;
 			}
-
-			if (!def.finished()) {
-				def.setInput(NOTHING, 0, 0);
-				def.setLevel(Deflater.NO_COMPRESSION);
-				deflate();
-				def.setLevel(Deflater.BEST_SPEED);
-				deflate();
-				super.flush();
-			}
-
-			hasPendingBytes = false;
+		} else if (obj instanceof Serializable) {
+			// java serializable classes
+			out.writeByte(2);
+			out.writeObject(obj);
+			return;
+		} else {
+			writeSmartSerializedObject(obj);
 		}
 	}
+
+	private boolean isNestedSmartSerializedObject(final Object obj) {
+		if(obj != null && obj instanceof Object[]) {
+			Object[] objArray = (Object[]) obj;
+			if(objArray.length > 0) {
+				// iterate to skip null
+				for(int i = 0; i < objArray.length; i++) {
+					if(objArray[i] instanceof Serializable) {
+						return false;
+					}
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void writeSmartSerializedObject(final Object obj) throws IOException,
+			NotSerializableException {
+		out.writeByte(3);
+
+		// all other classes: try smart serialization
+		Class clazz = obj.getClass();
+
+		if (SmartConstants.blackList.contains(clazz.getName())) {
+			throw new NotSerializableException("Class " + clazz.getName() //$NON-NLS-1$
+					+ " is not serializable"); //$NON-NLS-1$
+		}
+
+		out.writeUTF(clazz.getName());
+
+		// TODO: cache this information...
+		while (clazz != Object.class) {
+			// check for native methods
+			final Method[] methods = clazz.getDeclaredMethods();
+			for (int j = 0; j < methods.length; j++) {
+				final int mod = methods[j].getModifiers();
+				if (Modifier.isNative(mod)) {
+					throw new NotSerializableException(
+							"Class " //$NON-NLS-1$
+									+ clazz.getName()
+									+ " contains native methods and is therefore not serializable."); //$NON-NLS-1$ 
+				}
+			}
+
+			try {
+				final Field[] fields = clazz.getDeclaredFields();					
+				final int fieldCount = fields.length;
+				int realFieldCount = 0;
+				for (int i = 0; i < fieldCount; i++) {
+					final int mod = fields[i].getModifiers();
+					if (!(Modifier.isStatic(mod) || Modifier.isTransient(mod))) {
+						realFieldCount++;
+					}								
+				}							
+				out.writeInt(realFieldCount);
+				for (int i = 0; i < fieldCount; i++) {
+					final int mod = fields[i].getModifiers();
+					if (Modifier.isStatic(mod) || Modifier.isTransient(mod)) {
+						continue;
+					} else if (!Modifier.isPublic(mod)) {
+						fields[i].setAccessible(true);
+					}
+					out.writeUTF(fields[i].getName());
+					writeObjectOverride(fields[i].get(obj));
+				}
+			} catch (final Exception e) {
+				throw new NotSerializableException(
+						"Exception while serializing " + obj.toString() //$NON-NLS-1$
+								+ ":\n" + e.getMessage()); //$NON-NLS-1$ 
+			}
+			clazz = clazz.getSuperclass();
+		}
+		out.writeInt(-1);
+	}
+
+	/**
+	 * 
+	 * @see java.io.ObjectOutputStream#write(int)
+	 */
+	public final void write(final int val) throws IOException {
+		out.write(val);
+	}
+
+	/**
+	 * 
+	 * @see java.io.ObjectOutputStream#write(byte[])
+	 */
+	public final void write(final byte[] buf) throws IOException {
+		out.write(buf);
+	}
+
+	/**
+	 * 
+	 * @see java.io.ObjectOutputStream#write(byte[], int, int)
+	 */
+	public final void write(final byte[] buf, final int off, final int len)
+			throws IOException {
+		out.write(buf, off, len);
+	}
+
+	/**
+	 * 
+	 * @see java.io.ObjectOutputStream#flush()
+	 */
+	public final void flush() throws IOException {
+		out.flush();
+	}
+
+	/**
+	 * 
+	 * @see java.io.ObjectOutputStream#reset()
+	 */
+	public final void reset() throws IOException {
+		out.reset();
+	}
+
+	/**
+	 * 
+	 * @see java.io.ObjectOutputStream#close()
+	 */
+	public final void close() throws IOException {
+		out.close();
+	}
+
+	/**
+	 * 
+	 * @see java.io.ObjectOutputStream#writeBoolean(boolean)
+	 */
+	public final void writeBoolean(final boolean val) throws IOException {
+		out.writeBoolean(val);
+	}
+
+	/**
+	 * 
+	 * @see java.io.ObjectOutputStream#writeByte(int)
+	 */
+	public final void writeByte(final int val) throws IOException {
+		out.writeByte(val);
+	}
+
+	/**
+	 * 
+	 * @see java.io.ObjectOutputStream#writeShort(int)
+	 */
+	public final void writeShort(final int val) throws IOException {
+		out.writeShort(val);
+	}
+
+	/**
+	 * 
+	 * @see java.io.ObjectOutputStream#writeChar(int)
+	 */
+	public final void writeChar(final int val) throws IOException {
+		out.writeChar(val);
+	}
+
+	/**
+	 * 
+	 * @see java.io.ObjectOutputStream#writeInt(int)
+	 */
+	public final void writeInt(final int val) throws IOException {
+		out.writeInt(val);
+	}
+
+	/**
+	 * 
+	 * @see java.io.ObjectOutputStream#writeLong(long)
+	 */
+	public final void writeLong(final long val) throws IOException {
+		out.writeLong(val);
+	}
+
+	/**
+	 * 
+	 * @see java.io.ObjectOutputStream#writeFloat(float)
+	 */
+	public final void writeFloat(final float val) throws IOException {
+		out.writeFloat(val);
+	}
+
+	/**
+	 * 
+	 * @see java.io.ObjectOutputStream#writeDouble(double)
+	 */
+	public final void writeDouble(final double val) throws IOException {
+		out.writeDouble(val);
+	}
+
+	/**
+	 * 
+	 * @see java.io.ObjectOutputStream#writeBytes(java.lang.String)
+	 */
+	public final void writeBytes(final String str) throws IOException {
+		out.writeBytes(str);
+	}
+
+	/**
+	 * 
+	 * @see java.io.ObjectOutputStream#writeChars(java.lang.String)
+	 */
+	public final void writeChars(final String str) throws IOException {
+		out.writeChars(str);
+	}
+
+	/**
+	 * 
+	 * @see java.io.ObjectOutputStream#writeUTF(java.lang.String)
+	 */
+	public final void writeUTF(final String str) throws IOException {
+		out.writeUTF(str);
+	}
+
 }

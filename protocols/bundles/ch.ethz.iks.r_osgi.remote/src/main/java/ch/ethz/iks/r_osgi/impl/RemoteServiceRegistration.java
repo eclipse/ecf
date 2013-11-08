@@ -28,7 +28,6 @@
  */
 package ch.ethz.iks.r_osgi.impl;
 
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -39,7 +38,6 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;
 
-import ch.ethz.iks.r_osgi.RemoteOSGiException;
 import ch.ethz.iks.r_osgi.RemoteOSGiService;
 import ch.ethz.iks.r_osgi.messages.DeliverServiceMessage;
 
@@ -78,7 +76,7 @@ final class RemoteServiceRegistration {
 	/**
 	 * a prefactored deliver service message.
 	 */
-	private volatile DeliverServiceMessage deliverServiceMessage;
+	private DeliverServiceMessage deliverServiceMessage;
 
 	/**
 	 * creates a new RemoteService object.
@@ -117,11 +115,6 @@ final class RemoteServiceRegistration {
 		// build up the method table for each interface
 		for (int i = 0; i < interfaceCount; i++) {
 			serviceInterfaces[i] = bundleLoader.loadClass(interfaceNames[i]);
-			if (!serviceInterfaces[i].isInterface()) {
-				throw new RemoteOSGiException(
-						"Service registered under non-interface "
-								+ serviceInterfaces[i].getName());
-			}
 			final Method[] methods = serviceInterfaces[i].getMethods();
 			for (int j = 0; j < methods.length; j++) {
 				methodTable.put(methods[j].getName()
@@ -133,40 +126,19 @@ final class RemoteServiceRegistration {
 		final CodeAnalyzer analyzer = new CodeAnalyzer(bundleLoader,
 				(String) headers.get(Constants.IMPORT_PACKAGE),
 				(String) headers.get(Constants.EXPORT_PACKAGE));
-		new Thread() {
-			public void run() {
-				synchronized (RemoteServiceRegistration.this) {
-					try {
-						deliverServiceMessage = analyzer
-								.analyze(
-										interfaceNames,
-										(String) ref
-												.getProperty(RemoteOSGiService.SMART_PROXY),
-										(String[]) ref
-												.getProperty(RemoteOSGiService.INJECTIONS),
-										(String) ref
-												.getProperty(RemoteOSGiService.PRESENTATION));
-						deliverServiceMessage.setServiceID(((Long) ref
-								.getProperty(Constants.SERVICE_ID)).toString());
-					} catch (final IOException e) {
-						e.printStackTrace();
-						if (RemoteOSGiServiceImpl.log != null) {
-							RemoteOSGiServiceImpl.log
-									.log(LogService.LOG_ERROR,
-											"Error during remote service registration", e); //$NON-NLS-1$
-						}
-					} catch (final ClassNotFoundException cnf) {
-						cnf.printStackTrace();
-						if (RemoteOSGiServiceImpl.log != null) {
-							RemoteOSGiServiceImpl.log
-									.log(LogService.LOG_ERROR,
-											"Error during remote service registration", cnf); //$NON-NLS-1$
-						}
-					}
-					RemoteServiceRegistration.this.notifyAll();
-				}
+		try {
+			deliverServiceMessage = analyzer.analyze(interfaceNames,
+					(String) ref.getProperty(RemoteOSGiService.SMART_PROXY),
+					(String[]) ref.getProperty(RemoteOSGiService.INJECTIONS),
+					(String) ref.getProperty(RemoteOSGiService.PRESENTATION));
+			deliverServiceMessage.setServiceID(((Long) ref
+					.getProperty(Constants.SERVICE_ID)).toString());
+		} catch (final Exception e) {
+			if (RemoteOSGiServiceImpl.log != null) {
+				RemoteOSGiServiceImpl.log.log(LogService.LOG_ERROR,
+						"Error during remote service registration", e); //$NON-NLS-1$
 			}
-		}.start();
+		}
 	}
 
 	/**
@@ -267,16 +239,7 @@ final class RemoteServiceRegistration {
 	 * @return the message.
 	 */
 	DeliverServiceMessage getDeliverServiceMessage() {
-		synchronized (this) {
-			if (deliverServiceMessage == null) {
-				try {
-					wait();
-				} catch (final InterruptedException e) {
-					// ignore
-				}
-			}
-			return deliverServiceMessage;
-		}
+		return deliverServiceMessage;
 	}
 
 	public String toString() {
