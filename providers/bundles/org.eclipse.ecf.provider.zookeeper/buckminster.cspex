@@ -6,7 +6,6 @@
 	<dependencies>
 		<dependency name="org.apache.log4j" componentType="osgi.bundle"/>
 		<dependency name="org.apache.hadoop.zookeeper" componentType="osgi.bundle"/>
-		<dependency name="org.slf4j.api" componentType="osgi.bundle"/>
 	</dependencies>
 	<generators>
 		<!-- Place your Generators here -->

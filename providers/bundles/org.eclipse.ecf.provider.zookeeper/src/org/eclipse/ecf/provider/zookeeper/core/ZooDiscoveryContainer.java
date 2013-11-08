@@ -12,6 +12,7 @@
 package org.eclipse.ecf.provider.zookeeper.core;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,7 +21,8 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.zookeeper.server.NIOServerCnxnFactory;
+import org.apache.zookeeper.server.NIOServerCnxn;
+import org.apache.zookeeper.server.NIOServerCnxn.Factory;
 import org.apache.zookeeper.server.PurgeTxnLog;
 import org.apache.zookeeper.server.ServerConfig;
 import org.apache.zookeeper.server.ZooKeeperServer;
@@ -59,7 +61,6 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 	protected Advertiser advertiser;
 	protected Localizer localizer;
 	private static ZooKeeperServer zooKeeperServer;
-	private static NIOServerCnxnFactory cnxnFactory;
 	private ID targetId;
 	protected boolean isQuorumPeerReady;
 	private ZooDiscoveryNamespace namespace;
@@ -196,11 +197,8 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 			FileTxnSnapLog fileTxnSnapLog = new FileTxnSnapLog(conf.getZookeeperDataFile(), conf.getZookeeperDataFile());
 			ZooDiscoveryContainer.zooKeeperServer.setTxnLogFactory(fileTxnSnapLog);
 			ZooDiscoveryContainer.zooKeeperServer.setTickTime(conf.getTickTime());
-			if (cnxnFactory == null) {
-				cnxnFactory = new NIOServerCnxnFactory();
-				cnxnFactory.configure(new InetSocketAddress(conf.getClientPort()), 0);
-				cnxnFactory.startup(ZooDiscoveryContainer.zooKeeperServer);
-			}
+			Factory cnxnFactory = new NIOServerCnxn.Factory(new InetSocketAddress(conf.getClientPort()));
+			cnxnFactory.startup(ZooDiscoveryContainer.zooKeeperServer);
 		} catch (Exception e) {
 			Logger.log(LogService.LOG_ERROR,
 					"Zookeeper server cannot be started! Possibly another instance is already running on the same port. ", e);
@@ -225,17 +223,23 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 		try {
 			final QuorumPeerConfig quorumPeerConfig = new QuorumPeerConfig();
 			quorumPeerConfig.parse(conf.getConfFile());
+			QuorumPeer.Factory qpFactory = new QuorumPeer.Factory() {
+				public QuorumPeer create(NIOServerCnxn.Factory cnxnFactory) throws IOException {
+					ServerConfig serverConfig = new ServerConfig();
+					serverConfig.readFrom(quorumPeerConfig);
+					QuorumPeer peer = new QuorumPeer(quorumPeerConfig.getServers(), new File(serverConfig.getDataDir()), new File(
+							serverConfig.getDataLogDir()), quorumPeerConfig.getElectionAlg(), quorumPeerConfig.getServerId(),
+							quorumPeerConfig.getTickTime(), quorumPeerConfig.getInitLimit(), quorumPeerConfig.getSyncLimit(), cnxnFactory,
+							quorumPeerConfig.getQuorumVerifier());
+					ZooDiscoveryContainer.this.quorumPeer = peer;
+					return peer;
+				}
 
-			ServerConfig serverConfig = new ServerConfig();
-			serverConfig.readFrom(quorumPeerConfig);
-			
-			NIOServerCnxnFactory cnxnFactory = new NIOServerCnxnFactory();
-			cnxnFactory.configure(new InetSocketAddress(conf.getClientPort()), 0);
-			quorumPeer = new QuorumPeer(quorumPeerConfig.getServers(), new File(serverConfig.getDataDir()), new File(
-					serverConfig.getDataLogDir()), quorumPeerConfig.getElectionAlg(), quorumPeerConfig.getServerId(),
-					quorumPeerConfig.getTickTime(), quorumPeerConfig.getInitLimit(), quorumPeerConfig.getSyncLimit(), cnxnFactory,
-					quorumPeerConfig.getQuorumVerifier());
-
+				public NIOServerCnxn.Factory createConnectionFactory() throws IOException {
+					return new NIOServerCnxn.Factory(quorumPeerConfig.getClientPortAddress());
+				}
+			};
+			quorumPeer = qpFactory.create(qpFactory.createConnectionFactory());
 			quorumPeer.start();
 			quorumPeer.setDaemon(true);
 			isQuorumPeerReady = true;
@@ -267,16 +271,9 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 			}
 			if (ZooDiscoveryContainer.zooKeeperServer != null) {
 				// purge snaps and logs. Keep only last three of each
-				FileTxnSnapLog txnLogFactory = ZooDiscoveryContainer.zooKeeperServer.getTxnLogFactory();
-				if (txnLogFactory != null) {
-					PurgeTxnLog.purge(txnLogFactory.getDataDir(), txnLogFactory
-							.getSnapDir(), 3);
-				}
+				PurgeTxnLog.purge(ZooDiscoveryContainer.zooKeeperServer.getTxnLogFactory().getDataDir(), ZooDiscoveryContainer.zooKeeperServer.getTxnLogFactory()
+						.getSnapDir(), 3);
 				ZooDiscoveryContainer.zooKeeperServer.shutdown();
-			}
-			if (cnxnFactory != null) {
-				cnxnFactory.shutdown();
-				cnxnFactory = null;
 			}
 			if (this.quorumPeer != null) {
 				// purge snaps and logs. Keep only last three of each
