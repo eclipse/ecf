@@ -182,23 +182,23 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 	 */
 	void startStandAlone(final Configuration conf) {
 
-		if (this.zooKeeperServer != null && this.zooKeeperServer.isRunning())
+		if (ZooDiscoveryContainer.zooKeeperServer != null && ZooDiscoveryContainer.zooKeeperServer.isRunning())
 			return;
-		else if (this.zooKeeperServer != null && !this.zooKeeperServer.isRunning())
+		else if (ZooDiscoveryContainer.zooKeeperServer != null && !ZooDiscoveryContainer.zooKeeperServer.isRunning())
 			try {
-				this.zooKeeperServer.startup();
+				ZooDiscoveryContainer.zooKeeperServer.startup();
 				return;
 			} catch (Exception e) {
 				Logger.log(LogService.LOG_DEBUG, "Zookeeper server cannot be started! ", e);//$NON-NLS-1$				
 			}
 
 		try {
-			ZooDiscoveryContainer.this.zooKeeperServer = new ZooKeeperServer();
+			ZooDiscoveryContainer.zooKeeperServer = new ZooKeeperServer();
 			FileTxnSnapLog fileTxnSnapLog = new FileTxnSnapLog(conf.getZookeeperDataFile(), conf.getZookeeperDataFile());
-			ZooDiscoveryContainer.this.zooKeeperServer.setTxnLogFactory(fileTxnSnapLog);
-			ZooDiscoveryContainer.this.zooKeeperServer.setTickTime(conf.getTickTime());
+			ZooDiscoveryContainer.zooKeeperServer.setTxnLogFactory(fileTxnSnapLog);
+			ZooDiscoveryContainer.zooKeeperServer.setTickTime(conf.getTickTime());
 			Factory cnxnFactory = new NIOServerCnxn.Factory(new InetSocketAddress(conf.getClientPort()));
-			cnxnFactory.startup(ZooDiscoveryContainer.this.zooKeeperServer);
+			cnxnFactory.startup(ZooDiscoveryContainer.zooKeeperServer);
 		} catch (Exception e) {
 			Logger.log(LogService.LOG_ERROR,
 					"Zookeeper server cannot be started! Possibly another instance is already running on the same port. ", e);
@@ -269,11 +269,11 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 			if (this.localizer != null) {
 				this.localizer.close();
 			}
-			if (this.zooKeeperServer != null) {
+			if (ZooDiscoveryContainer.zooKeeperServer != null) {
 				// purge snaps and logs. Keep only last three of each
-				PurgeTxnLog.purge(this.zooKeeperServer.getTxnLogFactory().getDataDir(), this.zooKeeperServer.getTxnLogFactory()
+				PurgeTxnLog.purge(ZooDiscoveryContainer.zooKeeperServer.getTxnLogFactory().getDataDir(), ZooDiscoveryContainer.zooKeeperServer.getTxnLogFactory()
 						.getSnapDir(), 3);
-				this.zooKeeperServer.shutdown();
+				ZooDiscoveryContainer.zooKeeperServer.shutdown();
 			}
 			if (this.quorumPeer != null) {
 				// purge snaps and logs. Keep only last three of each
@@ -297,7 +297,7 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 	}
 
 	public ZooKeeperServer getLocalServer() {
-		return this.zooKeeperServer;
+		return ZooDiscoveryContainer.zooKeeperServer;
 	}
 
 	public void connect(ID id, IConnectContext connectContext) throws ContainerConnectException {

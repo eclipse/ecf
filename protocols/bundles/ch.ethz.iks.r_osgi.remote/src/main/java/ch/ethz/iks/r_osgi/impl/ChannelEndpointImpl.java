@@ -962,9 +962,19 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	 */
 	void ungetRemoteService(final URI uri) {
 		try {
-			((Bundle) proxyBundles.remove(uri.getFragment())).uninstall();
+			Bundle bundle = (Bundle) proxyBundles.remove(uri.getFragment());
+			// see https://bugs.eclipse.org/420897
+			if (bundle != null) {
+				bundle.uninstall();
+			} else {
+				RemoteOSGiServiceImpl.log
+						.log(LogService.LOG_WARNING,
+								"failed to uninstall non-existant bundle " + uri.getFragment()); //$NON-NLS-1$
+			}
 		} catch (final BundleException be) {
-
+			// TODO Could a BE indicate that the old proxy bundle (which failed
+			// to uninstall) will prevent future proxy bundles from
+			// installing/resolving?
 		}
 	}
 
@@ -1091,6 +1101,13 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 				}
 
 				final RemoteServiceReferenceImpl ref = getRemoteReference(serviceURI); //$NON-NLS-1$
+				// If r-OSGi receives a SERVICE_MODIFIED for service X before it
+				// knows about X (SERVICE_ADDED), there is no point in updating
+				// the local service instance. It will fail with an NPE anyway.
+				// (see https://bugs.eclipse.org/420433)
+				if (ref == null && reg == null) {
+					return null;
+				}
 				ref.setProperties(properties);
 				RemoteOSGiServiceImpl
 						.notifyRemoteServiceListeners(new RemoteServiceEvent(
