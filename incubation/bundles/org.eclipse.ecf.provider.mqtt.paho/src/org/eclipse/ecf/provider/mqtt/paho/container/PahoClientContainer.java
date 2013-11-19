@@ -7,7 +7,6 @@ import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
 import org.eclipse.ecf.provider.comm.ConnectionCreateException;
 import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.provider.generic.ClientSOContainer;
-import org.eclipse.ecf.provider.mqtt.paho.identity.PahoID;
 import org.eclipse.ecf.provider.mqtt.paho.identity.PahoNamespace;
 
 public class PahoClientContainer extends ClientSOContainer {
@@ -24,7 +23,7 @@ public class PahoClientContainer extends ClientSOContainer {
 	@Override
 	protected ISynchAsynchConnection createConnection(ID targetID, Object data)
 			throws ConnectionCreateException {
-		return new PahoConnection((PahoID) targetID,data);
+		return new PahoConnection();
 	}
 
 }
