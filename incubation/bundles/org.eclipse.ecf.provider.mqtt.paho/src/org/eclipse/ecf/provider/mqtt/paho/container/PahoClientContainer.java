@@ -23,7 +23,8 @@ public class PahoClientContainer extends ClientSOContainer {
 	@Override
 	protected ISynchAsynchConnection createConnection(ID targetID, Object data)
 			throws ConnectionCreateException {
-		return new PahoConnection();
+		// XXX todo
+		return null;
 	}
 
 }

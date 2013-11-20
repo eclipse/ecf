@@ -11,13 +11,17 @@ public class PahoID extends StringID {
 		super(n, s);
 	}
 
-	public String getTargetID() {
-		// XXX TODO
+	public String getServerURI() {
 		return null;
 	}
-	
-	public String getClientID() {
-		// XXX TODO
+
+	public String getClientId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getTopic() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 }
