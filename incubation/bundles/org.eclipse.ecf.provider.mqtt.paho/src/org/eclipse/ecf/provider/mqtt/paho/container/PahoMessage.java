@@ -13,20 +13,20 @@ public class PahoMessage implements Serializable {
 
 	private PahoID targetID;
 	private byte[] bytes;
-	
+
 	public PahoMessage(PahoID targetID, byte[] bytes) {
 		this.targetID = targetID;
 		this.bytes = bytes;
 	}
-	
+
 	public PahoID getTargetID() {
 		return this.targetID;
 	}
-	
+
 	public byte[] getBytes() {
 		return this.bytes;
 	}
-	
+
 	public MqttMessage createMessage() throws IOException {
 		byte[] objectBytes = SOContainer.serialize(this);
 		return new MqttMessage(objectBytes);

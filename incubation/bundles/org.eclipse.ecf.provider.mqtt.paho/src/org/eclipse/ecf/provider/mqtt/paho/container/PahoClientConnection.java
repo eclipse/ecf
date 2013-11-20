@@ -1,7 +1,5 @@
 package org.eclipse.ecf.provider.mqtt.paho.container;
 
-import java.io.IOException;
-
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
@@ -27,9 +25,9 @@ public class PahoClientConnection extends AbstractPahoConnection implements
 
 		MqttConnectOptions connectOpts = createConnectionOptions(targetID,
 				data, timeout);
-		
+
 		connectAndSubscribe(pahoTargetID, connectOpts);
-		
+
 		try {
 			// publish to topic
 			this.client.publish(pahoTargetID.getTopic(), new MqttMessage());
@@ -64,9 +62,10 @@ public class PahoClientConnection extends AbstractPahoConnection implements
 		return false;
 	}
 
-	public Object sendSynch(ID receiver, byte[] data) throws IOException {
+	@Override
+	protected void handleMessageArrived(String topic2, MqttMessage message) {
 		// TODO Auto-generated method stub
-		return null;
+
 	}
 
 }

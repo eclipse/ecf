@@ -8,7 +8,8 @@ import org.eclipse.ecf.core.provider.BaseRemoteServiceContainerInstantiator;
 public class PahoClientContainerInstantiator extends
 		BaseRemoteServiceContainerInstantiator {
 
-	public IContainer createInstance(ContainerTypeDescription description, Object[] parameters) throws ContainerCreateException {
+	public IContainer createInstance(ContainerTypeDescription description,
+			Object[] parameters) throws ContainerCreateException {
 		// XXX todo
 		return null;
 	}

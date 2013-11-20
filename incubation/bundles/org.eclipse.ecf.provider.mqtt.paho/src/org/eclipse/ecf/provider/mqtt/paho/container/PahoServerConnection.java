@@ -1,13 +1,13 @@
 package org.eclipse.ecf.provider.mqtt.paho.container;
 
-import java.io.IOException;
-
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.provider.mqtt.paho.identity.PahoID;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-public class PahoServerConnection extends AbstractPahoConnection implements ISynchAsynchConnection {
+public class PahoServerConnection extends AbstractPahoConnection implements
+		ISynchAsynchConnection {
 
 	public PahoServerConnection(PahoID clientID) {
 		super(clientID);
@@ -33,9 +33,10 @@ public class PahoServerConnection extends AbstractPahoConnection implements ISyn
 		return false;
 	}
 
-	public Object sendSynch(ID receiver, byte[] data) throws IOException {
+	@Override
+	protected void handleMessageArrived(String topic2, MqttMessage message) {
 		// TODO Auto-generated method stub
-		return null;
+
 	}
 
 }
