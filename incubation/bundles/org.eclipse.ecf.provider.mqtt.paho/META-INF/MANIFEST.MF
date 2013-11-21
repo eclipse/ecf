@@ -16,4 +16,5 @@ Import-Package: org.eclipse.ecf.core;version="3.0.0",
  org.eclipse.ecf.core.sharedobject;version="2.3.0",
  org.eclipse.ecf.core.util;version="3.2.0",
  org.eclipse.ecf.provider.comm;version="4.3.0",
+ org.eclipse.ecf.provider.comm.tcp;version="4.3.0",
  org.eclipse.ecf.provider.generic;version="4.3.0"

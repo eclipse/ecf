@@ -1,18 +1,19 @@
 package org.eclipse.ecf.provider.mqtt.paho.container;
 
+import java.io.IOException;
+
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
+import org.eclipse.ecf.provider.comm.ISynchAsynchEventHandler;
+import org.eclipse.ecf.provider.comm.tcp.ConnectResultMessage;
 import org.eclipse.ecf.provider.mqtt.paho.identity.PahoID;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-public class PahoClientConnection extends AbstractPahoConnection implements
-		ISynchAsynchConnection {
+public class PahoClientConnection extends AbstractPahoConnection {
 
-	public PahoClientConnection(PahoID clientID) {
-		super(clientID);
+	public PahoClientConnection(PahoID clientID,
+			ISynchAsynchEventHandler handler) {
+		super(clientID, handler);
 	}
 
 	public synchronized Object connect(ID targetID, Object data, int timeout)
@@ -27,45 +28,24 @@ public class PahoClientConnection extends AbstractPahoConnection implements
 				data, timeout);
 
 		connectAndSubscribe(pahoTargetID, connectOpts);
-
+		ConnectResultMessage response;
 		try {
-			// publish to topic
-			this.client.publish(pahoTargetID.getTopic(), new MqttMessage());
-		} catch (MqttException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			response = (ConnectResultMessage) sendSynch(pahoTargetID,
+					new ConnectRequestMessage((PahoID) getLocalID(),
+							pahoTargetID, data).serialize());
+		} catch (IOException e) {
+			throw new ECFException("Could not connect to target=" + targetID, e);
 		}
-		// wait for response
-		// ConnectResponseMessage crm =
-		// AbstractMessage.createFromByteArray(bytes);
-		// TODO Auto-generated method stub
-		return null;
-	}
+		if (response == null)
+			throw new ECFException("Received null response from group manager");
 
-	public void disconnect() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void start() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void stop() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public boolean isStarted() {
-		// TODO Auto-generated method stub
-		return false;
+		return response.getData();
 	}
 
 	@Override
-	protected void handleMessageArrived(String topic2, MqttMessage message) {
+	protected void handleSynchRequest(SyncRequestMessage pahoMessage) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 }
