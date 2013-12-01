@@ -11,11 +11,14 @@
 
 package org.eclipse.ecf.internal.remoteservice;
 
+import org.eclipse.ecf.remoteservice.RemoteServiceNamespace;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.core.util.SystemLogService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceProxyCreator;
@@ -41,6 +44,8 @@ public class Activator implements BundleActivator {
 	private LogService logService = null;
 
 	private ServiceRegistration remoteServiceProxyCreator;
+
+	private RemoteServiceNamespace remoteServiceNamespace;
 
 	/**
 	 * The constructor
@@ -69,6 +74,9 @@ public class Activator implements BundleActivator {
 				return Proxy.newProxyInstance(classloader, interfaces, handler);
 			}
 		}, props);
+		// Setup namespace
+		this.remoteServiceNamespace = new RemoteServiceNamespace(RemoteServiceNamespace.NAME, "remote service namespace"); //$NON-NLS-1$
+		IDFactory.getDefault().addNamespace(remoteServiceNamespace);
 	}
 
 	/*
@@ -85,6 +93,11 @@ public class Activator implements BundleActivator {
 			logServiceTracker.close();
 			logServiceTracker = null;
 			logService = null;
+		}
+		// Remote namespace
+		if (remoteServiceNamespace != null) {
+			IDFactory.getDefault().removeNamespace(remoteServiceNamespace);
+			remoteServiceNamespace = null;
 		}
 		this.context = null;
 		plugin = null;
