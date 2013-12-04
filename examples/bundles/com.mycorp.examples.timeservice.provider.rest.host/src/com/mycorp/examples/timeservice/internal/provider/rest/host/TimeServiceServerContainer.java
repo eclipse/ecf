@@ -15,42 +15,43 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.remoteservice.servlet.HttpServiceComponent;
 import org.eclipse.ecf.remoteservice.servlet.RemoteServiceHttpServlet;
 import org.eclipse.ecf.remoteservice.servlet.ServletServerContainer;
-import org.eclipse.ecf.remoteservice.servlet.HttpServiceComponent;
-import org.eclipse.ecf.remoteservice.servlet.ObjectSerializationResponseSerializer;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
 
 import com.mycorp.examples.timeservice.ITimeService;
 import com.mycorp.examples.timeservice.provider.rest.common.TimeServiceRestNamespace;
 
 public class TimeServiceServerContainer extends ServletServerContainer {
 
-	public static final String NAME = "com.mycorp.examples.timeservice.rest.host";
+	public static final String TIMESERVICE_HOST_CONFIG_NAME = "com.mycorp.examples.timeservice.rest.host";
+	public static final String TIMESERVICE_SERVLET_NAME = "/" + ITimeService.class.getName();
 
-	private final String timeServiceServletName = "/" + ITimeService.class.getName();
-
-	private HttpService httpService;
+	private final HttpService httpService;
 	
-	public TimeServiceServerContainer(ID id, HttpService httpService) throws ServletException,
-			NamespaceException {
-		super(id);
+	TimeServiceServerContainer(String id, HttpService httpService) throws ContainerCreateException {
+		super(IDFactory.getDefault()
+				.createID(TimeServiceRestNamespace.NAME, id));
 		this.httpService = httpService;
-		// Register our servlet with 
-		this.httpService.registerServlet(timeServiceServletName,
-				new TimeRemoteServiceHttpServlet(), null, null);
+		// Register our servlet with the given httpService with the TIMESERVICE_SERVLET_NAME
+		// which is "/com.mycorp.examples.timeservice.ITimeService"
+		try {
+			this.httpService.registerServlet(TIMESERVICE_SERVLET_NAME,
+					new TimeRemoteServiceHttpServlet(), null, null);
+		} catch (Exception e) {
+			throw new ContainerCreateException("Could not create Time Service Server Container",e);
+		}
 	}
 
 	@Override
 	public void dispose() {
-		if (httpService != null) {
-			httpService.unregister(timeServiceServletName);
-			httpService = null;
-		}
+		httpService.unregister(TIMESERVICE_SERVLET_NAME);
 		super.dispose();
 	}
 
@@ -64,30 +65,28 @@ public class TimeServiceServerContainer extends ServletServerContainer {
 
 		private static final long serialVersionUID = 3906126401901826462L;
 
-		public TimeRemoteServiceHttpServlet() {
-			// Set response serializer to serialized time
-			// service call
-			setRemoteCallResponseSerializer(new ObjectSerializationResponseSerializer());
-		}
-
-		// Handle post call right here.
+		// Handle get call right here.
 		@Override
-		protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+		protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 				throws ServletException, IOException {
 			
 			// No arguments to getCurrentTime() method, so
-			// nothing to deserialize
+			// nothing to deserialize from request
 			
-			// Get local ITimeService
+			// Get local OSGi ITimeService
 			ITimeService timeService = HttpServiceComponent.getDefault()
 					.getService(ITimeService.class);
 			
-			// Call local service
+			// Call local service to get the time
 			Long currentTime = timeService.getCurrentTime();
 			
 			// Serialize response
-			getRemoteCallResponseSerializer().serializeResponse(resp,
-					currentTime);
+		    try {
+				JSONObject json = new JSONObject().put("time", currentTime);
+				resp.getOutputStream().print(json.toString());
+			} catch (JSONException e) {
+				throw new ServletException("json response object could not be created for time service", e);
+			}
 		}
 	}
 

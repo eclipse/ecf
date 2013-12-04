@@ -13,6 +13,8 @@ import java.net.URI;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.remoteservice.rest.identity.RestID;
 import org.eclipse.ecf.remoteservice.rest.identity.RestNamespace;
 
 public class TimeServiceRestNamespace extends RestNamespace {
@@ -23,19 +25,19 @@ public class TimeServiceRestNamespace extends RestNamespace {
 
 	@Override
 	public ID createInstance(Object[] parameters) throws IDCreateException {
-		try {
-			String uriString = getInitStringFromExternalForm(parameters);
-			if (uriString == null)
-				uriString = (String) parameters[0];
-			return new TimeServiceRestID(this, URI.create(uriString));
-		} catch (Exception e) {
-			throw new IDCreateException("Could not create TimeServiceRestID", e);
+		return new TimeServiceRestID(this, URI.create((String) parameters[0]));
+	}
+
+	/**
+	 * @since 2.0
+	 */
+	public static class TimeServiceRestID extends RestID {
+
+		private static final long serialVersionUID = 688293496962799572L;
+
+		public TimeServiceRestID(Namespace namespace, URI uri) {
+			super(namespace, uri);
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Class[][] getSupportedParameterTypes() {
-		return new Class[][] { { String.class } };
-	}
 }

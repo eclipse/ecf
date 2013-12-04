@@ -22,5 +22,5 @@
 <booleanAttribute key="tracing" value="false"/>
 <booleanAttribute key="useCustomFeatures" value="false"/>
 <booleanAttribute key="useDefaultConfigArea" value="true"/>
-<stringAttribute key="workspace_bundles" value="com.mycorp.examples.timeservice.consumer.ds@default:default,com.mycorp.examples.timeservice.consumer.filediscovery.rest@default:false,com.mycorp.examples.timeservice.provider.rest.common@default:default,com.mycorp.examples.timeservice.provider.rest.consumer@default:default,com.mycorp.examples.timeservice@default:default,org.eclipse.ecf.remoteservice.rest@default:default,org.eclipse.ecf.remoteservice@default:default"/>
+<stringAttribute key="workspace_bundles" value="com.mycorp.examples.timeservice.consumer.ds@default:default,com.mycorp.examples.timeservice.consumer.filediscovery.rest@default:false,com.mycorp.examples.timeservice.provider.rest.common@default:default,com.mycorp.examples.timeservice.provider.rest.consumer@default:default,com.mycorp.examples.timeservice@default:default,org.eclipse.ecf.remoteservice.rest@default:default,org.eclipse.ecf.remoteservice@default:default,org.json@default:default"/>
 </launchConfiguration>

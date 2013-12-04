@@ -17,6 +17,7 @@ Import-Package: com.mycorp.examples.timeservice;version="1.0.0",
  org.eclipse.ecf.remoteservice.servlet,
  org.eclipse.ecf.remoteservice.util;version="8.1.0",
  org.eclipse.equinox.concurrent.future;version="1.1.0",
+ org.json,
  org.osgi.framework;version="1.7.0",
  org.osgi.service.http;version="1.2.1"
 Service-Component: OSGI-INF/httpservicecomponent.xml
