@@ -82,8 +82,7 @@ public class TimeServiceServerContainer extends ServletServerContainer {
 			
 			// Serialize response
 		    try {
-				JSONObject json = new JSONObject().put("time", currentTime);
-				resp.getOutputStream().print(json.toString());
+				resp.getOutputStream().print(new JSONObject().put("time", currentTime).toString());
 			} catch (JSONException e) {
 				throw new ServletException("json response object could not be created for time service", e);
 			}
