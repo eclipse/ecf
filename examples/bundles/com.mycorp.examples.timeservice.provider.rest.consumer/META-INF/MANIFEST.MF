@@ -8,14 +8,13 @@ Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Import-Package: com.mycorp.examples.timeservice;version="1.0.0",
  com.mycorp.examples.timeservice.provider.rest.common,
- org.eclipse.ecf.remoteservice;version="7.0.0",
- org.eclipse.ecf.remoteservice.client;version="8.0.0",
- org.eclipse.ecf.remoteservice.rest;version="2.2.200",
- org.eclipse.ecf.remoteservice.rest.client;version="2.2.300",
- org.eclipse.ecf.remoteservice.rest.identity;version="2.2.200",
- org.eclipse.ecf.remoteservice.util;version="8.1.0",
- org.eclipse.equinox.concurrent.future;version="1.1.0",
+ org.eclipse.ecf.remoteservice,
+ org.eclipse.ecf.remoteservice.client,
+ org.eclipse.ecf.remoteservice.rest,
+ org.eclipse.ecf.remoteservice.rest.client,
+ org.eclipse.ecf.remoteservice.rest.identity,
+ org.eclipse.equinox.concurrent.future,
  org.json,
  org.osgi.framework
-Require-Bundle: org.eclipse.equinox.common,
- org.eclipse.ecf
+Require-Bundle: org.eclipse.ecf,
+ org.eclipse.equinox.common;bundle-version="3.6.200"
