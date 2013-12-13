@@ -1399,11 +1399,23 @@ public class RemoteServiceAdmin implements
 							remoteIntentsSupported);
 
 		// ECF properties
+		// ECF ENDPOINT ID
+		String ecfEndpointId = (String) PropertiesUtil.getPropertyValue(serviceReference, overridingProperties,
+				RemoteConstants.ENDPOINT_ID);
+		if (ecfEndpointId == null) 
+			ecfEndpointId = endpointId;
+		endpointDescriptionProperties
+		.put(RemoteConstants.ENDPOINT_ID,
+				endpointId);
+				
 		// ID namespace
 		String idNamespace = containerID.getNamespace().getName();
 		endpointDescriptionProperties.put(
 				RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE, idNamespace);
-
+		
+		// timestamp
+		endpointDescriptionProperties.put(RemoteConstants.ENDPOINT_TIMESTAMP, System.currentTimeMillis());
+		
 		// ENDPOINT_CONNECTTARGET_ID
 		String connectTarget = (String) PropertiesUtil.getPropertyValue(
 				serviceReference, overridingProperties,

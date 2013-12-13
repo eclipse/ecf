@@ -81,9 +81,8 @@ public class RemoteConstants {
 	 * <b>not</b> set, this prefix will be the precede the unique identifier.
 	 */
 	public static final String DISCOVERY_DEFAULT_SERVICE_NAME_PREFIX = "osgirsvc_"; //$NON-NLS-1$
-
 	/**
-	 * Optional ECF {@link EndpointDescription} property (with value of type
+	 * ECF {@link EndpointDescription} property (with value of type
 	 * String) that defines the unique
 	 * {@link org.eclipse.ecf.core.identity.Namespace} name. If present in the
 	 * {@link EndpointDescription}, the value will be used to create the
@@ -94,6 +93,18 @@ public class RemoteConstants {
 	 * used to create the container ID for remote service import.
 	 */
 	public static final String ENDPOINT_CONTAINER_ID_NAMESPACE = "ecf.endpoint.id.ns"; //$NON-NLS-1$
+	/**
+	 * ECF {@link EndpointDescription} property (with value of type String)
+	 * that defines the ecf endpoint id (typically the container id).
+	 * @since 3.1
+	 */
+	public static final String ENDPOINT_ID = "ecf.endpoint.id";  //$NON-NLS-1$
+	/**
+	 * ECF {@link EndpointDescription} property (with value of type Long)
+	 * that defines a service timestamp set upon initial export of the remote service.
+	 * @since 3.1
+	 */
+	public static final String ENDPOINT_TIMESTAMP = "ecf.endpoint.ts";  //$NON-NLS-1$
 	/**
 	 * Optional ECF {@link EndpointDescription} property (with value of type
 	 * String) that defines a connect target ID. If set/non-<code>null</code>,

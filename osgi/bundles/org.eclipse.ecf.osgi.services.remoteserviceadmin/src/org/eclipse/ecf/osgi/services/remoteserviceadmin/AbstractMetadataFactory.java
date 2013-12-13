@@ -200,6 +200,20 @@ public abstract class AbstractMetadataFactory {
 					RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE,
 					containerIDNamespace);
 
+			// ecf endpoint id
+			String ecfEndpointId = decodeString(discoveredServiceProperties,
+					RemoteConstants.ENDPOINT_ID);
+			if (ecfEndpointId != null)
+				endpointDescriptionProperties.put(RemoteConstants.ENDPOINT_ID,
+						ecfEndpointId);			
+			
+			// timestamp
+			Long timestamp = decodeLong(discoveredServiceProperties,
+					RemoteConstants.ENDPOINT_TIMESTAMP);
+			if (timestamp != null)
+				endpointDescriptionProperties.put(
+						RemoteConstants.ENDPOINT_TIMESTAMP, timestamp);
+			
 			// connect target ID
 			String connectTargetIDName = decodeString(
 					discoveredServiceProperties,
@@ -353,6 +367,11 @@ public abstract class AbstractMetadataFactory {
 						org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,
 						rsId);
 
+			String ecfEndpointId = (String) ecfEd.getProperties().get(
+					RemoteConstants.ENDPOINT_ID);
+			if (ecfEndpointId != null)
+				encodeString(result, RemoteConstants.ENDPOINT_ID, ecfEndpointId);
+			
 			// org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE
 			String containerIDNamespace = ecfEd.getIdNamespace();
 			if (containerIDNamespace != null)
@@ -360,6 +379,12 @@ public abstract class AbstractMetadataFactory {
 						RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE,
 						containerIDNamespace);
 
+			Long timestamp = (Long) ecfEd.getProperties().get(
+					RemoteConstants.ENDPOINT_TIMESTAMP);
+			if (timestamp != null)
+				encodeLong(result, RemoteConstants.ENDPOINT_TIMESTAMP,
+						timestamp);
+			
 			// org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants.ENDPOINT_CONNECTTARGET_ID
 			ID connectTargetID = ecfEd.getConnectTargetID();
 			if (connectTargetID != null)

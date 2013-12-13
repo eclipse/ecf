@@ -43,6 +43,8 @@ import org.osgi.framework.Version;
 public class EndpointDescription extends
 		org.osgi.service.remoteserviceadmin.EndpointDescription {
 
+	private String id;
+	private Long timestamp;
 	private String idNamespace;
 	private ID containerID;
 	private ID connectTargetID;
@@ -92,11 +94,27 @@ public class EndpointDescription extends
 	}
 
 	private void verifyECFProperties() {
+		this.id = verifyStringProperty(RemoteConstants.ENDPOINT_ID);
+		if (this.id == null) this.id = getId();
+		this.timestamp = verifyLongProperty(RemoteConstants.ENDPOINT_TIMESTAMP);
+		if (this.timestamp == null) this.timestamp = getServiceId();
 		this.idNamespace = verifyStringProperty(RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
 		this.containerID = verifyIDProperty(idNamespace, getId());
 		this.connectTargetID = verifyIDProperty(RemoteConstants.ENDPOINT_CONNECTTARGET_ID);
 		this.idFilter = verifyIDFilter();
 		this.rsFilter = verifyStringProperty(RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER);
+	}
+
+	private Long verifyLongProperty(String propName) {
+		Object r = getProperties().get(propName);
+		try {
+			return (Long) r;
+		} catch (ClassCastException e) {
+			IllegalArgumentException iae = new IllegalArgumentException(
+					"property value is not a Long: " + propName); //$NON-NLS-1$
+			iae.initCause(e);
+			throw iae;
+		}
 	}
 
 	private String verifyStringProperty(String propName) {
@@ -170,6 +188,20 @@ public class EndpointDescription extends
 		return result;
 	}
 
+	/**
+	 * @since 3.1
+	 */
+	public String getEndpointId() {
+		return id;
+	}
+	
+	/**
+	 * @since 3.1
+	 */
+	public Long getTimestamp() {
+		return this.timestamp;
+	}
+	
 	public ID getContainerID() {
 		return containerID;
 	}
