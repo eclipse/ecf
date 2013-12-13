@@ -17,7 +17,9 @@ import java.util.Map;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.IDUtil;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
@@ -95,9 +97,19 @@ public class EndpointDescription extends
 
 	private void verifyECFProperties() {
 		this.id = verifyStringProperty(RemoteConstants.ENDPOINT_ID);
-		if (this.id == null) this.id = getId();
+		if (this.id == null) {
+			LogUtility
+					.logWarning(
+							"verifyECFProperties", DebugOptions.ENDPOINT_DESCRIPTION_READER, EndpointDescription.class, "ECFEndpointDescription property " + RemoteConstants.ENDPOINT_ID + " not set.  Using OSGI endpoint.id"); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+			this.id = getId();
+		}
 		this.timestamp = verifyLongProperty(RemoteConstants.ENDPOINT_TIMESTAMP);
-		if (this.timestamp == null) this.timestamp = getServiceId();
+		if (this.timestamp == null) {
+			LogUtility
+					.logWarning(
+							"verifyECFProperties", DebugOptions.ENDPOINT_DESCRIPTION_READER, EndpointDescription.class, "ECFEndpointDescription property " + RemoteConstants.ENDPOINT_TIMESTAMP + " not set.  Using OSGI endpoint.service.id"); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+			this.timestamp = getServiceId();
+		}
 		this.idNamespace = verifyStringProperty(RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
 		this.containerID = verifyIDProperty(idNamespace, getId());
 		this.connectTargetID = verifyIDProperty(RemoteConstants.ENDPOINT_CONNECTTARGET_ID);
