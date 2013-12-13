@@ -45,7 +45,7 @@ import org.osgi.framework.Version;
 public class EndpointDescription extends
 		org.osgi.service.remoteserviceadmin.EndpointDescription {
 
-	private String id;
+	private String ecfid;
 	private Long timestamp;
 	private String idNamespace;
 	private ID containerID;
@@ -96,12 +96,12 @@ public class EndpointDescription extends
 	}
 
 	private void verifyECFProperties() {
-		this.id = verifyStringProperty(RemoteConstants.ENDPOINT_ID);
-		if (this.id == null) {
+		this.ecfid = verifyStringProperty(RemoteConstants.ENDPOINT_ID);
+		if (this.ecfid == null) {
 			LogUtility
 					.logWarning(
 							"verifyECFProperties", DebugOptions.ENDPOINT_DESCRIPTION_READER, EndpointDescription.class, "ECFEndpointDescription property " + RemoteConstants.ENDPOINT_ID + " not set.  Using OSGI endpoint.id"); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
-			this.id = getId();
+			this.ecfid = getId();
 		}
 		this.timestamp = verifyLongProperty(RemoteConstants.ENDPOINT_TIMESTAMP);
 		if (this.timestamp == null) {
@@ -111,7 +111,7 @@ public class EndpointDescription extends
 			this.timestamp = getServiceId();
 		}
 		this.idNamespace = verifyStringProperty(RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
-		this.containerID = verifyIDProperty(idNamespace, getId());
+		this.containerID = verifyIDProperty(idNamespace, this.ecfid);
 		this.connectTargetID = verifyIDProperty(RemoteConstants.ENDPOINT_CONNECTTARGET_ID);
 		this.idFilter = verifyIDFilter();
 		this.rsFilter = verifyStringProperty(RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER);
@@ -204,7 +204,7 @@ public class EndpointDescription extends
 	 * @since 3.1
 	 */
 	public String getEndpointId() {
-		return id;
+		return ecfid;
 	}
 	
 	/**

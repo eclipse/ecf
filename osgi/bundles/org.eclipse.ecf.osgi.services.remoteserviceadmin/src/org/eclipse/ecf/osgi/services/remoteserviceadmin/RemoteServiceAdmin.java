@@ -1340,11 +1340,20 @@ public class RemoteServiceAdmin implements
 						overridingProperties,
 						org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID);
 		if (endpointId == null)
-			endpointId = containerID.getName();
+			endpointId = UUID.randomUUID().toString();
 		endpointDescriptionProperties
 				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
 						endpointId);
 
+		// ECF ENDPOINT ID
+		String ecfEndpointId = (String) PropertiesUtil.getPropertyValue(
+				serviceReference, overridingProperties,
+				RemoteConstants.ENDPOINT_ID);
+		if (ecfEndpointId == null)
+			ecfEndpointId = containerID.getName();
+		endpointDescriptionProperties.put(RemoteConstants.ENDPOINT_ID,
+				ecfEndpointId);
+				
 		// ENDPOINT_SERVICE_ID
 		// This is always set to the value from serviceReference as per 122.5.1
 		Long serviceId = (Long) serviceReference
@@ -1399,15 +1408,6 @@ public class RemoteServiceAdmin implements
 							remoteIntentsSupported);
 
 		// ECF properties
-		// ECF ENDPOINT ID
-		String ecfEndpointId = (String) PropertiesUtil.getPropertyValue(serviceReference, overridingProperties,
-				RemoteConstants.ENDPOINT_ID);
-		if (ecfEndpointId == null) 
-			ecfEndpointId = endpointId;
-		endpointDescriptionProperties
-		.put(RemoteConstants.ENDPOINT_ID,
-				endpointId);
-				
 		// ID namespace
 		String idNamespace = containerID.getNamespace().getName();
 		endpointDescriptionProperties.put(
