@@ -28,9 +28,7 @@ import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.core.util.SystemLogService;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionAdvertiser;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionLocator;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionAdvertiser;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.osgi.framework.Bundle;
@@ -66,7 +64,6 @@ public class Activator implements BundleActivator {
 	private ServiceRegistration remoteServiceAdminRegistration;
 
 	private EndpointDescriptionLocator endpointDescriptionLocator;
-	private EndpointDescriptionAdvertiser endpointDescriptionAdvertiser;
 	private ServiceRegistration endpointDescriptionAdvertiserRegistration;
 
 	// Logging
@@ -209,11 +206,6 @@ public class Activator implements BundleActivator {
 		final Properties properties = new Properties();
 		properties.put(Constants.SERVICE_RANKING,
 				new Integer(Integer.MIN_VALUE));
-		endpointDescriptionAdvertiser = new EndpointDescriptionAdvertiser(
-				endpointDescriptionLocator);
-		endpointDescriptionAdvertiserRegistration = context.registerService(
-				IEndpointDescriptionAdvertiser.class.getName(),
-				endpointDescriptionAdvertiser, (Dictionary) properties);
 
 		// start endpointDescriptionLocator
 		endpointDescriptionLocator.start();
@@ -250,10 +242,6 @@ public class Activator implements BundleActivator {
 		if (endpointDescriptionAdvertiserRegistration != null) {
 			endpointDescriptionAdvertiserRegistration.unregister();
 			endpointDescriptionAdvertiserRegistration = null;
-		}
-		if (endpointDescriptionAdvertiser != null) {
-			endpointDescriptionAdvertiser.close();
-			endpointDescriptionAdvertiser = null;
 		}
 		synchronized (saxParserFactoryTrackerLock) {
 			if (saxParserFactoryTracker != null) {
