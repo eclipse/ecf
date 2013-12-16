@@ -18,6 +18,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
+import org.eclipse.ecf.discovery.identity.ServiceTypeID;
 
 public class ZooDiscoveryNamespace extends Namespace {
 
@@ -31,7 +32,7 @@ public class ZooDiscoveryNamespace extends Namespace {
 	public ID createInstance(Object[] parameters) throws IDCreateException {
 		Assert.isTrue(parameters != null && parameters.length > 0);
 		try {
-			if (parameters[0] instanceof String) {
+			if (parameters[0] instanceof String && parameters instanceof String[]) {
 				return new ZooDiscoveryTargetID(this, (String[]) parameters);
 			} else if (parameters.length == 1
 					&& parameters[0] instanceof IServiceTypeID) {
@@ -42,6 +43,12 @@ public class ZooDiscoveryNamespace extends Namespace {
 					&& parameters[1] instanceof URI) {
 				return new ZooDiscoveryServiceID(this,
 						((IServiceTypeID) parameters[0]), ((URI) parameters[1]));
+			} else if (parameters.length == 2
+					&& parameters[0] instanceof String
+					&& parameters[1] instanceof URI) {
+				final String type = (String) parameters[0];
+				return new ZooDiscoveryServiceID(this,
+						new ServiceTypeID(this, type), ((URI) parameters[1]));
 			}
 
 		} catch (Exception e) {

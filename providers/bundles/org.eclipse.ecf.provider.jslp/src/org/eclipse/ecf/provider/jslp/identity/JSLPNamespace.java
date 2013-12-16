@@ -72,7 +72,7 @@ public class JSLPNamespace extends Namespace {
 			return createInstance(parameters);
 
 			// create IServiceID by ECF discovery generic String representation
-		} else if (parameters.length == 2 && parameters[0] instanceof String && ((String) parameters[0]).startsWith("_")) { //$NON-NLS-1$
+		} else if (parameters.length == 2 && parameters[0] instanceof String && ((String) parameters[0]).startsWith("_") && parameters[1] instanceof URI) { //$NON-NLS-1$
 			final String type = (String) parameters[0];
 			final URI anURI = (URI) parameters[1];
 			final JSLPServiceTypeID serviceType = new JSLPServiceTypeID(this, new ServiceTypeID(this, type));

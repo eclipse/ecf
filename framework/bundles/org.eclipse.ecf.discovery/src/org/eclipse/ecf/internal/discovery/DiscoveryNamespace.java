@@ -10,8 +10,10 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.discovery;
 
+import java.net.URI;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
+import org.eclipse.ecf.discovery.identity.ServiceID;
 
 public class DiscoveryNamespace extends Namespace {
 
@@ -29,8 +31,25 @@ public class DiscoveryNamespace extends Namespace {
 		if (parameters != null && parameters.length == 1
 				&& parameters[0] instanceof IServiceTypeID) {
 			return (ID) parameters[0];
+		} else if (parameters != null && parameters.length == 2
+				&& parameters[0] instanceof IServiceTypeID
+				&& parameters[1] instanceof URI) {
+			final IServiceTypeID type = (IServiceTypeID) parameters[0];
+			final URI uri = (URI) parameters[1];
+			return new DiscoveryServiceID(this, type, uri);
 		}
 		throw new IDCreateException("Parameters must be of type IServiceTypeID"); //$NON-NLS-1$
+	}
+
+	private static class DiscoveryServiceID extends ServiceID {
+
+		private static final long serialVersionUID = -9017925060137305026L;
+
+		// Need public constructor
+		public DiscoveryServiceID(Namespace namespace, IServiceTypeID type,
+				URI uri) {
+			super(namespace, type, uri);
+		}
 	}
 
 	/*
