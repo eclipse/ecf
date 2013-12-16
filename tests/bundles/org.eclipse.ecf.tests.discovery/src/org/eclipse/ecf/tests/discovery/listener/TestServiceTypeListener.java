@@ -22,7 +22,7 @@ public class TestServiceTypeListener extends TestListener implements IServiceTyp
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.IServiceTypeListener#serviceTypeDiscovered(org.eclipse.ecf.discovery.IServiceTypeEvent)
 	 */
-	public void serviceTypeDiscovered(IServiceTypeEvent anEvent) {
+	public synchronized void serviceTypeDiscovered(IServiceTypeEvent anEvent) {
 		events.add(anEvent);
 		if(events.size() == amountOfEventsToExpect) {
 			synchronized (this) {
