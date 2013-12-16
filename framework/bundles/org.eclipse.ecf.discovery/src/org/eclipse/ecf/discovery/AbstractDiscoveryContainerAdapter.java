@@ -20,7 +20,6 @@ import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.internal.discovery.*;
 import org.eclipse.equinox.concurrent.future.*;
-import org.osgi.framework.*;
 
 public abstract class AbstractDiscoveryContainerAdapter extends
 		AbstractContainer implements IDiscoveryLocator, IDiscoveryAdvertiser {
@@ -52,8 +51,6 @@ public abstract class AbstractDiscoveryContainerAdapter extends
 	private DiscoveryServiceListener discoveryServiceTypeListener;
 	private ServiceTypeComparator discoveryServiceListenerComparator;
 
-	private final ServiceListener iServiceInfoListener;
-
 	/**
 	 * @param aNamespaceName
 	 * @param aConfig
@@ -74,57 +71,6 @@ public abstract class AbstractDiscoveryContainerAdapter extends
 				IServiceTypeListener.class);
 
 		discoveryServiceListenerComparator = new ServiceTypeComparator();
-
-		// A discovery advertisers is a listener for IServiceInfo instances that
-		// can be registered with the OSGi service registry and will be
-		// advertised for as long as they are registered with the SR.
-		final BundleContext bundleContext = DiscoveryPlugin.getDefault()
-				.getBundleContext();
-		iServiceInfoListener = new ServiceListener() {
-			public void serviceChanged(ServiceEvent event) {
-				final ServiceReference serviceReference = event
-						.getServiceReference();
-				final IServiceInfo serviceInfo = (IServiceInfo) bundleContext
-						.getService(serviceReference);
-				switch (event.getType()) {
-				case ServiceEvent.REGISTERED:
-					AbstractDiscoveryContainerAdapter.this
-							.registerService(serviceInfo);
-					break;
-				case ServiceEvent.MODIFIED:
-					AbstractDiscoveryContainerAdapter.this
-							.registerService(serviceInfo);
-					break;
-				case ServiceEvent.UNREGISTERING:
-					AbstractDiscoveryContainerAdapter.this
-							.unregisterService(serviceInfo);
-					break;
-				}
-			}
-		};
-		try {
-			bundleContext.addServiceListener(iServiceInfoListener, getFilter());
-
-			// Advertise all _existing_ IServiceInfo (whiteboard) "services"
-			final ServiceReference[] allServiceReferences = bundleContext
-					.getAllServiceReferences(IServiceInfo.class.getName(), null);
-			if (allServiceReferences != null) {
-				for (int i = 0; i < allServiceReferences.length; i++) {
-					final ServiceReference serviceReference = allServiceReferences[i];
-					final IServiceInfo serviceInfo = (IServiceInfo) bundleContext
-							.getService(serviceReference);
-					AbstractDiscoveryContainerAdapter.this
-							.registerService(serviceInfo);
-				}
-			}
-		} catch (InvalidSyntaxException doesNotHappen) {
-			doesNotHappen.printStackTrace();
-		}
-	}
-
-	private String getFilter() {
-		return "(" + Constants.OBJECTCLASS + "=" + IServiceInfo.class.getName() //$NON-NLS-1$ //$NON-NLS-2$
-				+ ")"; //$NON-NLS-1$
 	}
 
 	/*
@@ -190,8 +136,6 @@ public abstract class AbstractDiscoveryContainerAdapter extends
 		config = null;
 		discoveryServiceListener.dispose();
 		discoveryServiceTypeListener.dispose();
-		DiscoveryPlugin.getDefault().getBundleContext()
-				.removeServiceListener(iServiceInfoListener);
 		super.dispose();
 	}
 

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %bundle.name
 Bundle-SymbolicName: org.eclipse.ecf.osgi.services.remoteserviceadmin
-Bundle-Version: 4.0.0.qualifier
+Bundle-Version: 3.0.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator
 Bundle-Vendor: %bundle.provider
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
@@ -34,5 +34,4 @@ Import-Package: javax.xml.parsers,
  org.xml.sax
 DynamicImport-Package: *
 Bundle-ActivationPolicy: lazy
-Service-Component: OSGI-INF/serviceInfoFactory.xml
 
