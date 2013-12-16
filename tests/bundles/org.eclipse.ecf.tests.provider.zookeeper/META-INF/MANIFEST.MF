@@ -13,3 +13,4 @@ Require-Bundle: org.eclipse.ecf,
 Bundle-Vendor: %bundle.provider
 Export-Package: org.eclipse.ecf.tests.provider.zookeeper,
  org.eclipse.ecf.tests.provider.zookeeper.identity
+Import-Package: org.osgi.framework

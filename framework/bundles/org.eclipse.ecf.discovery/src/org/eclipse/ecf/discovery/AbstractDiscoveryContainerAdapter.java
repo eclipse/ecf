@@ -51,6 +51,8 @@ public abstract class AbstractDiscoveryContainerAdapter extends
 	private DiscoveryServiceListener discoveryServiceTypeListener;
 	private ServiceTypeComparator discoveryServiceListenerComparator;
 
+	private final IServiceInfoServiceListener iServiceInfoServiceListener;
+
 	/**
 	 * @param aNamespaceName
 	 * @param aConfig
@@ -71,6 +73,8 @@ public abstract class AbstractDiscoveryContainerAdapter extends
 				IServiceTypeListener.class);
 
 		discoveryServiceListenerComparator = new ServiceTypeComparator();
+
+		iServiceInfoServiceListener = new IServiceInfoServiceListener(this);
 	}
 
 	/*
@@ -136,6 +140,7 @@ public abstract class AbstractDiscoveryContainerAdapter extends
 		config = null;
 		discoveryServiceListener.dispose();
 		discoveryServiceTypeListener.dispose();
+		iServiceInfoServiceListener.dispose();
 		super.dispose();
 	}
 

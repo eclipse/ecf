@@ -63,7 +63,6 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 	private static ZooKeeperServer zooKeeperServer;
 	private ID targetId;
 	protected boolean isQuorumPeerReady;
-	private ZooDiscoveryNamespace namespace;
 	private boolean isConnected;
 	private boolean isDisposed;
 	private WatchManager watchManager;
@@ -85,13 +84,9 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 	}
 
 	private ZooDiscoveryContainer() {
-		
 		super(ZooDiscoveryNamespace.NAME, Configurator.INSTANCE);
-		
-		CACHED_THREAD_POOL=Executors.newCachedThreadPool();
 		DiscoveryProperties = new Properties();
-		this.namespace = new ZooDiscoveryNamespace();
-
+		
 		if (autoStart()) {
 			try {
 				this.targetId = this.getConnectNamespace().createInstance(new String[] { DefaultDiscoveryConfig.getDefaultTarget() });
@@ -323,7 +318,7 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 	}
 
 	public Namespace getConnectNamespace() {
-		return this.namespace;
+		return super.getConnectNamespace();
 	}
 
 	public ID getConnectedID() {
@@ -367,7 +362,7 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 	}
 
 	public Namespace getServicesNamespace() {
-		return this.namespace;
+		return super.getServicesNamespace();
 	}
 
 	public synchronized void registerService(IServiceInfo serviceInfo) {
