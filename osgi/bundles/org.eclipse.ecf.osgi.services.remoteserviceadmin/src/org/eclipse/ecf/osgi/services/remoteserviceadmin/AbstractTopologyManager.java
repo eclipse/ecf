@@ -58,7 +58,7 @@ public abstract class AbstractTopologyManager {
 
 	public AbstractTopologyManager(BundleContext context) {
 		serviceInfoFactoryTracker = new ServiceTracker(
-				Activator.getContext(), createISIFFilter(), null);
+				Activator.getContext(), createISIFFilter(Activator.getContext()), null);
 		serviceInfoFactoryTracker.open();
 		this.context = context;
 	}
@@ -110,7 +110,7 @@ public abstract class AbstractTopologyManager {
 	/**
 	 * @since 4.0
 	 */
-	protected Filter createISIFFilter() {
+	protected Filter createISIFFilter(BundleContext ctx) {
 		String filterString = "(" //$NON-NLS-1$
 				+ org.osgi.framework.Constants.OBJECTCLASS
 				+ "=" //$NON-NLS-1$
@@ -118,7 +118,7 @@ public abstract class AbstractTopologyManager {
 						.getName()
 				+ ")"; //$NON-NLS-1$
 		try {
-			return getContext().createFilter(filterString);
+			return ctx.createFilter(filterString);
 		} catch (InvalidSyntaxException doesNotHappen) {
 			// Should never happen
 			doesNotHappen.printStackTrace();
