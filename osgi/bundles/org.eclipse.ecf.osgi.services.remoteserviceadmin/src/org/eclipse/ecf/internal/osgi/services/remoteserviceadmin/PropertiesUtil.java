@@ -359,6 +359,15 @@ public class PropertiesUtil {
 		return target;
 	}
 
+	public static Map<String, Object> copyNonECFProperties(
+			IRemoteServiceRegistration serviceRegistration, Map<String, Object> target) {
+		String[] keys = serviceRegistration.getPropertyKeys();
+		for (int i = 0; i < keys.length; i++)
+			if (!isECFProperty(keys[i]))
+				target.put(keys[i], serviceRegistration.getProperty(keys[i]));
+		return target;
+	}
+
 	public static Map<String, Object> copyNonReservedProperties(
 			ServiceReference serviceReference, Map<String, Object> target) {
 		String[] keys = serviceReference.getPropertyKeys();
@@ -383,6 +392,10 @@ public class PropertiesUtil {
 				overrides);
 	}
 
+	public static Map mergeProperties(final IRemoteServiceRegistration remoteServiceRegistration, final Map<String, Object> properties) {
+		return copyProperties(copyNonECFProperties(remoteServiceRegistration, new HashMap()),properties);
+	}
+	
 	public static Map mergeProperties(final Map<String, Object> source,
 			final Map<String, Object> overrides) {
 

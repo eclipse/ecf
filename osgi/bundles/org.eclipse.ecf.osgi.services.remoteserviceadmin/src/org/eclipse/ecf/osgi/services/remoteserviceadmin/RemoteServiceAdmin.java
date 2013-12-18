@@ -2024,6 +2024,9 @@ public class RemoteServiceAdmin implements
 				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID,
 						remoteRegistration
 								.getProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID));
+		
+		endpointDescriptionProperties = PropertiesUtil.mergeProperties(remoteRegistration, endpointDescriptionProperties);
+		
 		EndpointDescription endpointDescription = new EndpointDescription(
 				serviceReference, endpointDescriptionProperties);
 		// Create ExportEndpoint/ExportRegistration
