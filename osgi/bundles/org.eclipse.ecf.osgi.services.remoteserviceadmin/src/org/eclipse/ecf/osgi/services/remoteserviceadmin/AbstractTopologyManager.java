@@ -9,8 +9,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +17,7 @@ import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
@@ -27,6 +27,7 @@ import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.remoteserviceadmin.EndpointListener;
 import org.osgi.service.remoteserviceadmin.ImportRegistration;
 import org.osgi.util.tracker.ServiceTracker;
@@ -47,13 +48,18 @@ public abstract class AbstractTopologyManager {
 
 	private BundleContext context;
 
-	private ServiceTracker endpointDescriptionAdvertiserTracker;
-	private Object endpointDescriptionAdvertiserTrackerLock = new Object();
+	private ServiceTracker<IServiceInfoFactory, IServiceInfoFactory> serviceInfoFactoryTracker;
 
 	private ServiceTracker remoteServiceAdminTracker;
 	private Object remoteServiceAdminTrackerLock = new Object();
 
+	private final Map<org.osgi.service.remoteserviceadmin.EndpointDescription, ServiceRegistration<IServiceInfo>> registrations =
+			new HashMap<org.osgi.service.remoteserviceadmin.EndpointDescription, ServiceRegistration<IServiceInfo>>();
+
 	public AbstractTopologyManager(BundleContext context) {
+		serviceInfoFactoryTracker = new ServiceTracker(
+				Activator.getContext(), createISIFFilter(), null);
+		serviceInfoFactoryTracker.open();
 		this.context = context;
 	}
 
@@ -68,42 +74,7 @@ public abstract class AbstractTopologyManager {
 		return a.getFrameworkUUID();
 	}
 
-	/**
-	 * @since 3.0
-	 */
-	protected IEndpointDescriptionAdvertiser getEndpointDescriptionAdvertiser(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
-		IEndpointDescriptionAdvertiser advertiser = AccessController
-				.doPrivileged(new PrivilegedAction<IEndpointDescriptionAdvertiser>() {
-					public IEndpointDescriptionAdvertiser run() {
-						synchronized (endpointDescriptionAdvertiserTrackerLock) {
-							if (endpointDescriptionAdvertiserTracker == null) {
-								endpointDescriptionAdvertiserTracker = new ServiceTracker(
-										getContext(),
-										IEndpointDescriptionAdvertiser.class
-												.getName(), null);
-								endpointDescriptionAdvertiserTracker.open();
-							}
-						}
-						return (IEndpointDescriptionAdvertiser) endpointDescriptionAdvertiserTracker
-								.getService();
-					}
-				});
-		if (advertiser == null)
-			logWarning("handleOSGiEndpointAdded", //$NON-NLS-1$
-					"No endpoint description advertiser available for endpointDescription=" //$NON-NLS-1$
-							+ endpointDescription);
-
-		return advertiser;
-	}
-
 	public void close() {
-		synchronized (endpointDescriptionAdvertiserTrackerLock) {
-			if (endpointDescriptionAdvertiserTracker != null) {
-				endpointDescriptionAdvertiserTracker.close();
-				endpointDescriptionAdvertiserTracker = null;
-			}
-		}
 		synchronized (remoteServiceAdminTrackerLock) {
 			if (remoteServiceAdminTracker != null) {
 				remoteServiceAdminTracker.close();
@@ -129,8 +100,28 @@ public abstract class AbstractTopologyManager {
 				+ "=*))"; //$NON-NLS-1$
 		try {
 			return getContext().createFilter(filterString);
-		} catch (InvalidSyntaxException e) {
+		} catch (InvalidSyntaxException doesNotHappen) {
 			// Should never happen
+			doesNotHappen.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * @since 4.0
+	 */
+	protected Filter createISIFFilter() {
+		String filterString = "(" //$NON-NLS-1$
+				+ org.osgi.framework.Constants.OBJECTCLASS
+				+ "=" //$NON-NLS-1$
+				+ IServiceInfoFactory.class
+						.getName()
+				+ ")"; //$NON-NLS-1$
+		try {
+			return getContext().createFilter(filterString);
+		} catch (InvalidSyntaxException doesNotHappen) {
+			// Should never happen
+			doesNotHappen.printStackTrace();
 			return null;
 		}
 	}
@@ -152,16 +143,29 @@ public abstract class AbstractTopologyManager {
 	 */
 	protected void advertiseEndpointDescription(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
-		// forward to all other endpoint listener
-		IEndpointDescriptionAdvertiser advertiser = getEndpointDescriptionAdvertiser(endpointDescription);
-		if (advertiser != null) {
-			// Now advertise endpoint description using endpoint description
-			// advertiser
-			trace("advertiseEndpointDescription", //$NON-NLS-1$
-					"advertising endpointDescription=" + endpointDescription //$NON-NLS-1$
-							+ " with advertiser=" + advertiser); //$NON-NLS-1$
-			handleAdvertisingResult(advertiser.advertise(endpointDescription),
-					endpointDescription, true);
+		final IServiceInfoFactory service = serviceInfoFactoryTracker
+				.getService();
+		if (service != null) {
+			final IServiceInfo serviceInfo = service.createServiceInfo(null,
+					endpointDescription);
+			if (serviceInfo != null) {
+				trace("advertiseEndpointDescription", //$NON-NLS-1$
+						"advertising endpointDescription=" + endpointDescription +  //$NON-NLS-1$
+						" and IServiceInfo " + serviceInfo); //$NON-NLS-1$
+
+				final ServiceRegistration<IServiceInfo> registerService = this.context
+						.registerService(IServiceInfo.class, serviceInfo, null);
+				this.registrations.put(endpointDescription, registerService);
+				
+			} else {
+				logError(
+						"advertiseEndpointDescription",  //$NON-NLS-1$
+						"IServiceInfoFactory failed to convert EndpointDescription " + endpointDescription); //$NON-NLS-1$1
+			}
+		} else {
+			logError(
+					"advertiseEndpointDescription",  //$NON-NLS-1$
+					"no IServiceInfoFactory service found"); //$NON-NLS-1$
 		}
 	}
 
@@ -170,52 +174,15 @@ public abstract class AbstractTopologyManager {
 	 */
 	protected void unadvertiseEndpointDescription(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
-		IEndpointDescriptionAdvertiser advertiser = getEndpointDescriptionAdvertiser(endpointDescription);
-		if (advertiser != null) {
-			// Now unadvertise endpoint description using endpoint description
-			// advertiser
-			trace("unadvertiseEndpointDescription", //$NON-NLS-1$
-					"unadvertising endpointDescription=" + endpointDescription //$NON-NLS-1$
-							+ " with advertiser=" + advertiser); //$NON-NLS-1$
-			handleAdvertisingResult(
-					advertiser.unadvertise(endpointDescription),
-					endpointDescription, false);
-		}
-	}
-
-	/**
-	 * @since 3.0
-	 */
-	protected void advertiseEndpointDescription(
-			EndpointDescription endpointDescription) {
-		// forward to all other endpoint listener
-		IEndpointDescriptionAdvertiser advertiser = getEndpointDescriptionAdvertiser(endpointDescription);
-		if (advertiser != null) {
-			// Now advertise endpoint description using endpoint description
-			// advertiser
-			trace("advertiseEndpointDescription", //$NON-NLS-1$
-					"advertising endpointDescription=" + endpointDescription //$NON-NLS-1$
-							+ " with advertiser=" + advertiser); //$NON-NLS-1$
-			handleAdvertisingResult(advertiser.advertise(endpointDescription),
-					endpointDescription, true);
-		}
-	}
-
-	/**
-	 * @since 3.0
-	 */
-	protected void unadvertiseEndpointDescription(
-			EndpointDescription endpointDescription) {
-		IEndpointDescriptionAdvertiser advertiser = getEndpointDescriptionAdvertiser(endpointDescription);
-		if (advertiser != null) {
-			// Now unadvertise endpoint description using endpoint description
-			// advertiser
-			trace("unadvertiseEndpointDescription", //$NON-NLS-1$
-					"unadvertising endpointDescription=" + endpointDescription //$NON-NLS-1$
-							+ " with advertiser=" + advertiser); //$NON-NLS-1$
-			handleAdvertisingResult(
-					advertiser.unadvertise(endpointDescription),
-					endpointDescription, false);
+		final ServiceRegistration<IServiceInfo> serviceRegistration = this.registrations
+				.get(endpointDescription);
+		if (serviceRegistration != null) {
+			serviceRegistration.unregister();
+		} else {
+			logWarning("unadvertiseEndpointDescription", //$NON-NLS-1$
+					"Failed to unadvertise endpointDescription: " //$NON-NLS-1$
+							+ endpointDescription
+							+ ". Seems it was never advertised."); //$NON-NLS-1$
 		}
 	}
 
@@ -310,8 +277,9 @@ public abstract class AbstractTopologyManager {
 			listeners = context.getServiceReferences(
 					EndpointListener.class.getName(),
 					"(" + EndpointListener.ENDPOINT_LISTENER_SCOPE + "=*)"); //$NON-NLS-1$//$NON-NLS-2$
-		} catch (InvalidSyntaxException e) {
+		} catch (InvalidSyntaxException doesNotHappen) {
 			// Should never happen
+			doesNotHappen.printStackTrace();
 		}
 		if (listeners != null) {
 			for (int i = 0; i < listeners.length; i++) {
@@ -436,5 +404,4 @@ public abstract class AbstractTopologyManager {
 			}
 		}
 	}
-
 }
