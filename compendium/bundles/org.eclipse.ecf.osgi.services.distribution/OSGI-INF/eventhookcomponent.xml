@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" immediate="false" name="org.eclipse.ecf.osgi.services.distribution.basictopologymanager">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" immediate="true" name="org.eclipse.ecf.osgi.services.distribution.basictopologymanager">
    <implementation class="org.eclipse.ecf.internal.osgi.services.distribution.BasicTopologyManagerComponent"/>
    <service>
       <provide interface="org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener"/>
