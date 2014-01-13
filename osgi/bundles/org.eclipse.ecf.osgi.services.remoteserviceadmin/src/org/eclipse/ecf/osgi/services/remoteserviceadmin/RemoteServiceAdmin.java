@@ -227,7 +227,7 @@ public class RemoteServiceAdmin implements
 
 	// RemoteServiceAdmin service interface impl methods
 	public Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> exportService(
-			final ServiceReference serviceReference, Map<String, ?> op) {
+			final ServiceReference<?> serviceReference, Map<String, ?> op) {
 		trace("exportService", "serviceReference=" + serviceReference //$NON-NLS-1$ //$NON-NLS-2$
 				+ ",properties=" + op); //$NON-NLS-1$
 		final Map<String, ?> overridingProperties = PropertiesUtil
@@ -699,6 +699,12 @@ public class RemoteServiceAdmin implements
 			return exportReference.getException();
 		}
 
+		public org.osgi.service.remoteserviceadmin.EndpointDescription update(
+				Map<String, ?> properties) {
+			// TODO XXX this is new method for rfc 203...i.e. RSA 1.1
+			return null;
+		}
+
 	}
 
 	class ExportReference implements
@@ -922,6 +928,11 @@ public class RemoteServiceAdmin implements
 
 		public Throwable getException() {
 			return importReference.getException();
+		}
+
+		public void update(
+				org.osgi.service.remoteserviceadmin.EndpointDescription endpoint) {
+			// TODO XXX this is new method for RFC 203...i.e. RSA 1.1
 		}
 
 	}
