@@ -39,6 +39,7 @@ import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
+import org.eclipse.ecf.remoteservice.IExtendedRemoteServiceRegistration;
 import org.eclipse.ecf.remoteservice.IOSGiRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
@@ -2047,6 +2048,14 @@ public class RemoteServiceAdmin implements
 				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID,
 						remoteRegistration
 								.getProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID));
+
+		if (remoteRegistration instanceof IExtendedRemoteServiceRegistration) {
+			IExtendedRemoteServiceRegistration iersr = (IExtendedRemoteServiceRegistration) remoteRegistration;
+			Map<String, Object> extraProperties = iersr.getExtraProperties();
+			endpointDescriptionProperties = PropertiesUtil.mergeProperties(endpointDescriptionProperties, extraProperties);
+
+		}
+		
 		EndpointDescription endpointDescription = new EndpointDescription(
 				serviceReference, endpointDescriptionProperties);
 		// Create ExportEndpoint/ExportRegistration
