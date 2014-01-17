@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF TimeService Rest Provider Host
 Bundle-SymbolicName: com.mycorp.examples.timeservice.provider.rest.host;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.1.0.qualifier
 Bundle-Vendor: MyCorp
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Require-Bundle: org.eclipse.equinox.common,
@@ -21,3 +21,4 @@ Import-Package: com.mycorp.examples.timeservice;version="1.0.0",
  org.osgi.service.http
 Service-Component: OSGI-INF/httpservicecomponent.xml
 Bundle-ActivationPolicy: lazy
+Provide-Capability: osgi.remoteserviceadmin.distribution; configs:List<String>=”com.mycorp.examples.timeservice.rest.host”; version:Version=1.1 
