@@ -598,6 +598,23 @@ public class RemoteServiceAdmin implements
 			}
 			return removed;
 		}
+
+		synchronized org.osgi.service.remoteserviceadmin.EndpointDescription update(
+				Map<String, ?> properties) {
+			// Get the existing properties
+			Map<String, Object> edProps = endpointDescription.getProperties();
+			// As per RemoteRegistration.update javadocs, if the given properties
+			// are null, the original properties are used to create the new endpoint description
+			// if non-null then they override the previous ed properties
+			if (properties != null)
+				edProps = PropertiesUtil.mergeProperties(edProps,
+						(Map<String, Object>) properties);
+			// Create new endpoint description, and this is now our new EndpointDescription
+			endpointDescription = new EndpointDescription(serviceReference,
+					edProps);
+			// Return so that it can be advertised by topology manager
+			return endpointDescription;
+		}
 	}
 
 	class ExportRegistration implements
@@ -702,8 +719,8 @@ public class RemoteServiceAdmin implements
 
 		public org.osgi.service.remoteserviceadmin.EndpointDescription update(
 				Map<String, ?> properties) {
-			// TODO XXX this is new method for rfc 203...i.e. RSA 1.1
-			return null;
+			if (closed) return null;
+			return exportReference.update(properties);
 		}
 
 	}
@@ -719,6 +736,12 @@ public class RemoteServiceAdmin implements
 		ExportReference(ExportEndpoint exportEndpoint) {
 			Assert.isNotNull(exportEndpoint);
 			this.exportEndpoint = exportEndpoint;
+		}
+
+		synchronized org.osgi.service.remoteserviceadmin.EndpointDescription update(
+				Map<String, ?> properties) {
+			if (exportEndpoint == null) return null;
+			return exportEndpoint.update(properties);
 		}
 
 		ExportReference(Throwable exception,
