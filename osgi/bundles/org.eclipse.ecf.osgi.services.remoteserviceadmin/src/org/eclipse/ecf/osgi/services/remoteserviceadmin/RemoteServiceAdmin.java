@@ -801,17 +801,20 @@ public class RemoteServiceAdmin implements
 		private EndpointDescription endpointDescription;
 		private IRemoteServiceListener rsListener;
 		private IRemoteServiceReference rsReference;
+		private IRemoteService rs;
 		private ServiceRegistration proxyRegistration;
 		private Set<ImportRegistration> activeImportRegistrations = new HashSet<ImportRegistration>();
 
 		ImportEndpoint(IRemoteServiceContainerAdapter rsContainerAdapter,
 				IRemoteServiceReference rsReference,
+				IRemoteService rs,
 				IRemoteServiceListener rsListener,
 				ServiceRegistration proxyRegistration,
 				EndpointDescription endpointDescription) {
 			this.rsContainerAdapter = rsContainerAdapter;
 			this.endpointDescription = endpointDescription;
 			this.rsReference = rsReference;
+			this.rs = rs;
 			this.rsListener = rsListener;
 			this.proxyRegistration = proxyRegistration;
 			// Add the remoteservice listener to the container adapter, so that
@@ -858,6 +861,7 @@ public class RemoteServiceAdmin implements
 								.removeRemoteServiceListener(rsListener);
 						rsListener = null;
 					}
+					rs = null;
 					rsContainerAdapter = null;
 				}
 				endpointDescription = null;
@@ -877,6 +881,24 @@ public class RemoteServiceAdmin implements
 			return this.endpointDescription.isSameService(ed);
 		}
 
+		synchronized void update(
+				org.osgi.service.remoteserviceadmin.EndpointDescription endpoint) {
+			if (proxyRegistration == null)
+				return;
+			// Get or create ECF endpoint description
+			EndpointDescription updatedEndpoint = (endpoint instanceof EndpointDescription) ? ((EndpointDescription) endpoint)
+					: new EndpointDescription(endpoint.getProperties());
+			// Create new proxy properties from updatedEndpoint and rsReference and rs
+			Map newProxyProperties = createProxyProperties(updatedEndpoint,
+					rsReference, rs);
+			// set the endpoint description with the proxy properties
+			updatedEndpoint.setPropertiesOverrides(newProxyProperties);
+			// set this endpointDescription to updatedEndpoint
+			this.endpointDescription = updatedEndpoint;
+			// Set proxyRegistration properties
+			this.proxyRegistration.setProperties(PropertiesUtil
+					.createDictionaryFromMap(newProxyProperties));
+		}
 	}
 
 	class ImportRegistration implements
@@ -956,7 +978,7 @@ public class RemoteServiceAdmin implements
 
 		public void update(
 				org.osgi.service.remoteserviceadmin.EndpointDescription endpoint) {
-			// TODO XXX this is new method for RFC 203...i.e. RSA 1.1
+			if (!closed) importReference.update(endpoint);
 		}
 
 	}
@@ -972,6 +994,11 @@ public class RemoteServiceAdmin implements
 		ImportReference(ImportEndpoint importEndpoint) {
 			Assert.isNotNull(importEndpoint);
 			this.importEndpoint = importEndpoint;
+		}
+
+		synchronized void update(
+				org.osgi.service.remoteserviceadmin.EndpointDescription endpoint) {
+			if (importEndpoint != null) importEndpoint.update(endpoint);
 		}
 
 		ImportReference(EndpointDescription endpointDescription,
@@ -1291,14 +1318,13 @@ public class RemoteServiceAdmin implements
 				});
 	}
 
-	private ContainerTypeDescription getContainerTypeDescription(
-			IContainer container) {
+	private ContainerTypeDescription getContainerTypeDescription(ID containerID) {
 		return Activator.getDefault().getContainerManager()
-				.getContainerTypeDescription(container.getID());
+				.getContainerTypeDescription(containerID);
 	}
-
+	
 	private boolean isClient(IContainer container) {
-		ContainerTypeDescription ctd = getContainerTypeDescription(container);
+		ContainerTypeDescription ctd = getContainerTypeDescription(container.getID());
 		if (ctd == null)
 			return false;
 		else
@@ -1409,7 +1435,7 @@ public class RemoteServiceAdmin implements
 						frameworkId);
 
 		// REMOTE_CONFIGS_SUPPORTED
-		String[] remoteConfigsSupported = getSupportedConfigs(container);
+		String[] remoteConfigsSupported = getSupportedConfigs(container.getID());
 		if (remoteConfigsSupported != null)
 			endpointDescriptionProperties
 					.put(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED,
@@ -1436,7 +1462,7 @@ public class RemoteServiceAdmin implements
 							intents);
 
 		// REMOTE_INTENTS_SUPPORTED
-		String[] remoteIntentsSupported = getSupportedIntents(container);
+		String[] remoteIntentsSupported = getSupportedIntents(container.getID());
 		if (remoteIntentsSupported != null)
 			endpointDescriptionProperties
 					.put(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_INTENTS_SUPPORTED,
@@ -1495,20 +1521,20 @@ public class RemoteServiceAdmin implements
 		return target;
 	}
 
-	private String[] getSupportedConfigs(IContainer container) {
-		ContainerTypeDescription ctd = getContainerTypeDescription(container);
+	private String[] getSupportedConfigs(ID containerID) {
+		ContainerTypeDescription ctd = getContainerTypeDescription(containerID);
 		return (ctd == null) ? null : ctd.getSupportedConfigs();
 	}
 
-	private String[] getImportedConfigs(IContainer container,
+	private String[] getImportedConfigs(ID containerID,
 			String[] exporterSupportedConfigs) {
-		ContainerTypeDescription ctd = getContainerTypeDescription(container);
+		ContainerTypeDescription ctd = getContainerTypeDescription(containerID);
 		return (ctd == null) ? null : ctd
 				.getImportedConfigs(exporterSupportedConfigs);
 	}
 
-	private String[] getSupportedIntents(IContainer container) {
-		ContainerTypeDescription ctd = getContainerTypeDescription(container);
+	private String[] getSupportedIntents(ID containerID) {
+		ContainerTypeDescription ctd = getContainerTypeDescription(containerID);
 		return (ctd == null) ? null : ctd.getSupportedIntents();
 	}
 
@@ -1574,7 +1600,7 @@ public class RemoteServiceAdmin implements
 							+ rsContainerID);
 
 		final Map proxyProperties = createProxyProperties(endpointDescription,
-				rsContainer, selectedRsReference, rs);
+				selectedRsReference, rs);
 
 		// sync sref props with endpoint props
 		endpointDescription.setPropertiesOverrides(proxyProperties);
@@ -1594,7 +1620,7 @@ public class RemoteServiceAdmin implements
 					}
 				});
 
-		return new ImportEndpoint(containerAdapter, selectedRsReference,
+		return new ImportEndpoint(containerAdapter, selectedRsReference, rs,
 				new RemoteServiceListener(), proxyRegistration,
 				endpointDescription);
 	}
@@ -1972,7 +1998,6 @@ public class RemoteServiceAdmin implements
 	}
 
 	private Map createProxyProperties(EndpointDescription endpointDescription,
-			IRemoteServiceContainer rsContainer,
 			IRemoteServiceReference rsReference, IRemoteService remoteService) {
 
 		Map resultProperties = new TreeMap<String, Object>(
@@ -2013,8 +2038,7 @@ public class RemoteServiceAdmin implements
 		String[] exporterSupportedConfigs = (String[]) endpointDescription
 				.getProperties()
 				.get(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED);
-		String[] importedConfigs = getImportedConfigs(
-				rsContainer.getContainer(), exporterSupportedConfigs);
+		String[] importedConfigs = getImportedConfigs(rsReference.getContainerID(), exporterSupportedConfigs);
 		// Set service.imported.configs
 		resultProperties
 				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS,
