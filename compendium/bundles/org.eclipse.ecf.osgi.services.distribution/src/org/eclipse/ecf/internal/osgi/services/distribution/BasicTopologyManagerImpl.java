@@ -1,8 +1,6 @@
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.AbstractTopologyManager;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants;
@@ -101,8 +99,6 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 		}
 	}
 
-	private final ConcurrentMap<org.osgi.service.remoteserviceadmin.EndpointDescription, org.osgi.service.remoteserviceadmin.EndpointDescription> known = new ConcurrentHashMap<org.osgi.service.remoteserviceadmin.EndpointDescription, org.osgi.service.remoteserviceadmin.EndpointDescription>();
-
 	// EndpointListener impl
 	/*
 	 * (non-Javadoc)
@@ -122,18 +118,16 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 	public void endpointAdded(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
 			String matchedFilter) {
-		if (known.putIfAbsent(endpoint, endpoint) == null) {
-			if (matchedFilter.equals(endpointListenerScope))
-				if (endpoint instanceof EndpointDescription)
-					handleECFEndpointAdded((EndpointDescription) endpoint);
-				else
-					handleNonECFEndpointAdded(this, endpoint);
+		if (matchedFilter.equals(endpointListenerScope))
+			if (endpoint instanceof EndpointDescription)
+				handleECFEndpointAdded((EndpointDescription) endpoint);
+			else
+				handleNonECFEndpointAdded(this, endpoint);
 		else if (matchedFilter.equals(NO_ECF_SCOPE))
-				if (endpoint instanceof EndpointDescription)
-					handleECFEndpointAdded((EndpointDescription) endpoint);
-				else
-					advertiseEndpointDescription(endpoint);
-		}
+			if (endpoint instanceof EndpointDescription)
+				handleECFEndpointAdded((EndpointDescription) endpoint);
+			else
+				advertiseEndpointDescription(endpoint);
 	}
 
 	/*
@@ -147,11 +141,6 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 	public void endpointRemoved(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
 			String matchedFilter) {
-		if (known.remove(endpoint) == null) {
-			// Just remove the endpoint but don't block subsequent removals
-			logWarning(
-					"endpointRemoved", "EndpointDescription=" + endpoint + " redundant removal"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		}
 		if (matchedFilter.equals(endpointListenerScope))
 			if (endpoint instanceof EndpointDescription)
 				handleECFEndpointRemoved((EndpointDescription) endpoint);

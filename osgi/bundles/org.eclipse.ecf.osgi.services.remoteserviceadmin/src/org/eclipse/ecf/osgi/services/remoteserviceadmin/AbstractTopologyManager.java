@@ -143,29 +143,33 @@ public abstract class AbstractTopologyManager {
 	 */
 	protected void advertiseEndpointDescription(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
-		final IServiceInfoFactory service = serviceInfoFactoryTracker
-				.getService();
-		if (service != null) {
-			final IServiceInfo serviceInfo = service.createServiceInfo(null,
-					endpointDescription);
-			if (serviceInfo != null) {
-				trace("advertiseEndpointDescription", //$NON-NLS-1$
-						"advertising endpointDescription=" + endpointDescription +  //$NON-NLS-1$
-						" and IServiceInfo " + serviceInfo); //$NON-NLS-1$
-
-				final ServiceRegistration<IServiceInfo> registerService = this.context
-						.registerService(IServiceInfo.class, serviceInfo, null);
-				this.registrations.put(endpointDescription, registerService);
-				
+		synchronized (this.registrations) {
+			if (this.registrations.containsKey(endpointDescription)) {
+				return;
+			}
+			final IServiceInfoFactory service = serviceInfoFactoryTracker
+					.getService();
+			if (service != null) {
+				final IServiceInfo serviceInfo = service.createServiceInfo(null,
+						endpointDescription);
+				if (serviceInfo != null) {
+					trace("advertiseEndpointDescription", //$NON-NLS-1$
+							"advertising endpointDescription=" + endpointDescription +  //$NON-NLS-1$
+							" and IServiceInfo " + serviceInfo); //$NON-NLS-1$
+					
+					final ServiceRegistration<IServiceInfo> registerService = this.context
+							.registerService(IServiceInfo.class, serviceInfo, null);
+					this.registrations.put(endpointDescription, registerService);
+				} else {
+					logError(
+							"advertiseEndpointDescription",  //$NON-NLS-1$
+							"IServiceInfoFactory failed to convert EndpointDescription " + endpointDescription); //$NON-NLS-1$1
+				}
 			} else {
 				logError(
 						"advertiseEndpointDescription",  //$NON-NLS-1$
-						"IServiceInfoFactory failed to convert EndpointDescription " + endpointDescription); //$NON-NLS-1$1
+						"no IServiceInfoFactory service found"); //$NON-NLS-1$
 			}
-		} else {
-			logError(
-					"advertiseEndpointDescription",  //$NON-NLS-1$
-					"no IServiceInfoFactory service found"); //$NON-NLS-1$
 		}
 	}
 
@@ -174,16 +178,18 @@ public abstract class AbstractTopologyManager {
 	 */
 	protected void unadvertiseEndpointDescription(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
-		final ServiceRegistration<IServiceInfo> serviceRegistration = this.registrations
-				.get(endpointDescription);
-		if (serviceRegistration != null) {
-			serviceRegistration.unregister();
-		} else {
-			logWarning("unadvertiseEndpointDescription", //$NON-NLS-1$
-					"Failed to unadvertise endpointDescription: " //$NON-NLS-1$
-							+ endpointDescription
-							+ ". Seems it was never advertised."); //$NON-NLS-1$
+		synchronized (this.registrations) {
+			final ServiceRegistration<IServiceInfo> serviceRegistration = this.registrations
+					.remove(endpointDescription);
+			if (serviceRegistration != null) {
+				serviceRegistration.unregister();
+				return;
+			}
 		}
+		logWarning("unadvertiseEndpointDescription", //$NON-NLS-1$
+				"Failed to unadvertise endpointDescription: " //$NON-NLS-1$
+						+ endpointDescription
+						+ ". Seems it was never advertised."); //$NON-NLS-1$
 	}
 
 	protected void logError(String methodName, String message,
