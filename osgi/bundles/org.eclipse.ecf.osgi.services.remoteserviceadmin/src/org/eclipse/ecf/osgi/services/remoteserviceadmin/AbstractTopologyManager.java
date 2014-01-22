@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.discovery.IServiceInfo;
@@ -55,12 +56,19 @@ public abstract class AbstractTopologyManager {
 
 	private final Map<org.osgi.service.remoteserviceadmin.EndpointDescription, ServiceRegistration<IServiceInfo>> registrations =
 			new HashMap<org.osgi.service.remoteserviceadmin.EndpointDescription, ServiceRegistration<IServiceInfo>>();
-
+	private final ReentrantLock registrationLock;
+	
 	public AbstractTopologyManager(BundleContext context) {
 		serviceInfoFactoryTracker = new ServiceTracker(
 				Activator.getContext(), createISIFFilter(Activator.getContext()), null);
 		serviceInfoFactoryTracker.open();
 		this.context = context;
+		// Use a FAIR lock here to guarantee that an endpoint removed operation
+		// for EP x never executes before its corresponding endpoint added op
+		// for EP x.
+		// This might happen for an unfair lock (e.g. synchronized) because it
+		// doesn't maintain ordering of the waiting threads.
+		this.registrationLock = new ReentrantLock(true);
 	}
 
 	protected BundleContext getContext() {
@@ -75,6 +83,12 @@ public abstract class AbstractTopologyManager {
 	}
 
 	public void close() {
+		registrationLock.lock();
+		try {
+			registrations.clear();
+		} finally {
+			registrationLock.unlock();
+		}
 		synchronized (remoteServiceAdminTrackerLock) {
 			if (remoteServiceAdminTracker != null) {
 				remoteServiceAdminTracker.close();
@@ -143,7 +157,8 @@ public abstract class AbstractTopologyManager {
 	 */
 	protected void advertiseEndpointDescription(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
-		synchronized (this.registrations) {
+		this.registrationLock.lock();
+		try {
 			if (this.registrations.containsKey(endpointDescription)) {
 				return;
 			}
@@ -170,6 +185,8 @@ public abstract class AbstractTopologyManager {
 						"advertiseEndpointDescription",  //$NON-NLS-1$
 						"no IServiceInfoFactory service found"); //$NON-NLS-1$
 			}
+		} finally {
+			this.registrationLock.unlock();
 		}
 	}
 
@@ -178,13 +195,16 @@ public abstract class AbstractTopologyManager {
 	 */
 	protected void unadvertiseEndpointDescription(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
-		synchronized (this.registrations) {
+		this.registrationLock.lock();
+		try {
 			final ServiceRegistration<IServiceInfo> serviceRegistration = this.registrations
 					.remove(endpointDescription);
 			if (serviceRegistration != null) {
 				serviceRegistration.unregister();
 				return;
 			}
+		} finally {
+			this.registrationLock.unlock();
 		}
 		logWarning("unadvertiseEndpointDescription", //$NON-NLS-1$
 				"Failed to unadvertise endpointDescription: " //$NON-NLS-1$
