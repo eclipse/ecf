@@ -7,11 +7,10 @@
  * Contributors:
  *   Markus Alexander Kuppe - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.tests.discovery;
+package org.eclipse.ecf.tests.discovery.listener;
 
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.IServiceEvent;
-import org.eclipse.ecf.tests.discovery.listener.TestServiceListener;
 
 public class ThreadTestServiceListener extends TestServiceListener {
 
@@ -19,6 +18,13 @@ public class ThreadTestServiceListener extends TestServiceListener {
 
 	public Thread getCallingThread() {
 		return currentThread;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.tests.discovery.listener.TestServiceListener#triggerDiscovery()
+	 */
+	public boolean triggerDiscovery() {
+		return true;
 	}
 
 	public ThreadTestServiceListener(int eventsToExpect,

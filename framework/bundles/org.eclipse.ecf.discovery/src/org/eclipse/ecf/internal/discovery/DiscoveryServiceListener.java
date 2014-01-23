@@ -10,15 +10,12 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.discovery;
 
-import java.util.*;
-import org.eclipse.core.runtime.*;
-import org.eclipse.core.runtime.jobs.ILock;
-import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.util.StringUtils;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.*;
-import org.eclipse.equinox.concurrent.future.*;
 import org.osgi.framework.*;
 
 public class DiscoveryServiceListener implements ServiceListener {
@@ -29,45 +26,10 @@ public class DiscoveryServiceListener implements ServiceListener {
 	private final IServiceIDFactory idFactory;
 	private final Namespace discoveryNamespace;
 
-	// Need a fair lock to gurantee ordering of add and remove events
-	private final ILock cacheLock;
-	private final Set cache = new HashSet();
-	private final IExecutor executor;
-	private final IServiceListener cachingListener = new IServiceListener() {
-
-		public void serviceUndiscovered(IServiceEvent anEvent) {
-			try {
-				cacheLock.acquire();
-				cache.remove(anEvent);
-			} finally {
-				cacheLock.release();
-			}
-		}
-
-		public void serviceDiscovered(IServiceEvent anEvent) {
-			try {
-				cacheLock.acquire();
-				cache.add(anEvent);
-			} finally {
-				cacheLock.release();
-			}
-		}
-	};
-	private final DiscoveryContainerConfig config;
-
 	public DiscoveryServiceListener(
 			AbstractDiscoveryContainerAdapter anAbstractDiscoveryContainerAdapter,
-			Class clazz, DiscoveryContainerConfig config) {
-
-		this.config = config;
-		executor = new ThreadsExecutor();
-		cacheLock = Job.getJobManager().newLock();
-
+			Class clazz) {
 		discoveryContainer = anAbstractDiscoveryContainerAdapter;
-
-		// Add a cache to the discovery container
-		discoveryContainer.addServiceListener(cachingListener);
-
 		listenerClass = clazz;
 		discoveryNamespace = IDFactory.getDefault().getNamespaceByName(
 				DiscoveryNamespace.NAME);
@@ -89,9 +51,6 @@ public class DiscoveryServiceListener implements ServiceListener {
 	}
 
 	public void dispose() {
-		discoveryContainer.removeServiceListener(cachingListener);
-		purgeCache();
-
 		if (!DiscoveryPlugin.isStopped()) {
 			context.removeServiceListener(this);
 		}
@@ -101,65 +60,27 @@ public class DiscoveryServiceListener implements ServiceListener {
 		if (references == null) {
 			return;
 		}
-		final Map futures = new HashMap(references.length);
 		for (int i = 0; i < references.length; i++) {
 			final ServiceReference serviceReference = references[i];
 			if (listenerClass.getName()
 					.equals(IServiceListener.class.getName())) {
-				final IServiceTypeID aType = getIServiceTypeID(serviceReference);
-				if (aType == null) {
-					continue;
-				}
-				final IServiceListener aListener = (IServiceListener) context
-						.getService(serviceReference);
-				discoveryContainer.addServiceListener(aType, aListener);
-
-				// Notify newly registered ISI of previously discovered services
-				if (serviceReference.getProperty(IServiceListener.Cache.USE) != null) {
-					for (Iterator iterator = cache.iterator(); iterator
-							.hasNext();) {
-						final IServiceEvent event = (IServiceEvent) iterator
-								.next();
-						// if
-						// (aType.equals(event.getServiceInfo().getServiceID()
-						// .getServiceTypeID())) {
-						aListener.serviceDiscovered(event);
-						// }
+				if (isAllWildcards(serviceReference)) {
+					final IServiceListener aListener = (IServiceListener) context
+							.getService(serviceReference);
+					discoveryContainer.addServiceListener(aListener);
+				} else {
+					final IServiceTypeID aType = getIServiceTypeID(serviceReference);
+					if (aType == null) {
+						continue;
 					}
-				}
-				if (Boolean.TRUE.equals(serviceReference
-						.getProperty(IServiceListener.Cache.REFRESH))) {
-					// Just trigger re-discovery without caring for the result
-					futures.put(discoveryContainer.getAsyncServices(),
-							aListener);
+					final IServiceListener aListener = (IServiceListener) context
+							.getService(serviceReference);
+					discoveryContainer.addServiceListener(aType, aListener);
 				}
 			} else {
 				final IServiceTypeListener aListener = (IServiceTypeListener) context
 						.getService(serviceReference);
 				discoveryContainer.addServiceTypeListener(aListener);
-			}
-
-			// Finally notify all listeners
-			if (futures.size() > 0) {
-				final IProgressRunnable runnable = new IProgressRunnable() {
-					public Object run(final IProgressMonitor arg0)
-							throws Exception {
-						for (final Iterator iterator = futures.keySet()
-								.iterator(); iterator.hasNext();) {
-							final IFuture f = (IFuture) iterator.next();
-							final IServiceListener listener = (IServiceListener) futures
-									.get(f);
-							final IServiceInfo[] infos = (IServiceInfo[]) f
-									.get();
-							for (int i = 0; i < infos.length; i++) {
-								listener.serviceDiscovered(new ServiceContainerEvent(
-										infos[i], config.getID()));
-							}
-						}
-						return null;
-					}
-				};
-				executor.execute(runnable, null);
 			}
 		}
 	}
@@ -176,13 +97,19 @@ public class DiscoveryServiceListener implements ServiceListener {
 			final ServiceReference serviceReference = references[i];
 			if (listenerClass.getName()
 					.equals(IServiceListener.class.getName())) {
-				final IServiceTypeID aType = getIServiceTypeID(serviceReference);
-				if (aType == null) {
-					continue;
+				if (isAllWildcards(serviceReference)) {
+					final IServiceListener aListener = (IServiceListener) context
+							.getService(serviceReference);
+					discoveryContainer.removeServiceListener(aListener);
+				} else {
+					final IServiceTypeID aType = getIServiceTypeID(serviceReference);
+					if (aType == null) {
+						continue;
+					}
+					final IServiceListener aListener = (IServiceListener) context
+							.getService(serviceReference);
+					discoveryContainer.removeServiceListener(aType, aListener);
 				}
-				final IServiceListener aListener = (IServiceListener) context
-						.getService(serviceReference);
-				discoveryContainer.removeServiceListener(aType, aListener);
 			} else {
 				final IServiceTypeListener aListener = (IServiceTypeListener) context
 						.getService(serviceReference);
@@ -193,6 +120,17 @@ public class DiscoveryServiceListener implements ServiceListener {
 
 	private void removeServiceListener(ServiceReference reference) {
 		removeServiceListener(new ServiceReference[] { reference });
+	}
+
+	private boolean isAllWildcards(ServiceReference serviceReference) {
+		return serviceReference
+				.getProperty("org.eclipse.ecf.discovery.namingauthority") == null
+				&& serviceReference
+						.getProperty("org.eclipse.ecf.discovery.services") == null
+				&& serviceReference
+						.getProperty("org.eclipse.ecf.discovery.scopes") == null
+				&& serviceReference
+						.getProperty("org.eclipse.ecf.discovery.protocols") == null;
 	}
 
 	private IServiceTypeID getIServiceTypeID(ServiceReference serviceReference) {
@@ -258,14 +196,5 @@ public class DiscoveryServiceListener implements ServiceListener {
 	private String getFilter() {
 		return "(" + Constants.OBJECTCLASS + "=" + listenerClass.getName() //$NON-NLS-1$ //$NON-NLS-2$
 				+ ")"; //$NON-NLS-1$
-	}
-
-	public void purgeCache() {
-		try {
-			cacheLock.acquire();
-			cache.clear();
-		} finally {
-			cacheLock.release();
-		}
 	}
 }

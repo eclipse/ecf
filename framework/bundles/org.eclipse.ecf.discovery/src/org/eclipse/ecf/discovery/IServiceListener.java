@@ -38,15 +38,14 @@ package org.eclipse.ecf.discovery;
 public interface IServiceListener {
 
 	/**
-	 * @since 4.1
-	 * @noimplement This interface is not intended to be implemented by clients.
+	 * @since 5.0
+	 * 
+	 * @return true iff this {@link IServiceListener} request re-discovery by
+	 *         the {@link IDiscoveryLocator}. The discovery
+	 *         {@link IServiceEvent} will be fired asynchronously.
 	 */
-	public static interface Cache {
-
-		public static final String USE = "org.eclipse.ecf.discovery.IServiceListener.Cache.USE";
-		public static final String REFRESH = "org.eclipse.ecf.discovery.IServiceListener.Cache.REFRESH";
-	}
-
+	public boolean triggerDiscovery();
+	
 	/**
 	 * Notification that a service has been discovered (the service is fully resolved).
 	 * 
