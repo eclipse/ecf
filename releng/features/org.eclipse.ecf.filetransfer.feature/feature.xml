@@ -24,9 +24,9 @@ Contributors: Composent, Inc. - initial API and implementation
       %license
    </license>
 
-   <requires>
-      <import feature="org.eclipse.ecf.core.feature" version="1.1.0" match="greaterOrEqual"/>
-   </requires>
+   <includes
+         id="org.eclipse.ecf.core.feature"
+         version="0.0.0"/>
 
    <plugin
          id="org.eclipse.ecf.filetransfer"
