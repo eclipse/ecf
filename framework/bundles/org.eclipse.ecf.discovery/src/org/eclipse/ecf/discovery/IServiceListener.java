@@ -38,6 +38,16 @@ package org.eclipse.ecf.discovery;
 public interface IServiceListener {
 
 	/**
+	 * @since 4.1
+	 * @noimplement This interface is not intended to be implemented by clients.
+	 */
+	public static interface Cache {
+
+		public static final String USE = "org.eclipse.ecf.discovery.IServiceListener.Cache.USE";
+		public static final String REFRESH = "org.eclipse.ecf.discovery.IServiceListener.Cache.REFRESH";
+	}
+
+	/**
 	 * Notification that a service has been discovered (the service is fully resolved).
 	 * 
 	 * @param anEvent Will not be <code>null</code>

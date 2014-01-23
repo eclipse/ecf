@@ -57,6 +57,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	 */
 	protected void tearDown() throws Exception {
 		discoveryAdvertiser.unregisterService(serviceInfo);
+		discoveryLocator.purgeCache();
 		super.tearDown();
 	}
 

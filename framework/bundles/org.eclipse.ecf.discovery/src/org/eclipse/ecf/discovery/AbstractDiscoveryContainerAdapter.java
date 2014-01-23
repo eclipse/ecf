@@ -351,6 +351,7 @@ public abstract class AbstractDiscoveryContainerAdapter extends
 	 * @since 3.0
 	 */
 	public IServiceInfo[] purgeCache() {
+		this.discoveryServiceListener.purgeCache();
 		return new IServiceInfo[] {};
 	}
 

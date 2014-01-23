@@ -55,6 +55,85 @@ public abstract class DiscoveryServiceTest extends DiscoveryTest {
 	protected IDiscoveryAdvertiser getDiscoveryAdvertiser() {
 		return Activator.getDefault().getDiscoveryAdvertiser(containerUnderTest);
 	}
+	
+	// Check newly added IServiceListener is notified about service discovered _before_ the listener is registered
+	public void testGetPreregisteredService() {
+		IServiceInfo[] services = discoveryLocator.getServices();
+		assertTrue("No Services must be registerd at this point " + (services.length == 0 ? "" : services[0].toString()), services.length == 0);
+
+		registerService();
+		
+		final TestServiceListener tsl = new TestServiceListener(eventsToExpect, discoveryLocator);
+		Properties props = new Properties();
+		props.put(IDiscoveryLocator.CONTAINER_NAME, containerUnderTest);
+		props.put(IServiceListener.Cache.USE, Boolean.TRUE);
+		BundleContext ctxt = Activator.getDefault().getContext();
+		ServiceRegistration registration = ctxt.registerService(IServiceListener.class.getName(), tsl, props);
+		
+		// No need to wait() on TSL here
+		
+		registration.unregister();
+		
+		IContainerEvent[] event = tsl.getEvent();
+		assertNotNull("Test listener didn't receive any discovery event", event);
+		assertEquals("Test listener received unexpected amount of discovery events: \n\t" + Arrays.asList(event), eventsToExpect, event.length);
+		IServiceInfo serviceInfo2 = ((IServiceEvent) event[eventsToExpect - 1]).getServiceInfo();
+		assertTrue("IServiceInfo should match, expected:\n\t" + serviceInfo + " but was \n\t" + serviceInfo2, comparator.compare(serviceInfo2, serviceInfo) == 0);
+	}
+	
+	public void testGetRefreshService() {
+		IServiceInfo[] services = discoveryLocator.getServices();
+		assertTrue("No Services must be registerd at this point " + (services.length == 0 ? "" : services[0].toString()), services.length == 0);
+
+		registerService();
+		try {
+			// Purge the DiscoveryServiceListener explicitly
+			discoveryLocator.purgeCache();
+			
+			final TestServiceListener tsl = new TestServiceListener(eventsToExpect, discoveryLocator);
+			Properties props = new Properties();
+			props.put(IDiscoveryLocator.CONTAINER_NAME, containerUnderTest);
+			props.put(IServiceListener.Cache.REFRESH, Boolean.TRUE);
+			props.put(IServiceListener.Cache.USE, Boolean.TRUE);
+			BundleContext ctxt = Activator.getDefault().getContext();
+			ServiceRegistration registration = ctxt.registerService(IServiceListener.class.getName(), tsl, props);
+			
+			// Because the cache has been purged, it shouldn't know about the previously registered service
+			IContainerEvent[] event = tsl.getEvent();
+			assertEquals("Test listener received unexpected amount of discovery events: \n\t" + Arrays.asList(event), 0, event.length);
+			
+			// Here's is a race condition between the DiscoveryServiceListener
+			// already actively discovering services and us. If the discovery of
+			// the service has finished before we wait on the tsl, we will miss
+			// the event? 
+			// OTOH won't the event be received by the tsl anyway and
+			// we just have to wait for the timeout?
+			
+			// IServiceListener.Cache.REFRESH should have triggered re-discovery 
+			synchronized (tsl) {
+				// register a service which we expect the test listener to get notified of
+				try {
+					tsl.wait(waitTimeForProvider);
+				} catch (final InterruptedException e) {
+					Thread.currentThread().interrupt();
+					fail("Some discovery unrelated threading issues?");
+				}
+			}
+			
+			registration.unregister();
+			
+			event = tsl.getEvent();
+			assertNotNull("Test listener didn't receive any discovery event", event);
+			assertEquals("Test listener received unexpected amount of discovery events: \n\t" + Arrays.asList(event), eventsToExpect, event.length);
+			IServiceInfo serviceInfo2 = ((IServiceEvent) event[eventsToExpect - 1]).getServiceInfo();
+			assertTrue("IServiceInfo should match, expected:\n\t" + serviceInfo + " but was \n\t" + serviceInfo2, comparator.compare(serviceInfo2, serviceInfo) == 0);
+		} finally {
+			//de-register the manually registered service manually again.
+			// 1. registerService(..)
+			// 2. addListenerRegisterAndWait(..)
+			unregisterService();
+		}
+	}
 
 	public void testAddServiceListenerIServiceListenerOSGi() throws ContainerConnectException {
 		IServiceInfo[] services = discoveryLocator.getServices();

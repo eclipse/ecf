@@ -10,8 +10,11 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.discovery;
 
+import java.util.*;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.ILock;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.util.StringUtils;
 import org.eclipse.ecf.discovery.*;
@@ -26,10 +29,41 @@ public class DiscoveryServiceListener implements ServiceListener {
 	private final IServiceIDFactory idFactory;
 	private final Namespace discoveryNamespace;
 
+	// Need a fair lock to gurantee ordering of add and remove events
+	private final ILock cacheLock;
+	private final Set cache = new HashSet();
+	private final IServiceListener cachingListener = new IServiceListener() {
+
+		public void serviceUndiscovered(IServiceEvent anEvent) {
+			try {
+				cacheLock.acquire();
+				cache.remove(anEvent);
+			} finally {
+				cacheLock.release();
+			}
+		}
+
+		public void serviceDiscovered(IServiceEvent anEvent) {
+			try {
+				cacheLock.acquire();
+				cache.add(anEvent);
+			} finally {
+				cacheLock.release();
+			}
+		}
+	};
+
 	public DiscoveryServiceListener(
 			AbstractDiscoveryContainerAdapter anAbstractDiscoveryContainerAdapter,
 			Class clazz) {
+
+		cacheLock = Job.getJobManager().newLock();
+
 		discoveryContainer = anAbstractDiscoveryContainerAdapter;
+
+		// Add a cache to the discovery container
+		discoveryContainer.addServiceListener(cachingListener);
+
 		listenerClass = clazz;
 		discoveryNamespace = IDFactory.getDefault().getNamespaceByName(
 				DiscoveryNamespace.NAME);
@@ -51,6 +85,9 @@ public class DiscoveryServiceListener implements ServiceListener {
 	}
 
 	public void dispose() {
+		discoveryContainer.removeServiceListener(cachingListener);
+		purgeCache();
+
 		if (!DiscoveryPlugin.isStopped()) {
 			context.removeServiceListener(this);
 		}
@@ -71,6 +108,25 @@ public class DiscoveryServiceListener implements ServiceListener {
 				final IServiceListener aListener = (IServiceListener) context
 						.getService(serviceReference);
 				discoveryContainer.addServiceListener(aType, aListener);
+
+				// Notify newly registered ISI of previously discovered services
+				if (serviceReference.getProperty(IServiceListener.Cache.USE) != null) {
+					for (Iterator iterator = cache.iterator(); iterator
+							.hasNext();) {
+						final IServiceEvent event = (IServiceEvent) iterator
+								.next();
+						// if
+						// (aType.equals(event.getServiceInfo().getServiceID()
+						// .getServiceTypeID())) {
+						aListener.serviceDiscovered(event);
+						// }
+					}
+				}
+				if (serviceReference
+						.getProperty(IServiceListener.Cache.REFRESH) != null) {
+					// Just trigger re-discovery without caring for the result
+					discoveryContainer.getAsyncServices(aType);
+				}
 			} else {
 				final IServiceTypeListener aListener = (IServiceTypeListener) context
 						.getService(serviceReference);
@@ -173,5 +229,14 @@ public class DiscoveryServiceListener implements ServiceListener {
 	private String getFilter() {
 		return "(" + Constants.OBJECTCLASS + "=" + listenerClass.getName() //$NON-NLS-1$ //$NON-NLS-2$
 				+ ")"; //$NON-NLS-1$
+	}
+
+	public void purgeCache() {
+		try {
+			cacheLock.acquire();
+			cache.clear();
+		} finally {
+			cacheLock.release();
+		}
 	}
 }
