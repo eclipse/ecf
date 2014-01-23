@@ -68,9 +68,9 @@ public abstract class AbstractDiscoveryContainerAdapter extends
 		allServiceListeners = Collections.synchronizedSet(new HashSet());
 
 		discoveryServiceListener = new DiscoveryServiceListener(this,
-				IServiceListener.class);
+				IServiceListener.class, config);
 		discoveryServiceTypeListener = new DiscoveryServiceListener(this,
-				IServiceTypeListener.class);
+				IServiceTypeListener.class, config);
 
 		discoveryServiceListenerComparator = new ServiceTypeComparator();
 
@@ -129,6 +129,13 @@ public abstract class AbstractDiscoveryContainerAdapter extends
 		allServiceListeners.clear();
 	}
 
+	/**
+	 * @since 4.1
+	 */
+	public void disconnect() {
+		iServiceInfoServiceListener.dispose();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -140,7 +147,6 @@ public abstract class AbstractDiscoveryContainerAdapter extends
 		config = null;
 		discoveryServiceListener.dispose();
 		discoveryServiceTypeListener.dispose();
-		iServiceInfoServiceListener.dispose();
 		super.dispose();
 	}
 

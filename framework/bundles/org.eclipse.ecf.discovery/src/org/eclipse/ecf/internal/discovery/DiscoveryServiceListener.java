@@ -11,14 +11,14 @@
 package org.eclipse.ecf.internal.discovery;
 
 import java.util.*;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.ILock;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.util.StringUtils;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.*;
+import org.eclipse.equinox.concurrent.future.*;
 import org.osgi.framework.*;
 
 public class DiscoveryServiceListener implements ServiceListener {
@@ -32,6 +32,7 @@ public class DiscoveryServiceListener implements ServiceListener {
 	// Need a fair lock to gurantee ordering of add and remove events
 	private final ILock cacheLock;
 	private final Set cache = new HashSet();
+	private final IExecutor executor;
 	private final IServiceListener cachingListener = new IServiceListener() {
 
 		public void serviceUndiscovered(IServiceEvent anEvent) {
@@ -52,11 +53,14 @@ public class DiscoveryServiceListener implements ServiceListener {
 			}
 		}
 	};
+	private final DiscoveryContainerConfig config;
 
 	public DiscoveryServiceListener(
 			AbstractDiscoveryContainerAdapter anAbstractDiscoveryContainerAdapter,
-			Class clazz) {
+			Class clazz, DiscoveryContainerConfig config) {
 
+		this.config = config;
+		executor = new ThreadsExecutor();
 		cacheLock = Job.getJobManager().newLock();
 
 		discoveryContainer = anAbstractDiscoveryContainerAdapter;
@@ -97,6 +101,7 @@ public class DiscoveryServiceListener implements ServiceListener {
 		if (references == null) {
 			return;
 		}
+		final Map futures = new HashMap(references.length);
 		for (int i = 0; i < references.length; i++) {
 			final ServiceReference serviceReference = references[i];
 			if (listenerClass.getName()
@@ -122,15 +127,39 @@ public class DiscoveryServiceListener implements ServiceListener {
 						// }
 					}
 				}
-				if (serviceReference
-						.getProperty(IServiceListener.Cache.REFRESH) != null) {
+				if (Boolean.TRUE.equals(serviceReference
+						.getProperty(IServiceListener.Cache.REFRESH))) {
 					// Just trigger re-discovery without caring for the result
-					discoveryContainer.getAsyncServices(aType);
+					futures.put(discoveryContainer.getAsyncServices(),
+							aListener);
 				}
 			} else {
 				final IServiceTypeListener aListener = (IServiceTypeListener) context
 						.getService(serviceReference);
 				discoveryContainer.addServiceTypeListener(aListener);
+			}
+
+			// Finally notify all listeners
+			if (futures.size() > 0) {
+				final IProgressRunnable runnable = new IProgressRunnable() {
+					public Object run(final IProgressMonitor arg0)
+							throws Exception {
+						for (final Iterator iterator = futures.keySet()
+								.iterator(); iterator.hasNext();) {
+							final IFuture f = (IFuture) iterator.next();
+							final IServiceListener listener = (IServiceListener) futures
+									.get(f);
+							final IServiceInfo[] infos = (IServiceInfo[]) f
+									.get();
+							for (int i = 0; i < infos.length; i++) {
+								listener.serviceDiscovered(new ServiceContainerEvent(
+										infos[i], config.getID()));
+							}
+						}
+						return null;
+					}
+				};
+				executor.execute(runnable, null);
 			}
 		}
 	}

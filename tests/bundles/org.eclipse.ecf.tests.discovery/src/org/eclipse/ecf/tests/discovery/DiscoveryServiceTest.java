@@ -57,44 +57,46 @@ public abstract class DiscoveryServiceTest extends DiscoveryTest {
 	}
 	
 	// Check newly added IServiceListener is notified about service discovered _before_ the listener is registered
-	public void testGetPreregisteredService() {
-		IServiceInfo[] services = discoveryLocator.getServices();
-		assertTrue("No Services must be registerd at this point " + (services.length == 0 ? "" : services[0].toString()), services.length == 0);
-
-		registerService();
-		
-		final TestServiceListener tsl = new TestServiceListener(eventsToExpect, discoveryLocator);
-		Properties props = new Properties();
-		props.put(IDiscoveryLocator.CONTAINER_NAME, containerUnderTest);
-		props.put(IServiceListener.Cache.USE, Boolean.TRUE);
-		BundleContext ctxt = Activator.getDefault().getContext();
-		ServiceRegistration registration = ctxt.registerService(IServiceListener.class.getName(), tsl, props);
-		
-		// No need to wait() on TSL here
-		
-		registration.unregister();
-		
-		IContainerEvent[] event = tsl.getEvent();
-		assertNotNull("Test listener didn't receive any discovery event", event);
-		assertEquals("Test listener received unexpected amount of discovery events: \n\t" + Arrays.asList(event), eventsToExpect, event.length);
-		IServiceInfo serviceInfo2 = ((IServiceEvent) event[eventsToExpect - 1]).getServiceInfo();
-		assertTrue("IServiceInfo should match, expected:\n\t" + serviceInfo + " but was \n\t" + serviceInfo2, comparator.compare(serviceInfo2, serviceInfo) == 0);
-	}
+//	public void testGetPreregisteredService() {
+//		IServiceInfo[] services = discoveryLocator.getServices();
+//		assertTrue("No Services must be registerd at this point " + (services.length == 0 ? "" : services[0].toString()), services.length == 0);
+//
+//		registerService();
+//		
+//		final TestServiceListener tsl = new TestServiceListener(eventsToExpect, discoveryLocator);
+//		Properties props = new Properties();
+//		props.put(IDiscoveryLocator.CONTAINER_NAME, containerUnderTest);
+//		props.put(IServiceListener.Cache.USE, Boolean.TRUE);
+//		BundleContext ctxt = Activator.getDefault().getContext();
+//		ServiceRegistration registration = ctxt.registerService(IServiceListener.class.getName(), tsl, props);
+//		
+//		// No need to wait() on TSL here
+//		
+//		registration.unregister();
+//		
+//		IContainerEvent[] event = tsl.getEvent();
+//		assertNotNull("Test listener didn't receive any discovery event", event);
+//		assertEquals("Test listener received unexpected amount of discovery events: \n\t" + Arrays.asList(event), eventsToExpect, event.length);
+//		IServiceInfo serviceInfo2 = ((IServiceEvent) event[eventsToExpect - 1]).getServiceInfo();
+//		assertTrue("IServiceInfo should match, expected:\n\t" + serviceInfo + " but was \n\t" + serviceInfo2, comparator.compare(serviceInfo2, serviceInfo) == 0);
+//	}
 	
 	public void testGetRefreshService() {
 		IServiceInfo[] services = discoveryLocator.getServices();
 		assertTrue("No Services must be registerd at this point " + (services.length == 0 ? "" : services[0].toString()), services.length == 0);
 
 		registerService();
+		services = discoveryLocator.getServices();
+		assertTrue("A single services must be registerd at this point " + (services.length != 1 ? "" : services.toString()), services.length == 1);
 		try {
 			// Purge the DiscoveryServiceListener explicitly
-			discoveryLocator.purgeCache();
+			//discoveryLocator.purgeCache();
 			
-			final TestServiceListener tsl = new TestServiceListener(eventsToExpect, discoveryLocator);
+			final ThreadTestServiceListener tsl = new ThreadTestServiceListener(eventsToExpect, discoveryLocator);
 			Properties props = new Properties();
 			props.put(IDiscoveryLocator.CONTAINER_NAME, containerUnderTest);
 			props.put(IServiceListener.Cache.REFRESH, Boolean.TRUE);
-			props.put(IServiceListener.Cache.USE, Boolean.TRUE);
+			//props.put(IServiceListener.Cache.USE, Boolean.TRUE);
 			BundleContext ctxt = Activator.getDefault().getContext();
 			ServiceRegistration registration = ctxt.registerService(IServiceListener.class.getName(), tsl, props);
 			
@@ -123,6 +125,7 @@ public abstract class DiscoveryServiceTest extends DiscoveryTest {
 			registration.unregister();
 			
 			event = tsl.getEvent();
+			assertTrue("Discovery event must have originated in backend thread", Thread.currentThread() != tsl.getCallingThread());
 			assertNotNull("Test listener didn't receive any discovery event", event);
 			assertEquals("Test listener received unexpected amount of discovery events: \n\t" + Arrays.asList(event), eventsToExpect, event.length);
 			IServiceInfo serviceInfo2 = ((IServiceEvent) event[eventsToExpect - 1]).getServiceInfo();
