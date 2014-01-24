@@ -2,8 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: TimeService Consumer Filediscovery
 Bundle-SymbolicName: com.mycorp.examples.timeservice.consumer.filediscovery
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.1.0.qualifier
 Bundle-Vendor: MyCorp, Inc.
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Remote-Service: timeserviceendpointdescription.xml
+Requre-Capability: osgi.extender; filter:=(&(osgi.extender=osgi.remoteserviceadmin) (version>=1.1)); effective:=active
 

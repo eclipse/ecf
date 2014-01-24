@@ -2,7 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF RemoteServices Hello Example Endpoint Description Extender Format
 Bundle-SymbolicName: org.eclipse.ecf.examples.remoteservices.hello.consumer.edef
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.1.0.qualifier
 Bundle-Vendor: Eclipse.org - ECF
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Remote-Service: generic_hello.xml
+Requre-Capability: osgi.extender; filter:=(&(osgi.extender=osgi.remoteserviceadmin) (version>=1.1)); effective:=active
