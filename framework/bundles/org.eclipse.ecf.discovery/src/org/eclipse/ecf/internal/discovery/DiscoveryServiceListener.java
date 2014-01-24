@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.discovery;
 
+import org.eclipse.ecf.discovery.identity.IServiceTypeID;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.*;
@@ -64,13 +66,19 @@ public class DiscoveryServiceListener implements ServiceListener {
 			final ServiceReference serviceReference = references[i];
 			if (listenerClass.getName()
 					.equals(IServiceListener.class.getName())) {
-				final IServiceTypeID aType = getIServiceTypeID(serviceReference);
-				if (aType == null) {
-					continue;
+				if (isAllWildcards(serviceReference)) {
+					final IServiceListener aListener = (IServiceListener) context
+							.getService(serviceReference);
+					discoveryContainer.addServiceListener(aListener);
+				} else {
+					final IServiceTypeID aType = getIServiceTypeID(serviceReference);
+					if (aType == null) {
+						continue;
+					}
+					final IServiceListener aListener = (IServiceListener) context
+							.getService(serviceReference);
+					discoveryContainer.addServiceListener(aType, aListener);
 				}
-				final IServiceListener aListener = (IServiceListener) context
-						.getService(serviceReference);
-				discoveryContainer.addServiceListener(aType, aListener);
 			} else {
 				final IServiceTypeListener aListener = (IServiceTypeListener) context
 						.getService(serviceReference);
@@ -91,13 +99,19 @@ public class DiscoveryServiceListener implements ServiceListener {
 			final ServiceReference serviceReference = references[i];
 			if (listenerClass.getName()
 					.equals(IServiceListener.class.getName())) {
-				final IServiceTypeID aType = getIServiceTypeID(serviceReference);
-				if (aType == null) {
-					continue;
+				if (isAllWildcards(serviceReference)) {
+					final IServiceListener aListener = (IServiceListener) context
+							.getService(serviceReference);
+					discoveryContainer.removeServiceListener(aListener);
+				} else {
+					final IServiceTypeID aType = getIServiceTypeID(serviceReference);
+					if (aType == null) {
+						continue;
+					}
+					final IServiceListener aListener = (IServiceListener) context
+							.getService(serviceReference);
+					discoveryContainer.removeServiceListener(aType, aListener);
 				}
-				final IServiceListener aListener = (IServiceListener) context
-						.getService(serviceReference);
-				discoveryContainer.removeServiceListener(aType, aListener);
 			} else {
 				final IServiceTypeListener aListener = (IServiceTypeListener) context
 						.getService(serviceReference);
@@ -110,6 +124,17 @@ public class DiscoveryServiceListener implements ServiceListener {
 		removeServiceListener(new ServiceReference[] { reference });
 	}
 
+	private boolean isAllWildcards(ServiceReference serviceReference) {
+		return serviceReference
+				.getProperty("org.eclipse.ecf.discovery.namingauthority") == null
+				&& serviceReference
+						.getProperty("org.eclipse.ecf.discovery.services") == null
+				&& serviceReference
+						.getProperty("org.eclipse.ecf.discovery.scopes") == null
+				&& serviceReference
+						.getProperty("org.eclipse.ecf.discovery.protocols") == null;
+	}
+	
 	private IServiceTypeID getIServiceTypeID(ServiceReference serviceReference) {
 		String namingAuthority = (String) serviceReference
 				.getProperty("org.eclipse.ecf.discovery.namingauthority"); //$NON-NLS-1$
