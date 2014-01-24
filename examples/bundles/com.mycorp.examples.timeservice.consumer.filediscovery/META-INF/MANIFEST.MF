@@ -6,5 +6,5 @@ Bundle-Version: 1.1.0.qualifier
 Bundle-Vendor: MyCorp, Inc.
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Remote-Service: timeserviceendpointdescription.xml
-Requre-Capability: osgi.extender; filter:=(&(osgi.extender=osgi.remoteserviceadmin) (version>=1.1)); effective:=active
+Require-Capability: osgi.extender; filter:=(&(osgi.extender=osgi.remoteserviceadmin) (version>=1.1)); effective:=active
 
