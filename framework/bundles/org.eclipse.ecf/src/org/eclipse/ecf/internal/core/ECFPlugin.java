@@ -19,6 +19,7 @@ import org.eclipse.ecf.internal.core.identity.Activator;
 import org.osgi.framework.*;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 public class ECFPlugin implements BundleActivator {
 
@@ -67,13 +68,15 @@ public class ECFPlugin implements BundleActivator {
 	// The shared instance.
 	private static ECFPlugin plugin;
 
-	private BundleContext context = null;
+	BundleContext context = null;
 
-	private ServiceTracker extensionRegistryTracker = null;
+	ServiceTracker extensionRegistryTracker = null;
 
 	private Map disposables = new WeakHashMap();
 
-	private IRegistryChangeListener registryManager = null;
+	// This is Object rather than IExtensionRegistryManager to avoid loading 
+	// IRegistryChangeListener class (optional)
+	Object registryManager = null;
 
 	private ServiceRegistration containerFactoryServiceRegistration;
 
@@ -92,9 +95,8 @@ public class ECFPlugin implements BundleActivator {
 	 * @return ECFPlugin
 	 */
 	public synchronized static ECFPlugin getDefault() {
-		if (plugin == null) {
+		if (plugin == null)
 			plugin = new ECFPlugin();
-		}
 		return plugin;
 	}
 
@@ -117,13 +119,42 @@ public class ECFPlugin implements BundleActivator {
 			log(new Status(IStatus.ERROR, getDefault().getBundle().getSymbolicName(), "Unexpected Error in ECFPlugin.start", t)); //$NON-NLS-1$
 		}
 
-		this.extensionRegistryTracker = new ServiceTracker(ctxt, IExtensionRegistry.class.getName(), null);
-		this.extensionRegistryTracker.open();
-		final IExtensionRegistry registry = getExtensionRegistry();
-		if (registry != null) {
-			this.registryManager = new ECFRegistryManager();
-			registry.addRegistryChangeListener(registryManager);
-		}
+		SafeRunner.run(new OptionalCodeSafeRunnable() {
+			public void run() throws Exception {
+				extensionRegistryTracker = new ServiceTracker(context, IExtensionRegistry.class.getName(), null);
+				extensionRegistryTracker.open();
+				final IExtensionRegistry registry = getExtensionRegistry();
+				if (registry != null) {
+					registryManager = new IRegistryChangeListener() {
+						public void registryChanged(IRegistryChangeEvent event) {
+							final IExtensionDelta factoryDeltas[] = event.getExtensionDeltas(ECFNAMESPACE, CONTAINER_FACTORY_NAME);
+							for (int i = 0; i < factoryDeltas.length; i++) {
+								switch (factoryDeltas[i].getKind()) {
+									case IExtensionDelta.ADDED :
+										addContainerFactoryExtensions(factoryDeltas[i].getExtension().getConfigurationElements());
+										break;
+									case IExtensionDelta.REMOVED :
+										removeContainerFactoryExtensions(factoryDeltas[i].getExtension().getConfigurationElements());
+										break;
+								}
+							}
+							final IExtensionDelta containerDeltas[] = event.getExtensionDeltas(ECFNAMESPACE, CONTAINER_NAME);
+							for (int i = 0; i < containerDeltas.length; i++) {
+								switch (containerDeltas[i].getKind()) {
+									case IExtensionDelta.ADDED :
+										addContainerExtensions(containerDeltas[i].getExtension().getConfigurationElements());
+										break;
+									case IExtensionDelta.REMOVED :
+										removeContainerExtensions(containerDeltas[i].getExtension().getConfigurationElements());
+										break;
+								}
+							}
+						}
+					};
+					registry.addRegistryChangeListener((IRegistryChangeListener) registryManager);
+				}
+			}
+		});
 
 		// defer extension execution until first consumer calls
 		final ServiceFactory sf = new ServiceFactory() {
@@ -135,25 +166,69 @@ public class ECFPlugin implements BundleActivator {
 				// NOP
 			}
 		};
+
 		containerFactoryServiceRegistration = ctxt.registerService(IContainerFactory.class.getName(), sf, null);
 		containerManagerServiceRegistration = ctxt.registerService(IContainerManager.class.getName(), sf, null);
 
-		// but eagerly start ECF startup extension
-		setupStartExtensionPoint(context);
+		SafeRunner.run(new OptionalCodeSafeRunnable() {
+			public void run() throws Exception {
+				// but eagerly start ECF startup extension
+				setupStartExtensionPoint(context);
+			}
+		});
 	}
 
+	private ServiceTracker containerTypeDescriptionTracker;
+
 	public void initializeExtensions() {
-		setupContainerFactoryExtensionPoint(context);
-		setupContainerExtensionPoint(context);
+		// initialize from ContainerTypeDescription services
+		if (containerTypeDescriptionTracker == null) {
+			containerTypeDescriptionTracker = new ServiceTracker(this.context, ContainerTypeDescription.class.getName(), new ServiceTrackerCustomizer() {
+				public Object addingService(ServiceReference reference) {
+					ContainerTypeDescription ctd = (ContainerTypeDescription) context.getService(reference);
+					if (ctd != null) {
+						IContainerFactory cf = ContainerFactory.getDefault();
+						cf.addDescription(ctd);
+						return ctd;
+					}
+					return null;
+				}
+
+				public void modifiedService(ServiceReference reference, Object service) {
+					// nothing
+				}
+
+				public void removedService(ServiceReference reference, Object service) {
+					IContainerFactory cf = ContainerFactory.getDefault();
+					cf.removeDescription((ContainerTypeDescription) service);
+				}
+			});
+			containerTypeDescriptionTracker.open();
+		}
+		// Initialize from extension registry (if one exists)
+		SafeRunner.run(new OptionalCodeSafeRunnable() {
+			public void run() throws Exception {
+				setupContainerFactoryExtensionPoint(context);
+				setupContainerExtensionPoint(context);
+			}
+		});
 	}
 
 	public void stop(BundleContext ctxt) throws Exception {
 		fireDisposables();
 		this.disposables = null;
-		final IExtensionRegistry reg = getExtensionRegistry();
-		if (reg != null)
-			reg.removeRegistryChangeListener(registryManager);
+		SafeRunner.run(new OptionalCodeSafeRunnable() {
+			public void run() throws Exception {
+				final IExtensionRegistry reg = getExtensionRegistry();
+				if (reg != null)
+					reg.removeRegistryChangeListener((IRegistryChangeListener) registryManager);
+			}
+		});
 		this.registryManager = null;
+		if (containerTypeDescriptionTracker != null) {
+			containerTypeDescriptionTracker.close();
+			containerTypeDescriptionTracker = null;
+		}
 		if (ecfTrustManager != null) {
 			ecfTrustManager.stop(ctxt);
 			ecfTrustManager = null;
@@ -451,7 +526,7 @@ public class ECFPlugin implements BundleActivator {
 	 * @param bc
 	 *            the BundleContext for this bundle
 	 */
-	protected void setupStartExtensionPoint(BundleContext bc) {
+	void setupStartExtensionPoint(BundleContext bc) {
 		final IExtensionRegistry reg = getExtensionRegistry();
 		if (reg != null) {
 			final IExtensionPoint extensionPoint = reg.getExtensionPoint(START_EPOINT);
@@ -495,33 +570,6 @@ public class ECFPlugin implements BundleActivator {
 		} else {
 			final ECFStartJob job = new ECFStartJob(name, exten);
 			job.schedule();
-		}
-	}
-
-	protected class ECFRegistryManager implements IRegistryChangeListener {
-		public void registryChanged(IRegistryChangeEvent event) {
-			final IExtensionDelta factoryDeltas[] = event.getExtensionDeltas(ECFNAMESPACE, CONTAINER_FACTORY_NAME);
-			for (int i = 0; i < factoryDeltas.length; i++) {
-				switch (factoryDeltas[i].getKind()) {
-					case IExtensionDelta.ADDED :
-						addContainerFactoryExtensions(factoryDeltas[i].getExtension().getConfigurationElements());
-						break;
-					case IExtensionDelta.REMOVED :
-						removeContainerFactoryExtensions(factoryDeltas[i].getExtension().getConfigurationElements());
-						break;
-				}
-			}
-			final IExtensionDelta containerDeltas[] = event.getExtensionDeltas(ECFNAMESPACE, CONTAINER_NAME);
-			for (int i = 0; i < containerDeltas.length; i++) {
-				switch (containerDeltas[i].getKind()) {
-					case IExtensionDelta.ADDED :
-						addContainerExtensions(containerDeltas[i].getExtension().getConfigurationElements());
-						break;
-					case IExtensionDelta.REMOVED :
-						removeContainerExtensions(containerDeltas[i].getExtension().getConfigurationElements());
-						break;
-				}
-			}
 		}
 	}
 
