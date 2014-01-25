@@ -971,5 +971,9 @@ public class EndpointDescriptionLocator {
 			}
 			discoveredEndpointDescriptions.clear();
 		}
+
+		public boolean triggerDiscovery() {
+			return false;
+		}
 	}
 }
