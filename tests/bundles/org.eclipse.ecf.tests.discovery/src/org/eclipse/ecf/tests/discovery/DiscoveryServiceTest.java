@@ -63,7 +63,7 @@ public abstract class DiscoveryServiceTest extends DiscoveryTest {
 
 		registerService();
 		services = discoveryLocator.getServices();
-		assertTrue("A single services must be registerd at this point " + (services.length != 1 ? "" : services.toString()), services.length == 1);
+		assertTrue(eventsToExpect + " services must be registerd at this point " + (services.length > 0 ? "" : services.toString()), services.length == eventsToExpect);
 			
 		final ThreadTestServiceListener tsl = new ThreadTestServiceListener(eventsToExpect, discoveryLocator);
 		Properties props = new Properties();
@@ -71,11 +71,10 @@ public abstract class DiscoveryServiceTest extends DiscoveryTest {
 		BundleContext ctxt = Activator.getDefault().getContext();
 		ServiceRegistration registration = ctxt.registerService(IServiceListener.class.getName(), tsl, props);
 		
-		// Because the cache has been purged, it shouldn't know about the previously registered service
 		IContainerEvent[] event = tsl.getEvent();
 		assertEquals("Test listener received unexpected amount of discovery events: \n\t" + Arrays.asList(event), 0, event.length);
 		
-		// IServiceListener.Cache.REFRESH should have triggered re-discovery 
+		// IServiceListener#triggerDiscovery should have triggered re-discovery 
 		synchronized (tsl) {
 			// register a service which we expect the test listener to get notified of
 			try {
@@ -89,8 +88,9 @@ public abstract class DiscoveryServiceTest extends DiscoveryTest {
 		registration.unregister();
 		
 		event = tsl.getEvent();
-		assertTrue("Discovery event must have originated from backend thread", Thread.currentThread() != tsl.getCallingThread() && tsl.getCallingThread() != null);
 		assertNotNull("Test listener didn't receive any discovery event", event);
+		assertTrue("Discovery event must have originated from backend thread. Thread is: "
+				+ tsl.getCallingThread(), Thread.currentThread() != tsl.getCallingThread() && tsl.getCallingThread() != null);
 		assertEquals("Test listener received unexpected amount of discovery events: \n\t" + Arrays.asList(event), eventsToExpect, event.length);
 		IServiceInfo serviceInfo2 = ((IServiceEvent) event[eventsToExpect - 1]).getServiceInfo();
 		assertTrue("IServiceInfo should match, expected:\n\t" + serviceInfo + " but was \n\t" + serviceInfo2, comparator.compare(serviceInfo2, serviceInfo) == 0);

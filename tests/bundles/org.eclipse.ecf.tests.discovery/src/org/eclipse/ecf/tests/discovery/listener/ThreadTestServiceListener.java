@@ -14,7 +14,7 @@ import org.eclipse.ecf.discovery.IServiceEvent;
 
 public class ThreadTestServiceListener extends TestServiceListener {
 
-	private Thread currentThread;
+	private volatile Thread currentThread;
 
 	public Thread getCallingThread() {
 		return currentThread;
@@ -33,7 +33,7 @@ public class ThreadTestServiceListener extends TestServiceListener {
 	}
 
 	public void serviceDiscovered(IServiceEvent anEvent) {
-		super.serviceDiscovered(anEvent);
 		currentThread = Thread.currentThread();
+		super.serviceDiscovered(anEvent);
 	}
 }
