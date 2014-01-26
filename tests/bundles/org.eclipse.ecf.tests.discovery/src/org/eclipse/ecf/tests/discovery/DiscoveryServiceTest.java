@@ -65,7 +65,7 @@ public abstract class DiscoveryServiceTest extends DiscoveryTest {
 		services = discoveryLocator.getServices();
 		assertTrue(eventsToExpect + " services must be registerd at this point " + (services.length > 0 ? "" : services.toString()), services.length == eventsToExpect);
 			
-		final ThreadTestServiceListener tsl = new ThreadTestServiceListener(eventsToExpect, discoveryLocator);
+		final ThreadTestServiceListener tsl = new ThreadTestServiceListener(eventsToExpect, discoveryLocator, getName());
 		Properties props = new Properties();
 		props.put(IDiscoveryLocator.CONTAINER_NAME, containerUnderTest);
 		BundleContext ctxt = Activator.getDefault().getContext();
@@ -89,9 +89,9 @@ public abstract class DiscoveryServiceTest extends DiscoveryTest {
 		
 		event = tsl.getEvent();
 		assertNotNull("Test listener didn't receive any discovery event", event);
+		assertEquals("Test listener received unexpected amount of discovery events: \n\t" + Arrays.asList(event), eventsToExpect, event.length);
 		assertTrue("Discovery event must have originated from backend thread. Thread is: "
 				+ tsl.getCallingThread(), Thread.currentThread() != tsl.getCallingThread() && tsl.getCallingThread() != null);
-		assertEquals("Test listener received unexpected amount of discovery events: \n\t" + Arrays.asList(event), eventsToExpect, event.length);
 		IServiceInfo serviceInfo2 = ((IServiceEvent) event[eventsToExpect - 1]).getServiceInfo();
 		assertTrue("IServiceInfo should match, expected:\n\t" + serviceInfo + " but was \n\t" + serviceInfo2, comparator.compare(serviceInfo2, serviceInfo) == 0);
 	}
@@ -100,7 +100,7 @@ public abstract class DiscoveryServiceTest extends DiscoveryTest {
 		IServiceInfo[] services = discoveryLocator.getServices();
 		assertTrue("No Services must be registerd at this point " + (services.length == 0 ? "" : services[0].toString()), services.length == 0);
 
-		final TestServiceListener tsl = new TestServiceListener(eventsToExpect, discoveryLocator);
+		final TestServiceListener tsl = new TestServiceListener(eventsToExpect, discoveryLocator, getName());
 
 		Properties props = new Properties();
 		props.put(IDiscoveryLocator.CONTAINER_NAME, containerUnderTest);
@@ -122,7 +122,7 @@ public abstract class DiscoveryServiceTest extends DiscoveryTest {
 		IServiceInfo[] services = discoveryLocator.getServices();
 		assertTrue("No Services must be registerd at this point " + (services.length == 0 ? "" : services[0].toString()), services.length == 0);
 
-		final TestServiceListener tsl = new TestServiceListener(eventsToExpect, discoveryLocator);
+		final TestServiceListener tsl = new TestServiceListener(eventsToExpect, discoveryLocator, getName());
 
 		IServiceTypeID serviceTypeID = serviceInfo.getServiceID().getServiceTypeID();
 		Properties props = new Properties();
@@ -150,7 +150,7 @@ public abstract class DiscoveryServiceTest extends DiscoveryTest {
 		IServiceInfo[] services = discoveryLocator.getServices();
 		assertTrue("No Services must be registerd at this point " + (services.length == 0 ? "" : services[0].toString()), services.length == 0);
 
-		final TestServiceListener tsl = new TestServiceListener(eventsToExpect, discoveryLocator);
+		final TestServiceListener tsl = new TestServiceListener(eventsToExpect, discoveryLocator, getName());
 
 		Properties props = new Properties();
 		props.put("org.eclipse.ecf.discovery.services", "*");

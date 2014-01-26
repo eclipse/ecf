@@ -28,12 +28,14 @@ public class ThreadTestServiceListener extends TestServiceListener {
 	}
 
 	public ThreadTestServiceListener(int eventsToExpect,
-			IDiscoveryLocator aLocator) {
-		super(eventsToExpect, aLocator);
+			IDiscoveryLocator aLocator, String testName) {
+		super(eventsToExpect, aLocator, testName);
 	}
 
 	public void serviceDiscovered(IServiceEvent anEvent) {
-		currentThread = Thread.currentThread();
-		super.serviceDiscovered(anEvent);
+		if (matchesExpected(anEvent)) {
+			currentThread = Thread.currentThread();
+			super.serviceDiscovered(anEvent);
+		}
 	}
 }

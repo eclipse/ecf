@@ -210,7 +210,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		IServiceInfo[] services = discoveryLocator.getServices();
 		assertTrue("No Services must be registerd at this point " + (services.length == 0 ? "" : services[0].toString()), services.length == 0);
 
-		final TestServiceListener tsl = new TestServiceListener(eventsToExpect, discoveryLocator);
+		final TestServiceListener tsl = new TestServiceListener(eventsToExpect, discoveryLocator, getName());
 		addServiceListener(tsl);
 	}
 
@@ -223,7 +223,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 		IServiceInfo[] services = discoveryLocator.getServices();
 		assertTrue("No Services must be registerd at this point " + (services.length == 0 ? "" : services[0].toString()), services.length == 0);
 
-		final TestServiceListener tsl = new TestServiceListener(eventsToExpect, discoveryLocator);
+		final TestServiceListener tsl = new TestServiceListener(eventsToExpect, discoveryLocator, getName());
 		discoveryLocator.addServiceListener(serviceInfo.getServiceID().getServiceTypeID(), tsl);
 		addListenerRegisterAndWait(tsl, serviceInfo);
 		discoveryLocator.removeServiceListener(serviceInfo.getServiceID().getServiceTypeID(), tsl);
@@ -272,7 +272,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	 * @throws ContainerConnectException 
 	 */
 	public void testRemoveServiceListenerIServiceListener() throws ContainerConnectException {
-		final TestServiceListener serviceListener = new TestServiceListener(eventsToExpect, discoveryLocator);
+		final TestServiceListener serviceListener = new TestServiceListener(eventsToExpect, discoveryLocator, getName());
 		addServiceListener(serviceListener);
 		//TODO reregister and verify the listener doesn't receive any events any longer.
 	}
@@ -283,7 +283,7 @@ public abstract class DiscoveryTest extends AbstractDiscoveryTest {
 	 * @throws ContainerConnectException 
 	 */
 	public void testRemoveServiceListenerIServiceTypeIDIServiceListener() throws ContainerConnectException {
-		final TestServiceListener serviceListener = new TestServiceListener(eventsToExpect, discoveryLocator);
+		final TestServiceListener serviceListener = new TestServiceListener(eventsToExpect, discoveryLocator, getName());
 		addServiceListener(serviceListener);
 		//TODO reregister and verify the listener doesn't receive any events any longer.
 	}

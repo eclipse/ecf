@@ -15,14 +15,18 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceListener;
+import org.eclipse.ecf.tests.discovery.AbstractDiscoveryTest;
 
 public class TestServiceListener extends TestListener implements IServiceListener {
 
-	private IDiscoveryLocator locator;
+	private final IDiscoveryLocator locator;
+	private final String testName;
 
 
-	public TestServiceListener(int eventsToExpect, IDiscoveryLocator aLocator) {
+	public TestServiceListener(int eventsToExpect, IDiscoveryLocator aLocator, String testName) {
 		super(eventsToExpect);
+		Assert.isNotNull(testName);
+		this.testName = testName;
 		Assert.isNotNull(aLocator);
 		locator = aLocator;
 	}
@@ -31,12 +35,21 @@ public class TestServiceListener extends TestListener implements IServiceListene
 	 * @see org.eclipse.ecf.discovery.IServiceListener#serviceDiscovered(org.eclipse.ecf.discovery.IServiceEvent)
 	 */
 	public void serviceDiscovered(IServiceEvent anEvent) {
-		events.add(anEvent);
-		if(events.size() == amountOfEventsToExpect) {
-			synchronized (this) {
-				notifyAll();
+		if (matchesExpected(anEvent)) {
+			events.add(anEvent);
+			if(events.size() == amountOfEventsToExpect) {
+				synchronized (this) {
+					notifyAll();
+				}
 			}
+		} else {
+			System.err.println("Ignored unexpected events received by test listener " + anEvent);
 		}
+	}
+
+	protected boolean matchesExpected(IServiceEvent anEvent) {
+		return (testName.equals(anEvent.getServiceInfo().getServiceProperties()
+				.getProperty(AbstractDiscoveryTest.TEST_NAME)));
 	}
 
 	/* (non-Javadoc)
