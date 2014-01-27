@@ -70,6 +70,13 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 						"serviceRemoved fired without any listeners present"); //$NON-NLS-1$
 			}
 		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.ecf.discovery.IServiceListener#triggerDiscovery()
+		 */
+		public boolean triggerDiscovery() {
+			return false;
+		}
 	}
 
 	protected class CompositeContainerServiceTypeListener implements IServiceTypeListener {

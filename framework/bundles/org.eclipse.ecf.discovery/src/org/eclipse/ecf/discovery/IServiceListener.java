@@ -38,6 +38,15 @@ package org.eclipse.ecf.discovery;
 public interface IServiceListener {
 
 	/**
+	 * @since 5.0
+	 * 
+	 * @return true iff this {@link IServiceListener} request re-discovery by
+	 *         the {@link IDiscoveryLocator}. The discovery
+	 *         {@link IServiceEvent} will be fired asynchronously.
+	 */
+	public boolean triggerDiscovery();
+	
+	/**
 	 * Notification that a service has been discovered (the service is fully resolved).
 	 * 
 	 * @param anEvent Will not be <code>null</code>

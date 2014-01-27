@@ -36,6 +36,11 @@ public class IServiceInfoServiceListener {
 								.getService(reference);
 						final IServiceInfo specific = convertToProviderSpecific(
 								advertiser, serviceInfo);
+						if (advertiser instanceof AbstractDiscoveryContainerAdapter) {
+							AbstractDiscoveryContainerAdapter adca = (AbstractDiscoveryContainerAdapter) advertiser;
+							if (adca.getConnectedID() == null)
+								return null;
+						}
 						advertiser.registerService(specific);
 						return serviceInfo;
 					}

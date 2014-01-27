@@ -84,9 +84,25 @@ public abstract class AbstractDiscoveryContainerAdapter extends
 	 * org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#addServiceListener
 	 * (org.eclipse.ecf.discovery.IServiceListener)
 	 */
-	public void addServiceListener(IServiceListener aListener) {
+	public void addServiceListener(final IServiceListener aListener) {
 		Assert.isNotNull(aListener);
 		allServiceListeners.add(aListener);
+
+		if (aListener.triggerDiscovery()) {
+			final IExecutor executor = new ThreadsExecutor();
+			executor.execute(new IProgressRunnable() {
+				public Object run(final IProgressMonitor arg0) throws Exception {
+					final IServiceInfo[] services = getServices();
+
+					for (int i = 0; i < services.length; i++) {
+						final IServiceInfo iServiceInfo = services[i];
+						aListener.serviceDiscovered(new ServiceContainerEvent(
+								iServiceInfo, getConfig().getID()));
+					}
+					return null;
+				}
+			}, null);
+		}
 	}
 
 	/*
@@ -97,8 +113,8 @@ public abstract class AbstractDiscoveryContainerAdapter extends
 	 * (org.eclipse.ecf.discovery.identity.IServiceTypeID,
 	 * org.eclipse.ecf.discovery.IServiceListener)
 	 */
-	public void addServiceListener(IServiceTypeID aType,
-			IServiceListener aListener) {
+	public void addServiceListener(final IServiceTypeID aType,
+			final IServiceListener aListener) {
 		Assert.isNotNull(aListener);
 		Assert.isNotNull(aType);
 		synchronized (serviceListeners) { // put-if-absent idiom race condition
@@ -108,6 +124,22 @@ public abstract class AbstractDiscoveryContainerAdapter extends
 				serviceListeners.put(aType, v);
 			}
 			v.add(aListener);
+		}
+
+		if (aListener.triggerDiscovery()) {
+			final IExecutor executor = new ThreadsExecutor();
+			executor.execute(new IProgressRunnable() {
+				public Object run(final IProgressMonitor arg0) throws Exception {
+					final IServiceInfo[] services = getServices(aType);
+
+					for (int i = 0; i < services.length; i++) {
+						final IServiceInfo iServiceInfo = services[i];
+						aListener.serviceDiscovered(new ServiceContainerEvent(
+								iServiceInfo, getConfig().getID()));
+					}
+					return null;
+				}
+			}, null);
 		}
 	}
 

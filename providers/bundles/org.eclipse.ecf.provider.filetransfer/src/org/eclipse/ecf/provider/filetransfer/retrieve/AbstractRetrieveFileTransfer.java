@@ -137,7 +137,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 	}
 
 	protected InputStream wrapTransferReadInputStream(InputStream inputStream, IProgressMonitor monitor) {
-		return new PollingInputStream(remoteFileContents, getRetryAttempts(), monitor, readTimeoutMessage, closeTimeoutMessage);
+		return new PollingInputStream(inputStream, getRetryAttempts(), monitor, readTimeoutMessage, closeTimeoutMessage);
 	}
 
 	private int getRetryAttempts() {
@@ -165,8 +165,14 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 			double factor = (totalWork > Integer.MAX_VALUE) ? (((double) Integer.MAX_VALUE) / ((double) totalWork)) : 1.0;
 			int work = (totalWork > Integer.MAX_VALUE) ? Integer.MAX_VALUE : (int) totalWork;
 			monitor.beginTask(getRemoteFileURL().toString() + Messages.AbstractRetrieveFileTransfer_Progress_Data, work);
-			InputStream readInputStream = wrapTransferReadInputStream(remoteFileContents, monitor);
+			InputStream readInputStream = null;
 			try {
+				// We will test for remoteFileContents is null...if it is null then we can't continue.
+				// See bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=425868
+				if (remoteFileContents == null)
+					throw new IOException("input stream cannot be null"); //$NON-NLS-1$
+				// Create read input stream
+				readInputStream = wrapTransferReadInputStream(remoteFileContents, monitor);
 				while (!isDone() && !isPaused()) {
 					try {
 						final int bytes = readInputStream.read(buf);
