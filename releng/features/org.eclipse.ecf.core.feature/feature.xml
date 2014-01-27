@@ -24,6 +24,13 @@ Contributors: Composent, Inc. - initial API and implementation
       %license
    </license>
 
+   <requires>
+      <import plugin="org.eclipse.equinox.common"/>
+      <import plugin="org.eclipse.equinox.registry"/>
+      <import plugin="org.eclipse.equinox.concurrent"/>
+      <import plugin="org.eclipse.core.jobs"/>
+   </requires>
+
    <plugin
          id="org.eclipse.ecf"
          download-size="0"
