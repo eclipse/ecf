@@ -1,5 +1,7 @@
 package org.eclipse.ecf.internal.core.sharedobject;
 
+import org.eclipse.core.runtime.IConfigurationElement;
+
 import java.util.Map;
 import java.util.Properties;
 import org.eclipse.core.runtime.*;
@@ -40,11 +42,9 @@ public class Activator implements BundleActivator {
 	// The shared instance
 	private static Activator plugin;
 
-	private BundleContext context = null;
+	BundleContext context = null;
 
-	private IRegistryChangeListener registryManager = null;
-
-	private ServiceTracker extensionRegistryTracker = null;
+	ServiceTracker extensionRegistryTracker = null;
 
 	private ServiceTracker logServiceTracker = null;
 
@@ -70,14 +70,20 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext ctxt) throws Exception {
 		this.context = ctxt;
 		plugin = this;
-		this.extensionRegistryTracker = new ServiceTracker(ctxt, IExtensionRegistry.class.getName(), null);
-		this.extensionRegistryTracker.open();
-		IExtensionRegistry registry = getExtensionRegistry();
-		if (registry != null) {
-			this.registryManager = new SharedObjectRegistryManager();
-			registry.addRegistryChangeListener(registryManager);
-		}
-		setupSharedObjectExtensionPoint(ctxt);
+		// run with OptionalCodeSafeRunnable, in case extension registry isn't present
+		SafeRunner.run(new OptionalCodeSafeRunnable() {
+			@Override
+			public void run() throws Exception {
+				extensionRegistryTracker = new ServiceTracker(context, IExtensionRegistry.class.getName(), null);
+				extensionRegistryTracker.open();
+				IExtensionRegistry reg = getExtensionRegistry();
+				if (reg != null) {
+					IExtensionPoint extensionPoint = reg.getExtensionPoint(SHAREDOBJECT_FACTORY_EPOINT);
+					if (extensionPoint != null)
+						addSharedObjectExtensions(extensionPoint.getConfigurationElements());
+				}
+			}
+		});
 		Trace.exiting(Activator.PLUGIN_ID, SharedObjectDebugOptions.METHODS_ENTERING, Activator.class, "start"); //$NON-NLS-1$
 	}
 
@@ -88,10 +94,6 @@ public class Activator implements BundleActivator {
 	 */
 	public void stop(BundleContext ctxt) throws Exception {
 		Trace.entering(Activator.PLUGIN_ID, SharedObjectDebugOptions.METHODS_EXITING, Activator.class, "stop"); //$NON-NLS-1$
-		IExtensionRegistry reg = getExtensionRegistry();
-		if (reg != null)
-			reg.removeRegistryChangeListener(registryManager);
-		this.registryManager = null;
 		if (extensionRegistryTracker != null) {
 			extensionRegistryTracker.close();
 			extensionRegistryTracker = null;
@@ -170,7 +172,7 @@ public class Activator implements BundleActivator {
 	 * @param members
 	 *            the members to remove
 	 */
-	protected void removeSharedObjectExtensions(IConfigurationElement[] members) {
+	void removeSharedObjectExtensions(IConfigurationElement[] members) {
 		for (int m = 0; m < members.length; m++) {
 			IConfigurationElement member = members[m];
 			String name = null;
@@ -203,7 +205,7 @@ public class Activator implements BundleActivator {
 	 * @param members
 	 *            to add
 	 */
-	protected void addSharedObjectExtensions(IConfigurationElement[] members) {
+	void addSharedObjectExtensions(IConfigurationElement[] members) {
 		String bundleName = getDefault().getBundle().getSymbolicName();
 		// For each configuration element
 		for (int m = 0; m < members.length; m++) {
@@ -224,8 +226,22 @@ public class Activator implements BundleActivator {
 				if (description == null) {
 					description = ""; //$NON-NLS-1$
 				}
+				IConfigurationElement[] propertyElements = member.getChildren(PROPERTY_ELEMENT_NAME);
+				Properties props = new Properties();
+				if (propertyElements != null) {
+					if (propertyElements.length > 0) {
+						for (int i = 0; i < propertyElements.length; i++) {
+							String name1 = propertyElements[i].getAttribute(NAME_ATTRIBUTE);
+							String value = propertyElements[i].getAttribute(VALUE_ATTRIBUTE);
+							if (name1 != null && !name1.equals("") && value != null //$NON-NLS-1$
+									&& !value.equals("")) { //$NON-NLS-1$
+								props.setProperty(name1, value);
+							}
+						}
+					}
+				}
 				// Get any property elements
-				Map properties = getProperties(member.getChildren(PROPERTY_ELEMENT_NAME));
+				Map properties = props;
 				// Now make description instance
 				SharedObjectTypeDescription scd = new SharedObjectTypeDescription(name, exten, description, properties);
 				org.eclipse.ecf.core.util.Trace.trace(Activator.PLUGIN_ID, SharedObjectDebugOptions.DEBUG, "setupSharedObjectExtensionPoint:createdDescription(" //$NON-NLS-1$
@@ -248,56 +264,6 @@ public class Activator implements BundleActivator {
 						+ name + ";extension point id=" //$NON-NLS-1$
 						+ extension.getExtensionPointUniqueIdentifier(), null));
 				org.eclipse.ecf.core.util.Trace.catching(Activator.PLUGIN_ID, SharedObjectDebugOptions.EXCEPTIONS_CATCHING, Activator.class, "addSharedObjectExtensions", e); //$NON-NLS-1$
-			}
-		}
-	}
-
-	/**
-	 * Setup shared object extension point
-	 * 
-	 * @param bc
-	 *            the BundleContext for this bundle
-	 */
-	protected void setupSharedObjectExtensionPoint(BundleContext bc) {
-		IExtensionRegistry reg = getExtensionRegistry();
-		if (reg != null) {
-			IExtensionPoint extensionPoint = reg.getExtensionPoint(SHAREDOBJECT_FACTORY_EPOINT);
-			if (extensionPoint == null) {
-				return;
-			}
-			addSharedObjectExtensions(extensionPoint.getConfigurationElements());
-		}
-	}
-
-	protected Map getProperties(IConfigurationElement[] propertyElements) {
-		Properties props = new Properties();
-		if (propertyElements != null) {
-			if (propertyElements.length > 0) {
-				for (int i = 0; i < propertyElements.length; i++) {
-					String name = propertyElements[i].getAttribute(NAME_ATTRIBUTE);
-					String value = propertyElements[i].getAttribute(VALUE_ATTRIBUTE);
-					if (name != null && !name.equals("") && value != null //$NON-NLS-1$
-							&& !value.equals("")) { //$NON-NLS-1$
-						props.setProperty(name, value);
-					}
-				}
-			}
-		}
-		return props;
-	}
-
-	protected class SharedObjectRegistryManager implements IRegistryChangeListener {
-		public void registryChanged(IRegistryChangeEvent event) {
-			IExtensionDelta delta[] = event.getExtensionDeltas(PLUGIN_ID, NAMESPACE_NAME);
-			for (int i = 0; i < delta.length; i++) {
-				switch (delta[i].getKind()) {
-					case IExtensionDelta.ADDED :
-						addSharedObjectExtensions(delta[i].getExtension().getConfigurationElements());
-						break;
-					case IExtensionDelta.REMOVED :
-						removeSharedObjectExtensions(delta[i].getExtension().getConfigurationElements());
-						break;
-				}
 			}
 		}
 	}
