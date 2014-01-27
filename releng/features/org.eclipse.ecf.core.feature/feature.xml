@@ -25,10 +25,10 @@ Contributors: Composent, Inc. - initial API and implementation
    </license>
 
    <requires>
-      <import plugin="org.eclipse.equinox.common"/>
-      <import plugin="org.eclipse.equinox.registry"/>
-      <import plugin="org.eclipse.equinox.concurrent"/>
-      <import plugin="org.eclipse.core.jobs"/>
+      <import plugin="org.eclipse.equinox.common" version="3.6" match="compatible"/>
+      <import plugin="org.eclipse.equinox.registry" version="3.5" match="compatible"/>
+      <import plugin="org.eclipse.equinox.concurrent" version="1.0" match="compatible"/>
+      <import plugin="org.eclipse.core.jobs" version="3.5" match="compatible"/>
    </requires>
 
    <plugin

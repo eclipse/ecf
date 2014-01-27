@@ -28,10 +28,10 @@ Contributors: Composent, Inc. - initial API and implementation
          version="0.0.0"/>
 
    <requires>
-      <import plugin="org.apache.commons.codec"/>
-      <import plugin="org.apache.commons.logging"/>
-      <import plugin="org.apache.httpcomponents.httpclient"/>
-      <import plugin="org.apache.httpcomponents.httpcore"/>
+      <import plugin="org.apache.commons.codec" version="1.6" match="compatible"/>
+      <import plugin="org.apache.commons.logging" version="1.1.1" match="compatible"/>
+      <import plugin="org.apache.httpcomponents.httpclient" version="4.2.6" match="compatible"/>
+      <import plugin="org.apache.httpcomponents.httpcore" version="4.2.5" match="compatible"/>
    </requires>
 
    <plugin
