@@ -43,7 +43,9 @@ public class TestServiceListener extends TestListener implements IServiceListene
 				}
 			}
 		} else {
-			System.err.println("Ignored unexpected events received by test listener " + anEvent);
+			System.err.println(toString()
+					+ "ignored unexpected events received by test listener "
+					+ anEvent);
 		}
 	}
 
@@ -69,5 +71,11 @@ public class TestServiceListener extends TestListener implements IServiceListene
 
 	public boolean triggerDiscovery() {
 		return false;
+	}
+
+	public String toString() {
+		return "TestServiceListener [locator=" + locator + ", testName="
+				+ testName + ", events=" + getEvent() + ", amountOfEventsToExpect="
+				+ amountOfEventsToExpect + "]";
 	}
 }
