@@ -74,33 +74,38 @@ public abstract class DiscoveryServiceTest extends DiscoveryTest {
 		IServiceInfo[] services = discoveryLocator.getServices();
 		assertTrue("No Services must be registerd at this point " + (services.length == 0 ? "" : services[0].toString()), services.length == 0);
 
-		registerService();
-		services = discoveryLocator.getServices();
-		assertTrue(eventsToExpect + " services must be registerd at this point " + (services.length > 0 ? "" : services.toString()), services.length == eventsToExpect);
-			
-		final ThreadTestServiceListener tsl = new ThreadTestServiceListener(eventsToExpect, discoveryLocator, getName());
-		Properties props = new Properties();
+		final ThreadTestServiceListener tsl = new ThreadTestServiceListener(eventsToExpect, discoveryLocator, getName(), getTestId());
+		
+		// OSGi
+		final Properties props = new Properties();
 		props.put(IDiscoveryLocator.CONTAINER_NAME, containerUnderTest);
-		BundleContext ctxt = Activator.getDefault().getContext();
-		ServiceRegistration registration = ctxt.registerService(IServiceListener.class.getName(), tsl, props);
-		
-		IContainerEvent[] event = tsl.getEvent();
-		assertEquals("Test listener received unexpected amount of discovery events: \n\t" + Arrays.asList(event), 0, event.length);
-		
-		// IServiceListener#triggerDiscovery should have triggered re-discovery 
+		final BundleContext ctxt = Activator.getDefault().getContext();
+
+		// Lock the listener first so that we won't miss any discovery event
 		synchronized (tsl) {
+
+			registerService();
+			
+			// Check that services have been registered successfully
+			services = discoveryLocator.getServices();
+			assertTrue(eventsToExpect + " services must be registerd at this point " + (services.length > 0 ? "" : services.toString()), services.length == eventsToExpect);
+				
+			// Register listener with OSGi
+			ServiceRegistration registration = ctxt.registerService(IServiceListener.class.getName(), tsl, props);
+			
+			// IServiceListener#triggerDiscovery should have triggered re-discovery 
 			// register a service which we expect the test listener to get notified of
 			try {
 				tsl.wait(waitTimeForProvider);
 			} catch (final InterruptedException e) {
 				Thread.currentThread().interrupt();
 				fail("Some discovery unrelated threading issues?");
+			} finally {
+				registration.unregister();
 			}
 		}
 		
-		registration.unregister();
-		
-		event = tsl.getEvent();
+		final IContainerEvent[] event = tsl.getEvent();
 		assertNotNull("Test listener didn't receive any discovery event", event);
 		
 		// Diff the expected ids with what actually has been discovered. The
@@ -129,7 +134,7 @@ public abstract class DiscoveryServiceTest extends DiscoveryTest {
 		IServiceInfo[] services = discoveryLocator.getServices();
 		assertTrue("No Services must be registerd at this point " + (services.length == 0 ? "" : services[0].toString()), services.length == 0);
 
-		final TestServiceListener tsl = new TestServiceListener(eventsToExpect, discoveryLocator, getName());
+		final TestServiceListener tsl = new TestServiceListener(eventsToExpect, discoveryLocator, getName(), getTestId());
 
 		Properties props = new Properties();
 		props.put(IDiscoveryLocator.CONTAINER_NAME, containerUnderTest);
@@ -151,7 +156,7 @@ public abstract class DiscoveryServiceTest extends DiscoveryTest {
 		IServiceInfo[] services = discoveryLocator.getServices();
 		assertTrue("No Services must be registerd at this point " + (services.length == 0 ? "" : services[0].toString()), services.length == 0);
 
-		final TestServiceListener tsl = new TestServiceListener(eventsToExpect, discoveryLocator, getName());
+		final TestServiceListener tsl = new TestServiceListener(eventsToExpect, discoveryLocator, getName(), getTestId());
 
 		IServiceTypeID serviceTypeID = serviceInfo.getServiceID().getServiceTypeID();
 		Properties props = new Properties();
@@ -179,7 +184,7 @@ public abstract class DiscoveryServiceTest extends DiscoveryTest {
 		IServiceInfo[] services = discoveryLocator.getServices();
 		assertTrue("No Services must be registerd at this point " + (services.length == 0 ? "" : services[0].toString()), services.length == 0);
 
-		final TestServiceListener tsl = new TestServiceListener(eventsToExpect, discoveryLocator, getName());
+		final TestServiceListener tsl = new TestServiceListener(eventsToExpect, discoveryLocator, getName(), getTestId());
 
 		Properties props = new Properties();
 		props.put("org.eclipse.ecf.discovery.services", "*");

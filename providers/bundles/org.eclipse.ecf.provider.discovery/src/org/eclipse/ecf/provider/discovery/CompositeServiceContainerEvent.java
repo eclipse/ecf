@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.discovery;
 
+import org.eclipse.ecf.discovery.IServiceInfo;
+
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.ServiceContainerEvent;
@@ -19,8 +21,12 @@ public class CompositeServiceContainerEvent extends ServiceContainerEvent implem
 	private final ID origId;
 
 	public CompositeServiceContainerEvent(final IServiceEvent event, final ID connectedId) {
-		super(event.getServiceInfo(), connectedId);
-		origId = event.getLocalContainerID();
+		this(event.getServiceInfo(), connectedId, event.getLocalContainerID());
+	}
+
+	public CompositeServiceContainerEvent(final IServiceInfo info, final ID connectedId, final ID origId) {
+		super(info, connectedId);
+		this.origId = origId;
 	}
 
 	/**

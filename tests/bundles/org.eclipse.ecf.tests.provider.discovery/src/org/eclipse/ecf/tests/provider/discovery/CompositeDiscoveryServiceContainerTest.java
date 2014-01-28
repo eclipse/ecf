@@ -112,7 +112,8 @@ public class CompositeDiscoveryServiceContainerTest extends
 				final CompositeServiceContainerEvent csce = (CompositeServiceContainerEvent) iContainerEvent;
 				originalIds.add(csce.getOriginalLocalContainerID());
 			} else {
-				originalIds.add(iContainerEvent.getLocalContainerID());
+				System.err.println("WARNING: Skipping non CompositeServiceContainerEvent in CompositeDiscoveryServiceContainerTest#getContainerIds(IContainerEvent[])");
+				//originalIds.add(iContainerEvent.getLocalContainerID());
 			}
 		}
 		return originalIds;
