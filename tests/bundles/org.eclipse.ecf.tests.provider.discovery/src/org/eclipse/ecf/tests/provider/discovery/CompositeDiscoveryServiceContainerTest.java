@@ -12,11 +12,17 @@ package org.eclipse.ecf.tests.provider.discovery;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
@@ -46,7 +52,21 @@ public class CompositeDiscoveryServiceContainerTest extends
 	protected void setUp() throws Exception {
 		super.setUp();
 		container = (IContainer) discoveryLocator;  
-		eventsToExpect = ((CompositeDiscoveryContainer) discoveryLocator).getDiscoveryContainers().size();
+		
+		final Collection discoveryContainers = ((CompositeDiscoveryContainer) discoveryLocator)
+				.getDiscoveryContainers();
+		final Set s = new HashSet();
+		for (final Iterator itr = discoveryContainers.iterator(); itr.hasNext();) {
+			final IDiscoveryLocator object = (IDiscoveryLocator) itr.next();
+			final IContainer adapter = (IContainer) object
+					.getAdapter(IContainer.class);
+			s.add(adapter.getID());
+		}
+		// make sure it's never (accidentally) modified by a test
+		idsToExpect = Collections.unmodifiableSet(s);
+		
+		eventsToExpect = discoveryContainers.size();
+		
 		assertTrue("zero events make no sense", eventsToExpect > 0);
 	}
 
@@ -82,5 +102,19 @@ public class CompositeDiscoveryServiceContainerTest extends
 		}
 		// check that all underlying containers fired an event
 		assertEquals("A nested container didn't send an event, but another multiple.", eventsToExpect, origContainers.size());
+	}
+	
+	protected Collection getContainerIds(IContainerEvent[] events) {
+		final Collection originalIds = new ArrayList();
+		for (int i = 0; i < events.length; i++) {
+			final IContainerEvent iContainerEvent = events[i];
+			if (iContainerEvent instanceof CompositeServiceContainerEvent) {
+				final CompositeServiceContainerEvent csce = (CompositeServiceContainerEvent) iContainerEvent;
+				originalIds.add(csce.getOriginalLocalContainerID());
+			} else {
+				originalIds.add(iContainerEvent.getLocalContainerID());
+			}
+		}
+		return originalIds;
 	}
 }

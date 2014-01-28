@@ -12,9 +12,14 @@
 package org.eclipse.ecf.tests.discovery;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 import org.eclipse.ecf.core.ContainerConnectException;
+import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
@@ -31,6 +36,8 @@ import org.osgi.framework.ServiceRegistration;
 
 public abstract class DiscoveryServiceTest extends DiscoveryTest {
 
+	protected Set idsToExpect;
+
 	public DiscoveryServiceTest(String name) {
 		super(name);
 	}
@@ -40,6 +47,12 @@ public abstract class DiscoveryServiceTest extends DiscoveryTest {
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
+		
+		final IContainer adapter = (IContainer) getDiscoveryLocator().getAdapter(IContainer.class);
+		final Set set = new HashSet();
+		set.add(adapter.getID());
+		idsToExpect = Collections.unmodifiableSet(set);
+
 		discoveryLocator.purgeCache();
 	}
 
@@ -89,11 +102,27 @@ public abstract class DiscoveryServiceTest extends DiscoveryTest {
 		
 		event = tsl.getEvent();
 		assertNotNull("Test listener didn't receive any discovery event", event);
+		
+		// Diff the expected ids with what actually has been discovered. The
+		// remainig events are those missing.
+		final Set ids = new HashSet(idsToExpect);
+		ids.removeAll(getContainerIds(event));
+		assertTrue("Test misses " + ids.size() + " event(s) from container(s) out of " + idsToExpect + ". Those Ids are: " + ids, ids.size() == 0);
+		
 		assertEquals("Test listener received unexpected amount of discovery events: \n\t" + Arrays.asList(event), eventsToExpect, event.length);
 		assertTrue("Discovery event must have originated from backend thread. Thread is: "
 				+ tsl.getCallingThread(), Thread.currentThread() != tsl.getCallingThread() && tsl.getCallingThread() != null);
 		IServiceInfo serviceInfo2 = ((IServiceEvent) event[eventsToExpect - 1]).getServiceInfo();
 		assertTrue("IServiceInfo should match, expected:\n\t" + serviceInfo + " but was \n\t" + serviceInfo2, comparator.compare(serviceInfo2, serviceInfo) == 0);
+	}
+	
+	protected Collection getContainerIds(IContainerEvent[] events) {
+		final Collection originalIds = new HashSet();
+		for (int i = 0; i < events.length; i++) {
+			final IContainerEvent iContainerEvent = events[i];
+			originalIds.add(iContainerEvent.getLocalContainerID());
+		}
+		return originalIds;
 	}
 
 	public void testAddServiceListenerIServiceListenerOSGi() throws ContainerConnectException {
