@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.ecf.filetransfer.httpclient.feature"
-      label="ECF Httpclient Filetransfer Provider"
-      version="3.8.0.qualifier"
+      id="org.eclipse.ecf.filetransfer.httpclient.ssl.feature"
+      label="ECF HttpClient SSL Filetransfer Provider Feature"
+      version="1.0.0.qualifier"
       provider-name="Eclipse.org - ECF">
 
    <description url="http://www.eclipse.org/ecf">
@@ -10,7 +10,7 @@
    </description>
 
    <copyright>
-      Copyright (c) 2011 Composent, Inc. and others. All rights
+      Copyright (c) 2014 Composent, Inc. and others. All rights
 reserved.
 This program and the accompanying materials are made available
 under the terms of the Eclipse Public License v1.0 which accompanies
@@ -25,20 +25,15 @@ Contributors: Composent, Inc. - initial API and implementation
    </license>
 
    <includes
-         id="org.eclipse.ecf.filetransfer.feature"
+         id="org.eclipse.ecf.filetransfer.ssl.feature"
          version="0.0.0"/>
 
-   <requires>
-      <import plugin="org.apache.commons.httpclient" version="3.1" match="compatible"/>
-      <import plugin="org.apache.commons.codec" version="1.2" match="compatible"/>
-      <import plugin="org.apache.commons.logging" version="1.0.4" match="compatible"/>
-   </requires>
-
    <plugin
-         id="org.eclipse.ecf.provider.filetransfer.httpclient"
+         id="org.eclipse.ecf.provider.filetransfer.httpclient.ssl"
          download-size="0"
          install-size="0"
          version="0.0.0"
+         fragment="true"
          unpack="false"/>
 
 </feature>
