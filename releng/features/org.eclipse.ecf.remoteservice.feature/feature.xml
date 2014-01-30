@@ -27,15 +27,8 @@
 
    <requires>
       <import feature="org.eclipse.ecf.discovery.feature" version="1.0.0"/>
-      <import feature="org.eclipse.ecf.provider.generic.feature" version="1.0" match="compatible"/>
+      <import feature="org.eclipse.ecf.provider.generic.remoteservice.feature" version="1.0" match="compatible"/>
    </requires>
-
-   <plugin
-         id="org.eclipse.ecf.provider.remoteservice"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
 
    <plugin
          id="org.eclipse.ecf.remoteservice"
