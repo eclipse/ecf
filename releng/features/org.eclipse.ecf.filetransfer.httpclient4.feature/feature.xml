@@ -23,15 +23,12 @@ Contributors: Composent, Inc. - initial API and implementation
       %license
    </license>
 
-   <includes
-         id="org.eclipse.ecf.filetransfer.feature"
-         version="0.0.0"/>
-
    <requires>
       <import plugin="org.apache.commons.codec" version="1.6" match="compatible"/>
       <import plugin="org.apache.commons.logging" version="1.1.1" match="compatible"/>
       <import plugin="org.apache.httpcomponents.httpclient" version="4.2.6" match="compatible"/>
       <import plugin="org.apache.httpcomponents.httpcore" version="4.2.5" match="compatible"/>
+      <import feature="org.eclipse.ecf.filetransfer.feature" version="3.9.0" match="compatible"/>
    </requires>
 
    <plugin

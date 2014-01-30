@@ -25,9 +25,9 @@
       %license
    </license>
 
-   <includes
-         id="org.eclipse.ecf.core.feature"
-         version="0.0.0"/>
+   <requires>
+      <import feature="org.eclipse.ecf.core.feature" version="1.1.0" match="compatible"/>
+   </requires>
 
    <plugin
          id="org.eclipse.ecf.discovery"

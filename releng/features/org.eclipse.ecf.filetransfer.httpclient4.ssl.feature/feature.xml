@@ -23,9 +23,9 @@ Contributors: Composent, Inc. - initial API and implementation
       %license
    </license>
 
-   <includes
-         id="org.eclipse.ecf.filetransfer.ssl.feature"
-         version="0.0.0"/>
+   <requires>
+      <import feature="org.eclipse.ecf.filetransfer.ssl.feature" version="1.0.0.qualifier"/>
+   </requires>
 
    <plugin
          id="org.eclipse.ecf.provider.filetransfer.httpclient4.ssl"
