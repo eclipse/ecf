@@ -27,7 +27,7 @@
    </license>
 
    <requires>
-      <import feature="org.eclipse.ecf.discovery.feature" version="1.0.0"/>
+      <import feature="org.eclipse.ecf.discovery.feature" version="1.0.0" match="compatible"/>
    </requires>
 
    <plugin
