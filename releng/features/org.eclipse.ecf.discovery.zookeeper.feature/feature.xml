@@ -27,16 +27,7 @@
    </license>
 
    <requires>
-      <import plugin="org.apache.log4j"/>
-      <import plugin="org.eclipse.equinox.common" version="3.5.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ecf.discovery" version="3.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ecf"/>
-      <import plugin="org.eclipse.ecf.identity"/>
-      <import plugin="org.eclipse.equinox.concurrent"/>
-      <import plugin="org.eclipse.osgi"/>
-      <import plugin="org.eclipse.osgi.services"/>
-      <import plugin="org.eclipse.equinox.ds"/>
-      <import feature="org.eclipse.ecf.discovery.feature" version="1.0.0"/>
+      <import feature="org.eclipse.ecf.discovery.feature" version="1.0.0" match="compatible"/>
    </requires>
 
    <plugin
