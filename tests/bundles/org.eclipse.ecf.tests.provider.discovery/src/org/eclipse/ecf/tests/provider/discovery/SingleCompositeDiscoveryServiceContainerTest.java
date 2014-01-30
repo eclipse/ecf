@@ -30,6 +30,13 @@ import org.osgi.framework.hooks.service.FindHook;
 public abstract class SingleCompositeDiscoveryServiceContainerTest extends
 		CompositeDiscoveryServiceContainerTest {
 
+	// Whether the OSGi hooks should be de-/registered after and before each
+	// individual test and not just after/before the test class. 
+	// E.g. when tests are executed in random order and thus are interleaved
+	// with other tests, setUp/tearDown has to run after each test. Otherwise
+	// expect test failures.
+	public static boolean SETUP_OSGI_HOOKS_PER_TEST = false;
+
 	private static int testMethods;
 	private static int testMethodsLeft;
 	private static ServiceRegistration findHook;
@@ -54,11 +61,20 @@ public abstract class SingleCompositeDiscoveryServiceContainerTest extends
 		className = aClassName;
 	}
 	
+	private boolean doSetUp() {
+		return SETUP_OSGI_HOOKS_PER_TEST || testMethodsLeft == testMethods;
+	}
+
+	private boolean doTearDown() {
+		return SETUP_OSGI_HOOKS_PER_TEST || --testMethodsLeft == 0;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.tests.provider.discovery.CompositeDiscoveryServiceContainerTest#setUp()
 	 */
 	protected void setUp() throws Exception {
-		if(testMethodsLeft == testMethods) {
+		// HACK: @BeforeClass JUnit4 functionality
+		if(doSetUp()) {
 			// HACK: forcefully start the (nested) discovery container if it hasn't been started yet
 			// assuming the bundle declares a lazy start buddy policy
 			Class.forName(className);
@@ -78,7 +94,8 @@ public abstract class SingleCompositeDiscoveryServiceContainerTest extends
 	 */
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		if(--testMethodsLeft == 0) {
+		// HACK: @BeforeClass JUnit4 functionality
+		if(doTearDown()) {
 			if(findHook != null) {
 				findHook.unregister();
 				findHook = null;
@@ -169,6 +186,7 @@ public abstract class SingleCompositeDiscoveryServiceContainerTest extends
 						final String symbolicName = bundleContext.getBundle().getSymbolicName();
 						if(BUNDLE_UNDER_TEST.equals(symbolicName)) {
 							removees.add(bundleContext);
+							System.out.println("Filtered reference: " + property);
 							break;
 						}
 					}

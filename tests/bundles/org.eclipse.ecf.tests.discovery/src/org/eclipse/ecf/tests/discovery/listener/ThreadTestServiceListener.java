@@ -28,8 +28,8 @@ public class ThreadTestServiceListener extends TestServiceListener {
 	}
 
 	public ThreadTestServiceListener(int eventsToExpect,
-			IDiscoveryLocator aLocator, String testName) {
-		super(eventsToExpect, aLocator, testName);
+			IDiscoveryLocator aLocator, String testName, String testId) {
+		super(eventsToExpect, aLocator, testName, testId);
 	}
 
 	public void serviceDiscovered(IServiceEvent anEvent) {

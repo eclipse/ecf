@@ -43,11 +43,17 @@ public abstract class AbstractDiscoveryTest extends TestCase {
 	protected IDiscoveryAdvertiser discoveryAdvertiser = null;
 
 	private String hostname = DiscoveryTestHelper.HOSTNAME;
+
+	private String testId;
 	
 	public AbstractDiscoveryTest(String name) {
 		super();
 		this.containerUnderTest = name;
 		this.random = new Random();
+	}
+	
+	public String getTestId() {
+		return testId;
 	}
 
 	protected abstract IDiscoveryLocator getDiscoveryLocator();
@@ -99,7 +105,8 @@ public abstract class AbstractDiscoveryTest extends TestCase {
 		assertNotNull(serviceTypeID);
 		final ServiceProperties serviceProperties = new ServiceProperties(props);
 		serviceProperties.setPropertyString(TEST_NAME, getName());
-		serviceProperties.setPropertyString(getName() + "testIdentifier", Long.toString(random.nextLong()));
+		testId = Long.toString(random.nextLong());
+		serviceProperties.setPropertyString(getName() + "testIdentifier", testId);
 		serviceProperties.setPropertyString(getName() + "servicePropertiesString", "serviceProperties");
 		serviceProperties.setProperty(getName() + "servicePropertiesIntegerMax", new Integer(Integer.MIN_VALUE));
 		serviceProperties.setProperty(getName() + "servicePropertiesIntegerMin", new Integer(Integer.MAX_VALUE));

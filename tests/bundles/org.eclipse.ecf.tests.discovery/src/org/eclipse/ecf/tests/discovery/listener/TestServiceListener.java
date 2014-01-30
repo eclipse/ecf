@@ -15,16 +15,18 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceListener;
-import org.eclipse.ecf.tests.discovery.AbstractDiscoveryTest;
 
 public class TestServiceListener extends TestListener implements IServiceListener {
 
 	private final IDiscoveryLocator locator;
 	private final String testName;
+	private final String testId;
 
 
-	public TestServiceListener(int eventsToExpect, IDiscoveryLocator aLocator, String testName) {
+	public TestServiceListener(int eventsToExpect, IDiscoveryLocator aLocator, String testName, String testId) {
 		super(eventsToExpect);
+		Assert.isNotNull(testId);
+		this.testId = testId;
 		Assert.isNotNull(testName);
 		this.testName = testName;
 		Assert.isNotNull(aLocator);
@@ -43,13 +45,15 @@ public class TestServiceListener extends TestListener implements IServiceListene
 				}
 			}
 		} else {
-			System.err.println("Ignored unexpected events received by test listener " + anEvent);
+			System.err.println(toString()
+					+ "ignored unexpected events received by test listener "
+					+ anEvent);
 		}
 	}
 
 	protected boolean matchesExpected(IServiceEvent anEvent) {
-		return (testName.equals(anEvent.getServiceInfo().getServiceProperties()
-				.getProperty(AbstractDiscoveryTest.TEST_NAME)));
+		return (testId.equals(anEvent.getServiceInfo().getServiceProperties()
+				.getProperty(testName + "testIdentifier")));
 	}
 
 	/* (non-Javadoc)
@@ -69,5 +73,11 @@ public class TestServiceListener extends TestListener implements IServiceListene
 
 	public boolean triggerDiscovery() {
 		return false;
+	}
+
+	public String toString() {
+		return "TestServiceListener [locator=" + locator + ", testName="
+				+ testName + ", events=" + getEvent() + ", amountOfEventsToExpect="
+				+ amountOfEventsToExpect + "]";
 	}
 }

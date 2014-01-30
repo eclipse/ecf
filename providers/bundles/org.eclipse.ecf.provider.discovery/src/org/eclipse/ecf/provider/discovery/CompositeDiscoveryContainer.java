@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.discovery;
 
+import java.net.URI;
 import java.util.*;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.ContainerConnectException;
@@ -200,6 +201,57 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 		fireContainerEvent(new ContainerDisconnectedEvent(this.getID(), getConnectedID()));
 	}
 
+	public static class CompositeServiceInfoWrapper implements IServiceInfo {
+		private final IServiceInfo anInfo;
+		private final ID anId;
+
+		public CompositeServiceInfoWrapper(IServiceInfo anInfo, ID anId) {
+			this.anInfo = anInfo;
+			this.anId = anId;
+		}
+
+		public ID getId() {
+			return anId;
+		}
+
+		public URI getLocation() {
+			return anInfo.getLocation();
+		}
+
+		public IServiceID getServiceID() {
+			return anInfo.getServiceID();
+		}
+
+		public int getPriority() {
+			return anInfo.getPriority();
+		}
+
+		public Object getAdapter(Class adapter) {
+			return anInfo.getAdapter(adapter);
+		}
+
+		public int getWeight() {
+			return anInfo.getWeight();
+		}
+
+		public long getTTL() {
+			return anInfo.getTTL();
+		}
+
+		public IServiceProperties getServiceProperties() {
+			return anInfo.getServiceProperties();
+		}
+
+		public String getServiceName() {
+			return anInfo.getServiceName();
+		}
+	}
+
+	protected IServiceEvent getServiceEvent(IServiceInfo iServiceInfo, ID id) {
+		final CompositeServiceInfoWrapper csi = (CompositeServiceInfoWrapper) iServiceInfo;
+		return new CompositeServiceContainerEvent(iServiceInfo, id, csi.getId());
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.AbstractDiscoveryContainerAdapter#dispose()
 	 */
@@ -264,7 +316,12 @@ public class CompositeDiscoveryContainer extends AbstractDiscoveryContainerAdapt
 		synchronized (containers) {
 			for (final Iterator itr = containers.iterator(); itr.hasNext();) {
 				final IDiscoveryLocator idca = (IDiscoveryLocator) itr.next();
+				final ID containerId = ((IContainer) idca).getID();
 				final IServiceInfo[] services = idca.getServices();
+				for (int i = 0; i < services.length; i++) {
+					IServiceInfo iServiceInfo = services[i];
+					services[i] = new CompositeServiceInfoWrapper(iServiceInfo, containerId);
+				}
 				set.addAll(Arrays.asList(services));
 			}
 		}
