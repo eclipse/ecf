@@ -27,6 +27,7 @@
 
    <requires>
       <import feature="org.eclipse.ecf.discovery.feature" version="1.0.0"/>
+      <import feature="org.eclipse.ecf.sharedobject.feature" version="1.0.0.qualifier"/>
    </requires>
 
    <plugin
@@ -38,13 +39,6 @@
 
    <plugin
          id="org.eclipse.ecf.remoteservice"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.sharedobject"
          download-size="0"
          install-size="0"
          version="0.0.0"
