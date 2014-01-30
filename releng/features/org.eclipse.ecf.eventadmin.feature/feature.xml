@@ -26,15 +26,8 @@
    </license>
 
    <requires>
-      <import feature="org.eclipse.ecf.sharedobject.feature" version="1.0" match="compatible"/>
+      <import feature="org.eclipse.ecf.provider.generic.feature" version="1.0.0.qualifier"/>
    </requires>
-
-   <plugin
-         id="org.eclipse.ecf.provider"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
 
    <plugin
          id="org.eclipse.ecf.remoteservice.eventadmin"
