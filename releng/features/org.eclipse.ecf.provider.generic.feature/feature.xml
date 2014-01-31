@@ -24,9 +24,9 @@ Contributors: Composent, Inc. - initial API and implementation
       %license
    </license>
 
-   <requires>
-      <import feature="org.eclipse.ecf.sharedobject.feature" version="1.0" match="compatible"/>
-   </requires>
+   <includes
+         id="org.eclipse.ecf.sharedobject.feature"
+         version="0.0.0"/>
 
    <plugin
          id="org.eclipse.ecf.provider"

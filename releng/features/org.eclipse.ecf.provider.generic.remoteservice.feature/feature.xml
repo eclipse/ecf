@@ -29,10 +29,6 @@ Contributors: Composent, Inc. - initial API and implementation
          version="0.0.0"/>
 
    <includes
-         id="org.eclipse.ecf.sharedobject.feature"
-         version="0.0.0"/>
-
-   <includes
          id="org.eclipse.ecf.provider.generic.feature"
          version="0.0.0"/>
 

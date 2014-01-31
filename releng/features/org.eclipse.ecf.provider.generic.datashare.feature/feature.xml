@@ -25,10 +25,13 @@
       %license
    </license>
 
-   <requires>
-      <import feature="org.eclipse.ecf.datashare.feature" version="1.0.0.qualifier"/>
-      <import feature="org.eclipse.ecf.provider.generic.feature" version="1.0" match="compatible"/>
-   </requires>
+   <includes
+         id="org.eclipse.ecf.datashare.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.provider.generic.feature"
+         version="0.0.0"/>
 
    <plugin
          id="org.eclipse.ecf.provider.datashare"
