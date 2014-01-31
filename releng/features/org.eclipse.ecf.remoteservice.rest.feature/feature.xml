@@ -25,9 +25,9 @@
       %license
    </license>
 
-   <includes
-         id="org.eclipse.ecf.remoteservice.feature"
-         version="0.0.0"/>
+   <requires>
+      <import feature="org.eclipse.ecf.remoteservice.feature" version="1.1" match="compatible"/>
+   </requires>
 
    <plugin
          id="org.eclipse.ecf.remoteservice.rest"
@@ -44,21 +44,28 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.ecf.remoteservice.rest.synd"
+         id="org.apache.httpcomponents.httpclient"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="com.sun.syndication"
+         id="org.apache.httpcomponents.httpcore"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="org.jdom"
+         id="org.apache.commons.codec"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.commons.logging"
          download-size="0"
          install-size="0"
          version="0.0.0"
