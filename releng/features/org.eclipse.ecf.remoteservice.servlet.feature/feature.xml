@@ -26,7 +26,7 @@
    </license>
 
    <requires>
-      <import feature="org.eclipse.ecf.remoteservice.feature" version="1.1" match="compatible"/>
+      <import feature="org.eclipse.ecf.remoteservice.feature" version="2.0" match="compatible"/>
       <import plugin="javax.servlet"/>
    </requires>
 
