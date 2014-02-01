@@ -46,11 +46,19 @@
          version="0.0.0"/>
 
    <includes
+         id="org.eclipse.ecf.remoteservice.rest.synd.feature"
+         version="0.0.0"/>
+
+   <includes
          id="org.eclipse.ecf.remoteservice.rosgi.feature"
          version="0.0.0"/>
 
    <includes
          id="org.eclipse.ecf.remoteservice.soap.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.remoteservice.servlet.feature"
          version="0.0.0"/>
 
    <includes
