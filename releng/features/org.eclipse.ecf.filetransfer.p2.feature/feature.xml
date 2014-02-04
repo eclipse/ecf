@@ -6,7 +6,7 @@
       provider-name="Eclipse.org - ECF">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the httpclient4-based filetransfer provider.
+      This feature id not intended to be installed directly.
    </description>
 
    <copyright url="http://www.example.com/copyright">
@@ -40,7 +40,7 @@ Contributors: Composent, Inc. - initial API and implementation
          version="0.0.0"/>
 
    <includes
-         id="org.eclipse.ecf.filetransfer.httpclient4.feature"
+         id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature"
          version="0.0.0"/>
 
    <plugin
