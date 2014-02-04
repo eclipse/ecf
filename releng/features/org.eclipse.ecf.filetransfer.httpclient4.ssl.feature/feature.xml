@@ -24,7 +24,7 @@ Contributors: Composent, Inc. - initial API and implementation
    </license>
 
    <requires>
-      <import feature="org.eclipse.ecf.filetransfer.ssl.feature" version="1.0.0.qualifier"/>
+      <import feature="org.eclipse.ecf.filetransfer.ssl.feature" version="1.0" match="compatible"/>
    </requires>
 
    <plugin
