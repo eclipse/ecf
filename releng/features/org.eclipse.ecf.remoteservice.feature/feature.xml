@@ -26,7 +26,8 @@
    </license>
 
    <requires>
-      <import feature="org.eclipse.ecf.sharedobject.feature" version="1.0" match="compatible"/>
+      <import plugin="org.eclipse.ecf" version="3.3" match="compatible"/>
+      <import plugin="org.eclipse.ecf.identity" version="3.2" match="compatible"/>
    </requires>
 
    <plugin

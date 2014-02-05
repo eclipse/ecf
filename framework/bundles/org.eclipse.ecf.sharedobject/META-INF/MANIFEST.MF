@@ -12,7 +12,6 @@ Export-Package: org.eclipse.ecf.core.sharedobject;version="2.3",
  org.eclipse.ecf.core.sharedobject.provider;version="2.2.100",
  org.eclipse.ecf.core.sharedobject.security;version="2.2.100",
  org.eclipse.ecf.core.sharedobject.util;version="2.3.0",
- org.eclipse.ecf.core.util.reflection;version="2.2.100",
  org.eclipse.ecf.internal.core.sharedobject;version="2.2.100";x-internal:=true
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
