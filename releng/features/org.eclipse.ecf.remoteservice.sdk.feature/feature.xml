@@ -97,4 +97,28 @@
          id="org.eclipse.ecf.xmpp.feature"
          version="0.0.0"/>
 
+   <includes
+         id="org.eclipse.ecf.console.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.core.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.provider.generic.datashare.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.provider.generic.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.provider.generic.remoteservice.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.sharedobject.feature"
+         version="0.0.0"/>
+
 </feature>
