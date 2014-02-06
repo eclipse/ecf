@@ -6,9 +6,6 @@
 	<dependencies>
 		<dependency name="org.eclipse.platform" componentType="eclipse.feature"/>
 		<dependency name="org.eclipse.jdt" componentType="eclipse.feature"/>
-		<dependency name="org.eclipse.ecf.core" componentType="eclipse.feature"/>
-		<!-- o.e.ecf.core does not include filetransfer, hence include featurepatch -->
-		<dependency name="org.eclipse.ecf.filetransfer" componentType="osgi.bundle"/>
 	</dependencies>
 	<generators>
 		<!-- Place your Generators here -->
