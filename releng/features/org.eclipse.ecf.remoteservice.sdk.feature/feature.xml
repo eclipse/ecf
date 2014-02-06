@@ -121,4 +121,8 @@
          id="org.eclipse.ecf.sharedobject.feature"
          version="0.0.0"/>
 
+   <includes
+         id="org.eclipse.ecf.presence.feature"
+         version="0.0.0"/>
+
 </feature>

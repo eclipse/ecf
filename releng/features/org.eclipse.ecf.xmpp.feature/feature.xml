@@ -24,6 +24,10 @@ Contributors: Composent, Inc. - initial API and implementation
       %license
    </license>
 
+   <requires>
+      <import feature="org.eclipse.ecf.presence.feature" version="1.0" match="compatible"/>
+   </requires>
+
    <plugin
          id="org.eclipse.ecf.provider.xmpp"
          download-size="0"
@@ -52,13 +56,6 @@ Contributors: Composent, Inc. - initial API and implementation
          install-size="0"
          version="0.0.0"
          fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.presence"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
          unpack="false"/>
 
    <plugin
