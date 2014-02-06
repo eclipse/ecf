@@ -26,6 +26,8 @@ Contributors: Composent, Inc. - initial API and implementation
 
    <requires>
       <import feature="org.eclipse.ecf.presence.feature" version="1.0" match="compatible"/>
+      <import feature="org.eclipse.ecf.datashare.feature" version="1.0" match="compatible"/>
+      <import feature="org.eclipse.ecf.remoteservice.feature" version="2.0" match="compatible"/>
    </requires>
 
    <plugin

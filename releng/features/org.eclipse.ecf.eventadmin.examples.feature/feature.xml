@@ -25,9 +25,10 @@
       %license
    </license>
 
-   <includes
-         id="org.eclipse.ecf.eventadmin.feature"
-         version="0.0.0"/>
+   <requires>
+      <import feature="org.eclipse.ecf.eventadmin.feature" version="2.0" match="compatible"/>
+      <import plugin="org.eclipse.equinox.app"/>
+   </requires>
 
    <plugin
          id="org.eclipse.ecf.examples.eventadmin.app"
