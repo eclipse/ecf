@@ -10,8 +10,7 @@ Import-Package: org.osgi.framework,
  org.osgi.util.tracker;version="1.4.2"
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
-Require-Bundle: org.eclipse.osgi.services.remoteserviceadmin;bundle-version="1.5.0",
- org.eclipse.ecf.tests,
+Require-Bundle: org.eclipse.ecf.tests,
  org.eclipse.ecf.osgi.services.distribution;bundle-version="1.0.0",
  org.eclipse.ecf.remoteservice;bundle-version="3.0.0",
  org.eclipse.ecf;bundle-version="3.0.0",
