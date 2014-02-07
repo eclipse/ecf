@@ -6,6 +6,15 @@
 	<dependencies>
 		<dependency name="org.eclipse.platform" componentType="eclipse.feature"/>
 		<dependency name="org.eclipse.jdt" componentType="eclipse.feature"/>
+		<dependency name="org.eclipse.ecf.sync" componentType="osgi.bundle"/>
+		<dependency name="org.eclipse.ecf.provider.datashare.nio"
+componentType="osgi.bundle"/>
+		<dependency name="org.eclipse.ecf.provider.msn"
+componentType="osgi.bundle"/>
+		<dependency name="org.eclipse.ecf.protocol.msn"
+componentType="osgi.bundle"/>
+		<dependency name="org.eclipse.osgi.services.remoteserviceadmin"
+componentType="osgi.bundle"/>
 	</dependencies>
 	<generators>
 		<!-- Place your Generators here -->
