@@ -10,6 +10,7 @@
 		<!-- tests -->
 		<dependency name="org.eclipse.jdt" componentType="eclipse.feature"/>
 		<dependency name="org.eclipse.ecf.tests" componentType="osgi.bundle"/>
+		<dependency name="org.eclipse.ecf.tests.core" componentType="osgi.bundle"/>
 	</dependencies>
 	<generators>
 		<!-- Place your Generators here -->
