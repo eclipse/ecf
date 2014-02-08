@@ -344,7 +344,7 @@ limitations under the License.
          version="0.0.0"/>
 
    <includes
-         id="org.eclipse.ecf.presence.feature"
+         id="org.eclipse.ecf.core"
          version="0.0.0"/>
 
    <plugin
