@@ -347,6 +347,10 @@ limitations under the License.
          id="org.eclipse.ecf.core"
          version="0.0.0"/>
 
+   <includes
+         id="org.eclipse.ecf.remoteservice.sdk.examples.feature"
+         version="0.0.0"/>
+
    <plugin
          id="org.eclipse.ecf.storage"
          download-size="0"
