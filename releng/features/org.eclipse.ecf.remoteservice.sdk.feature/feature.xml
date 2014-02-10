@@ -6,7 +6,9 @@
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the ECF Remote Services Target Components.  This is the set of bundles (API, examples, and providers), that allow OSGi frameworks to expose and access remote services.
+      This feature provides the ECF Remote Services Target Components.
+This is the set of bundles (API and providers), that
+allow OSGi frameworks to expose and access remote services.
    </description>
 
    <copyright>
