@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.ecf.sdk"
-      label="ECF Target Components Feature"
+      label="ECF SDK Feature"
       version="3.8.0.qualifier"
       provider-name="Eclipse.org">
 
    <description url="http://www.eclipse.org/ecf">
-      Eclipse Communication Framework Target Components
+      Eclipse Communication Framework SDK
    </description>
 
    <copyright>

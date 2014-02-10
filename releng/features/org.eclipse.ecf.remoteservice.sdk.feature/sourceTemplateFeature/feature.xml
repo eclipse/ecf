@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.ecf.remoteservice.sdk.feature"
-      label="ECF Remote Services Target Components"
-      version="3.5.1.qualifier"
+      label="OSGi Remote Services SDK"
+      version="3.8.0.qualifier"
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the ECF Remote Services Target Components
+      This feature provides an all-in-one distribution of ECFs implementation of the OSGi Remote Service (chapter 100) and
+      Remote Service Admin (chapter 122) standards.  Included are multiple discovery and 
+      remote services provider implementations, allowing the remote service developer to select and use, or
+      create for themselves the protocols needed to discover and use OSGi standard Remote Services.  For example, discovery based upon
+      discovery protocols Zeroconf, SLP, DNSSD, and Zookeeper are present in this distribution.  Also present are 
+      multiple distribution providers such as r-OSGi, ECF generic, and multiple REST-based transports.  The SDK also supports the creation
+      of custom discovery and/or distribution providers via open, community-tested APIs.
+       Also included in this SDK is a distributed implementation of 
+      the OSGi Event Admin service.  Note that the contents of this feature do not require Eclipse or Equinox specifically, but rather may be run
+      on other frameworks (e.g. Felix) and with other tools.
    </description>
 
    <copyright>
@@ -26,15 +35,7 @@
    </license>
 
    <includes
-         id="org.eclipse.ecf.eventadmin.examples.feature"
-         version="0.0.0"/>
-
-   <includes
          id="org.eclipse.ecf.eventadmin.feature"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.ecf.remoteservice.examples.feature"
          version="0.0.0"/>
 
    <includes
@@ -46,11 +47,19 @@
          version="0.0.0"/>
 
    <includes
+         id="org.eclipse.ecf.remoteservice.rest.synd.feature"
+         version="0.0.0"/>
+
+   <includes
          id="org.eclipse.ecf.remoteservice.rosgi.feature"
          version="0.0.0"/>
 
    <includes
          id="org.eclipse.ecf.remoteservice.soap.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.remoteservice.servlet.feature"
          version="0.0.0"/>
 
    <includes
@@ -87,6 +96,34 @@
 
    <includes
          id="org.eclipse.ecf.xmpp.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.console.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.core.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.provider.generic.datashare.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.provider.generic.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.provider.generic.remoteservice.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.sharedobject.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.presence.feature"
          version="0.0.0"/>
 
 </feature>
