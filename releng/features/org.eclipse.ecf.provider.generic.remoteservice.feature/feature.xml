@@ -6,7 +6,7 @@
       provider-name="Eclipse.org - ECF">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the ECF Generic Provider.
+      This feature provides the Remote Services support for the ECF Generic Provider.  This support allows the ECF Generic Provider to serve as an OSGi Remote Service/RSA distribution provider.
    </description>
 
    <copyright>
