@@ -6,7 +6,7 @@
       provider-name="Eclipse.org - ECF">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the ECF filetransfer ssl fragments used by the Eclipse platform to support P2 filetransfer.
+      This feature provides the SSL support for the ECF FileTransfer API used by the Eclipse platform to support P2 filetransfer.
    </description>
 
    <copyright>
