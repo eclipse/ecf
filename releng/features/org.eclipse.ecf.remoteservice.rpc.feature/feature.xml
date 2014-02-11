@@ -6,7 +6,9 @@
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the ECF Remote Services XML-RPC Support
+      This feature installs the ECF Remote Services XML-RPC Provider.  The XML-RPC provider is an implementation that provides the distribution for OSGi Remote Services.  For information about both OSGi Remote Services and the XML-RPC provider see
+
+https://wiki.eclipse.org/ECF#OSGi_Remote_Services
    </description>
 
    <copyright url="%noticeURL">
