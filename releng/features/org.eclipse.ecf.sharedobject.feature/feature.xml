@@ -6,7 +6,7 @@
       provider-name="Eclipse.org - ECF">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the ECF core and ECF identity bundles.
+      This feature provides the ECF Shared Object API.   The ECF Shared Object API may be used to implement modular implementations for other APIs...e.g. Datashare, Remote Services, etc.
    </description>
 
    <copyright>
