@@ -6,7 +6,7 @@
       provider-name="Eclipse.org - ECF">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the ECF core and ECF identity bundles.
+      This feature provides the ECF core (org.eclipse.ecf) and ECF identity (org.eclipse.ecf.identity) bundles.  These two bundles are required for all other parts of ECF.
    </description>
 
    <copyright>
