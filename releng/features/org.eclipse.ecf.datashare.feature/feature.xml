@@ -27,8 +27,7 @@ messaging within a channel.
    </license>
 
    <requires>
-      <import plugin="org.eclipse.ecf" version="3.3" match="compatible"/>
-      <import plugin="org.eclipse.ecf.identity" version="3.2" match="compatible"/>
+      <import feature="org.eclipse.ecf.core.feature" version="1.1" match="compatible"/>
    </requires>
 
    <plugin
