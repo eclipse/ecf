@@ -6,7 +6,9 @@
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the ECF Distributed EventAdmin Examples.
+      This feature provides the ECF Distributed EventAdmin Example Application.  For more information about Distribute EventAdmin see:
+
+https://wiki.eclipse.org/EIG:Distributed_EventAdmin_Service
    </description>
 
    <copyright>
