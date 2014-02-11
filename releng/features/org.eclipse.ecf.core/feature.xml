@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.ecf.core"
-      label="ECF SDK for Eclipse"
+      label="SDK for Eclipse"
       version="3.8.0.qualifier"
       provider-name="%providerName"
       plugin="org.eclipse.ecf">
@@ -28,6 +28,11 @@ Contributors: Composent, Inc. - initial API and implementation
    <includes
          id="org.eclipse.ecf.docshare.feature"
          version="0.0.0"/>
+
+   <requires>
+      <import feature="org.eclipse.ecf.remoteservice.sdk.feature" version="3.8" match="compatible"/>
+      <import feature="org.eclipse.ecf.remoteservice.sdk.examples.feature" version="1.0" match="compatible"/>
+   </requires>
 
    <plugin
          id="org.eclipse.ecf.doc"
