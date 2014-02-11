@@ -6,7 +6,9 @@
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the ECF Distributed EventAdmin API.
+      This feature provides the ECF Distributed EventAdmin API.  This is a distributed implementation of the OSGi EventAdmin service.   For information about this API please see:
+
+https://wiki.eclipse.org/EIG:Distributed_EventAdmin_Service
    </description>
 
    <copyright>
