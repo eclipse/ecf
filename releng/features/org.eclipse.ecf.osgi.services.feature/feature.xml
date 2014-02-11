@@ -7,8 +7,7 @@
 
    <description url="http://www.eclipse.org/ecf">
       This feature provides the ECF Implementation of OSGi R6 Remote
-Services (chapter 100) and Remote Service Admin (chapter 122 in Enterprise specification).  Remote Services are specified in chapter 13 of the
-OSGi compendium specification.  
+Services and Remote Service Admin.  Remote Services are specified in chapter 100 of the OSGi R6 Enterprise specification while RSA is specified in chapter 122 of the OSGi R6 Enterprise specification.  
 
 For specifications see 
 
