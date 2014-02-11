@@ -9,7 +9,7 @@
       This feature provides the ECF Remote Services API.  The ECF Remote
 Services API allows distribution of services over a network.  This API is required by ECF&apos;s implementation of OSGi R6 Remote Services/Remote Service Admin.  Remote Services are specified in chapter 100 of the OSGi R6 Enterprise specification while RSA is specified in chapter 122 of the OSGi R6 Enterprise specification.  
 
-For specifications see 
+For the Remote Service and Remote Service Admin specifications see 
 
 http://www.osgi.org/Specifications/HomePage
 
