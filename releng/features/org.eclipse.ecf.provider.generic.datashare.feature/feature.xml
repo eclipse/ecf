@@ -6,7 +6,7 @@
       provider-name="Eclipse.org - ECF">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the ECF Generic Provider for Datashare
+      This feature provides the Datashare API support for the ECF Generic Provider.
    </description>
 
    <copyright>

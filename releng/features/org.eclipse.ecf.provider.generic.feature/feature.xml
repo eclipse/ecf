@@ -6,7 +6,7 @@
       provider-name="Eclipse.org - ECF">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the ECF Generic Provider.
+      This feature provides the ECF Generic Provider.  The ECF Generic provider can be used for OSGi Remote Services (via the ECF Generic Provider RemoteService Feature), the ECF Datashare API (along with the ECF Generic Provider Datashare Feature), and the SharedObject API.
    </description>
 
    <copyright>
