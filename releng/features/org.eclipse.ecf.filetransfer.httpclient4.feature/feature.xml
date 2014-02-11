@@ -6,7 +6,7 @@
       provider-name="Eclipse.org - ECF">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the httpclient4-based filetransfer provider.
+      This feature provides the Apache HttpComponents/HttpClient4-based FileTransfer provider used by the Eclipse platform to support P2 filetransfer.
    </description>
 
    <copyright url="http://www.example.com/copyright">
