@@ -7,7 +7,7 @@
       plugin="org.eclipse.ecf">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides all of the ECF APIs, providers, and examples for Eclipse.  Use this feature if you want to install all of ECF into Eclipse.
+      This feature provides an all-in-one distribution of ECF APIs, providers, ui, tools, and examples for Eclipse.  Use this feature if you want to install all of ECF into Eclipse.
    </description>
 
    <copyright>
