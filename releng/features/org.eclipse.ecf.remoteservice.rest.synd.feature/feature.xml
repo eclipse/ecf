@@ -6,7 +6,8 @@
       provider-name="Eclipse.org - ECF">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the ECF Remote Services REST Synd.  The ECF Remote Services API allows distribution of services over a network.
+      This feature provides the REST Syndication support for ECF REST-based Remote Services.  The
+ECF Remote Services API allows distribution of OSGi Remote Services over a network.
    </description>
 
    <copyright>
