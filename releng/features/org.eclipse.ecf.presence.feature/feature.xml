@@ -6,7 +6,8 @@
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the ECF Presence.  The ECF Presence API allows distribution of presence information along with instant messaging.
+      This feature provides the ECF Presence API.  The ECF Presence API
+allows distribution of user presence and instant messaging using common Instant Messaging transports (XMPP/XMPPS, IRC, MSM).
    </description>
 
    <copyright>
