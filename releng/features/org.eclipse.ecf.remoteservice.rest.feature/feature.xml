@@ -6,7 +6,10 @@
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the ECF Remote Services REST Support.  This API allows clients to easily be created for REST-based services.
+      This feature provides the REST support for ECF Remote Services. 
+This API allows REST-based OSGi Remote Services to easily be created.  For information about REST-based remote services see:
+
+https://wiki.eclipse.org/ECF#OSGi_Remote_Services
    </description>
 
    <copyright>
