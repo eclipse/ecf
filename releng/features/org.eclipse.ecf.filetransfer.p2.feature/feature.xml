@@ -43,18 +43,8 @@ Contributors: Composent, Inc. - initial API and implementation
          id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature"
          version="0.0.0"/>
 
-   <plugin
-         id="org.eclipse.ecf"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.identity"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <includes
+         id="org.eclipse.ecf.core.feature"
+         version="0.0.0"/>
 
 </feature>
