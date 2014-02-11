@@ -6,7 +6,7 @@
       provider-name="Eclipse.org - ECF">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the ECF core SSL fragment.
+      This feature provides the ECF core SSL fragment.  On Equinox-based frameworks, this fragment exposes the Equinox TrustManager to ECF FileTransfer and other ECF-based communications.
    </description>
 
    <copyright>
