@@ -7,7 +7,7 @@
 
    <description url="http://www.eclipse.org/ecf">
       This feature provides the ECF Datashare API for asynchronous
-messaging within a channel.
+messaging within a named channel.
    </description>
 
    <copyright>
