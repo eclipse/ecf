@@ -6,7 +6,9 @@
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the ECF Remote Services XML-RPC Support
+      This feature installs the ECF Remote Services XML-RPC Provider.  The XML-RPC provider is an implementation that provides the distribution for OSGi Remote Services.  For information about both OSGi Remote Services and the XML-RPC provider see
+
+https://wiki.eclipse.org/ECF#OSGi_Remote_Services
    </description>
 
    <copyright url="%noticeURL">
@@ -17,9 +19,11 @@
       %license
    </license>
 
-   <includes
-         id="org.eclipse.ecf.remoteservice.feature"
-         version="0.0.0"/>
+   <requires>
+      <import feature="org.eclipse.ecf.remoteservice.feature" version="2.0" match="compatible"/>
+      <import feature="org.eclipse.ecf.filetransfer.httpclient.feature" version="3.8" match="compatible"/>
+      <import plugin="org.jdom"/>
+   </requires>
 
    <plugin
          id="org.apache.xmlrpc"
@@ -37,20 +41,6 @@
 
    <plugin
          id="org.apache.ws.commons.util"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.jdom"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.commons.httpclient"
          download-size="0"
          install-size="0"
          version="0.0.0"

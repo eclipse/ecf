@@ -6,7 +6,9 @@
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the ECF Distributed EventAdmin API.
+      This feature provides the ECF Distributed EventAdmin API.  This is a distributed implementation of the OSGi EventAdmin service.   For information about this API please see:
+
+https://wiki.eclipse.org/EIG:Distributed_EventAdmin_Service
    </description>
 
    <copyright>
@@ -25,22 +27,12 @@
       %license
    </license>
 
-   <plugin
-         id="org.eclipse.ecf.provider"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <requires>
+      <import feature="org.eclipse.ecf.provider.generic.feature" version="1.0" match="compatible"/>
+   </requires>
 
    <plugin
          id="org.eclipse.ecf.remoteservice.eventadmin"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.sharedobject"
          download-size="0"
          install-size="0"
          version="0.0.0"

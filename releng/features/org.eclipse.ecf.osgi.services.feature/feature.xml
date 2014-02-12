@@ -6,8 +6,16 @@
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the ECF Implementation of OSGi 4.2 Remote
-Services.  Remote Services are specified in chapter 13 of the OSGi compendium specification.  See http://www.osgi.org/download/r4v42/r4.cmpn.pdf.
+      This feature provides the ECF Implementation of OSGi R6 Remote
+Services and Remote Service Admin.  Remote Services are specified in chapter 100 of the OSGi R6 Enterprise specification while RSA is specified in chapter 122 of the OSGi R6 Enterprise specification.  
+
+For specifications see 
+
+http://www.osgi.org/Specifications/HomePage
+
+For tutorials, documentation, and examples with ECF&apos;s Implementation of OSGi RS/RSA see
+
+https://wiki.eclipse.org/ECF#OSGi_Remote_Services
    </description>
 
    <copyright>
@@ -26,9 +34,10 @@ Services.  Remote Services are specified in chapter 13 of the OSGi compendium sp
       %license
    </license>
 
-   <includes
-         id="org.eclipse.ecf.remoteservice.feature"
-         version="0.0.0"/>
+   <requires>
+      <import feature="org.eclipse.ecf.discovery.feature" version="1.0" match="compatible"/>
+      <import feature="org.eclipse.ecf.remoteservice.feature" version="2.0" match="compatible"/>
+   </requires>
 
    <plugin
          id="org.eclipse.ecf.osgi.services.distribution"

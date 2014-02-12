@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.ecf.core"
-      label="ECF Target Components for Eclipse"
+      label="SDK for Eclipse"
       version="3.8.0.qualifier"
       provider-name="%providerName"
       plugin="org.eclipse.ecf">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides all of the ECF APIs, providers, and examples for Eclipse.  Use this feature if you want to install all of ECF into Eclipse.
+      This feature provides an all-in-one distribution of ECF APIs, providers, ui, tools, and examples for Eclipse.  Use this feature if you want to install all of ECF into Eclipse.
    </description>
 
    <copyright>
@@ -26,8 +26,13 @@ Contributors: Composent, Inc. - initial API and implementation
    </license>
 
    <includes
-         id="org.eclipse.ecf.remoteservice.sdk.feature"
+         id="org.eclipse.ecf.docshare.feature"
          version="0.0.0"/>
+
+   <requires>
+      <import feature="org.eclipse.ecf.remoteservice.sdk.feature" version="3.8" match="compatible"/>
+      <import feature="org.eclipse.ecf.remoteservice.sdk.examples.feature" version="1.0" match="compatible"/>
+   </requires>
 
    <plugin
          id="org.eclipse.ecf.doc"
@@ -170,13 +175,6 @@ Contributors: Composent, Inc. - initial API and implementation
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.ecf.docshare"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.ecf.provider.filetransfer.scp"
          download-size="0"
          install-size="0"
@@ -192,13 +190,6 @@ Contributors: Composent, Inc. - initial API and implementation
 
    <plugin
          id="org.eclipse.ecf.protocol.bittorrent"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.sync"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -299,6 +290,34 @@ Contributors: Composent, Inc. - initial API and implementation
 
    <plugin
          id="org.eclipse.ecf.remoteservices.tooling.pde"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.ecf.storage"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.ecf.sync"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.ecf.protocol.msn"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.ecf.provider.msn"
          download-size="0"
          install-size="0"
          version="0.0.0"

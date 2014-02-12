@@ -67,26 +67,4 @@ public interface IServiceInfoFactory {
 	public IServiceInfo createServiceInfo(
 			IDiscoveryAdvertiser advertiser,
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription);
-
-/**
-	 * Remove any previously created service info that is associated with the
-	 * given endpointDescription (and advertiser).
-	 * 
-	 * @param advertiser
-	 *            the advertiser associated with the service info previously
-	 *            created. Must not be <code>null</code>.
-	 * @param endpointDescription
-	 *            the endpoint description that the service info was previously
-	 *            created for. Must not be <code>null</code>.
-	 * @return IServiceInfo to use to unpublish the endpointDescription for
-	 *         discovery (via
-	 *         {@link IDiscoveryAdvertiser#unregisterService(IServiceInfo)). If
-	 *         <code>null</code> no service info exists that had previously been
-	 *         created for the given endpointDescription and advertiser.
-	 * @since 3.0
-	 */
-	public IServiceInfo removeServiceInfo(
-			IDiscoveryAdvertiser advertiser,
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription);
-
 }

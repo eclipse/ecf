@@ -6,7 +6,7 @@
       provider-name="Eclipse.org - ECF">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the httpclient4-based filetransfer provider.
+      This feature provides the Apache HttpComponents/HttpClient4-based FileTransfer provider used by the Eclipse platform to support P2 filetransfer.
    </description>
 
    <copyright url="http://www.example.com/copyright">
@@ -23,19 +23,9 @@ Contributors: Composent, Inc. - initial API and implementation
       %license
    </license>
 
-   <plugin
-         id="org.apache.httpcomponents.httpclient"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.httpcomponents.httpcore"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <requires>
+      <import feature="org.eclipse.ecf.filetransfer.feature" version="3.9.0" match="compatible"/>
+   </requires>
 
    <plugin
          id="org.eclipse.ecf.provider.filetransfer.httpclient4"
@@ -45,11 +35,10 @@ Contributors: Composent, Inc. - initial API and implementation
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.ecf.provider.filetransfer.httpclient4.ssl"
+         id="org.apache.commons.codec"
          download-size="0"
          install-size="0"
          version="0.0.0"
-         fragment="true"
          unpack="false"/>
 
    <plugin
@@ -60,7 +49,14 @@ Contributors: Composent, Inc. - initial API and implementation
          unpack="false"/>
 
    <plugin
-         id="org.apache.commons.codec"
+         id="org.apache.httpcomponents.httpclient"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.httpcomponents.httpcore"
          download-size="0"
          install-size="0"
          version="0.0.0"

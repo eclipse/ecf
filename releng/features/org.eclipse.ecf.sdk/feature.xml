@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.ecf.sdk"
-      label="ECF Target Components Feature"
+      label="ECF SDK Feature"
       version="3.8.0.qualifier"
       provider-name="Eclipse.org">
 
    <description url="http://www.eclipse.org/ecf">
-      Eclipse Communications Framework Target Components
+      Eclipse Communication Framework SDK
    </description>
 
    <copyright>
@@ -308,10 +308,6 @@ limitations under the License.
    </license>
 
    <includes
-         id="org.eclipse.ecf.core"
-         version="0.0.0"/>
-
-   <includes
          id="org.eclipse.ecf.remoteservice.sdk.feature"
          version="0.0.0"/>
 
@@ -320,11 +316,39 @@ limitations under the License.
          version="0.0.0"/>
 
    <includes
+         id="org.eclipse.ecf.filetransfer.httpclient4.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.filetransfer.httpclient.ssl.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.core.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.core.ssl.feature"
+         version="0.0.0"/>
+
+   <includes
          id="org.eclipse.ecf.filetransfer.feature"
          version="0.0.0"/>
 
    <includes
-         id="org.eclipse.ecf.filetransfer.httpclient4.feature"
+         id="org.eclipse.ecf.filetransfer.ssl.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.core"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.remoteservice.sdk.examples.feature"
          version="0.0.0"/>
 
 </feature>

@@ -2,11 +2,20 @@
 <feature
       id="org.eclipse.ecf.remoteservice.feature"
       label="ECF Remote Services"
-      version="1.1.0.qualifier"
+      version="2.0.0.qualifier"
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the ECF Remote Services.  The ECF Remote Services API allows distribution of services over a network.
+      This feature provides the ECF Remote Services API.  The ECF Remote
+Services API allows distribution of services over a network.  This API is required by ECF&apos;s implementation of OSGi R6 Remote Services/Remote Service Admin.  Remote Services are specified in chapter 100 of the OSGi R6 Enterprise specification while RSA is specified in chapter 122 of the OSGi R6 Enterprise specification.  
+
+For the Remote Service and Remote Service Admin specifications see 
+
+http://www.osgi.org/Specifications/HomePage
+
+For tutorials, documentation, and examples with ECF&apos;s Implementation of OSGi RS/RSA see
+
+https://wiki.eclipse.org/ECF#OSGi_Remote_Services
    </description>
 
    <copyright>
@@ -26,46 +35,11 @@
    </license>
 
    <requires>
-      <import feature="org.eclipse.ecf.discovery.feature" version="1.0.0"/>
+      <import feature="org.eclipse.ecf.core.feature" version="1.1" match="compatible"/>
    </requires>
 
    <plugin
-         id="org.eclipse.ecf.provider.remoteservice"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.ecf.remoteservice"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.sharedobject"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.provider"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.console"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.remoteservice.servlet"
          download-size="0"
          install-size="0"
          version="0.0.0"

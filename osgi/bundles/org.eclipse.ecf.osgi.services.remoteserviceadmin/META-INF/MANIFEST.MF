@@ -2,13 +2,13 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %bundle.name
 Bundle-SymbolicName: org.eclipse.ecf.osgi.services.remoteserviceadmin
-Bundle-Version: 3.1.0.qualifier
+Bundle-Version: 4.0.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator
 Bundle-Vendor: %bundle.provider
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-Localization: bundle
 Export-Package: org.eclipse.ecf.internal.osgi.services.remoteserviceadmin;x-internal:=true,
- org.eclipse.ecf.osgi.services.remoteserviceadmin;version="1.0.0"
+ org.eclipse.ecf.osgi.services.remoteserviceadmin;version="2.0.0"
 Require-Bundle: org.eclipse.equinox.common;bundle-version="3.6.0",
  org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy;bundle-version="1.0.0"
 Import-Package: javax.xml.parsers,
@@ -18,9 +18,9 @@ Import-Package: javax.xml.parsers,
  org.eclipse.ecf.core.jobs;version="1.1.0",
  org.eclipse.ecf.core.security;version="3.1.0",
  org.eclipse.ecf.core.util;version="3.2.0",
- org.eclipse.ecf.discovery;version="4.0.0",
+ org.eclipse.ecf.discovery;version="4.1.0",
  org.eclipse.ecf.discovery.identity,
- org.eclipse.ecf.remoteservice;version="6.0.0",
+ org.eclipse.ecf.remoteservice;version="7.2.0",
  org.eclipse.ecf.remoteservice.events;version="6.0.0",
  org.eclipse.equinox.concurrent.future;version="1.0.0",
  org.eclipse.osgi.framework.eventmgr,

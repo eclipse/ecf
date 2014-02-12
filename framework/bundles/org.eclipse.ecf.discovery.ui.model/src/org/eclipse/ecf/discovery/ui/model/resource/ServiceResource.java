@@ -74,11 +74,10 @@ public class ServiceResource extends ResourceImpl implements Resource {
 					ModelPlugin
 							.getDefault()
 							.getLog()
-							.log(
-									new Status(
-											IStatus.WARNING,
-											ModelPlugin.PLUGIN_ID,
-											Messages.ServiceResource_NO_DISCOVERY_CONTAINER_AVAILABLE));
+							.log(new Status(
+									IStatus.WARNING,
+									ModelPlugin.PLUGIN_ID,
+									Messages.ServiceResource_NO_DISCOVERY_CONTAINER_AVAILABLE));
 				}
 			} catch (ContainerCreateException e1) {
 				container = null;
@@ -86,16 +85,17 @@ public class ServiceResource extends ResourceImpl implements Resource {
 				ModelPlugin
 						.getDefault()
 						.getLog()
-						.log(
-								new Status(
-										IStatus.WARNING,
-										ModelPlugin.PLUGIN_ID,
-										Messages.ServiceResource_NO_DISCOVERY_CONTAINER_AVAILABLE,
-										e1));
+						.log(new Status(
+								IStatus.WARNING,
+								ModelPlugin.PLUGIN_ID,
+								Messages.ServiceResource_NO_DISCOVERY_CONTAINER_AVAILABLE,
+								e1));
 				return;
 			} catch (ContainerConnectException e) {
-				ModelPlugin.getDefault().getLog().log(
-						new Status(IStatus.ERROR, ModelPlugin.PLUGIN_ID, e
+				ModelPlugin
+						.getDefault()
+						.getLog()
+						.log(new Status(IStatus.ERROR, ModelPlugin.PLUGIN_ID, e
 								.getMessage(), e));
 			} finally {
 				lock.release();
@@ -169,18 +169,18 @@ public class ServiceResource extends ResourceImpl implements Resource {
 					ModelPlugin
 							.getDefault()
 							.getLog()
-							.log(
-									new Status(
-											IStatus.INFO,
-											ModelPlugin.PLUGIN_ID,
-											NLS
-													.bind(
-															Messages.ServiceResource_NoEMFServiceModel,
-															anUri)));
+							.log(new Status(
+									IStatus.INFO,
+									ModelPlugin.PLUGIN_ID,
+									NLS.bind(
+											Messages.ServiceResource_NoEMFServiceModel,
+											anUri)));
 				} else {
-					ModelPlugin.getDefault().getLog().log(
-							new Status(IStatus.INFO, ModelPlugin.PLUGIN_ID, e
-									.getMessage()));
+					ModelPlugin
+							.getDefault()
+							.getLog()
+							.log(new Status(IStatus.INFO,
+									ModelPlugin.PLUGIN_ID, e.getMessage()));
 				}
 			}
 			emfIServiceInfo = ModelFactory.eINSTANCE.createIServiceInfo();
@@ -214,9 +214,9 @@ public class ServiceResource extends ResourceImpl implements Resource {
 			// set Authority to host and port of the service
 			final java.net.URI location = anIServiceInfo.getLocation();
 			final String authority = location.getAuthority();
-			uri = URI.createHierarchicalURI(uri.scheme(), authority, uri
-					.device(), uri.segments(), location.getQuery(), location
-					.getFragment());
+			uri = URI.createHierarchicalURI(uri.scheme(), authority,
+					uri.device(), uri.segments(), location.getQuery(),
+					location.getFragment());
 
 			return uri;
 		}
@@ -248,8 +248,8 @@ public class ServiceResource extends ResourceImpl implements Resource {
 				for (java.util.Iterator itr = host.getServices().iterator(); itr
 						.hasNext();) {
 					IServiceInfo emfIServiceInfo = (IServiceInfo) itr.next();
-					if (aComparator.compare(ecfServiceInfo, emfIServiceInfo
-							.getEcfServiceInfo()) == 0) {
+					if (aComparator.compare(ecfServiceInfo,
+							emfIServiceInfo.getEcfServiceInfo()) == 0) {
 						return emfIServiceInfo;
 					}
 				}
@@ -289,11 +289,10 @@ public class ServiceResource extends ResourceImpl implements Resource {
 				}
 				getResourceSet().getResources().removeAll(resources);
 
-				Trace
-						.trace(
-								ModelPlugin.PLUGIN_ID,
-								ModelPlugin.PLUGIN_ID + "/methods/tracing", ServiceResource.class, //$NON-NLS-1$
-								"serviceUndiscovered", "Removed service " + emfIServiceInfo); //$NON-NLS-1$ //$NON-NLS-2$
+				Trace.trace(
+						ModelPlugin.PLUGIN_ID,
+						ModelPlugin.PLUGIN_ID + "/methods/tracing", ServiceResource.class, //$NON-NLS-1$
+						"serviceUndiscovered", "Removed service " + emfIServiceInfo); //$NON-NLS-1$ //$NON-NLS-2$
 
 				// remove the host if no services left for this particular host
 				IHost host = findIHost(getInetAddress(ecfServiceInfo
@@ -414,6 +413,10 @@ public class ServiceResource extends ResourceImpl implements Resource {
 				}
 				return -1;
 			}
+		}
+
+		public boolean triggerDiscovery() {
+			return false;
 		}
 	}
 

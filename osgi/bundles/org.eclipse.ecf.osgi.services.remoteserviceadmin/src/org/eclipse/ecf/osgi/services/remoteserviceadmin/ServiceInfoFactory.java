@@ -12,7 +12,6 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.ecf.core.identity.IDFactory;
@@ -33,41 +32,6 @@ import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
 public class ServiceInfoFactory extends AbstractMetadataFactory implements
 		IServiceInfoFactory {
 
-	protected Map<ServiceInfoKey, IServiceInfo> serviceInfos = new HashMap();
-
-	protected class ServiceInfoKey {
-		private org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription;
-		private Namespace discoveryNamespace;
-		private int hashCode = 7;
-
-		/**
-		 * @since 3.0
-		 */
-		public ServiceInfoKey(
-				org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
-				Namespace discoveryNamespace) {
-			this.endpointDescription = endpointDescription;
-			this.discoveryNamespace = discoveryNamespace;
-			this.hashCode = 31 * this.hashCode + endpointDescription.hashCode();
-			this.hashCode = 31 * this.hashCode + discoveryNamespace.hashCode();
-		}
-
-		public boolean equals(Object other) {
-			if (other == null)
-				return false;
-			if (!(other instanceof ServiceInfoKey))
-				return false;
-			ServiceInfoKey otherKey = (ServiceInfoKey) other;
-			return (this.endpointDescription
-					.equals(otherKey.endpointDescription) && this.discoveryNamespace
-					.equals(otherKey.discoveryNamespace));
-		}
-
-		public int hashCode() {
-			return hashCode;
-		}
-	}
-
 	/**
 	 * @since 3.0
 	 */
@@ -75,15 +39,6 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 			IDiscoveryAdvertiser advertiser,
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
 		try {
-			Namespace advertiserNamespace = advertiser.getServicesNamespace();
-			ServiceInfoKey key = new ServiceInfoKey(endpointDescription,
-					advertiserNamespace);
-			IServiceInfo existingServiceInfo = null;
-			synchronized (serviceInfos) {
-				existingServiceInfo = serviceInfos.get(key);
-				// If it's already there, then we return null
-				if (existingServiceInfo != null)
-					return null;
 				IServiceTypeID serviceTypeID = createServiceTypeID(
 						endpointDescription, advertiser);
 				String serviceName = createServiceName(endpointDescription,
@@ -95,10 +50,7 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 						serviceName, uri);
 				IServiceInfo newServiceInfo = createServiceInfo(uri,
 						serviceName, serviceTypeID, serviceProperties);
-				// put into map using key
-				serviceInfos.put(key, newServiceInfo);
 				return newServiceInfo;
-			}
 		} catch (Exception e) {
 			logError(
 					"createServiceInfo", //$NON-NLS-1$
@@ -213,6 +165,13 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 	protected IServiceTypeID createServiceTypeID(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
 			IDiscoveryAdvertiser advertiser) {
+		
+		Namespace servicesNamespace = IDFactory.getDefault()
+				.getNamespaceByName("ecf.namespace.discovery"); //$NON-NLS-1$
+		if (advertiser != null) {
+			servicesNamespace = advertiser.getServicesNamespace();
+		}
+
 		Map props = endpointDescription.getProperties();
 		String[] scopes = PropertiesUtil.getStringArrayWithDefault(props,
 				RemoteConstants.DISCOVERY_SCOPE, IServiceTypeID.DEFAULT_SCOPE);
@@ -223,33 +182,8 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 				RemoteConstants.DISCOVERY_NAMING_AUTHORITY,
 				IServiceTypeID.DEFAULT_NA);
 		return ServiceIDFactory.getDefault().createServiceTypeID(
-				advertiser.getServicesNamespace(),
+				servicesNamespace,
 				new String[] { RemoteConstants.DISCOVERY_SERVICE_TYPE },
 				scopes, protocols, namingAuthority);
-	}
-
-	public void close() {
-		removeAllServiceInfos();
-		super.close();
-	}
-
-	private void removeAllServiceInfos() {
-		synchronized (serviceInfos) {
-			serviceInfos.clear();
-		}
-	}
-
-	/**
-	 * @since 3.0
-	 */
-	public IServiceInfo removeServiceInfo(
-			IDiscoveryAdvertiser advertiser,
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
-		Namespace advertiserNamespace = advertiser.getServicesNamespace();
-		ServiceInfoKey key = new ServiceInfoKey(endpointDescription,
-				advertiserNamespace);
-		synchronized (serviceInfos) {
-			return serviceInfos.remove(key);
-		}
 	}
 }

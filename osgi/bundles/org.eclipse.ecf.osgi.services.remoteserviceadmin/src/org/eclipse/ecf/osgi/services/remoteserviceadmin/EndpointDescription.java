@@ -201,14 +201,14 @@ public class EndpointDescription extends
 	}
 
 	/**
-	 * @since 3.1
+	 * @since 4.0
 	 */
 	public String getEndpointId() {
 		return ecfid;
 	}
 	
 	/**
-	 * @since 3.1
+	 * @since 4.0
 	 */
 	public Long getTimestamp() {
 		return this.timestamp;

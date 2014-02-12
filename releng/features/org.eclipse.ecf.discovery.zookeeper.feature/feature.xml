@@ -6,7 +6,7 @@
       provider-name="%providerName">
 
    <description url="http://wiki.eclipse.org/Zookeeper_Based_ECF_Discovery">
-      This feature provides the Apache Zookeeper Discovery Provider.
+      This feature provides the Apache Zookeeper Discovery Provider.  This provider can be used by OSGi Remote Services Discovery to publish and discover OSGi RS EndpointDescriptions.
    </description>
 
    <copyright url="http://www.eclipse.org/legal/epl-v10.html">
@@ -27,16 +27,7 @@
    </license>
 
    <requires>
-      <import plugin="org.apache.log4j"/>
-      <import plugin="org.eclipse.equinox.common" version="3.5.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ecf.discovery" version="3.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ecf"/>
-      <import plugin="org.eclipse.ecf.identity"/>
-      <import plugin="org.eclipse.equinox.concurrent"/>
-      <import plugin="org.eclipse.osgi"/>
-      <import plugin="org.eclipse.osgi.services"/>
-      <import plugin="org.eclipse.equinox.ds"/>
-      <import feature="org.eclipse.ecf.discovery.feature" version="1.0.0"/>
+      <import feature="org.eclipse.ecf.discovery.feature" version="1.0.0" match="compatible"/>
    </requires>
 
    <plugin
@@ -55,13 +46,6 @@
 
    <plugin
          id="org.apache.hadoop.zookeeper"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.slf4j.api"
          download-size="0"
          install-size="0"
          version="0.0.0"

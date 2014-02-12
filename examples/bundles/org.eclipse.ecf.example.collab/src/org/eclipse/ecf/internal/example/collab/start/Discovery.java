@@ -12,11 +12,7 @@ package org.eclipse.ecf.internal.example.collab.start;
 
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
-import org.eclipse.ecf.discovery.IServiceEvent;
-import org.eclipse.ecf.discovery.IServiceListener;
-import org.eclipse.ecf.discovery.IServiceTypeEvent;
-import org.eclipse.ecf.discovery.IServiceTypeListener;
+import org.eclipse.ecf.discovery.*;
 
 public class Discovery {
 
@@ -58,6 +54,11 @@ public class Discovery {
 		public void serviceUndiscovered(IServiceEvent anEvent) {
 			// TODO Auto-generated method stub
 
+		}
+
+		public boolean triggerDiscovery() {
+			// TODO Auto-generated method stub
+			return false;
 		}
 	}
 }

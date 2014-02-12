@@ -243,6 +243,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 	}
 
 	public void testRegisterAndUpdateProperties() throws Exception {
+		remoteServiceAdminEvents.clear();
 		// register RemoteServiceAdminListener
 		ServiceRegistration listenerReg = getContext().registerService(RemoteServiceAdminListener.class.getName(), createRemoteServiceAdminListener(), null);
 		// Create server container

@@ -13,9 +13,6 @@ Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.internal.tests;x-internal:=true,
  org.eclipse.ecf.tests,
  org.eclipse.ecf.tests.connect,
- org.eclipse.ecf.tests.core;x-internal:=true,
- org.eclipse.ecf.tests.core.identity;x-internal:=true,
- org.eclipse.ecf.tests.core.util;x-internal:=true,
  org.eclipse.ecf.tests.util
 Import-Package: org.eclipse.osgi.util;version="1.1.0",
  org.osgi.framework;version="1.4.0",

@@ -106,6 +106,14 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 	 * @see
 	 * org.osgi.service.remoteserviceadmin.EndpointListener#endpointAdded(org
 	 * .osgi.service.remoteserviceadmin.EndpointDescription, java.lang.String)
+	 * 
+	 * 
+	 * From the R5 spec page 329 section 122.6.2:
+	 * 
+	 * Notify the Endpoint Listener of a new Endpoint Description. The second
+	 * parameter is the filter that matched the Endpoint Description.
+	 * Registering the same Endpoint multiple times counts as a single
+	 * registration.
 	 */
 	public void endpointAdded(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,

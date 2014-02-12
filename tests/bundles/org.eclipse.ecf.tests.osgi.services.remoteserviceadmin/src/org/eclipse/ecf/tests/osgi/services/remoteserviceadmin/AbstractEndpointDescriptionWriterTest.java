@@ -1,14 +1,19 @@
 package org.eclipse.ecf.tests.osgi.services.remoteserviceadmin;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.Properties;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
+import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionWriter;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionAdvertiser;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.IServiceInfoFactory;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.ServiceInfoFactory;
+import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.remoteserviceadmin.RemoteConstants;
 
@@ -18,74 +23,94 @@ public abstract class AbstractEndpointDescriptionWriterTest extends
 	protected static final int REGISTER_WAIT = 2000;
 	private ServiceRegistration registration;
 
-	private ServiceRegistration writerEndpointDescriptionAdvertiser;
-	private EndpointDescriptionWriter writer;
+	private ServiceRegistration serviceInfoFactory;
 	
-	protected void setUp() throws Exception {
-		super.setUp();
-		writer = new EndpointDescriptionWriter();
-		writerEndpointDescriptionAdvertiser = getContext().registerService(IEndpointDescriptionAdvertiser.class.getName(), createStandardOutputWriterServiceInfoFactory(), null);
-	}
-
-	private IEndpointDescriptionAdvertiser createStandardOutputWriterServiceInfoFactory() {
-		return new IEndpointDescriptionAdvertiser() {
-
-			@Override
-			public IStatus advertise(EndpointDescription endpointDescription) {
-				// TODO Auto-generated method stub
-				try {
-					StringWriter sr = new StringWriter();
-					sr.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>").append("\n");
-					writer.writeEndpointDescriptions(sr, new EndpointDescription[] { (EndpointDescription) endpointDescription });
-					System.out.print(sr.toString());
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				return Status.OK_STATUS;
-			}
-
-			@Override
-			public IStatus unadvertise(EndpointDescription endpointDescription) {
-				// TODO Auto-generated method stub
-				return Status.OK_STATUS;
-			}
-
-			@Override
-			public IStatus advertise(
-					org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
-				// TODO Auto-generated method stub
-				return Status.OK_STATUS;
-			}
-
-			@Override
-			public IStatus unadvertise(
-					org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
-				// TODO Auto-generated method stub
-				return null;
-			}
-		};
-	}
-
 	protected void tearDown() throws Exception {
 		if (registration != null) {
 			registration.unregister();
 			registration = null;
 		}
-		if (writerEndpointDescriptionAdvertiser != null) {
-			writerEndpointDescriptionAdvertiser.unregister();
-			writerEndpointDescriptionAdvertiser = null;
+		if (serviceInfoFactory != null) {
+			serviceInfoFactory.unregister();
+			serviceInfoFactory = null;
 		}
 		super.tearDown();
 	}
 
-	public void testRegisterOnCreatedServer() throws Exception {
-		Properties props = getServiceProperties();
+	
+	private static class EDEFServiceInfoFactory extends ServiceInfoFactory {
+
+		@Override
+		public IServiceInfo createServiceInfo(
+				IDiscoveryAdvertiser advertiser,
+				org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
+			try {
+				EDEFBundleGenerator edefBundleGenerator = new EDEFBundleGenerator(new File(System.getProperty("java.io.tmpdir")),"org.eclipse.ecf.edefbundlegenerator","1.0.0",null);
+				edefBundleGenerator.generateEDEFBundle(new EndpointDescription[] { (EndpointDescription) endpointDescription });
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return super.createServiceInfo(advertiser, endpointDescription);
+		}
+	}
+	
+	public void testRegisterOnCreatedServerEDEF() throws Exception {
+		
+		// Make sure we take precedence over default ISIF
+		final Dictionary<String, String> props = new Hashtable<String, String>();
+		props.put(Constants.SERVICE_RANKING, "9999");
+
+		serviceInfoFactory = getContext().registerService(
+				IServiceInfoFactory.class,
+				new EDEFServiceInfoFactory(), props);
+		
 		// Actually register with default service (IConcatService)
-		registration = registerDefaultService(props);
+		registration = registerDefaultService(getServiceProperties());
 		// Wait a while
 		Thread.sleep(REGISTER_WAIT);
+
+	}
+
+	private static class XMLServiceInfoFactory extends ServiceInfoFactory {
+
+		private EndpointDescriptionWriter writer;
+
+		public XMLServiceInfoFactory(EndpointDescriptionWriter writer) {
+			this.writer = writer;
+		}
+
+		@Override
+		public IServiceInfo createServiceInfo(
+				IDiscoveryAdvertiser advertiser,
+				org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
+			try {
+				StringWriter sr = new StringWriter();
+				sr.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>").append("\n");
+				writer.writeEndpointDescriptions(sr, new EndpointDescription[] { (EndpointDescription) endpointDescription });
+				System.out.print(sr.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return super.createServiceInfo(advertiser, endpointDescription);
+		}
+	}
+
+	public void testRegisterOnCreatedServer() throws Exception {
+		
+		// Make sure we take precedence over default ISIF
+		final Dictionary<String, String> props = new Hashtable<String, String>();
+		props.put(Constants.SERVICE_RANKING, "9999");
+
+		serviceInfoFactory = getContext().registerService(
+				IServiceInfoFactory.class,
+				new XMLServiceInfoFactory(new EndpointDescriptionWriter()), props);
+		
+		// Actually register with default service (IConcatService)
+		registration = registerDefaultService(getServiceProperties());
+		// Wait a while
+		Thread.sleep(REGISTER_WAIT);
+		
+		//TODO really test something here
 	}
 
 	protected abstract String getServerContainerTypeName();

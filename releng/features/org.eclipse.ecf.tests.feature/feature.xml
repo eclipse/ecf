@@ -307,38 +307,6 @@ and
 limitations under the License.
    </license>
 
-   <requires>
-      <import plugin="org.eclipse.osgi"/>
-      <import plugin="org.eclipse.ecf.discovery"/>
-      <import plugin="org.eclipse.ecf.presence"/>
-      <import plugin="org.eclipse.ecf.sharedobject"/>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.eclipse.ecf.protocol.msn" version="0.3.1" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ecf.provider.datashare.nio"/>
-      <import plugin="org.eclipse.ecf.provider.jmdns"/>
-      <import plugin="org.eclipse.ecf.provider.jslp"/>
-      <import plugin="ch.ethz.iks.slp" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ecf.provider.xmpp"/>
-      <import plugin="org.eclipse.ecf.datashare" version="2.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.equinox.app" version="1.2.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ecf.provider"/>
-      <import plugin="org.eclipse.ecf.server.generic"/>
-      <import plugin="org.junit" version="3.8.2" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ecf.storage" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.equinox.security"/>
-      <import plugin="org.eclipse.ecf.identity"/>
-      <import plugin="org.eclipse.ecf.sync"/>
-      <import plugin="org.eclipse.jface.text"/>
-      <import plugin="org.eclipse.ecf.osgi.services.distribution" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ecf.remoteservice" version="3.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ecf" version="3.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.equinox.common" version="3.5.1" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.equinox.concurrent" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ecf.provider.discovery"/>
-      <import plugin="org.eclipse.ecf.provider.r_osgi"/>
-      <import plugin="ch.ethz.iks.r_osgi.remote"/>
-   </requires>
-
    <plugin
          id="org.eclipse.ecf.tests"
          download-size="0"

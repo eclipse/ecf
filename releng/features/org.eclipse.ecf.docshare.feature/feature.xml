@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipse.ecf.docshare.feature"
+      label="ECF Docshare"
+      version="1.0.0.qualifier"
+      provider-name="Eclipse.org - ECF">
+
+   <description url="http://www.eclipse.org/ecf">
+      This feature provides the ECF Docshare Add-on for Eclipse.   This add-on allows Eclipse-based text editors to do real-time document sharing using XMPP/Google Talk or other protocols.  For a demo of docshare see the following
+
+http://vimeo.com/1195398
+
+And for more technical info about extending/using docshare see
+
+https://wiki.eclipse.org/ECF/DocShare_Plugin
+
+https://wiki.eclipse.org/Extending_Real-Time_Shared_Editing_for_Use_with_Other_Editors
+   </description>
+
+   <copyright>
+      #################################################
+# Copyright (c) 2010 Composent, Inc. and others. All rights reserved.
+# This program and the accompanying materials are made available under the 
+# terms of the Eclipse Public License v1.0 which accompanies this 
+# distribution, and is available at 
+# http://www.eclipse.org/legal/epl-v10.html
+#
+# Contributors: Composent, Inc. - initial API and implementation
+#################################################
+   </copyright>
+
+   <license url="%licenseURL">
+      %license
+   </license>
+
+   <requires>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.ecf.datashare"/>
+      <import plugin="org.eclipse.ui.editors"/>
+      <import plugin="org.eclipse.ecf.presence.ui"/>
+      <import plugin="org.eclipse.ecf.presence"/>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.core.filesystem"/>
+   </requires>
+
+   <plugin
+         id="org.eclipse.ecf.docshare"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.ecf.sync"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>

@@ -6,7 +6,8 @@
       provider-name="Eclipse.org - ECF">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the httpclient-based filetransfer provider used by the Eclipse platform to support P2 filetransfer.
+      This feature provides the Apache HttpClient 3.1-based FileTransfer provider
+used by the Eclipse platform to support P2 filetransfer.
    </description>
 
    <copyright>
@@ -23,6 +24,17 @@ Contributors: Composent, Inc. - initial API and implementation
    <license url="%licenseURL">
       %license
    </license>
+
+   <requires>
+      <import feature="org.eclipse.ecf.filetransfer.feature" version="3.9.0" match="compatible"/>
+   </requires>
+
+   <plugin
+         id="org.eclipse.ecf.provider.filetransfer.httpclient"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.apache.commons.codec"
@@ -43,28 +55,6 @@ Contributors: Composent, Inc. - initial API and implementation
          download-size="0"
          install-size="0"
          version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.ssl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.provider.filetransfer.httpclient"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.provider.filetransfer.httpclient.ssl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
          unpack="false"/>
 
 </feature>

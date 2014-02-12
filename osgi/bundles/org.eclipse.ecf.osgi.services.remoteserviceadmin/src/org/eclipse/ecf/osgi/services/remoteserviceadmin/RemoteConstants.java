@@ -96,13 +96,13 @@ public class RemoteConstants {
 	/**
 	 * ECF {@link EndpointDescription} property (with value of type String)
 	 * that defines the ecf endpoint id (typically the container id).
-	 * @since 3.1
+	 * @since 4.0
 	 */
 	public static final String ENDPOINT_ID = "ecf.endpoint.id";  //$NON-NLS-1$
 	/**
 	 * ECF {@link EndpointDescription} property (with value of type Long)
 	 * that defines a service timestamp set upon initial export of the remote service.
-	 * @since 3.1
+	 * @since 4.0
 	 */
 	public static final String ENDPOINT_TIMESTAMP = "ecf.endpoint.ts";  //$NON-NLS-1$
 	/**
