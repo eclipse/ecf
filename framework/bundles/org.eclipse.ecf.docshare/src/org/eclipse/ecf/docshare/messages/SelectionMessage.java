@@ -21,19 +21,11 @@ public class SelectionMessage extends Message {
 
 	int offset;
 	int length;
-	int startLine;
-	int endLine;
 
-	public SelectionMessage(int offset, int length, int startLine, int endLine) {
+	public SelectionMessage(int offset, int length) {
 		super();
 		this.offset = offset;
 		this.length = length;
-		this.startLine = startLine;
-		this.endLine = endLine;
-	}
-
-	public SelectionMessage(int offset, int length) {
-		this(offset, length, -1, -1);
 	}
 
 	/**
@@ -48,20 +40,6 @@ public class SelectionMessage extends Message {
 	 */
 	public int getLength() {
 		return length;
-	}
-
-	/**
-	 * @return the startLine
-	 */
-	public int getStartLine() {
-		return startLine;
-	}
-
-	/**
-	 * @return the endLine
-	 */
-	public int getEndLine() {
-		return endLine;
 	}
 
 }
