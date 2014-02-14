@@ -21,13 +21,18 @@ import org.eclipse.ecf.presence.IPresence;
  * created as appropriate.
  * 
  */
-public class RosterEntry extends RosterItem implements IRosterEntry {
+public class RosterEntry extends RosterItem implements IRosterEntry, IMultiResourceRosterEntry {
 
 	protected IUser user;
 
 	protected IPresence presence;
 
 	protected List groups;
+
+	/**
+	 * @since 2.1
+	 */
+	protected List resources;
 
 	public RosterEntry(IRosterItem parent, IUser user, IPresence presenceState) {
 		Assert.isNotNull(parent);
@@ -40,6 +45,7 @@ public class RosterEntry extends RosterItem implements IRosterEntry {
 			groups.add(parent);
 			((RosterGroup) parent).add(this);
 		}
+		this.resources = new ArrayList();
 	}
 
 	public void setPresence(IPresence newPresence) {
@@ -129,6 +135,7 @@ public class RosterEntry extends RosterItem implements IRosterEntry {
 	public String toString() {
 		StringBuffer sb = new StringBuffer("RosterEntry["); //$NON-NLS-1$
 		synchronized (sb) {
+			sb.append("userid=" + getUser().getID().getName()).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
 			sb.append("name=").append(getName()).append(';'); //$NON-NLS-1$
 			sb.append("presence=").append(presence).append(';'); //$NON-NLS-1$
 			sb.append("groups="); //$NON-NLS-1$
@@ -142,6 +149,55 @@ public class RosterEntry extends RosterItem implements IRosterEntry {
 			sb.append(']');
 		}
 		return sb.toString();
+	}
+
+	/**
+	 * @since 2.1
+	 */
+	public boolean updateResource(String resourceName, IPresence p) {
+		if (resourceName == null)
+			return false;
+		synchronized (resources) {
+			for (Iterator i = resources.iterator(); i.hasNext();) {
+				RosterResource r = (RosterResource) i.next();
+				if (r.getName().equals(resourceName)) {
+					r.setPresence(p);
+					return true;
+				}
+			}
+			resources.add(new RosterResource(this, resourceName, p));
+			return false;
+		}
+	}
+
+	/**
+	 * @since 2.1
+	 */
+	public RosterResource removeResource(String resourceName) {
+		if (resourceName == null)
+			return null;
+		RosterResource result = null;
+		synchronized (resources) {
+			for (Iterator i = resources.iterator(); i.hasNext();) {
+				RosterResource r = (RosterResource) i.next();
+				if (r.getName().equals(resourceName)) {
+					i.remove();
+					result = r;
+				}
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * @since 2.1
+	 */
+	public IRosterResource[] getResources() {
+		List result = null;
+		synchronized (resources) {
+			result = new ArrayList(resources);
+		}
+		return (IRosterResource[]) result.toArray(new IRosterResource[result.size()]);
 	}
 
 }

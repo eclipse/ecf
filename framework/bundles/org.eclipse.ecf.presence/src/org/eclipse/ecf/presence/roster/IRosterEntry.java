@@ -12,7 +12,6 @@
 package org.eclipse.ecf.presence.roster;
 
 import java.util.Collection;
-
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.presence.IPresence;
 
@@ -35,7 +34,7 @@ public interface IRosterEntry extends IRosterItem {
 	 * Get groups associated with this roster entry. Instance in list are of
 	 * type {@link IRosterGroup}
 	 * 
-	 * @return Iterator of groups that this roster entry belongs to. Will not
+	 * @return Collection of IRosterGroup instances entry belongs to. Will not
 	 *         return <code>null</code>.
 	 */
 	public Collection getGroups();
