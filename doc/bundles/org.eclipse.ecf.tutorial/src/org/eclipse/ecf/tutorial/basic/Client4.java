@@ -15,7 +15,6 @@ import org.eclipse.ecf.example.clients.XMPPChatClient;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.im.IChatMessage;
-import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
@@ -25,8 +24,7 @@ public class Client4 extends XMPPChatClient {
 	private static final String DEFAULT_USERNAME = "eclipsecon@ecf.eclipse.org";
 	
 	public Client4() {
-		super();
-		setMessageReceiver(new IMessageReceiver() {
+		super(new IMessageReceiver() {
 			public void handleMessage(final IChatMessage chatMessage) {
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
@@ -34,16 +32,9 @@ public class Client4 extends XMPPChatClient {
 								+ chatMessage.getFromID().getName(), chatMessage.getBody());
 					}
 				});
-			}});
-		setPresenceListener(new IPresenceListener(){
+			}},new IPresenceListener(){
 			public void handlePresence(ID fromID, IPresence presence) {
 				System.out.println("handlePresence("+fromID+","+presence+")");
-			}
-			public void handleRosterEntryAdd(IRosterEntry entry) {
-				System.out.println("handleRosterEntryAdd("+entry+")");
-			}
-			public void handleRosterEntryRemove(IRosterEntry entry) {
-				System.out.println("handleRosterEntryRemove("+entry+")");
 			}});
 	}
 	public void createAndConnect() throws ECFException {

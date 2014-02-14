@@ -34,7 +34,7 @@ public class MyChannel extends BaseChannel {
 				if (event instanceof IContainerConnectedEvent) {
 					IContainerConnectedEvent ccevent = (IContainerConnectedEvent) event;
 					// Check to make sure it's a client...not the groupID
-					if (!ccevent.getTargetID().equals(getGroupID())) sendHelloMessage();
+					if (!ccevent.getTargetID().equals(getConnectedID())) sendHelloMessage();
 				}
 				return false;
 			}});
