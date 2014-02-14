@@ -59,9 +59,9 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
-import org.jivesoftware.smack.packet.RosterPacket;
 import org.jivesoftware.smack.packet.Presence.Mode;
 import org.jivesoftware.smack.packet.Presence.Type;
+import org.jivesoftware.smack.packet.RosterPacket;
 import org.jivesoftware.smackx.packet.VCard;
 
 public class XMPPContainerPresenceHelper implements ISharedObject {
@@ -391,13 +391,53 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		}
 	}
 
+	private boolean replace(IRosterItem i1, IRosterItem i2) {
+		if (i1 instanceof IRosterEntry) {
+			IRosterEntry re1 = (IRosterEntry) i1;
+			if (!(i2 instanceof IRosterEntry))
+				return false;
+			IRosterEntry re2 = (IRosterEntry) i2;
+			XMPPID id1 = (XMPPID) re1.getUser().getID();
+			XMPPID id2 = (XMPPID) re2.getUser().getID();
+			String jid1 = id1.getUsernameAtHost();
+			String jid2 = id2.getUsernameAtHost();
+			if (jid1.equals(jid2)) {
+				String r1 = id1.getResourceName();
+				String r2 = id2.getResourceName();
+				if (r1 == null && r2 != null)
+					return true;
+			}
+		}
+		return false;
+	}
+
+	private void addUnique(Collection existingItems, IRosterItem newItem) {
+		List toAdd = new ArrayList();
+		if (existingItems.size() == 0)
+			toAdd.add(newItem);
+		else {
+			boolean addNewItem = true;
+			for (Iterator i = existingItems.iterator(); i.hasNext();) {
+				IRosterItem existing = (IRosterItem) i.next();
+				// If the same then we don't add it
+				if (existing.equals(newItem))
+					addNewItem = false;
+				// else if the new item should replace the existing then remove
+				if (replace(existing, newItem))
+					i.remove();
+			}
+			if (addNewItem)
+				toAdd.add(newItem);
+		}
+		for (Iterator i = toAdd.iterator(); i.hasNext();)
+			existingItems.add(i.next());
+	}
+
 	private void addUniqueToRoster(IRosterItem[] newItems) {
 		Collection existingItems = roster.getItems();
 		synchronized (existingItems) {
-			for (int i = 0; i < newItems.length; i++) {
-				if (!existingItems.contains(newItems[i]))
-					existingItems.add(newItems[i]);
-			}
+			for (int i = 0; i < newItems.length; i++)
+				addUnique(existingItems, newItems[i]);
 		}
 		rosterManager.notifyRosterUpdate(roster);
 	}
@@ -411,17 +451,20 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	}
 
 	protected IRosterEntry createRosterEntry(RosterEntry entry) {
-		final XMPPID xmppid = createIDFromName(entry.getUser());
-		final String name = (entry.getName() == null) ? xmppid.getUsername()
-				: XMPPID.unfixEscapeInNode(entry.getName());
-		return createRosterEntry(xmppid, name, entry.getGroups().iterator());
+		XMPPID xmppid = createIDFromName(entry.getUser());
+		return createRosterEntry(xmppid, getEntryName(xmppid, entry.getName()),
+				entry.getGroups().iterator());
+	}
+
+	private String getEntryName(XMPPID xmppid, String entryName) {
+		return (entryName == null) ? xmppid.getUsername() : XMPPID
+				.unfixEscapeInNode(entryName);
 	}
 
 	protected IRosterEntry createRosterEntry(XMPPID xmppid,
 			RosterPacket.Item entry) {
-		final String name = (entry.getName() == null) ? xmppid.getUsername()
-				: XMPPID.unfixEscapeInNode(entry.getName());
-		return createRosterEntry(xmppid, name, entry.getGroupNames().iterator());
+		return createRosterEntry(xmppid, getEntryName(xmppid, entry.getName()),
+				entry.getGroupNames().iterator());
 	}
 
 	protected void handleIQEvent(IQEvent evt) {
@@ -435,10 +478,8 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 						.iterator(); i.hasNext();) {
 					final RosterPacket.Item item = (RosterPacket.Item) i.next();
 					final RosterPacket.ItemType itemType = item.getItemType();
-					boolean remove = false;
 					XMPPID newID = createIDFromName(item.getUser());
-					final IRosterItem items[] = createRosterEntries(newID, item);
-					final IRosterEntry entry = createRosterEntry(newID, item);
+					boolean remove = false;
 					if (itemType == RosterPacket.ItemType.none
 							|| itemType == RosterPacket.ItemType.remove) {
 						removeItemFromRoster(roster.getItems(),
@@ -446,10 +487,10 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 						remove = true;
 					} else {
 						remove = false;
-						addUniqueToRoster(items);
+						addUniqueToRoster(createRosterEntries(newID, item));
 					}
 					// In both cases fire set roster entry
-					fireSetRosterEntry(remove, entry);
+					fireSetRosterEntry(remove, createRosterEntry(newID, item));
 				}
 			}
 		} else {
@@ -530,13 +571,14 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 					final List xhtmlbodylist = new ArrayList();
 					for (; xhtmlbodies.hasNext();)
 						xhtmlbodylist.add(xhtmlbodies.next());
-					chatManager.fireXHTMLChatMessage(fromID, threadID, msg
-							.getType(), subject, body, ECFConnection
-							.getPropertiesFromPacket(msg), xhtmlbodylist);
+					chatManager.fireXHTMLChatMessage(fromID, threadID,
+							msg.getType(), subject, body,
+							ECFConnection.getPropertiesFromPacket(msg),
+							xhtmlbodylist);
 				} else if (body != null) {
 					chatManager.fireChatMessage(fromID, threadID,
-							msg.getType(), subject, body, ECFConnection
-									.getPropertiesFromPacket(msg));
+							msg.getType(), subject, body,
+							ECFConnection.getPropertiesFromPacket(msg));
 				}
 			}
 		}
@@ -904,8 +946,8 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		final Presence newPresence = new Presence(
 				createPresenceType(ipresence), ipresence.getStatus(), 0,
 				createPresenceMode(ipresence));
-		ECFConnection.setPropertiesInPacket(newPresence, ipresence
-				.getProperties());
+		ECFConnection.setPropertiesInPacket(newPresence,
+				ipresence.getProperties());
 		return newPresence;
 	}
 
@@ -998,9 +1040,9 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	protected IRosterItem[] createRosterEntries(RosterEntry entry) {
 		final XMPPID xmppid = createIDFromName(entry.getUser());
 		final String name = entry.getName();
-		final User newUser = (name == null) ? new User(xmppid, xmppid
-				.getUsername()) : new User(xmppid, XMPPID
-				.unfixEscapeInNode(name));
+		final User newUser = (name == null) ? new User(xmppid,
+				xmppid.getUsername()) : new User(xmppid,
+				XMPPID.unfixEscapeInNode(name));
 		return createRosterEntries(entry.getGroups().iterator(), roster,
 				newUser);
 	}
