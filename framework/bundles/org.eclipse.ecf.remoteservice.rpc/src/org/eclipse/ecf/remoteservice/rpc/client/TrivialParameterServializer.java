@@ -31,7 +31,7 @@ public class TrivialParameterServializer implements IRemoteCallParameterSerializ
 		if (paramToSerialize != null) {
 			for (int i = 0; i < paramToSerialize.length; i++) {
 				IRemoteCallParameter p = new RemoteCallParameter(currentParameters[i].getName(),
-						paramToSerialize[i] == null ? currentParameters[i].getValue() : paramToSerialize);
+						paramToSerialize[i] == null ? currentParameters[i].getValue() : paramToSerialize[i]);
 				results.add(p);
 			}
 		}

@@ -85,6 +85,12 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 			+ NEWLINE
 			+ "#    Markus Kuppe <mkuppe@versant.com> - bug 184036" //$NON-NLS-1$
 			+ NEWLINE
+			+" *    Nick Boldt <codeslave@ca.ibm.com> - bug 206528, 209410" //$NON-NLS-1$
+			+ NEWLINE
+			+" *    Dominik Goepel <dominik.goepel@gmx.de> - bug 216644" //$NON-NLS-1$
+			+ NEWLINE
+			+" *    Nitin Dahyabhai <nitind@us.ibm.com> - bug 308908"
+			+ NEWLINE
 			+ "################################################################################"; //$NON-NLS-1$
 
 	private static final String BUG_DATABASE_PREFIX = "https://bugs.eclipse.org/bugs/show_bug.cgi?id="; //$NON-NLS-1$
@@ -213,10 +219,15 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 
 		try {
 			parseCommands();
-			writeCommandsToHTML();
 		} catch (Exception e) {
 			commands = new Properties();
 		}
+
+		try {
+			writeCommandsToHTML();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}			 
 
 		try {
 			parseNewsgroup();
