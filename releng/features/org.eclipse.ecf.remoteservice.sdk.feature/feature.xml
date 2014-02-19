@@ -116,10 +116,6 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
          version="0.0.0"/>
 
    <includes
-         id="org.eclipse.ecf.core.feature"
-         version="0.0.0"/>
-
-   <includes
          id="org.eclipse.ecf.provider.generic.datashare.feature"
          version="0.0.0"/>
 
@@ -138,5 +134,10 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
    <includes
          id="org.eclipse.ecf.presence.feature"
          version="0.0.0"/>
+
+   <requires>
+      <import plugin="org.eclipse.ecf"/>
+      <import plugin="org.eclipse.ecf.identity"/>
+   </requires>
 
 </feature>

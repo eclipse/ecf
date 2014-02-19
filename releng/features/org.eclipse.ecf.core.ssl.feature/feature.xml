@@ -25,7 +25,8 @@ Contributors: Composent, Inc. - initial API and implementation
    </license>
 
    <requires>
-      <import feature="org.eclipse.ecf.core.feature" version="1.1" match="compatible"/>
+      <import plugin="org.eclipse.ecf"/>
+      <import plugin="org.eclipse.ecf.identity"/>
    </requires>
 
    <plugin
