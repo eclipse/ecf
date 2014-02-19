@@ -797,6 +797,7 @@ public class RemoteServiceAdmin implements
 
 	class ImportEndpoint {
 
+		private ID importContainerID;
 		private IRemoteServiceContainerAdapter rsContainerAdapter;
 		private EndpointDescription endpointDescription;
 		private IRemoteServiceListener rsListener;
@@ -805,12 +806,13 @@ public class RemoteServiceAdmin implements
 		private ServiceRegistration proxyRegistration;
 		private Set<ImportRegistration> activeImportRegistrations = new HashSet<ImportRegistration>();
 
-		ImportEndpoint(IRemoteServiceContainerAdapter rsContainerAdapter,
+		ImportEndpoint(ID importContainerID, IRemoteServiceContainerAdapter rsContainerAdapter,
 				IRemoteServiceReference rsReference,
 				IRemoteService rs,
 				IRemoteServiceListener rsListener,
 				ServiceRegistration proxyRegistration,
 				EndpointDescription endpointDescription) {
+			this.importContainerID = importContainerID;
 			this.rsContainerAdapter = rsContainerAdapter;
 			this.endpointDescription = endpointDescription;
 			this.rsReference = rsReference;
@@ -889,7 +891,7 @@ public class RemoteServiceAdmin implements
 			EndpointDescription updatedEndpoint = (endpoint instanceof EndpointDescription) ? ((EndpointDescription) endpoint)
 					: new EndpointDescription(endpoint.getProperties());
 			// Create new proxy properties from updatedEndpoint and rsReference and rs
-			Map newProxyProperties = createProxyProperties(updatedEndpoint,
+			Map newProxyProperties = createProxyProperties(importContainerID, updatedEndpoint,
 					rsReference, rs);
 			// set the endpoint description with the proxy properties
 			updatedEndpoint.setPropertiesOverrides(newProxyProperties);
@@ -1599,7 +1601,7 @@ public class RemoteServiceAdmin implements
 							+ selectedRsReference + ",rsContainerID=" //$NON-NLS-1$
 							+ rsContainerID);
 
-		final Map proxyProperties = createProxyProperties(endpointDescription,
+		final Map proxyProperties = createProxyProperties(rsContainerID, endpointDescription,
 				selectedRsReference, rs);
 
 		// sync sref props with endpoint props
@@ -1620,7 +1622,7 @@ public class RemoteServiceAdmin implements
 					}
 				});
 
-		return new ImportEndpoint(containerAdapter, selectedRsReference, rs,
+		return new ImportEndpoint(rsContainerID, containerAdapter, selectedRsReference, rs,
 				new RemoteServiceListener(), proxyRegistration,
 				endpointDescription);
 	}
@@ -1997,7 +1999,7 @@ public class RemoteServiceAdmin implements
 		return rsRefs.iterator().next();
 	}
 
-	private Map createProxyProperties(EndpointDescription endpointDescription,
+	private Map createProxyProperties(ID importContainerID, EndpointDescription endpointDescription,
 			IRemoteServiceReference rsReference, IRemoteService remoteService) {
 
 		Map resultProperties = new TreeMap<String, Object>(
@@ -2038,7 +2040,7 @@ public class RemoteServiceAdmin implements
 		String[] exporterSupportedConfigs = (String[]) endpointDescription
 				.getProperties()
 				.get(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED);
-		String[] importedConfigs = getImportedConfigs(rsReference.getContainerID(), exporterSupportedConfigs);
+		String[] importedConfigs = getImportedConfigs(importContainerID, exporterSupportedConfigs);
 		// Set service.imported.configs
 		resultProperties
 				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS,
