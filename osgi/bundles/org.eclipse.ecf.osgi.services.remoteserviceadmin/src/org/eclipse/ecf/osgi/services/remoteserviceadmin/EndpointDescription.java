@@ -21,6 +21,7 @@ import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.IDUtil;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
+import org.eclipse.ecf.remoteservice.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 
@@ -49,6 +50,8 @@ public class EndpointDescription extends
 	private Long timestamp;
 	private String idNamespace;
 	private ID containerID;
+	private Long rsId;
+	
 	private ID connectTargetID;
 	private ID[] idFilter;
 	private String rsFilter;
@@ -112,6 +115,10 @@ public class EndpointDescription extends
 		}
 		this.idNamespace = verifyStringProperty(RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
 		this.containerID = verifyIDProperty(idNamespace, this.ecfid);
+		this.rsId = verifyLongProperty(Constants.SERVICE_ID);
+			// if null, then set to service.id
+		if (this.rsId == null) 
+				this.rsId = getServiceId();
 		this.connectTargetID = verifyIDProperty(RemoteConstants.ENDPOINT_CONNECTTARGET_ID);
 		this.idFilter = verifyIDFilter();
 		this.rsFilter = verifyStringProperty(RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER);
@@ -214,6 +221,13 @@ public class EndpointDescription extends
 		return this.timestamp;
 	}
 	
+	/**
+	 * @since 4.0
+	 */
+	public Long getRemoteServiceId() {
+		return this.rsId;
+	}
+	
 	public ID getContainerID() {
 		return containerID;
 	}
@@ -271,9 +285,7 @@ public class EndpointDescription extends
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("ECFEndpointDescription["); //$NON-NLS-1$
-		sb.append("id=").append(getId()); //$NON-NLS-1$
-		sb.append(";endpoint.service.id=").append(getServiceId()); //$NON-NLS-1$
-		sb.append(";frameworkid=").append(getFrameworkUUID()).append("]"); //$NON-NLS-1$//$NON-NLS-2$
+		sb.append(getProperties()).append("]"); //$NON-NLS-1$
 		return sb.toString();
 	}
 }

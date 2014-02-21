@@ -187,14 +187,17 @@ public abstract class AbstractMetadataFactory {
 				endpointDescriptionProperties);
 
 		// remote service id
-		Long remoteServiceId = decodeLong(discoveredServiceProperties,
-				org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
-		endpointDescriptionProperties.put(
-				org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,
-				remoteServiceId);
 		String containerIDNamespace = decodeString(discoveredServiceProperties,
 				RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
 		if (containerIDNamespace != null) {
+			// remote service id
+			Long remoteServiceId = decodeLong(discoveredServiceProperties,
+					org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
+			if (remoteServiceId != null)
+				endpointDescriptionProperties.put(
+					org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,
+					remoteServiceId);
+			
 			// container id namespace
 			endpointDescriptionProperties.put(
 					RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE,

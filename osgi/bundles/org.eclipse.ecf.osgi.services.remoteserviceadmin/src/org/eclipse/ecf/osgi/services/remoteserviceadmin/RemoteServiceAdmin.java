@@ -798,11 +798,11 @@ public class RemoteServiceAdmin implements
 	class ImportEndpoint {
 
 		private ID importContainerID;
+		private IRemoteService rs;
 		private IRemoteServiceContainerAdapter rsContainerAdapter;
 		private EndpointDescription endpointDescription;
 		private IRemoteServiceListener rsListener;
 		private IRemoteServiceReference rsReference;
-		private IRemoteService rs;
 		private ServiceRegistration proxyRegistration;
 		private Set<ImportRegistration> activeImportRegistrations = new HashSet<ImportRegistration>();
 
@@ -1553,8 +1553,7 @@ public class RemoteServiceAdmin implements
 		long rsId = 0;
 		// if the ECF remote service id is present in properties, allow it to
 		// override
-		Long l = (Long) endpointDescription.getProperties().get(
-				org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
+		Long l = endpointDescription.getRemoteServiceId();
 		if (l != null)
 			rsId = l.longValue();
 		// if rsId is still zero, use the endpoint.service.id from
@@ -2093,23 +2092,21 @@ public class RemoteServiceAdmin implements
 					exportedInterfaces, service, PropertiesUtil
 							.createDictionaryFromMap(remoteServiceProperties));
 		}
-		endpointDescriptionProperties
-				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID,
-						remoteRegistration
-								.getProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID));
+		
+		endpointDescriptionProperties.put(
+				org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,
+				remoteRegistration.getID().getContainerRelativeID());
 
 		if (remoteRegistration instanceof IExtendedRemoteServiceRegistration) {
 			IExtendedRemoteServiceRegistration iersr = (IExtendedRemoteServiceRegistration) remoteRegistration;
 			Map<String, Object> extraProperties = iersr.getExtraProperties();
 			endpointDescriptionProperties = PropertiesUtil.mergeProperties(endpointDescriptionProperties, extraProperties);
-
 		}
 		
-		EndpointDescription endpointDescription = new EndpointDescription(
-				serviceReference, endpointDescriptionProperties);
 		// Create ExportEndpoint/ExportRegistration
 		return new ExportRegistration(new ExportEndpoint(serviceReference,
-				endpointDescription, remoteRegistration));
+				new EndpointDescription(serviceReference,
+						endpointDescriptionProperties), remoteRegistration));
 	}
 
 	private ImportRegistration importService(
