@@ -17,8 +17,11 @@ import java.util.Map;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.IDUtil;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
+import org.eclipse.ecf.remoteservice.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 
@@ -43,8 +46,12 @@ import org.osgi.framework.Version;
 public class EndpointDescription extends
 		org.osgi.service.remoteserviceadmin.EndpointDescription {
 
+	private String ecfid;
+	private Long timestamp;
 	private String idNamespace;
 	private ID containerID;
+	private Long rsId;
+	
 	private ID connectTargetID;
 	private ID[] idFilter;
 	private String rsFilter;
@@ -92,11 +99,42 @@ public class EndpointDescription extends
 	}
 
 	private void verifyECFProperties() {
+		this.ecfid = verifyStringProperty(RemoteConstants.ENDPOINT_ID);
+		if (this.ecfid == null) {
+			LogUtility
+					.logWarning(
+							"verifyECFProperties", DebugOptions.ENDPOINT_DESCRIPTION_READER, EndpointDescription.class, "ECFEndpointDescription property " + RemoteConstants.ENDPOINT_ID + " not set.  Using OSGI endpoint.id value"); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+			this.ecfid = getId();
+		}
+		this.timestamp = verifyLongProperty(RemoteConstants.ENDPOINT_TIMESTAMP);
+		if (this.timestamp == null) {
+			LogUtility
+					.logWarning(
+							"verifyECFProperties", DebugOptions.ENDPOINT_DESCRIPTION_READER, EndpointDescription.class, "ECFEndpointDescription property " + RemoteConstants.ENDPOINT_TIMESTAMP + " not set.  Using OSGI endpoint.service.id"); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+			this.timestamp = getServiceId();
+		}
 		this.idNamespace = verifyStringProperty(RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
-		this.containerID = verifyIDProperty(idNamespace, getId());
+		this.containerID = verifyIDProperty(idNamespace, this.ecfid);
+		this.rsId = verifyLongProperty(Constants.SERVICE_ID);
+			// if null, then set to service.id
+		if (this.rsId == null) 
+				this.rsId = getServiceId();
+		
 		this.connectTargetID = verifyIDProperty(RemoteConstants.ENDPOINT_CONNECTTARGET_ID);
 		this.idFilter = verifyIDFilter();
 		this.rsFilter = verifyStringProperty(RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER);
+	}
+
+	private Long verifyLongProperty(String propName) {
+		Object r = getProperties().get(propName);
+		try {
+			return (Long) r;
+		} catch (ClassCastException e) {
+			IllegalArgumentException iae = new IllegalArgumentException(
+					"property value is not a Long: " + propName); //$NON-NLS-1$
+			iae.initCause(e);
+			throw iae;
+		}
 	}
 
 	private String verifyStringProperty(String propName) {
@@ -170,6 +208,27 @@ public class EndpointDescription extends
 		return result;
 	}
 
+	/**
+	 * @since 4.0
+	 */
+	public String getEndpointId() {
+		return ecfid;
+	}
+	
+	/**
+	 * @since 4.0
+	 */
+	public Long getTimestamp() {
+		return this.timestamp;
+	}
+	
+	/**
+	 * @since 4.0
+	 */
+	public Long getRemoteServiceId() {
+		return this.rsId;
+	}
+	
 	public ID getContainerID() {
 		return containerID;
 	}
@@ -227,9 +286,7 @@ public class EndpointDescription extends
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("ECFEndpointDescription["); //$NON-NLS-1$
-		sb.append("id=").append(getId()); //$NON-NLS-1$
-		sb.append(";endpoint.service.id=").append(getServiceId()); //$NON-NLS-1$
-		sb.append(";frameworkid=").append(getFrameworkUUID()).append("]"); //$NON-NLS-1$//$NON-NLS-2$
+		sb.append(getProperties()).append("]"); //$NON-NLS-1$
 		return sb.toString();
 	}
 }
