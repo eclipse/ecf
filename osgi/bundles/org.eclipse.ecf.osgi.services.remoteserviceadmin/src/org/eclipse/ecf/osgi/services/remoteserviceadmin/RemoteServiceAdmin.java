@@ -2048,7 +2048,8 @@ public class RemoteServiceAdmin implements
 		if (remoteRegistration instanceof IExtendedRemoteServiceRegistration) {
 			IExtendedRemoteServiceRegistration iersr = (IExtendedRemoteServiceRegistration) remoteRegistration;
 			Map<String, Object> extraProperties = iersr.getExtraProperties();
-			endpointDescriptionProperties = PropertiesUtil.mergeProperties(endpointDescriptionProperties, extraProperties);
+			if (extraProperties != null)
+				endpointDescriptionProperties = PropertiesUtil.mergeProperties(endpointDescriptionProperties, extraProperties);
 		}
 		
 		// Create ExportEndpoint/ExportRegistration
