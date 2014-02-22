@@ -137,7 +137,7 @@ public class EndpointDescription extends
 		if (noAsyncProxy == null) {
 			// Get service.exported.async.objectClass property value
 			Object asyncObjectClass = getProperties().get(
-					RemoteConstants.SERVICE_EXPORTED_ASYNC_OBJECTCLASS);
+					RemoteConstants.SERVICE_EXPORTED_ASYNC_INTERFACES);
 			// If present
 			if (asyncObjectClass != null) {
 				List<String> originalInterfaces = getInterfaces();
