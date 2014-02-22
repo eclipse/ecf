@@ -13,6 +13,8 @@ package org.eclipse.ecf.remoteservice;
 
 /**
  * Remote service API constants.
+ * 
+ * @noimplement This interface is not intended to be implemented by clients.
  */
 public interface Constants {
 
@@ -159,6 +161,11 @@ public interface Constants {
 	 * client will be able to asynchronously call MyBar.doStuffAsync() on the proxy.
 	 */
 	public static final String SERVICE_ASYNC_RSPROXY_CLASS_ = "ecf.rsvc.async.proxy_"; //$NON-NLS-1$
+
+	/**
+	 * @since 8.3
+	 */
+	public static final String SERVICE_PREVENT_ASYNCPROXY = "ecf.rsvc.async.noproxy"; //$NON-NLS-1$
 
 	/**
 	 * @deprecated

@@ -150,22 +150,45 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 			classes.add(IRemoteServiceProxy.class);
 	}
 
+	private boolean nameAlreadyPresent(String className, List classes) {
+		for (Iterator i = classes.iterator(); i.hasNext();) {
+			Class c = (Class) i.next();
+			if (className.equals(c.getName()))
+				return true;
+		}
+		return false;
+	}
+
+	/**
+	 * @since 8.3
+	 */
+	protected List addAsyncProxyClasses(ClassLoader cl, Class[] interfaces) {
+		List intfs = Arrays.asList(interfaces);
+		List results = new ArrayList();
+		if (getRemoteServiceReference().getProperty(Constants.SERVICE_PREVENT_ASYNCPROXY) == null) {
+			for (Iterator i = intfs.iterator(); i.hasNext();) {
+				Class intf = (Class) i.next();
+				String intfName = convertInterfaceNameToAsyncInterfaceName(intf.getName());
+				if (intfName != null && !nameAlreadyPresent(intfName, intfs)) {
+					Class asyncClass = findAsyncRemoteServiceProxyClass(cl, intf);
+					// Only add if async
+					if (asyncClass != null && !intfs.contains(asyncClass))
+						results.add(asyncClass);
+				}
+			}
+		}
+		results.addAll(intfs);
+		return results;
+	}
+
 	/**
 	 * @since 6.0
 	 */
 	@SuppressWarnings("unchecked")
 	public Object getProxy(ClassLoader cl, Class[] interfaces) throws ECFException {
-		// Add async classes
-		// for all interfaces, add async classes
-		List classes = new ArrayList();
-		for (int i = 0; i < interfaces.length; i++) {
-			// add interface to classes
-			classes.add(interfaces[i]);
-			Class asyncClass = findAsyncRemoteServiceProxyClass(cl, interfaces[i]);
-			if (asyncClass != null)
-				classes.add(asyncClass);
-		}
-		// Add IRemoteServiceProxy to classes, if not restricted via service properties
+		// Now add any async p
+		List classes = addAsyncProxyClasses(cl, interfaces);
+
 		addRemoteServiceProxyToProxy(classes);
 		// create and return proxy
 		try {
@@ -256,6 +279,8 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 	 */
 	protected Class findAsyncRemoteServiceProxyClass(ClassLoader cl, Class c) {
 		String proxyClassName = convertInterfaceNameToAsyncInterfaceName(c.getName());
+		if (proxyClassName == null)
+			return null;
 		try {
 			return Class.forName(proxyClassName, true, cl);
 		} catch (ClassNotFoundException e) {
@@ -273,7 +298,8 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 		String asyncProxyName = (String) getRemoteServiceReference().getProperty(Constants.SERVICE_ASYNC_RSPROXY_CLASS_ + interfaceName);
 		if (asyncProxyName != null)
 			return asyncProxyName;
-		// If a value has been specified by the ServiceProperty
+		if (interfaceName.endsWith(IAsyncRemoteServiceProxy.ASYNC_INTERFACE_SUFFIX))
+			return interfaceName;
 		return interfaceName + IAsyncRemoteServiceProxy.ASYNC_INTERFACE_SUFFIX;
 	}
 
@@ -317,6 +343,32 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 		return callSync(call);
 	}
 
+	/**
+	 * @since 8.3
+	 */
+	protected boolean isAsync(Object proxy, Method method, Object[] args) {
+		return (Arrays.asList(method.getDeclaringClass().getInterfaces()).contains(IAsyncRemoteServiceProxy.class) || method.getName().endsWith(IAsyncRemoteServiceProxy.ASYNC_METHOD_SUFFIX));
+	}
+
+	/**
+	 * @since 8.3
+	 */
+	protected IRemoteCall createRemoteCall(final String callMethod, final Object[] callParameters, final long callTimeout) {
+		return new IRemoteCall() {
+			public String getMethod() {
+				return callMethod;
+			}
+
+			public Object[] getParameters() {
+				return callParameters;
+			}
+
+			public long getTimeout() {
+				return callTimeout;
+			}
+		};
+	}
+
 	public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
 		// methods declared by Object
 		try {
@@ -325,27 +377,13 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 			Object resultObject = invokeObject(proxy, method, args);
 			if (resultObject != null)
 				return resultObject;
-			// If the method's class is a subclass of IAsyncRemoteServiceProxy, then we assume
-			// that the methods are intended to be invoked asynchronously
-			if (Arrays.asList(method.getDeclaringClass().getInterfaces()).contains(IAsyncRemoteServiceProxy.class))
+			if (isAsync(proxy, method, args))
 				return invokeAsync(method, args);
 			// else call synchronously/block and return result
 			final String callMethod = getCallMethodNameForProxyInvoke(method, args);
 			final Object[] callParameters = getCallParametersForProxyInvoke(callMethod, method, args);
 			final long callTimeout = getCallTimeoutForProxyInvoke(callMethod, method, args);
-			final IRemoteCall remoteCall = new IRemoteCall() {
-				public String getMethod() {
-					return callMethod;
-				}
-
-				public Object[] getParameters() {
-					return callParameters;
-				}
-
-				public long getTimeout() {
-					return callTimeout;
-				}
-			};
+			final IRemoteCall remoteCall = createRemoteCall(callMethod, callParameters, callTimeout);
 			return invokeSync(remoteCall);
 		} catch (Throwable t) {
 			if (t instanceof ServiceException)

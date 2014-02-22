@@ -22,8 +22,11 @@ import org.eclipse.ecf.remoteservice.IRemoteService;
  * {@link org.osgi.service.remoteserviceadmin.RemoteConstants} and the <a
  * href="http://www.osgi.org/download/r4v42/r4.enterprise.pdf">OSGI 4.2 Remote
  * Service Admin specification (chap 122)</a>.
+ * 
+ * @noinstantiate This class is not intended to be instantiated by clients.
+ * @noextend This class is not intended to be subclassed by clients.
  */
-public class RemoteConstants {
+public final class RemoteConstants {
 
 	private RemoteConstants() {
 		// not instantiable
@@ -162,6 +165,13 @@ public class RemoteConstants {
 	 * . The type of the value is {@link ID}.
 	 */
 	public static final String SERVICE_EXPORTED_CONTAINER_ID = "ecf.exported.containerid"; //$NON-NLS-1$
+
+	/**
+	 * This property optionally set on exported service to specify the async service types.  
+	 * Values are of type String[].  
+	 * @since 4.0
+	 */
+	public static final String SERVICE_EXPORTED_ASYNC_OBJECTCLASS = "ecf.exported.async.objectClass"; //$NON-NLS-1$
 
 	/**
 	 * Allows exporting ECF containers to determine the type of value associated

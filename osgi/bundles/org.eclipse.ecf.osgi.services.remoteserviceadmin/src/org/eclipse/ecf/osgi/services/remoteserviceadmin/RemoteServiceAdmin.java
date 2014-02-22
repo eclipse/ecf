@@ -1554,8 +1554,15 @@ public class RemoteServiceAdmin implements
 		// sync sref props with endpoint props
 		endpointDescription.setPropertiesOverrides(proxyProperties);
 
-		final List<String> serviceTypes = endpointDescription.getInterfaces();
-
+		final List<String> originalTypes = endpointDescription.getInterfaces();
+		final List<String> asyncServiceTypes = endpointDescription.getAsyncInterfaces();
+		
+		final List<String> serviceTypes = new ArrayList<String>(originalTypes);
+		
+		if (asyncServiceTypes != null)
+			for(String ast: asyncServiceTypes) 
+				if (ast != null && !serviceTypes.contains(ast)) serviceTypes.add(ast);
+		
 		ServiceRegistration proxyRegistration = AccessController
 				.doPrivileged(new PrivilegedAction<ServiceRegistration>() {
 					public ServiceRegistration run() {
