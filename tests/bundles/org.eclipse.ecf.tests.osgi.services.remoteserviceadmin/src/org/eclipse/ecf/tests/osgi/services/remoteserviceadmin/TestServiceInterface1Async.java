@@ -12,9 +12,7 @@ package org.eclipse.ecf.tests.osgi.services.remoteserviceadmin;
 
 import java.util.concurrent.Future;
 
-import org.eclipse.ecf.remoteservice.IAsyncRemoteServiceProxy;
-
-public interface TestServiceInterface1Async extends IAsyncRemoteServiceProxy {
+public interface TestServiceInterface1Async {
 
 	Future<String> doStuff1Async();
 	

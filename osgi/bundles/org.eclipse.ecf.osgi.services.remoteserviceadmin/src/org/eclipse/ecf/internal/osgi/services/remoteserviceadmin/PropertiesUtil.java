@@ -119,15 +119,11 @@ public class PropertiesUtil {
 		return getExportedInterfaces(serviceReference);
 	}
 
-	private static String[] getExportedInterfaces(
-			ServiceReference serviceReference, Object propValue) {
-		if (propValue == null)
-			return null;
-		String[] objectClass = (String[]) serviceReference
-				.getProperty(org.osgi.framework.Constants.OBJECTCLASS);
+	public static String[] getMatchingInterfaces(String[] origin, Object propValue) {
+		if (propValue == null || origin == null) return null;
 		boolean wildcard = propValue.equals("*"); //$NON-NLS-1$
 		if (wildcard)
-			return objectClass;
+			return origin;
 		else {
 			final String[] stringArrayValue = getStringArrayFromPropertyValue(propValue);
 			if (stringArrayValue == null)
@@ -135,10 +131,19 @@ public class PropertiesUtil {
 			else if (stringArrayValue.length == 1
 					&& stringArrayValue[0].equals("*")) { //$NON-NLS-1$
 				// this will support the idiom: new String[] { "*" }
-				return objectClass;
+				return origin;
 			} else
 				return stringArrayValue;
 		}
+	}
+	
+	private static String[] getExportedInterfaces(
+			ServiceReference serviceReference, Object propValue) {
+		if (propValue == null)
+			return null;
+		String[] objectClass = (String[]) serviceReference
+				.getProperty(org.osgi.framework.Constants.OBJECTCLASS);
+		return getMatchingInterfaces(objectClass,propValue);
 	}
 
 	public static String[] getExportedInterfaces(

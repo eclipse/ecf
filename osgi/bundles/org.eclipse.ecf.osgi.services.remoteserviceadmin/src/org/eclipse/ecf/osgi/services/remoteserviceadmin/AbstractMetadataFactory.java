@@ -246,6 +246,15 @@ public abstract class AbstractMetadataFactory {
 						RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER,
 						remoteServiceFilter);
 
+			List<String> asyncInterfaces = decodeList(
+					discoveredServiceProperties,
+					RemoteConstants.SERVICE_EXPORTED_ASYNC_INTERFACES);
+			if (asyncInterfaces != null && asyncInterfaces.size() > 0)
+				endpointDescriptionProperties.put(
+						RemoteConstants.SERVICE_EXPORTED_ASYNC_INTERFACES,
+						asyncInterfaces.toArray(new String[asyncInterfaces
+								.size()]));
+			
 		}
 		// Finally, fill out other properties
 		decodeNonStandardServiceProperties(discoveredServiceProperties,
@@ -410,6 +419,10 @@ public abstract class AbstractMetadataFactory {
 				encodeString(result,
 						RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER,
 						remoteFilter);
+			
+			List<String> asyncTypes = ecfEd.getAsyncInterfaces();
+			if (asyncTypes != null && asyncTypes.size() > 0)
+				encodeList(result, RemoteConstants.SERVICE_EXPORTED_ASYNC_INTERFACES, asyncTypes);
 		}
 		// encode non standard properties
 		encodeNonStandardServiceProperties(endpointDescription.getProperties(),

@@ -22,8 +22,11 @@ import org.eclipse.ecf.remoteservice.IRemoteService;
  * {@link org.osgi.service.remoteserviceadmin.RemoteConstants} and the <a
  * href="http://www.osgi.org/download/r4v42/r4.enterprise.pdf">OSGI 4.2 Remote
  * Service Admin specification (chap 122)</a>.
+ * 
+ * @noinstantiate This class is not intended to be instantiated by clients.
+ * @noextend This class is not intended to be subclassed by clients.
  */
-public class RemoteConstants {
+public final class RemoteConstants {
 
 	private RemoteConstants() {
 		// not instantiable
@@ -162,6 +165,34 @@ public class RemoteConstants {
 	 * . The type of the value is {@link ID}.
 	 */
 	public static final String SERVICE_EXPORTED_CONTAINER_ID = "ecf.exported.containerid"; //$NON-NLS-1$
+
+	/**
+	 * Service property marking the service for async proxy export. It defines the
+	 * async interfaces under which this service will be exported on the remote
+	 * proxy. This list must be a
+	 * subset of the types service was exported (i.e. subset of interfaces specified 
+	 * by #{@link org.osgi.service.remoteserviceadmin.RemoteConstants#SERVICE_EXPORTED_INTERFACES}. The single
+	 * value of an asterisk (&quot;*&quot;, &#92;u002A) indicates all the
+	 * interface types under which the service was exported. 
+	 * <p>
+	 * The interfaces in the String[] can either be 
+	 * <ol>
+	 * <li>The same fully qualified name as an interface
+	 * in the #{@link org.osgi.service.remoteserviceadmin.RemoteConstants#SERVICE_EXPORTED_INTERFACES} property</li>
+	 * <li>The fully qualified name of an interface that follows the asynchronous proxy conventions to
+	 * match with one of the existing exported types.
+	 * </li>
+	 * 
+	 * <p>
+	 * This property may be supplied in the {@code properties}
+	 * {@code Dictionary} object passed to the
+	 * {@code BundleContext.registerService} method. The value of this property
+	 * must be of type {@code String}, {@code String[]}, or {@code Collection}
+	 * of {@code String}.
+	 * 
+	 * @since 4.0
+	 */
+	public static final String SERVICE_EXPORTED_ASYNC_INTERFACES = "ecf.exported.async.interfaces"; //$NON-NLS-1$
 
 	/**
 	 * Allows exporting ECF containers to determine the type of value associated

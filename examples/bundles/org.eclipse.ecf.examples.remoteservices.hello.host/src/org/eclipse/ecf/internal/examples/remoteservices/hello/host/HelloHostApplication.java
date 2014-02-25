@@ -15,6 +15,7 @@ import java.util.Hashtable;
 import java.util.Properties;
 
 import org.eclipse.ecf.examples.remoteservices.hello.IHello;
+import org.eclipse.ecf.examples.remoteservices.hello.IHelloAsync;
 import org.eclipse.ecf.examples.remoteservices.hello.impl.Hello;
 import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
 import org.eclipse.equinox.app.IApplication;
@@ -72,6 +73,7 @@ public class HelloHostApplication implements IApplication,
 		props.put(
 				IDistributionConstants.SERVICE_EXPORTED_CONTAINER_FACTORY_ARGUMENTS,
 				containerId);
+		props.put("ecf.exported.async.objectClass",new String[] { IHelloAsync.class.getName() });
 		// register remote service
 		helloRegistration = bundleContext.registerService(
 				IHello.class.getName(), new Hello(), props);
