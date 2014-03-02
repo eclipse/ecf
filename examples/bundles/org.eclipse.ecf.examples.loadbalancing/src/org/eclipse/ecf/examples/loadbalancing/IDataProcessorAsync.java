@@ -8,9 +8,8 @@
 package org.eclipse.ecf.examples.loadbalancing;
 
 import org.eclipse.ecf.remoteservice.IAsyncCallback;
-import org.eclipse.ecf.remoteservice.IAsyncRemoteServiceProxy;
 
-public interface IDataProcessorAsync extends IAsyncRemoteServiceProxy {
+public interface IDataProcessorAsync {
 
 	public void processDataAsync(String data, IAsyncCallback<String> callback);
 

@@ -10,13 +10,12 @@
 package org.eclipse.ecf.examples.remoteservices.hello;
 
 import org.eclipse.ecf.remoteservice.IAsyncCallback;
-import org.eclipse.ecf.remoteservice.IAsyncRemoteServiceProxy;
 import org.eclipse.equinox.concurrent.future.IFuture;
 
 /**
  * @since 2.0
  */
-public interface IHelloAsync extends IAsyncRemoteServiceProxy {
+public interface IHelloAsync {
 
 	public void helloAsync(String from, IAsyncCallback<String> callback);
 	public IFuture helloAsync(String from);

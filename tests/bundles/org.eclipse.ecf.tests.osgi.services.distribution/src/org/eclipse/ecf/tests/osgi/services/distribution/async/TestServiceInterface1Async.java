@@ -10,10 +10,9 @@
  *****************************************************************************/
 package org.eclipse.ecf.tests.osgi.services.distribution.async;
 
-import org.eclipse.ecf.remoteservice.IAsyncRemoteServiceProxy;
 import org.eclipse.equinox.concurrent.future.IFuture;
 
-public interface TestServiceInterface1Async extends IAsyncRemoteServiceProxy {
+public interface TestServiceInterface1Async {
 
 	IFuture doStuff1();
 	
