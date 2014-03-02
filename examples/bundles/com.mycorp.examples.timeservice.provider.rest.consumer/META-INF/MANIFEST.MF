@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Timeservice Provider Rest Consumer
 Bundle-SymbolicName: com.mycorp.examples.timeservice.provider.rest.consumer;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-Vendor: MyCorp
+Bundle-Vendor: Eclipse.org - ECF
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Import-Package: com.mycorp.examples.timeservice;version="1.0.0",

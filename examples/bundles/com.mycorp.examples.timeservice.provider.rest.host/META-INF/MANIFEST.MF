@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: ECF TimeService Rest Provider Host
 Bundle-SymbolicName: com.mycorp.examples.timeservice.provider.rest.host;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-Vendor: MyCorp
+Bundle-Vendor: Eclipse.org - ECF
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.ecf
