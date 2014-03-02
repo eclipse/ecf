@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Timeservice Consumer Declarative Services Example
 Bundle-SymbolicName: com.mycorp.examples.timeservice.consumer.ds
 Bundle-Version: 1.0.0.qualifier
-Bundle-Vendor: MyCorp, Inc.
+Bundle-Vendor: Eclipse.org - ECF
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Service-Component: OSGI-INF/timeservicecomponent.xml
 Import-Package: com.mycorp.examples.timeservice;version="1.0.0"
