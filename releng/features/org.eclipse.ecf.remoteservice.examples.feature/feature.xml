@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.ecf.remoteservice.examples.feature"
-      label="ECF OSGi 4.2 Remote Services Examples"
+      label="ECF OSGi Remote Services Examples"
       version="1.2.0.qualifier"
       provider-name="%providerName">
 
