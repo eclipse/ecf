@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Timerservice Rest Provider Common
+Bundle-Name: Example REST Timeservice Provider Common
 Bundle-SymbolicName: com.mycorp.examples.timeservice.provider.rest.common;singleton:=true
 Bundle-Version: 2.0.0.qualifier
 Bundle-Vendor: Eclipse.org - ECF
