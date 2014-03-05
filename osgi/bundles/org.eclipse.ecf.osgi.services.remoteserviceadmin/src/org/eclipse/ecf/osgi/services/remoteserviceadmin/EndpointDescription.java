@@ -106,7 +106,7 @@ public class EndpointDescription extends
 		if (this.ecfid == null) {
 			LogUtility
 					.logWarning(
-							"verifyECFProperties", DebugOptions.ENDPOINT_DESCRIPTION_READER, EndpointDescription.class, "ECFEndpointDescription property " + RemoteConstants.ENDPOINT_ID + " not set.  Using OSGI endpoint.id"); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+							"verifyECFProperties", DebugOptions.ENDPOINT_DESCRIPTION_READER, EndpointDescription.class, "ECFEndpointDescription property " + RemoteConstants.ENDPOINT_ID + " not set.  Using OSGI endpoint.id value"); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
 			this.ecfid = getId();
 		}
 		this.timestamp = verifyLongProperty(RemoteConstants.ENDPOINT_TIMESTAMP);
@@ -122,6 +122,7 @@ public class EndpointDescription extends
 			// if null, then set to service.id
 		if (this.rsId == null) 
 				this.rsId = getServiceId();
+		
 		this.connectTargetID = verifyIDProperty(RemoteConstants.ENDPOINT_CONNECTTARGET_ID);
 		this.idFilter = verifyIDFilter();
 		this.rsFilter = verifyStringProperty(RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER);

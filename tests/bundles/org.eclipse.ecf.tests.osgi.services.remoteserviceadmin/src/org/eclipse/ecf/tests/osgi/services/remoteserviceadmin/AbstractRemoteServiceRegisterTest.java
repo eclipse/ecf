@@ -9,7 +9,6 @@
 ******************************************************************************/
 package org.eclipse.ecf.tests.osgi.services.remoteserviceadmin;
 
-import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -21,8 +20,6 @@ import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.remoteserviceadmin.EndpointDescription;
-import org.osgi.service.remoteserviceadmin.ExportReference;
 import org.osgi.service.remoteserviceadmin.RemoteConstants;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener;
@@ -239,47 +236,6 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		assertTrue(containsEventType(RemoteServiceAdminEvent.EXPORT_UNREGISTRATION));
 		
 		// finally unregister the listenerReg
-		listenerReg.unregister();
-	}
-
-	public void testRegisterAndUpdateProperties() throws Exception {
-		remoteServiceAdminEvents.clear();
-		// register RemoteServiceAdminListener
-		ServiceRegistration listenerReg = getContext().registerService(RemoteServiceAdminListener.class.getName(), createRemoteServiceAdminListener(), null);
-		// Create server container
-		this.server = ContainerFactory.getDefault().createContainer(getServerContainerTypeName(),new Object[] {createServerID()});
-		// Create props
-		Properties props = getServiceProperties();
-		// Put "1" for "testonekey"
-		props.put("testonekey", "1");
-		// Actually register with default service (IConcatService) as a remote service
-		registration = registerDefaultService(props);
-		Thread.sleep(REGISTER_WAIT/2);
-		// remoteServiceAdminEvents should have the Export registration
-		assertTrue(remoteServiceAdminEvents.size() > 0);
-		// Get ExportReference
-		ExportReference exportRef = remoteServiceAdminEvents.get(0).getExportReference();
-		EndpointDescription oldED = exportRef.getExportedEndpoint();
-		assertNotNull(oldED);
-		Map<String,?> oldEDProperties = oldED.getProperties();
-		assertNotNull(oldEDProperties);
-		assertTrue("1".equals(oldEDProperties.get("testonekey")));
-		assertTrue(oldEDProperties.get("testtwokey")==null);
-
-		// Change testonekey value to "two" and set a new property "testtwokey" to "2"
-		props.put("testonekey", "two");
-		props.put("testtwokey", "2");
-		// Set/update the properties on the registration
-		this.registration.setProperties(props);
-		
-		// Now get new EndpointDescription and test that new properties have been changed in EndpointDescription
-		EndpointDescription updatedED = exportRef.getExportedEndpoint();
-		assertNotNull(updatedED);
-		Map<String,?> updatedEDProperties = updatedED.getProperties();
-		assertNotNull(updatedEDProperties);
-		assertTrue("two".equals(updatedEDProperties.get("testonekey")));
-		assertTrue("2".equals(updatedEDProperties.get("testtwokey")));
-		
 		listenerReg.unregister();
 	}
 
