@@ -24,4 +24,3 @@ Import-Package: org.eclipse.core.runtime.jobs,
  org.osgi.service.log,
  org.osgi.util.tracker
 Bundle-ActivationPolicy: lazy
-Provide-Capability: osgi.remoteserviceadmin.distribution; configs:List<String>=”ecf.generic.server,ecf.generic.client,ecf.generic.ssl.server,ecf.generic.ssl.client”; version:Version=1.1 

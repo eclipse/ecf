@@ -30,4 +30,3 @@ Export-Package: org.eclipse.ecf.provider.zookeeper;version="1.0.0",
  org.eclipse.ecf.provider.zookeeper.util;x-internal:=true
 Bundle-Vendor: %bundle.provider
 Bundle-Localization: bundle
-Provide-Capability: osgi.remoteserviceadmin.discovery;protocols:List<String>=”ZOOKEEPER,ecf.discovery.zoodiscovery,ecf.discovery.zoodiscovery.locator,ecf.discovery.zoodiscovery.advertiser”;version:Version=1.1
