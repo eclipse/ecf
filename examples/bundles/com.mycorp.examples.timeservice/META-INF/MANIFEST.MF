@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Example Timeservice API
+Bundle-Name: ECF RS Example Timeservice API
 Bundle-SymbolicName: com.mycorp.examples.timeservice
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Eclipse.org - ECF
