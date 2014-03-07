@@ -17,4 +17,4 @@ Import-Package: com.mycorp.examples.timeservice;version="1.0.0",
  org.json,
  org.osgi.framework
 Require-Bundle: org.eclipse.ecf,
- org.eclipse.equinox.common;bundle-version="3.6.200"
+ org.eclipse.equinox.common
