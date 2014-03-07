@@ -20,5 +20,5 @@ Import-Package: com.sun.syndication.feed.synd;version="0.9.0",
  org.osgi.framework;version="1.3.0",
  org.osgi.util.tracker
 Bundle-ActivationPolicy: lazy
-Require-Bundle: org.eclipse.equinox.common;bundle-version="3.6.0"
+Require-Bundle: org.eclipse.equinox.common
 Bundle-Localization: plugin

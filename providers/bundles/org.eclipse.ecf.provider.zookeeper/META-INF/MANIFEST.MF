@@ -20,7 +20,7 @@ Import-Package: org.apache.zookeeper,
  org.osgi.framework;version="1.5.0",
  org.osgi.service.log;version="1.3.0",
  org.osgi.util.tracker;version="1.4.2"
-Require-Bundle: org.eclipse.equinox.common;bundle-version="3.5.0",
+Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.ecf.discovery;bundle-version="3.0.0",
  org.apache.hadoop.zookeeper;bundle-version="[3.3.3,3.4.0)"
 Export-Package: org.eclipse.ecf.provider.zookeeper;version="1.0.0",

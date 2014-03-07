@@ -9,7 +9,7 @@ Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-Localization: bundle
 Export-Package: org.eclipse.ecf.internal.osgi.services.remoteserviceadmin;x-internal:=true,
  org.eclipse.ecf.osgi.services.remoteserviceadmin;version="1.0.0"
-Require-Bundle: org.eclipse.equinox.common;bundle-version="3.6.0",
+Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy;bundle-version="1.0.0"
 Import-Package: javax.xml.parsers,
  org.eclipse.ecf.core;version="3.0.0",
