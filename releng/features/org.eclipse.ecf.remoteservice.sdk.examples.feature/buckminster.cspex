@@ -7,6 +7,9 @@
 		<!-- the feature -->
 		<dependency name="org.eclipse.platform" componentType="eclipse.feature"/>
 		<dependency name="org.eclipse.equinox.concurrent" componentType="osgi.bundle"/>
+
+		<dependency name="org.eclipse.ecf.remoteservice.sdk.feature" componentType="eclipse.feature"/>
+
 	</dependencies>
 	<generators>
 		<!-- Place your Generators here -->
