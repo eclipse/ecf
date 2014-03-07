@@ -6,7 +6,10 @@
     <cq:property key="target.ws" value="*"/>
     
     <cq:advisorNode namePattern="^org\.eclipse\.ecf(\..+)?" useTargetPlatform="false" useWorkspace="false">
+    </cq:advisorNode>
     <cq:advisorNode namePattern="^com\.mycorp\.examples(\..+)?" useTargetPlatform="false" useWorkspace="false">
+    </cq:advisorNode>
     <cq:advisorNode namePattern=".*" mutableLevel="REJECT" sourceLevel="REJECT">
+    </cq:advisorNode>
     
 </cq:componentQuery>
