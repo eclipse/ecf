@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <md:mspec xmlns:md="http://www.eclipse.org/buckminster/MetaData-1.0" 
-    name="org.eclipse.ecf.remoteservice.sdk" 
+    name="org.eclipse.ecf.remoteservice.sdk.feature" 
     materializer="p2" 
-    url="org.eclipse.ecf.remoteservice.sdk.cquery">
+    url="org.eclipse.ecf.remoteservice.sdk.feature.cquery">
 
     <md:mspecNode namePattern="^ch\.ethz\.iks(\..+)?" materializer="workspace"/>
     <md:mspecNode namePattern="^org\.eclipse\.team\.ecf(\..+)?" materializer="workspace"/>
