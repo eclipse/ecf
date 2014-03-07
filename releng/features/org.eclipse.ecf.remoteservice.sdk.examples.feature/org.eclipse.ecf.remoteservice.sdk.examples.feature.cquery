@@ -5,6 +5,4 @@
     <cq:property key="target.os" value="*"/>
     <cq:property key="target.ws" value="*"/>
     
-    <cq:advisorNode namePattern=".*" mutableLevel="REJECT" sourceLevel="REJECT"/>
-    
 </cq:componentQuery>
