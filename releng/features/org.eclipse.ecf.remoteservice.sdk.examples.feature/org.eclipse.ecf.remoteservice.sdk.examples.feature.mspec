@@ -6,7 +6,6 @@
 
     <md:mspecNode namePattern="^org\.eclipse\.ecf(\..+)?" materializer="workspace"/>
     <md:mspecNode namePattern="^com\.mycorp\.examples(\..+)?" materializer="workspace"/>
-    <md:mspecNode namePattern="^org\.eclipse\.osgi\.services\.remoteserviceadmin(\..+)?" materializer="workspace"/>
 
     <!-- commented out for sdk when comparing to platform
     <md:mspecNode namePattern=".*" installLocation="${target.location}"/>
