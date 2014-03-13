@@ -20,3 +20,4 @@ Import-Package: org.osgi.framework;version="1.3.0",
  org.osgi.service.log;version="1.3.0",
  org.osgi.util.tracker;version="1.3.2"
 Bundle-ActivationPolicy: lazy
+Provide-Capability: osgi.remoteserviceadmin.discovery;protocols:List<String>=”ZEROCONF,ecf.discovery.jmdns,ecf.discovery.jmdns.locator,ecf.discovery.jmdns.advertiser”;version:Version=1.1
