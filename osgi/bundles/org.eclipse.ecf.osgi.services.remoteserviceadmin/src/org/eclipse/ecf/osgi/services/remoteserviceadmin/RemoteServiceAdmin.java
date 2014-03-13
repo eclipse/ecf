@@ -228,7 +228,7 @@ public class RemoteServiceAdmin implements
 
 	// RemoteServiceAdmin service interface impl methods
 	public Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> exportService(
-			final ServiceReference serviceReference, Map<String, ?> op) {
+			final ServiceReference<?> serviceReference, Map<String, ?> op) {
 		trace("exportService", "serviceReference=" + serviceReference //$NON-NLS-1$ //$NON-NLS-2$
 				+ ",properties=" + op); //$NON-NLS-1$
 		final Map<String, ?> overridingProperties = PropertiesUtil
@@ -598,6 +598,23 @@ public class RemoteServiceAdmin implements
 			}
 			return removed;
 		}
+
+		synchronized org.osgi.service.remoteserviceadmin.EndpointDescription update(
+				Map<String, ?> properties) {
+			// Get the existing properties
+			Map<String, Object> edProps = endpointDescription.getProperties();
+			// As per RemoteRegistration.update javadocs, if the given properties
+			// are null, the original properties are used to create the new endpoint description
+			// if non-null then they override the previous ed properties
+			if (properties != null)
+				edProps = PropertiesUtil.mergeProperties(edProps,
+						(Map<String, Object>) properties);
+			// Create new endpoint description, and this is now our new EndpointDescription
+			endpointDescription = new EndpointDescription(serviceReference,
+					edProps);
+			// Return so that it can be advertised by topology manager
+			return endpointDescription;
+		}
 	}
 
 	class ExportRegistration implements
@@ -700,6 +717,12 @@ public class RemoteServiceAdmin implements
 			return exportReference.getException();
 		}
 
+		public org.osgi.service.remoteserviceadmin.EndpointDescription update(
+				Map<String, ?> properties) {
+			if (closed) return null;
+			return exportReference.update(properties);
+		}
+
 	}
 
 	class ExportReference implements
@@ -713,6 +736,12 @@ public class RemoteServiceAdmin implements
 		ExportReference(ExportEndpoint exportEndpoint) {
 			Assert.isNotNull(exportEndpoint);
 			this.exportEndpoint = exportEndpoint;
+		}
+
+		synchronized org.osgi.service.remoteserviceadmin.EndpointDescription update(
+				Map<String, ?> properties) {
+			if (exportEndpoint == null) return null;
+			return exportEndpoint.update(properties);
 		}
 
 		ExportReference(Throwable exception,
@@ -768,13 +797,8 @@ public class RemoteServiceAdmin implements
 
 	class ImportEndpoint {
 
-		@SuppressWarnings("unused")  
-		// XXX this will be used when ImportRegistration.update(EndpointDescription)
-		// is added in RSA 1.1/RFC 203
 		private ID importContainerID;
-		@SuppressWarnings("unused")
 		private IRemoteService rs;
-		
 		private IRemoteServiceContainerAdapter rsContainerAdapter;
 		private EndpointDescription endpointDescription;
 		private IRemoteServiceListener rsListener;
@@ -859,6 +883,24 @@ public class RemoteServiceAdmin implements
 			return this.endpointDescription.isSameService(ed);
 		}
 
+		synchronized void update(
+				org.osgi.service.remoteserviceadmin.EndpointDescription endpoint) {
+			if (proxyRegistration == null)
+				return;
+			// Get or create ECF endpoint description
+			EndpointDescription updatedEndpoint = (endpoint instanceof EndpointDescription) ? ((EndpointDescription) endpoint)
+					: new EndpointDescription(endpoint.getProperties());
+			// Create new proxy properties from updatedEndpoint and rsReference and rs
+			Map newProxyProperties = createProxyProperties(importContainerID, updatedEndpoint,
+					rsReference, rs);
+			// set the endpoint description with the proxy properties
+			updatedEndpoint.setPropertiesOverrides(newProxyProperties);
+			// set this endpointDescription to updatedEndpoint
+			this.endpointDescription = updatedEndpoint;
+			// Set proxyRegistration properties
+			this.proxyRegistration.setProperties(PropertiesUtil
+					.createDictionaryFromMap(newProxyProperties));
+		}
 	}
 
 	class ImportRegistration implements
@@ -936,6 +978,11 @@ public class RemoteServiceAdmin implements
 			return importReference.getException();
 		}
 
+		public void update(
+				org.osgi.service.remoteserviceadmin.EndpointDescription endpoint) {
+			if (!closed) importReference.update(endpoint);
+		}
+
 	}
 
 	class ImportReference implements
@@ -949,6 +996,11 @@ public class RemoteServiceAdmin implements
 		ImportReference(ImportEndpoint importEndpoint) {
 			Assert.isNotNull(importEndpoint);
 			this.importEndpoint = importEndpoint;
+		}
+
+		synchronized void update(
+				org.osgi.service.remoteserviceadmin.EndpointDescription endpoint) {
+			if (importEndpoint != null) importEndpoint.update(endpoint);
 		}
 
 		ImportReference(EndpointDescription endpointDescription,

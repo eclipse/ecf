@@ -415,8 +415,24 @@ public abstract class AbstractTopologyManager {
 	}
 
 	protected void handleServiceModifying(ServiceReference serviceReference) {
-		logWarning(
-				"handleServiceModifying", "serviceReference=" + serviceReference + " modified with no response"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		List<RemoteServiceAdmin.ExportRegistration> exportedRegistrations = ((RemoteServiceAdmin) getRemoteServiceAdmin())
+				.getExportedRegistrations();
+		for (RemoteServiceAdmin.ExportRegistration exportedRegistration : exportedRegistrations) {
+			if (exportedRegistration.match(serviceReference)) {
+				trace("handleServiceModifying", "modifying exportRegistration for serviceReference=" //$NON-NLS-1$ //$NON-NLS-2$
+								+ serviceReference);
+				advertiseModifyEndpointDescription((EndpointDescription) exportedRegistration
+						.update(PropertiesUtil.copyProperties(serviceReference,
+								new HashMap<String, Object>())));
+			}
+		}
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	protected void advertiseModifyEndpointDescription(EndpointDescription updatedEndpointDescription) {
+		// XXX todo
 	}
 
 	protected void handleServiceUnregistering(ServiceReference serviceReference) {
