@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.osgi.services.distribution
-Bundle-Version: 2.0.300.qualifier
+Bundle-Version: 2.1.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.osgi.services.distribution.Activator
 Bundle-Vendor: %pluginProvider
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

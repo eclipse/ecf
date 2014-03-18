@@ -29,6 +29,7 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.remoteserviceadmin.EndpointEventListener;
 import org.osgi.service.remoteserviceadmin.EndpointListener;
 import org.osgi.service.remoteserviceadmin.ImportRegistration;
 import org.osgi.util.tracker.ServiceTracker;
@@ -238,7 +239,7 @@ public abstract class AbstractTopologyManager {
 	 */
 	protected void handleECFEndpointAdded(
 			EndpointDescription endpointDescription) {
-		trace("handleEndpointAdded", "endpointDescription=" //$NON-NLS-1$ //$NON-NLS-2$
+		trace("handleECFEndpointAdded", "endpointDescription=" //$NON-NLS-1$ //$NON-NLS-2$
 				+ endpointDescription);
 		// Import service
 		getRemoteServiceAdmin().importService(endpointDescription);
@@ -249,7 +250,7 @@ public abstract class AbstractTopologyManager {
 	 */
 	protected void handleECFEndpointRemoved(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
-		trace("handleEndpointRemoved", "endpointDescription=" //$NON-NLS-1$ //$NON-NLS-2$
+		trace("handleECFEndpointRemoved", "endpointDescription=" //$NON-NLS-1$ //$NON-NLS-2$
 				+ endpointDescription);
 		RemoteServiceAdmin rsa = (RemoteServiceAdmin) getRemoteServiceAdmin();
 		List<RemoteServiceAdmin.ImportRegistration> importedRegistrations = rsa
@@ -260,6 +261,25 @@ public abstract class AbstractTopologyManager {
 				trace("handleEndpointRemoved", "closing importedRegistration=" //$NON-NLS-1$ //$NON-NLS-2$
 						+ importedRegistration);
 				importedRegistration.close();
+			}
+		}
+	}
+
+	/**
+	 * @since 4.1
+	 */
+	protected void handleECFEndpointModified(EndpointDescription endpoint) {
+		trace("handleECFEndpointModified", "endpointDescription=" //$NON-NLS-1$ //$NON-NLS-2$
+				+ endpoint);
+		RemoteServiceAdmin rsa = (RemoteServiceAdmin) getRemoteServiceAdmin();
+		List<RemoteServiceAdmin.ImportRegistration> importedRegistrations = rsa
+				.getImportedRegistrations();
+		org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription ed = (org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription) endpoint;
+		for (RemoteServiceAdmin.ImportRegistration importedRegistration : importedRegistrations) {
+			if (importedRegistration.match(ed)) {
+				trace("handleECFEndpointModified", "updating importedRegistration=" //$NON-NLS-1$ //$NON-NLS-2$
+						+ importedRegistration);
+				importedRegistration.update(endpoint);
 			}
 		}
 	}
@@ -348,6 +368,16 @@ public abstract class AbstractTopologyManager {
 	}
 
 	/**
+	 * @since 4.1
+	 */
+	protected void handleNonECFEndpointModified(
+			EndpointEventListener basicTopologyManagerImpl,
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint) {
+		// TODO Auto-generated method stub
+
+	}
+
+	/**
 	 * @since 3.0
 	 */
 	protected void handleNonECFEndpointRemoved(
@@ -429,10 +459,10 @@ public abstract class AbstractTopologyManager {
 	}
 
 	/**
-	 * @since 4.0
+	 * @since 4.1
 	 */
 	protected void advertiseModifyEndpointDescription(EndpointDescription updatedEndpointDescription) {
-		// XXX todo
+		advertiseEndpointDescription(updatedEndpointDescription);
 	}
 
 	protected void handleServiceUnregistering(ServiceReference serviceReference) {
