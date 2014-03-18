@@ -232,12 +232,12 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 			handleEndpointModified(ed, matchedFilter);
 			break;
 		case EndpointEvent.MODIFIED_ENDMATCH:
-			endpointModifiedEndMatch(ed, matchedFilter);
+			handleEndpointModifiedEndmatch(ed, matchedFilter);
 			break;
 		}
 	}
 
-	protected void endpointModifiedEndMatch(
+	protected void handleEndpointModifiedEndmatch(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
 			String matchedFilter) {
 		// By default do nothing for end match. subclasses may decide
