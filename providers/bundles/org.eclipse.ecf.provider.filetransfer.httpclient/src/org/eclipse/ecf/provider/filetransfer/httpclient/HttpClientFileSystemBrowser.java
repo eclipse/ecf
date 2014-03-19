@@ -15,9 +15,7 @@ package org.eclipse.ecf.provider.filetransfer.httpclient;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.Socket;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.Map;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.Header;
@@ -144,15 +142,7 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 			}
 		}
 		if (connectingSockets != null) {
-			// this should unblock socket connect calls, if any
-			for (Iterator iterator = connectingSockets.getConnectingSockets().iterator(); iterator.hasNext();) {
-				Socket socket = (Socket) iterator.next();
-				try {
-					socket.close();
-				} catch (IOException e) {
-					Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "cancel", e); //$NON-NLS-1$
-				}
-			}
+			connectingSockets.closeSockets();
 		}
 	}
 
