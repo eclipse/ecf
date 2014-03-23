@@ -13,18 +13,10 @@
 
 package org.eclipse.ecf.provider.filetransfer.httpclient4;
 
-import org.eclipse.ecf.internal.provider.filetransfer.httpclient4.Activator;
-import org.eclipse.ecf.internal.provider.filetransfer.httpclient4.ConnectingSocketMonitor;
-import org.eclipse.ecf.internal.provider.filetransfer.httpclient4.DebugOptions;
-import org.eclipse.ecf.internal.provider.filetransfer.httpclient4.HttpClientProxyCredentialProvider;
-import org.eclipse.ecf.internal.provider.filetransfer.httpclient4.Messages;
-
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.Socket;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
@@ -57,6 +49,11 @@ import org.eclipse.ecf.filetransfer.IRemoteFile;
 import org.eclipse.ecf.filetransfer.IRemoteFileSystemListener;
 import org.eclipse.ecf.filetransfer.IRemoteFileSystemRequest;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
+import org.eclipse.ecf.internal.provider.filetransfer.httpclient4.Activator;
+import org.eclipse.ecf.internal.provider.filetransfer.httpclient4.ConnectingSocketMonitor;
+import org.eclipse.ecf.internal.provider.filetransfer.httpclient4.DebugOptions;
+import org.eclipse.ecf.internal.provider.filetransfer.httpclient4.HttpClientProxyCredentialProvider;
+import org.eclipse.ecf.internal.provider.filetransfer.httpclient4.Messages;
 import org.eclipse.ecf.provider.filetransfer.browse.AbstractFileSystemBrowser;
 import org.eclipse.ecf.provider.filetransfer.browse.URLRemoteFile;
 import org.eclipse.ecf.provider.filetransfer.events.socket.SocketEventSource;
@@ -191,17 +188,10 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 			}
 		}
 		if (connectingSockets != null) {
-			// this should unblock socket connect calls, if any
-			for (Iterator iterator = connectingSockets.getConnectingSockets().iterator(); iterator.hasNext();) {
-				Socket socket = (Socket) iterator.next();
-				try {
-					socket.close();
-				} catch (IOException e) {
-					Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "cancel", e); //$NON-NLS-1$
-				}
-			}
+			// Change for preventing CME from bug
+			// https://bugs.eclipse.org/bugs/show_bug.cgi?id=430704
+			connectingSockets.closeSockets();
 		}
-
 	}
 
 	protected boolean hasForceNTLMProxyOption() {

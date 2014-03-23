@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
-import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -246,16 +245,8 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			}
 		}
 		if (connectingSockets != null) {
-			// this should unblock socket connect calls, if any
-			for (Iterator iterator = connectingSockets.getConnectingSockets().iterator(); iterator.hasNext();) {
-				Socket socket = (Socket) iterator.next();
-				try {
-					Trace.trace(Activator.PLUGIN_ID, "Call socket.close() for socket=" + socket.toString()); //$NON-NLS-1$
-					socket.close();
-				} catch (IOException e) {
-					Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "cancel", e); //$NON-NLS-1$
-				}
-			}
+			// Added to prevent CME in bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=430704
+			connectingSockets.closeSockets();
 		}
 		hardClose();
 		if (fireDoneEvent) {

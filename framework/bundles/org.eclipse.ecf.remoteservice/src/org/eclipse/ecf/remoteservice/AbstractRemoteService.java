@@ -316,13 +316,14 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 	}
 
 	protected Object invokeObject(Object proxy, final Method method, final Object[] args) throws Throwable {
-		if (method.getName().equals("toString")) { //$NON-NLS-1$
+		String methodName = method.getName();
+		if (methodName.equals("toString")) { //$NON-NLS-1$
 			final String[] clazzes = getInterfaceClassNames();
 			String proxyClass = (clazzes.length == 1) ? clazzes[0] : Arrays.asList(clazzes).toString();
 			return proxyClass + ".proxy@" + getRemoteServiceID(); //$NON-NLS-1$
-		} else if (method.getName().equals("hashCode")) { //$NON-NLS-1$
+		} else if (methodName.equals("hashCode")) { //$NON-NLS-1$
 			return new Integer(hashCode());
-		} else if (method.getName().equals("equals")) { //$NON-NLS-1$
+		} else if (methodName.equals("equals")) { //$NON-NLS-1$
 			if (args == null || args.length == 0)
 				return Boolean.FALSE;
 			try {
@@ -331,9 +332,9 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 				return Boolean.FALSE;
 			}
 			// This handles the use of IRemoteServiceProxy.getRemoteService method
-		} else if (method.getName().equals("getRemoteService")) { //$NON-NLS-1$
+		} else if (methodName.equals("getRemoteService")) { //$NON-NLS-1$
 			return getRemoteService();
-		} else if (method.getName().equals("getRemoteServiceReference")) { //$NON-NLS-1$
+		} else if (methodName.equals("getRemoteServiceReference")) { //$NON-NLS-1$
 			return getRemoteServiceReference();
 		}
 		return null;
@@ -491,9 +492,9 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 		IRemoteCallListener listener = null;
 		Class returnType = method.getReturnType();
 		// If the return type is of type java.util.concurrent.Future, then we return
-		if (returnType.equals(Future.class)) {
+		if (returnType.isAssignableFrom(Future.class)) {
 			return new AsyncArgs(args, false);
-		} else if (returnType.equals(IFuture.class)) {
+		} else if (returnType.isAssignableFrom(IFuture.class)) {
 			return new AsyncArgs(args, true);
 		} else {
 			// If the provided args do *not* include an IRemoteCallListener then we have a problem

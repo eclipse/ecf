@@ -11,8 +11,19 @@
 
 package org.eclipse.ecf.internal.provider.filetransfer.httpclient;
 
-import java.util.*;
-import org.eclipse.ecf.filetransfer.events.socket.*;
+import java.io.IOException;
+import java.net.Socket;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.filetransfer.events.socket.ISocketClosedEvent;
+import org.eclipse.ecf.filetransfer.events.socket.ISocketConnectedEvent;
+import org.eclipse.ecf.filetransfer.events.socket.ISocketCreatedEvent;
+import org.eclipse.ecf.filetransfer.events.socket.ISocketEvent;
+import org.eclipse.ecf.filetransfer.events.socket.ISocketListener;
 
 public class ConnectingSocketMonitor implements ISocketListener {
 
@@ -26,12 +37,44 @@ public class ConnectingSocketMonitor implements ISocketListener {
 		connectingSockets = Collections.synchronizedMap(new HashMap());
 	}
 
+	/**
+	 * Callers of this method should not iterate through the returned
+	 * Collection, as a CME is possible...as reported by bug
+	 * https://bugs.eclipse.org/bugs/show_bug.cgi?id=430704
+	 * Rather than call this method and iterate through the Collection,
+	 * to close the connecting sockets call closeConnectingSockets
+	 * instead.
+	 * @return Collection the existing collection of underlying connecting
+	 * Socket instances
+	 */
 	public Collection getConnectingSockets() {
 		return Collections.unmodifiableCollection(connectingSockets.keySet());
 	}
 
 	public void clear() {
 		connectingSockets.clear();
+	}
+
+	/**
+	 * Method added to synchronize access to underlying keySet
+	 * to prevent CME as reported in bug
+	 * https://bugs.eclipse.org/bugs/show_bug.cgi?id=430704
+	 */
+	public void closeSockets() {
+		// synchronize on the connectingSockets map
+		// so all changes caused by handleSocketEvent
+		// are prevented via synchronized Map
+		synchronized (connectingSockets) {
+			for (Iterator iterator = connectingSockets.keySet().iterator(); iterator.hasNext();) {
+				Socket socket = (Socket) iterator.next();
+				try {
+					Trace.trace(Activator.PLUGIN_ID, "Call socket.close() for socket=" + socket.toString()); //$NON-NLS-1$
+					socket.close();
+				} catch (IOException e) {
+					Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "cancel", e); //$NON-NLS-1$
+				}
+			}
+		}
 	}
 
 	public void handleSocketEvent(ISocketEvent event) {
