@@ -395,17 +395,17 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 	}
 
 	/**
-	 * @since 3.3
+	 * @since 8.4
 	 */
-	protected class AsyncArgs {
+	public class AsyncArgs {
 		private IRemoteCallListener listener;
 		private Object[] args;
-		private boolean isIFuture;
+		private Class returnType;
 
-		public AsyncArgs(Object[] originalArgs, boolean isIFuture) {
+		public AsyncArgs(Object[] originalArgs, Class returnType) {
 			this.listener = null;
 			this.args = originalArgs;
-			this.isIFuture = isIFuture;
+			this.returnType = returnType;
 		}
 
 		public AsyncArgs(IRemoteCallListener listener, Object[] originalArgs) {
@@ -426,11 +426,8 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 			return args;
 		}
 
-		/**
-		 * @since 8.2
-		 */
-		public boolean isIFuture() {
-			return isIFuture;
+		public Class getReturnType() {
+			return returnType;
 		}
 	}
 
@@ -440,8 +437,7 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 	protected Object invokeAsync(final Method method, final Object[] args) throws Throwable {
 		final String invokeMethodName = getAsyncInvokeMethodName(method);
 		final AsyncArgs asyncArgs = getAsyncArgs(method, args);
-		IRemoteCallListener listener = asyncArgs.getListener();
-		IRemoteCall call = new IRemoteCall() {
+		return callAsync(new IRemoteCall() {
 			public String getMethod() {
 				return invokeMethodName;
 			}
@@ -453,14 +449,23 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 			public long getTimeout() {
 				return DEFAULT_TIMEOUT;
 			}
-		};
-		// IFuture or Future will have listener == null
-		if (listener == null) {
-			if (asyncArgs.isIFuture())
-				return callAsync(call);
-			return callFutureAsync(call);
-		}
-		return callAsyncWithResult(call, listener);
+		}, asyncArgs.getListener(), asyncArgs.getReturnType());
+	}
+
+	/**
+	 * @since 8.4
+	 */
+	protected Object callAsync(IRemoteCall call, IRemoteCallListener listener, Class returnType) {
+		return (listener != null) ? callAsyncWithResult(call, listener) : callFuture(call, returnType);
+	}
+
+	/**
+	 * @since 8.4
+	 */
+	protected Object callFuture(IRemoteCall call, Class returnType) {
+		if (IFuture.class.isAssignableFrom(returnType))
+			return callAsync(call);
+		return callFutureAsync(call);
 	}
 
 	/**
@@ -492,30 +497,26 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 		IRemoteCallListener listener = null;
 		Class returnType = method.getReturnType();
 		// If the return type is of type java.util.concurrent.Future, then we return
-		if (returnType.isAssignableFrom(Future.class)) {
-			return new AsyncArgs(args, false);
-		} else if (returnType.isAssignableFrom(IFuture.class)) {
-			return new AsyncArgs(args, true);
-		} else {
-			// If the provided args do *not* include an IRemoteCallListener then we have a problem
-			if (args == null || args.length == 0)
-				throw new IllegalArgumentException("Async calls must include a IRemoteCallListener instance as the last argument"); //$NON-NLS-1$
-			// Get the last arg
-			Object lastArg = args[args.length - 1];
-			// If it's an IRemoteCallListener implementer directly, then just cast and return
-			if (lastArg instanceof IRemoteCallListener) {
-				listener = (IRemoteCallListener) lastArg;
-			}
-			// If it's an implementation of IAsyncCallback, then create a new listener based upon 
-			// callback and return
-			if (lastArg instanceof IAsyncCallback) {
-				listener = new CallbackRemoteCallListener((IAsyncCallback) lastArg);
-			}
-			// If the last are is not an instance of IRemoteCallListener then there is a problem
-			if (listener == null)
-				throw new IllegalArgumentException("Last argument must be an instance of IRemoteCallListener"); //$NON-NLS-1$
-			return new AsyncArgs(listener, args);
+		if (Future.class.isAssignableFrom(returnType) || IFuture.class.isAssignableFrom(returnType))
+			return new AsyncArgs(args, returnType);
+		// If the provided args do *not* include an IRemoteCallListener then we have a problem
+		if (args == null || args.length == 0)
+			throw new IllegalArgumentException("Async calls must include a IRemoteCallListener instance as the last argument"); //$NON-NLS-1$
+		// Get the last arg
+		Object lastArg = args[args.length - 1];
+		// If it's an IRemoteCallListener implementer directly, then just cast and return
+		if (lastArg instanceof IRemoteCallListener) {
+			listener = (IRemoteCallListener) lastArg;
 		}
+		// If it's an implementation of IAsyncCallback, then create a new listener based upon 
+		// callback and return
+		if (lastArg instanceof IAsyncCallback) {
+			listener = new CallbackRemoteCallListener((IAsyncCallback) lastArg);
+		}
+		// If the last are is not an instance of IRemoteCallListener then there is a problem
+		if (listener == null)
+			throw new IllegalArgumentException("Last argument must be an instance of IRemoteCallListener"); //$NON-NLS-1$
+		return new AsyncArgs(listener, args);
 	}
 
 	/**
