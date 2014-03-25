@@ -14,18 +14,18 @@ import java.util.List;
 
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.provider.generic.GenericContainerInstantiator;
 import org.eclipse.ecf.provider.generic.SOContainerConfig;
+import org.eclipse.ecf.provider.generic.SSLGenericContainerInstantiator;
 
-public class J8GenericContainerInstantiator extends
-		GenericContainerInstantiator {
+public class J8SSLGenericContainerInstantiator extends
+		SSLGenericContainerInstantiator {
 
-	public static final String JAVA8_CLIENT_NAME = "ecf.generic.client.java8";
-	public static final String JAVA8_SERVER_NAME = "ecf.generic.server.java8";
+	public static final String JAVA8_SSL_CLIENT_NAME = "ecf.generic.ssl.client.java8";
+	public static final String JAVA8_SSL_SERVER_NAME = "ecf.generic.ssl.server.java8";
 	
 	@Override
 	protected boolean isClient(ContainerTypeDescription description) {
-		if (description.getName().equals(JAVA8_SERVER_NAME))
+		if (description.getName().equals(JAVA8_SSL_SERVER_NAME))
 			return false;
 		return true;
 	}
@@ -50,14 +50,14 @@ public class J8GenericContainerInstantiator extends
 		List results = new ArrayList();
 		List supportedConfigs = Arrays.asList(exporterSupportedConfigs);
 		// For a server, if exporter is a client then we can be an importer
-		if (JAVA8_SERVER_NAME.equals(description.getName())) {
-			if (supportedConfigs.contains(JAVA8_CLIENT_NAME))
-				results.add(JAVA8_SERVER_NAME);
+		if (JAVA8_SSL_SERVER_NAME.equals(description.getName())) {
+			if (supportedConfigs.contains(JAVA8_SSL_CLIENT_NAME))
+				results.add(JAVA8_SSL_SERVER_NAME);
 			// For a client, if exporter is server we can import
 			// or if remote is either generic server or generic client
-		} else if (JAVA8_CLIENT_NAME.equals(description.getName())) {
-			if (supportedConfigs.contains(JAVA8_SERVER_NAME) || supportedConfigs.contains(JAVA8_CLIENT_NAME))
-				results.add(JAVA8_CLIENT_NAME);
+		} else if (JAVA8_SSL_CLIENT_NAME.equals(description.getName())) {
+			if (supportedConfigs.contains(JAVA8_SSL_SERVER_NAME) || supportedConfigs.contains(JAVA8_SSL_CLIENT_NAME))
+				results.add(JAVA8_SSL_CLIENT_NAME);
 		}
 		if (results.size() == 0)
 			return null;
