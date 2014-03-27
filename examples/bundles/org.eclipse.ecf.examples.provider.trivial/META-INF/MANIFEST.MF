@@ -6,8 +6,7 @@ Bundle-Version: 1.0.200.provider
 Bundle-Activator: org.eclipse.ecf.internal.examples.provider.trivial.Activator
 Bundle-Vendor: %bundle.provider
 Require-Bundle: org.eclipse.ecf,
- org.eclipse.equinox.common;bundle-version="3.6.200",
- org.eclipse.equinox.registry;bundle-version="3.5.400";resolution:=optional
+ org.eclipse.equinox.common;bundle-version="3.6.200"
 Eclipse-LazyStart: true
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,

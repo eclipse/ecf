@@ -16,7 +16,7 @@ import org.osgi.util.tracker.ServiceTracker;
 /**
  * @since 3.3
  */
-public abstract class ExtensionRegistryRunnable implements ISafeRunnable {
+public class ExtensionRegistryRunnable implements ISafeRunnable {
 
 	private BundleContext context;
 
@@ -28,8 +28,10 @@ public abstract class ExtensionRegistryRunnable implements ISafeRunnable {
 		// by default do nothing
 	}
 
-	protected abstract void runWithRegistry(IExtensionRegistry registry)
-			throws Exception;
+	protected void runWithRegistry(IExtensionRegistry registry)
+			throws Exception {
+		// by default do nothing
+	}
 
 	protected void logWarning(Throwable exception) {
 		Activator a = Activator.getDefault();

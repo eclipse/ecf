@@ -1,6 +1,5 @@
 package org.eclipse.ecf.internal.examples.provider.trivial;
 
-import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.ExtensionRegistryRunnable;
@@ -35,10 +34,6 @@ public class Activator implements BundleActivator {
 		this.context = context;
 		plugin = this;
 		SafeRunner.run(new ExtensionRegistryRunnable(this.context) {
-			protected void runWithRegistry(IExtensionRegistry registry)
-					throws Exception {
-				// do nothing
-			}
 			protected void runWithoutRegistry() throws Exception {
 				Activator.this.context.registerService(Namespace.class, new TrivialNamespace("ecf.namespace.trivial"), null);
 			}
