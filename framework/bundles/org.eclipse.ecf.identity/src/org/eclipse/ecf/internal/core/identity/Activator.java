@@ -53,6 +53,8 @@ public class Activator implements BundleActivator {
 
 	private AdapterManagerTracker adapterManagerTracker;
 
+	private ServiceTracker namespacesTracker;
+
 	// This is object rather than typed to avoid referencing the
 	// IRegistryChangedListener class directly
 	private Object registryManager;
@@ -99,6 +101,28 @@ public class Activator implements BundleActivator {
 		idFactoryServiceRegistration = context.registerService(
 				IIDFactory.class.getName(), IDFactory.getDefault(), null);
 
+		namespacesTracker = new ServiceTracker(context,
+				Namespace.class.getName(), new ServiceTrackerCustomizer() {
+
+					public Object addingService(ServiceReference reference) {
+						Namespace ns = (Namespace) context
+								.getService(reference);
+						if (ns != null && ns.getName() != null)
+							IDFactory.addNamespace0(ns);
+						return ns;
+					}
+
+					public void modifiedService(ServiceReference reference,
+							Object service) {
+					}
+
+					public void removedService(ServiceReference reference,
+							Object service) {
+						IDFactory.removeNamespace0((Namespace) service);
+					}
+				});
+		namespacesTracker.open();
+
 		SafeRunner.run(new ExtensionRegistryRunnable(ctxt) {
 			protected void runWithRegistry(IExtensionRegistry registry)
 					throws Exception {
@@ -116,9 +140,41 @@ public class Activator implements BundleActivator {
 											.getConfigurationElements());
 									break;
 								case IExtensionDelta.REMOVED:
-									removeNamespaceExtensions(delta[i]
+									IConfigurationElement[] members = delta[i]
 											.getExtension()
-											.getConfigurationElements());
+											.getConfigurationElements();
+									for (int m = 0; m < members.length; m++) {
+										final IConfigurationElement member = members[m];
+										String name = null;
+										try {
+											name = member
+													.getAttribute(NAME_ATTRIBUTE);
+											if (name == null) {
+												name = member
+														.getAttribute(CLASS_ATTRIBUTE);
+											}
+											if (name == null)
+												continue;
+											final IIDFactory factory = IDFactory
+													.getDefault();
+											final Namespace n = factory
+													.getNamespaceByName(name);
+											if (n == null
+													|| !factory
+															.containsNamespace(n)) {
+												continue;
+											}
+											// remove
+											factory.removeNamespace(n);
+										} catch (final Exception e) {
+											getDefault()
+													.log(new Status(
+															IStatus.ERROR,
+															Activator.PLUGIN_ID,
+															IStatus.ERROR,
+															"Exception removing namespace", e)); //$NON-NLS-1$
+										}
+									}
 									break;
 								}
 							}
@@ -132,39 +188,6 @@ public class Activator implements BundleActivator {
 
 	public BundleContext getBundleContext() {
 		return context;
-	}
-
-	/**
-	 * Remove extensions for identity namespace extension point
-	 * 
-	 * @param members
-	 *            the members to remove
-	 */
-	void removeNamespaceExtensions(IConfigurationElement[] members) {
-		for (int m = 0; m < members.length; m++) {
-			final IConfigurationElement member = members[m];
-			String name = null;
-			try {
-				name = member.getAttribute(NAME_ATTRIBUTE);
-				if (name == null) {
-					name = member.getAttribute(CLASS_ATTRIBUTE);
-				}
-				if (name == null)
-					continue;
-				final IIDFactory factory = IDFactory.getDefault();
-				final Namespace n = factory.getNamespaceByName(name);
-				if (n == null || !factory.containsNamespace(n)) {
-					continue;
-				}
-				// remove
-				factory.removeNamespace(n);
-			} catch (final Exception e) {
-				getDefault().log(
-						new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-								IStatus.ERROR,
-								"Exception removing namespace", e)); //$NON-NLS-1$
-			}
-		}
 	}
 
 	Bundle getBundle() {
@@ -252,8 +275,6 @@ public class Activator implements BundleActivator {
 	 * 
 	 */
 	public void setupNamespaceExtensionPoint() {
-		if (context != null)
-			setupNamespaceServices();
 		SafeRunner.run(new ExtensionRegistryRunnable(context) {
 			protected void runWithRegistry(IExtensionRegistry registry)
 					throws Exception {
@@ -267,34 +288,6 @@ public class Activator implements BundleActivator {
 				}
 			}
 		});
-	}
-
-	private ServiceTracker namespacesTracker;
-
-	private void setupNamespaceServices() {
-		if (namespacesTracker == null) {
-			namespacesTracker = new ServiceTracker(context,
-					Namespace.class.getName(), new ServiceTrackerCustomizer() {
-
-						public Object addingService(ServiceReference reference) {
-							Namespace ns = (Namespace) context
-									.getService(reference);
-							if (ns != null && ns.getName() != null)
-								IDFactory.addNamespace0(ns);
-							return ns;
-						}
-
-						public void modifiedService(ServiceReference reference,
-								Object service) {
-						}
-
-						public void removedService(ServiceReference reference,
-								Object service) {
-							IDFactory.removeNamespace0((Namespace) service);
-						}
-					});
-			namespacesTracker.open();
-		}
 	}
 
 	/*

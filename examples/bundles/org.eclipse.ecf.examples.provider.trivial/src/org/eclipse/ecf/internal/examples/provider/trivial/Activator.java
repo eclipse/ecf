@@ -1,12 +1,17 @@
 package org.eclipse.ecf.internal.examples.provider.trivial;
 
-import org.eclipse.core.runtime.Plugin;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.SafeRunner;
+import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.util.ExtensionRegistryRunnable;
+import org.eclipse.ecf.examples.provider.trivial.identity.TrivialNamespace;
+import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends Plugin {
+public class Activator implements BundleActivator {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.eclipse.ecf.internal.examples.provider.trivial";
@@ -27,9 +32,17 @@ public class Activator extends Plugin {
 	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(BundleContext context) throws Exception {
-		super.start(context);
 		this.context = context;
 		plugin = this;
+		SafeRunner.run(new ExtensionRegistryRunnable(this.context) {
+			protected void runWithRegistry(IExtensionRegistry registry)
+					throws Exception {
+				// do nothing
+			}
+			protected void runWithoutRegistry() throws Exception {
+				Activator.this.context.registerService(Namespace.class, new TrivialNamespace("ecf.namespace.trivial"), null);
+			}
+		});
 	}
 
 	/*
@@ -38,7 +51,6 @@ public class Activator extends Plugin {
 	 */
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
-		super.stop(context);
 		this.context = null;
 	}
 
