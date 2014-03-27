@@ -14,8 +14,8 @@ package org.eclipse.ecf.internal.provider.datashare;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.IContainerManager;
+import org.eclipse.ecf.core.util.AdapterManagerTracker;
 import org.eclipse.ecf.core.util.LogHelper;
-import org.eclipse.ecf.core.util.PlatformHelper;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.log.LogService;
@@ -35,7 +35,7 @@ public class Activator implements BundleActivator {
 
 	private ServiceTracker logServiceTracker = null;
 
-	private ServiceTracker adapterManagerTracker = null;
+	private AdapterManagerTracker adapterManagerTracker = null;
 
 	private ServiceTracker containerManagerTracker = null;
 
@@ -103,15 +103,10 @@ public class Activator implements BundleActivator {
 	public IAdapterManager getAdapterManager() {
 		// First, try to get the adapter manager via
 		if (adapterManagerTracker == null) {
-			adapterManagerTracker = new ServiceTracker(this.context, IAdapterManager.class.getName(), null);
+			adapterManagerTracker = new AdapterManagerTracker(this.context);
 			adapterManagerTracker.open();
 		}
-		IAdapterManager adapterManager = (IAdapterManager) adapterManagerTracker.getService();
-		// Then, if the service isn't there, try to get from Platform class via
-		// PlatformHelper class
-		if (adapterManager == null)
-			adapterManager = PlatformHelper.getPlatformAdapterManager();
-		return adapterManager;
+		return adapterManagerTracker.getAdapterManager();
 	}
 
 	/**
