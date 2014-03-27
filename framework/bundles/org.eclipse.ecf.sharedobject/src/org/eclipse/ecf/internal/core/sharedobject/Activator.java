@@ -1,7 +1,5 @@
 package org.eclipse.ecf.internal.core.sharedobject;
 
-import org.eclipse.core.runtime.IConfigurationElement;
-
 import java.util.Map;
 import java.util.Properties;
 import org.eclipse.core.runtime.*;
@@ -44,11 +42,9 @@ public class Activator implements BundleActivator {
 
 	BundleContext context = null;
 
-	ServiceTracker extensionRegistryTracker = null;
-
 	private ServiceTracker logServiceTracker = null;
 
-	private ServiceTracker adapterManagerTracker = null;
+	private AdapterManagerTracker adapterManagerTracker = null;
 
 	/**
 	 * The constructor
@@ -57,28 +53,20 @@ public class Activator implements BundleActivator {
 		// null constructor
 	}
 
-	public IExtensionRegistry getExtensionRegistry() {
-		return (IExtensionRegistry) extensionRegistryTracker.getService();
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
-	@SuppressWarnings("unchecked")
 	public void start(BundleContext ctxt) throws Exception {
 		this.context = ctxt;
 		plugin = this;
-		// run with OptionalCodeSafeRunnable, in case extension registry isn't present
-		SafeRunner.run(new OptionalCodeSafeRunnable() {
+
+		SafeRunner.run(new ExtensionRegistryRunnable(context) {
 			@Override
-			public void run() throws Exception {
-				extensionRegistryTracker = new ServiceTracker(context, IExtensionRegistry.class.getName(), null);
-				extensionRegistryTracker.open();
-				IExtensionRegistry reg = getExtensionRegistry();
-				if (reg != null) {
-					IExtensionPoint extensionPoint = reg.getExtensionPoint(SHAREDOBJECT_FACTORY_EPOINT);
+			protected void runWithRegistry(IExtensionRegistry registry) throws Exception {
+				if (registry != null) {
+					IExtensionPoint extensionPoint = registry.getExtensionPoint(SHAREDOBJECT_FACTORY_EPOINT);
 					if (extensionPoint != null)
 						addSharedObjectExtensions(extensionPoint.getConfigurationElements());
 				}
@@ -94,10 +82,6 @@ public class Activator implements BundleActivator {
 	 */
 	public void stop(BundleContext ctxt) throws Exception {
 		Trace.entering(Activator.PLUGIN_ID, SharedObjectDebugOptions.METHODS_EXITING, Activator.class, "stop"); //$NON-NLS-1$
-		if (extensionRegistryTracker != null) {
-			extensionRegistryTracker.close();
-			extensionRegistryTracker = null;
-		}
 		if (adapterManagerTracker != null) {
 			adapterManagerTracker.close();
 			adapterManagerTracker = null;
@@ -147,23 +131,15 @@ public class Activator implements BundleActivator {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public IAdapterManager getAdapterManager() {
 		if (context == null)
 			return null;
 		// First, try to get the adapter manager via
 		if (adapterManagerTracker == null) {
-			adapterManagerTracker = new ServiceTracker(this.context, IAdapterManager.class.getName(), null);
+			adapterManagerTracker = new AdapterManagerTracker(this.context);
 			adapterManagerTracker.open();
 		}
-		IAdapterManager adapterManager = (IAdapterManager) adapterManagerTracker.getService();
-		// Then, if the service isn't there, try to get from Platform class via
-		// PlatformHelper class
-		if (adapterManager == null)
-			adapterManager = PlatformHelper.getPlatformAdapterManager();
-		if (adapterManager == null)
-			getDefault().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, "Cannot get adapter manager", null)); //$NON-NLS-1$
-		return adapterManager;
+		return adapterManagerTracker.getAdapterManager();
 	}
 
 	/**

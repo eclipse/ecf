@@ -70,8 +70,6 @@ public class ECFPlugin implements BundleActivator {
 
 	BundleContext context = null;
 
-	ServiceTracker extensionRegistryTracker = null;
-
 	private Map disposables = new WeakHashMap();
 
 	// This is Object rather than IExtensionRegistryManager to avoid loading 
@@ -86,7 +84,7 @@ public class ECFPlugin implements BundleActivator {
 
 	private LogService logService = null;
 
-	private ServiceTracker adapterManagerTracker = null;
+	private AdapterManagerTracker adapterManagerTracker = null;
 
 	private BundleActivator ecfTrustManager;
 
@@ -119,11 +117,8 @@ public class ECFPlugin implements BundleActivator {
 			log(new Status(IStatus.ERROR, getDefault().getBundle().getSymbolicName(), "Unexpected Error in ECFPlugin.start", t)); //$NON-NLS-1$
 		}
 
-		SafeRunner.run(new OptionalCodeSafeRunnable() {
-			public void run() throws Exception {
-				extensionRegistryTracker = new ServiceTracker(context, IExtensionRegistry.class.getName(), null);
-				extensionRegistryTracker.open();
-				final IExtensionRegistry registry = getExtensionRegistry();
+		SafeRunner.run(new ExtensionRegistryRunnable(this.context) {
+			protected void runWithRegistry(IExtensionRegistry registry) throws Exception {
 				if (registry != null) {
 					registryManager = new IRegistryChangeListener() {
 						public void registryChanged(IRegistryChangeEvent event) {
@@ -170,10 +165,44 @@ public class ECFPlugin implements BundleActivator {
 		containerFactoryServiceRegistration = ctxt.registerService(IContainerFactory.class.getName(), sf, null);
 		containerManagerServiceRegistration = ctxt.registerService(IContainerManager.class.getName(), sf, null);
 
-		SafeRunner.run(new OptionalCodeSafeRunnable() {
-			public void run() throws Exception {
-				// but eagerly start ECF startup extension
-				setupStartExtensionPoint(context);
+		SafeRunner.run(new ExtensionRegistryRunnable(this.context) {
+			protected void runWithRegistry(IExtensionRegistry registry) throws Exception {
+				if (registry != null) {
+					final IExtensionPoint extensionPoint = registry.getExtensionPoint(START_EPOINT);
+					if (extensionPoint == null) {
+						return;
+					}
+					IConfigurationElement[] configurationElements = extensionPoint.getConfigurationElements();
+					final String method = "runStartExtensions"; //$NON-NLS-1$
+					// For each configuration element
+					for (int m = 0; m < configurationElements.length; m++) {
+						final IConfigurationElement member = configurationElements[m];
+						try {
+							// The only required attribute is "class"
+							boolean sync = (member.getAttribute(ASYNCH_ATTRIBUTE) == null);
+							IECFStart clazz = (IECFStart) member.createExecutableExtension(CLASS_ATTRIBUTE);
+							// Create job to do start, and schedule
+							if (sync) {
+								IStatus result = null;
+								try {
+									result = clazz.run(new NullProgressMonitor());
+								} catch (final Throwable e) {
+									final String message = "startup extension error"; //$NON-NLS-1$
+									logException(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, message, e), message, e);
+								}
+								if (result != null && !result.isOK())
+									logException(result, result.getMessage(), result.getException());
+							} else {
+								final ECFStartJob job = new ECFStartJob(clazz.getClass().getName(), clazz);
+								job.schedule();
+							}
+						} catch (final CoreException e) {
+							logException(e.getStatus(), method, e);
+						} catch (final Exception e) {
+							logException(new Status(IStatus.ERROR, getDefault().getBundle().getSymbolicName(), IStatus.ERROR, "Unknown start exception", e), method, e); //$NON-NLS-1$
+						}
+					}
+				}
 			}
 		});
 	}
@@ -205,11 +234,19 @@ public class ECFPlugin implements BundleActivator {
 			});
 			containerTypeDescriptionTracker.open();
 		}
-		// Initialize from extension registry (if one exists)
-		SafeRunner.run(new OptionalCodeSafeRunnable() {
-			public void run() throws Exception {
-				setupContainerFactoryExtensionPoint(context);
-				setupContainerExtensionPoint(context);
+
+		SafeRunner.run(new ExtensionRegistryRunnable(this.context) {
+			protected void runWithRegistry(IExtensionRegistry registry) throws Exception {
+				if (registry != null) {
+					IExtensionPoint extensionPoint = registry.getExtensionPoint(CONTAINER_FACTORY_EPOINT);
+					if (extensionPoint == null)
+						return;
+					addContainerFactoryExtensions(extensionPoint.getConfigurationElements());
+					extensionPoint = registry.getExtensionPoint(CONTAINER_EPOINT);
+					if (extensionPoint == null)
+						return;
+					addContainerExtensions(extensionPoint.getConfigurationElements());
+				}
 			}
 		});
 	}
@@ -217,11 +254,10 @@ public class ECFPlugin implements BundleActivator {
 	public void stop(BundleContext ctxt) throws Exception {
 		fireDisposables();
 		this.disposables = null;
-		SafeRunner.run(new OptionalCodeSafeRunnable() {
-			public void run() throws Exception {
-				final IExtensionRegistry reg = getExtensionRegistry();
-				if (reg != null)
-					reg.removeRegistryChangeListener((IRegistryChangeListener) registryManager);
+		SafeRunner.run(new ExtensionRegistryRunnable(ctxt) {
+			protected void runWithRegistry(IExtensionRegistry registry) throws Exception {
+				if (registry != null)
+					registry.removeRegistryChangeListener((IRegistryChangeListener) registryManager);
 			}
 		});
 		this.registryManager = null;
@@ -237,10 +273,6 @@ public class ECFPlugin implements BundleActivator {
 			logServiceTracker.close();
 			logServiceTracker = null;
 			logService = null;
-		}
-		if (extensionRegistryTracker != null) {
-			extensionRegistryTracker.close();
-			extensionRegistryTracker = null;
 		}
 		if (containerFactoryServiceRegistration != null) {
 			containerFactoryServiceRegistration.unregister();
@@ -486,109 +518,15 @@ public class ECFPlugin implements BundleActivator {
 		return results;
 	}
 
-	/**
-	 * Setup container factory extension point
-	 * 
-	 * @param bc
-	 *            the BundleContext for this bundle
-	 */
-	protected void setupContainerFactoryExtensionPoint(BundleContext bc) {
-		final IExtensionRegistry reg = getExtensionRegistry();
-		if (reg != null) {
-			final IExtensionPoint extensionPoint = reg.getExtensionPoint(CONTAINER_FACTORY_EPOINT);
-			if (extensionPoint == null) {
-				return;
-			}
-			addContainerFactoryExtensions(extensionPoint.getConfigurationElements());
-		}
-	}
-
-	protected void setupContainerExtensionPoint(BundleContext bc) {
-		final IExtensionRegistry reg = getExtensionRegistry();
-		if (reg != null) {
-			final IExtensionPoint extensionPoint = reg.getExtensionPoint(CONTAINER_EPOINT);
-			if (extensionPoint == null) {
-				return;
-			}
-			addContainerExtensions(extensionPoint.getConfigurationElements());
-		}
-	}
-
-	public IExtensionRegistry getExtensionRegistry() {
-		if (context == null)
-			return null;
-		return (IExtensionRegistry) extensionRegistryTracker.getService();
-	}
-
-	/**
-	 * Setup start extension point
-	 * 
-	 * @param bc
-	 *            the BundleContext for this bundle
-	 */
-	void setupStartExtensionPoint(BundleContext bc) {
-		final IExtensionRegistry reg = getExtensionRegistry();
-		if (reg != null) {
-			final IExtensionPoint extensionPoint = reg.getExtensionPoint(START_EPOINT);
-			if (extensionPoint == null) {
-				return;
-			}
-			runStartExtensions(extensionPoint.getConfigurationElements());
-		}
-	}
-
-	protected void runStartExtensions(IConfigurationElement[] configurationElements) {
-		final String method = "runStartExtensions"; //$NON-NLS-1$
-		// For each configuration element
-		for (int m = 0; m < configurationElements.length; m++) {
-			final IConfigurationElement member = configurationElements[m];
-			try {
-				// The only required attribute is "class"
-				boolean sync = (member.getAttribute(ASYNCH_ATTRIBUTE) == null);
-				IECFStart clazz = (IECFStart) member.createExecutableExtension(CLASS_ATTRIBUTE);
-				startExtension(clazz.getClass().getName(), clazz, sync);
-			} catch (final CoreException e) {
-				logException(e.getStatus(), method, e);
-			} catch (final Exception e) {
-				logException(new Status(IStatus.ERROR, getDefault().getBundle().getSymbolicName(), IStatus.ERROR, "Unknown start exception", e), method, e); //$NON-NLS-1$
-			}
-		}
-	}
-
-	private void startExtension(String name, IECFStart exten, boolean synchronous) {
-		// Create job to do start, and schedule
-		if (synchronous) {
-			IStatus result = null;
-			try {
-				result = exten.run(new NullProgressMonitor());
-			} catch (final Throwable e) {
-				final String message = "startup extension error"; //$NON-NLS-1$
-				logException(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, message, e), message, e);
-			}
-			if (result != null && !result.isOK())
-				logException(result, result.getMessage(), result.getException());
-		} else {
-			final ECFStartJob job = new ECFStartJob(name, exten);
-			job.schedule();
-		}
-	}
-
 	public IAdapterManager getAdapterManager() {
 		if (context == null)
 			return null;
 		// First, try to get the adapter manager via
 		if (adapterManagerTracker == null) {
-			adapterManagerTracker = new ServiceTracker(this.context, IAdapterManager.class.getName(), null);
+			adapterManagerTracker = new AdapterManagerTracker(this.context);
 			adapterManagerTracker.open();
 		}
-		IAdapterManager adapterManager = (IAdapterManager) adapterManagerTracker.getService();
-		// Then, if the service isn't there, try to get from Platform class via
-		// PlatformHelper class
-		if (adapterManager == null)
-			adapterManager = PlatformHelper.getPlatformAdapterManager();
-		if (adapterManager == null)
-			getDefault().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, "Cannot get adapter manager", null)); //$NON-NLS-1$
-		return adapterManager;
+		return adapterManagerTracker.getAdapterManager();
 	}
 
 }

@@ -45,15 +45,13 @@ public class Activator implements BundleActivator {
 
 	private ServiceRegistration idFactoryServiceRegistration;
 
-	private ServiceTracker extensionRegistryTracker;
-
 	private ServiceTracker debugOptionsTracker;
 
 	private ServiceTracker logServiceTracker;
 
 	private LogService logService;
 
-	private ServiceTracker adapterManagerTracker;
+	private AdapterManagerTracker adapterManagerTracker;
 
 	// This is object rather than typed to avoid referencing the
 	// IRegistryChangedListener class directly
@@ -64,21 +62,10 @@ public class Activator implements BundleActivator {
 			return null;
 		// First, try to get the adapter manager via
 		if (adapterManagerTracker == null) {
-			adapterManagerTracker = new ServiceTracker(this.context,
-					IAdapterManager.class.getName(), null);
+			adapterManagerTracker = new AdapterManagerTracker(this.context);
 			adapterManagerTracker.open();
 		}
-		IAdapterManager adapterManager = (IAdapterManager) adapterManagerTracker
-				.getService();
-		// Then, if the service isn't there, try to get from Platform class via
-		// PlatformHelper class
-		if (adapterManager == null)
-			adapterManager = PlatformHelper.getPlatformAdapterManager();
-		if (adapterManager == null)
-			getDefault().log(
-					new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR,
-							"Cannot get adapter manager", null)); //$NON-NLS-1$
-		return adapterManager;
+		return adapterManagerTracker.getAdapterManager();
 	}
 
 	/**
@@ -86,17 +73,6 @@ public class Activator implements BundleActivator {
 	 */
 	public Activator() {
 		// public null constructor
-	}
-
-	synchronized IExtensionRegistry getExtensionRegistry() {
-		if (this.context == null)
-			return null;
-		if (extensionRegistryTracker == null) {
-			extensionRegistryTracker = new ServiceTracker(context,
-					IExtensionRegistry.class.getName(), null);
-			extensionRegistryTracker.open();
-		}
-		return (IExtensionRegistry) extensionRegistryTracker.getService();
 	}
 
 	public synchronized DebugOptions getDebugOptions() {
@@ -123,10 +99,10 @@ public class Activator implements BundleActivator {
 		idFactoryServiceRegistration = context.registerService(
 				IIDFactory.class.getName(), IDFactory.getDefault(), null);
 
-		SafeRunner.run(new OptionalCodeSafeRunnable() {
-			public void run() throws Exception {
-				final IExtensionRegistry reg = getExtensionRegistry();
-				if (reg != null) {
+		SafeRunner.run(new ExtensionRegistryRunnable(ctxt) {
+			protected void runWithRegistry(IExtensionRegistry registry)
+					throws Exception {
+				if (registry != null) {
 					registryManager = new IRegistryChangeListener() {
 						public void registryChanged(IRegistryChangeEvent event) {
 							final IExtensionDelta delta[] = event
@@ -148,7 +124,7 @@ public class Activator implements BundleActivator {
 							}
 						}
 					};
-					reg.addRegistryChangeListener((IRegistryChangeListener) registryManager);
+					registry.addRegistryChangeListener((IRegistryChangeListener) registryManager);
 				}
 			}
 		});
@@ -278,12 +254,11 @@ public class Activator implements BundleActivator {
 	public void setupNamespaceExtensionPoint() {
 		if (context != null)
 			setupNamespaceServices();
-		SafeRunner.run(new OptionalCodeSafeRunnable() {
-			public void run() throws Exception {
-				// Process extension points
-				final IExtensionRegistry reg = getExtensionRegistry();
-				if (reg != null) {
-					final IExtensionPoint extensionPoint = reg
+		SafeRunner.run(new ExtensionRegistryRunnable(context) {
+			protected void runWithRegistry(IExtensionRegistry registry)
+					throws Exception {
+				if (registry != null) {
+					final IExtensionPoint extensionPoint = registry
 							.getExtensionPoint(NAMESPACE_EPOINT);
 					if (extensionPoint == null)
 						return;
@@ -304,11 +279,9 @@ public class Activator implements BundleActivator {
 						public Object addingService(ServiceReference reference) {
 							Namespace ns = (Namespace) context
 									.getService(reference);
-							if (ns != null) {
+							if (ns != null && ns.getName() != null)
 								IDFactory.addNamespace0(ns);
-								return ns;
-							}
-							return null;
+							return ns;
 						}
 
 						public void modifiedService(ServiceReference reference,
@@ -331,14 +304,13 @@ public class Activator implements BundleActivator {
 	 * org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext ctxt) throws Exception {
-		SafeRunner.run(new OptionalCodeSafeRunnable() {
-			public void run() throws Exception {
-				final IExtensionRegistry reg = getExtensionRegistry();
-				if (reg != null)
-					reg.removeRegistryChangeListener((IRegistryChangeListener) registryManager);
+		SafeRunner.run(new ExtensionRegistryRunnable(ctxt) {
+			protected void runWithRegistry(IExtensionRegistry registry)
+					throws Exception {
+				if (registry != null)
+					registry.removeRegistryChangeListener((IRegistryChangeListener) registryManager);
 			}
 		});
-
 		if (namespacesTracker != null) {
 			namespacesTracker.close();
 			namespacesTracker = null;
@@ -352,10 +324,6 @@ public class Activator implements BundleActivator {
 		if (debugOptionsTracker != null) {
 			debugOptionsTracker.close();
 			debugOptionsTracker = null;
-		}
-		if (extensionRegistryTracker != null) {
-			extensionRegistryTracker.close();
-			extensionRegistryTracker = null;
 		}
 		if (idFactoryServiceRegistration != null) {
 			idFactoryServiceRegistration.unregister();
