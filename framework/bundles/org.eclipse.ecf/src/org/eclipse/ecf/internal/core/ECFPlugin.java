@@ -117,6 +117,28 @@ public class ECFPlugin implements BundleActivator {
 			log(new Status(IStatus.ERROR, getDefault().getBundle().getSymbolicName(), "Unexpected Error in ECFPlugin.start", t)); //$NON-NLS-1$
 		}
 
+		// initialize from ContainerTypeDescription services
+		if (containerTypeDescriptionTracker == null) {
+			containerTypeDescriptionTracker = new ServiceTracker(this.context, ContainerTypeDescription.class.getName(), new ServiceTrackerCustomizer() {
+				public Object addingService(ServiceReference reference) {
+					ContainerTypeDescription ctd = (ContainerTypeDescription) context.getService(reference);
+					if (ctd != null && ctd.getName() != null)
+						ContainerFactory.getDefault().addDescription(ctd);
+					return ctd;
+				}
+
+				public void modifiedService(ServiceReference reference, Object service) {
+					// nothing
+				}
+
+				public void removedService(ServiceReference reference, Object service) {
+					IContainerFactory cf = ContainerFactory.getDefault();
+					cf.removeDescription((ContainerTypeDescription) service);
+				}
+			});
+			containerTypeDescriptionTracker.open();
+		}
+
 		SafeRunner.run(new ExtensionRegistryRunnable(this.context) {
 			protected void runWithRegistry(IExtensionRegistry registry) throws Exception {
 				if (registry != null) {
@@ -210,31 +232,6 @@ public class ECFPlugin implements BundleActivator {
 	private ServiceTracker containerTypeDescriptionTracker;
 
 	public void initializeExtensions() {
-		// initialize from ContainerTypeDescription services
-		if (containerTypeDescriptionTracker == null) {
-			containerTypeDescriptionTracker = new ServiceTracker(this.context, ContainerTypeDescription.class.getName(), new ServiceTrackerCustomizer() {
-				public Object addingService(ServiceReference reference) {
-					ContainerTypeDescription ctd = (ContainerTypeDescription) context.getService(reference);
-					if (ctd != null) {
-						IContainerFactory cf = ContainerFactory.getDefault();
-						cf.addDescription(ctd);
-						return ctd;
-					}
-					return null;
-				}
-
-				public void modifiedService(ServiceReference reference, Object service) {
-					// nothing
-				}
-
-				public void removedService(ServiceReference reference, Object service) {
-					IContainerFactory cf = ContainerFactory.getDefault();
-					cf.removeDescription((ContainerTypeDescription) service);
-				}
-			});
-			containerTypeDescriptionTracker.open();
-		}
-
 		SafeRunner.run(new ExtensionRegistryRunnable(this.context) {
 			protected void runWithRegistry(IExtensionRegistry registry) throws Exception {
 				if (registry != null) {
