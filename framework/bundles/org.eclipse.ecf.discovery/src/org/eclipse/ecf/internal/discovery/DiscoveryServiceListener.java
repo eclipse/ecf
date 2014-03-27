@@ -10,8 +10,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.discovery;
 
-import org.eclipse.ecf.discovery.identity.IServiceTypeID;
-
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.*;
@@ -134,7 +132,7 @@ public class DiscoveryServiceListener implements ServiceListener {
 				&& serviceReference
 						.getProperty("org.eclipse.ecf.discovery.protocols") == null;
 	}
-	
+
 	private IServiceTypeID getIServiceTypeID(ServiceReference serviceReference) {
 		String namingAuthority = (String) serviceReference
 				.getProperty("org.eclipse.ecf.discovery.namingauthority"); //$NON-NLS-1$

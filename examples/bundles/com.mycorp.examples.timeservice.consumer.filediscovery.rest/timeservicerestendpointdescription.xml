@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <endpoint-descriptions xmlns="http://www.osgi.org/xmlns/rsa/v1.0.0">
   <endpoint-description>
+    <property name="ecf.endpoint.id" value-type="String" value="http://localhost:8181"/>
     <property name="ecf.endpoint.id.ns" value-type="String" value="com.mycorp.examples.timeservice.provider.rest.namespace"/>
+    <property name="ecf.endpoint.ts" value-type="Long" value="1387233380373"/>
     <property name="endpoint.framework.uuid" value-type="String" value="20cc5d57-e8f0-0012-192b-c570b422d1f9"/>
-    <property name="endpoint.id" value-type="String" value="http://localhost:8181"/>
+    <property name="endpoint.id" value-type="String" value="87d3ef4f-8e8f-4187-873e-166dcc58c9eb"/>
     <property name="endpoint.package.version.com.mycorp.examples.timeservice" value-type="String" value="1.0.0"/>
     <property name="endpoint.service.id" value-type="Long" value="0"/>
     <property name="objectClass" value-type="String">

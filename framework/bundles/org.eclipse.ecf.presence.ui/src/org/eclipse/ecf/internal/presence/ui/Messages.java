@@ -168,6 +168,7 @@ public class Messages extends NLS {
 
 	public static String MultiRosterView_SHOW_CHAT_ROOMS_FOR_ACCOUNT_ACTION_TEXT;
 	public static String MultiRosterView_ShowOffline;
+	public static String MultiRosterView_ShowAway;
 	public static String MultiRosterView_ShowEmptyGroups;
 	public static String MultiRosterView_AddContact;
 	public static String MultiRosterView_SearchContact;

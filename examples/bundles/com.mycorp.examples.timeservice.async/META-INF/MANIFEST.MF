@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ECF RS Example Timeservice Async API
+Bundle-SymbolicName: com.mycorp.examples.timeservice.async
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Eclipse.org - ECF
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: com.mycorp.examples.timeservice;version="2.0.0"
+Bundle-ActivationPolicy: lazy

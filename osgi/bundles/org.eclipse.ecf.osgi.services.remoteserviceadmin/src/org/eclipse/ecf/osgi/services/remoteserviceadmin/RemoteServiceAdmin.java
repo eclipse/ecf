@@ -768,6 +768,13 @@ public class RemoteServiceAdmin implements
 
 	class ImportEndpoint {
 
+		@SuppressWarnings("unused")  
+		// XXX this will be used when ImportRegistration.update(EndpointDescription)
+		// is added in RSA 1.1/RFC 203
+		private ID importContainerID;
+		@SuppressWarnings("unused")
+		private IRemoteService rs;
+		
 		private IRemoteServiceContainerAdapter rsContainerAdapter;
 		private EndpointDescription endpointDescription;
 		private IRemoteServiceListener rsListener;
@@ -775,14 +782,17 @@ public class RemoteServiceAdmin implements
 		private ServiceRegistration proxyRegistration;
 		private Set<ImportRegistration> activeImportRegistrations = new HashSet<ImportRegistration>();
 
-		ImportEndpoint(IRemoteServiceContainerAdapter rsContainerAdapter,
+		ImportEndpoint(ID importContainerID, IRemoteServiceContainerAdapter rsContainerAdapter,
 				IRemoteServiceReference rsReference,
+				IRemoteService rs,
 				IRemoteServiceListener rsListener,
 				ServiceRegistration proxyRegistration,
 				EndpointDescription endpointDescription) {
+			this.importContainerID = importContainerID;
 			this.rsContainerAdapter = rsContainerAdapter;
 			this.endpointDescription = endpointDescription;
 			this.rsReference = rsReference;
+			this.rs = rs;
 			this.rsListener = rsListener;
 			this.proxyRegistration = proxyRegistration;
 			// Add the remoteservice listener to the container adapter, so that
@@ -829,6 +839,7 @@ public class RemoteServiceAdmin implements
 								.removeRemoteServiceListener(rsListener);
 						rsListener = null;
 					}
+					rs = null;
 					rsContainerAdapter = null;
 				}
 				endpointDescription = null;
@@ -1257,14 +1268,13 @@ public class RemoteServiceAdmin implements
 				});
 	}
 
-	private ContainerTypeDescription getContainerTypeDescription(
-			IContainer container) {
+	private ContainerTypeDescription getContainerTypeDescription(ID containerID) {
 		return Activator.getDefault().getContainerManager()
-				.getContainerTypeDescription(container.getID());
+				.getContainerTypeDescription(containerID);
 	}
-
+	
 	private boolean isClient(IContainer container) {
-		ContainerTypeDescription ctd = getContainerTypeDescription(container);
+		ContainerTypeDescription ctd = getContainerTypeDescription(container.getID());
 		if (ctd == null)
 			return false;
 		else
@@ -1341,11 +1351,20 @@ public class RemoteServiceAdmin implements
 						overridingProperties,
 						org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID);
 		if (endpointId == null)
-			endpointId = containerID.getName();
+			endpointId = UUID.randomUUID().toString();
 		endpointDescriptionProperties
 				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
 						endpointId);
 
+		// ECF ENDPOINT ID
+		String ecfEndpointId = (String) PropertiesUtil.getPropertyValue(
+				serviceReference, overridingProperties,
+				RemoteConstants.ENDPOINT_ID);
+		if (ecfEndpointId == null)
+			ecfEndpointId = containerID.getName();
+		endpointDescriptionProperties.put(RemoteConstants.ENDPOINT_ID,
+				ecfEndpointId);
+				
 		// ENDPOINT_SERVICE_ID
 		// This is always set to the value from serviceReference as per 122.5.1
 		Long serviceId = (Long) serviceReference
@@ -1366,7 +1385,7 @@ public class RemoteServiceAdmin implements
 						frameworkId);
 
 		// REMOTE_CONFIGS_SUPPORTED
-		String[] remoteConfigsSupported = getSupportedConfigs(container);
+		String[] remoteConfigsSupported = getSupportedConfigs(container.getID());
 		if (remoteConfigsSupported != null)
 			endpointDescriptionProperties
 					.put(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED,
@@ -1393,7 +1412,7 @@ public class RemoteServiceAdmin implements
 							intents);
 
 		// REMOTE_INTENTS_SUPPORTED
-		String[] remoteIntentsSupported = getSupportedIntents(container);
+		String[] remoteIntentsSupported = getSupportedIntents(container.getID());
 		if (remoteIntentsSupported != null)
 			endpointDescriptionProperties
 					.put(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_INTENTS_SUPPORTED,
@@ -1404,7 +1423,10 @@ public class RemoteServiceAdmin implements
 		String idNamespace = containerID.getNamespace().getName();
 		endpointDescriptionProperties.put(
 				RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE, idNamespace);
-
+		
+		// timestamp
+		endpointDescriptionProperties.put(RemoteConstants.ENDPOINT_TIMESTAMP, System.currentTimeMillis());
+		
 		// ENDPOINT_CONNECTTARGET_ID
 		String connectTarget = (String) PropertiesUtil.getPropertyValue(
 				serviceReference, overridingProperties,
@@ -1449,20 +1471,20 @@ public class RemoteServiceAdmin implements
 		return target;
 	}
 
-	private String[] getSupportedConfigs(IContainer container) {
-		ContainerTypeDescription ctd = getContainerTypeDescription(container);
+	private String[] getSupportedConfigs(ID containerID) {
+		ContainerTypeDescription ctd = getContainerTypeDescription(containerID);
 		return (ctd == null) ? null : ctd.getSupportedConfigs();
 	}
 
-	private String[] getImportedConfigs(IContainer container,
+	private String[] getImportedConfigs(ID containerID,
 			String[] exporterSupportedConfigs) {
-		ContainerTypeDescription ctd = getContainerTypeDescription(container);
+		ContainerTypeDescription ctd = getContainerTypeDescription(containerID);
 		return (ctd == null) ? null : ctd
 				.getImportedConfigs(exporterSupportedConfigs);
 	}
 
-	private String[] getSupportedIntents(IContainer container) {
-		ContainerTypeDescription ctd = getContainerTypeDescription(container);
+	private String[] getSupportedIntents(ID containerID) {
+		ContainerTypeDescription ctd = getContainerTypeDescription(containerID);
 		return (ctd == null) ? null : ctd.getSupportedIntents();
 	}
 
@@ -1479,8 +1501,7 @@ public class RemoteServiceAdmin implements
 		long rsId = 0;
 		// if the ECF remote service id is present in properties, allow it to
 		// override
-		Long l = (Long) endpointDescription.getProperties().get(
-				org.eclipse.ecf.remoteservice.Constants.SERVICE_ID);
+		Long l = endpointDescription.getRemoteServiceId();
 		if (l != null)
 			rsId = l.longValue();
 		// if rsId is still zero, use the endpoint.service.id from
@@ -1527,14 +1548,21 @@ public class RemoteServiceAdmin implements
 							+ selectedRsReference + ",rsContainerID=" //$NON-NLS-1$
 							+ rsContainerID);
 
-		final Map proxyProperties = createProxyProperties(endpointDescription,
-				rsContainer, selectedRsReference, rs);
+		final Map proxyProperties = createProxyProperties(rsContainerID, endpointDescription,
+				selectedRsReference, rs);
 
 		// sync sref props with endpoint props
 		endpointDescription.setPropertiesOverrides(proxyProperties);
 
-		final List<String> serviceTypes = endpointDescription.getInterfaces();
-
+		final List<String> originalTypes = endpointDescription.getInterfaces();
+		final List<String> asyncServiceTypes = endpointDescription.getAsyncInterfaces();
+		
+		final List<String> serviceTypes = new ArrayList<String>(originalTypes);
+		
+		if (asyncServiceTypes != null)
+			for(String ast: asyncServiceTypes) 
+				if (ast != null && !serviceTypes.contains(ast)) serviceTypes.add(ast);
+		
 		ServiceRegistration proxyRegistration = AccessController
 				.doPrivileged(new PrivilegedAction<ServiceRegistration>() {
 					public ServiceRegistration run() {
@@ -1548,7 +1576,7 @@ public class RemoteServiceAdmin implements
 					}
 				});
 
-		return new ImportEndpoint(containerAdapter, selectedRsReference,
+		return new ImportEndpoint(rsContainerID, containerAdapter, selectedRsReference, rs,
 				new RemoteServiceListener(), proxyRegistration,
 				endpointDescription);
 	}
@@ -1925,8 +1953,7 @@ public class RemoteServiceAdmin implements
 		return rsRefs.iterator().next();
 	}
 
-	private Map createProxyProperties(EndpointDescription endpointDescription,
-			IRemoteServiceContainer rsContainer,
+	private Map createProxyProperties(ID importContainerID, EndpointDescription endpointDescription,
 			IRemoteServiceReference rsReference, IRemoteService remoteService) {
 
 		Map resultProperties = new TreeMap<String, Object>(
@@ -1967,8 +1994,7 @@ public class RemoteServiceAdmin implements
 		String[] exporterSupportedConfigs = (String[]) endpointDescription
 				.getProperties()
 				.get(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED);
-		String[] importedConfigs = getImportedConfigs(
-				rsContainer.getContainer(), exporterSupportedConfigs);
+		String[] importedConfigs = getImportedConfigs(importContainerID, exporterSupportedConfigs);
 		// Set service.imported.configs
 		resultProperties
 				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS,
@@ -2021,23 +2047,22 @@ public class RemoteServiceAdmin implements
 					exportedInterfaces, service, PropertiesUtil
 							.createDictionaryFromMap(remoteServiceProperties));
 		}
-		endpointDescriptionProperties
-				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID,
-						remoteRegistration
-								.getProperty(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID));
+		
+		endpointDescriptionProperties.put(
+				org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,
+				remoteRegistration.getID().getContainerRelativeID());
 
 		if (remoteRegistration instanceof IExtendedRemoteServiceRegistration) {
 			IExtendedRemoteServiceRegistration iersr = (IExtendedRemoteServiceRegistration) remoteRegistration;
 			Map<String, Object> extraProperties = iersr.getExtraProperties();
-			endpointDescriptionProperties = PropertiesUtil.mergeProperties(endpointDescriptionProperties, extraProperties);
-
+			if (extraProperties != null)
+				endpointDescriptionProperties = PropertiesUtil.mergeProperties(endpointDescriptionProperties, extraProperties);
 		}
 		
-		EndpointDescription endpointDescription = new EndpointDescription(
-				serviceReference, endpointDescriptionProperties);
 		// Create ExportEndpoint/ExportRegistration
 		return new ExportRegistration(new ExportEndpoint(serviceReference,
-				endpointDescription, remoteRegistration));
+				new EndpointDescription(serviceReference,
+						endpointDescriptionProperties), remoteRegistration));
 	}
 
 	private ImportRegistration importService(

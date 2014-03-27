@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.provider.discovery;singleton:=true
-Bundle-Version: 2.1.200.qualifier
+Bundle-Version: 2.2.0.qualifier
 Bundle-Vendor: %pluginProvider
 Import-Package: org.eclipse.equinox.concurrent.future;version="1.0.0",
  org.osgi.framework,

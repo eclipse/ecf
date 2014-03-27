@@ -1,9 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: TimeService Consumer Filediscovery
+Bundle-Name: ECF RS Example TimeService Consumer FileDiscovery
 Bundle-SymbolicName: com.mycorp.examples.timeservice.consumer.filediscovery
-Bundle-Version: 1.0.0.qualifier
-Bundle-Vendor: MyCorp, Inc.
+Bundle-Version: 1.1.0.qualifier
+Bundle-Vendor: Eclipse.org - ECF
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Remote-Service: timeserviceendpointdescription.xml
-

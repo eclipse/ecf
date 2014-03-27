@@ -10,6 +10,7 @@
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +18,12 @@ import java.util.Map;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.IDUtil;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
+import org.eclipse.ecf.remoteservice.Constants;
+import org.eclipse.ecf.remoteservice.IAsyncRemoteServiceProxy;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 
@@ -43,8 +48,13 @@ import org.osgi.framework.Version;
 public class EndpointDescription extends
 		org.osgi.service.remoteserviceadmin.EndpointDescription {
 
+	private String ecfid;
+	private Long timestamp;
 	private String idNamespace;
 	private ID containerID;
+	private Long rsId;
+	private List<String> asyncInterfaces;
+	
 	private ID connectTargetID;
 	private ID[] idFilter;
 	private String rsFilter;
@@ -92,11 +102,72 @@ public class EndpointDescription extends
 	}
 
 	private void verifyECFProperties() {
+		this.ecfid = verifyStringProperty(RemoteConstants.ENDPOINT_ID);
+		if (this.ecfid == null) {
+			LogUtility
+					.logWarning(
+							"verifyECFProperties", DebugOptions.ENDPOINT_DESCRIPTION_READER, EndpointDescription.class, "ECFEndpointDescription property " + RemoteConstants.ENDPOINT_ID + " not set.  Using OSGI endpoint.id value"); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+			this.ecfid = getId();
+		}
+		this.timestamp = verifyLongProperty(RemoteConstants.ENDPOINT_TIMESTAMP);
+		if (this.timestamp == null) {
+			LogUtility
+					.logWarning(
+							"verifyECFProperties", DebugOptions.ENDPOINT_DESCRIPTION_READER, EndpointDescription.class, "ECFEndpointDescription property " + RemoteConstants.ENDPOINT_TIMESTAMP + " not set.  Using OSGI endpoint.service.id"); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+			this.timestamp = getServiceId();
+		}
 		this.idNamespace = verifyStringProperty(RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
-		this.containerID = verifyIDProperty(idNamespace, getId());
+		this.containerID = verifyIDProperty(idNamespace, this.ecfid);
+		this.rsId = verifyLongProperty(Constants.SERVICE_ID);
+			// if null, then set to service.id
+		if (this.rsId == null) 
+				this.rsId = getServiceId();
+		
 		this.connectTargetID = verifyIDProperty(RemoteConstants.ENDPOINT_CONNECTTARGET_ID);
 		this.idFilter = verifyIDFilter();
 		this.rsFilter = verifyStringProperty(RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER);
+		
+		this.asyncInterfaces = verifyAsyncInterfaces();
+	}
+
+	private List<String> verifyAsyncInterfaces() {
+		// Check to see that async proxy has not been disabled
+		List<String> resultInterfaces = new ArrayList<String>();
+		Object noAsyncProxy = getProperties().get(Constants.SERVICE_PREVENT_ASYNCPROXY);
+		if (noAsyncProxy == null) {
+			// Get service.exported.async.objectClass property value
+			Object asyncObjectClass = getProperties().get(
+					RemoteConstants.SERVICE_EXPORTED_ASYNC_INTERFACES);
+			// If present
+			if (asyncObjectClass != null) {
+				List<String> originalInterfaces = getInterfaces();
+				String[] matchingInterfaces = PropertiesUtil
+						.getMatchingInterfaces(
+								originalInterfaces
+										.toArray(new String[originalInterfaces
+												.size()]), asyncObjectClass);
+				if (matchingInterfaces != null)
+					for (int i = 0; i < matchingInterfaces.length; i++) {
+						String asyncInterface = convertInterfaceToAsync(matchingInterfaces[i]);
+						if (asyncInterface != null
+								&& !resultInterfaces.contains(asyncInterface))
+							resultInterfaces.add(asyncInterface);
+					}
+			}
+		}
+		return Collections.unmodifiableList(resultInterfaces);
+	}
+	
+	private Long verifyLongProperty(String propName) {
+		Object r = getProperties().get(propName);
+		try {
+			return (Long) r;
+		} catch (ClassCastException e) {
+			IllegalArgumentException iae = new IllegalArgumentException(
+					"property value is not a Long: " + propName); //$NON-NLS-1$
+			iae.initCause(e);
+			throw iae;
+		}
 	}
 
 	private String verifyStringProperty(String propName) {
@@ -146,6 +217,15 @@ public class EndpointDescription extends
 		return (ID[]) results.toArray(new ID[results.size()]);
 	}
 
+	private void addInterfaceVersions(List<String> interfaces, Map<String,Version> result) {
+		if (interfaces == null) return;
+		for (String intf : interfaces) {
+			int index = intf.lastIndexOf('.');
+			if (index == -1) continue;
+			String packageName = intf.substring(0, index);
+			result.put(intf, getPackageVersion(packageName));
+		}
+	}
 	/**
 	 * Get a map of the service interface name -> Version information for all
 	 * the service interfaces exposed by this endpoint description (i.e. those
@@ -157,19 +237,33 @@ public class EndpointDescription extends
 	 *         may have value {@value Version#emptyVersion}
 	 */
 	public Map<String, Version> getInterfaceVersions() {
-		List<String> interfaces = getInterfaces();
 		Map<String, Version> result = new HashMap<String, Version>();
-		for (String intf : interfaces) {
-			int index = intf.lastIndexOf('.');
-			if (index == -1) {
-				continue;
-			}
-			String packageName = intf.substring(0, index);
-			result.put(intf, getPackageVersion(packageName));
-		}
+		addInterfaceVersions(getInterfaces(),result);
+		addInterfaceVersions(getAsyncInterfaces(),result);
 		return result;
 	}
 
+	/**
+	 * @since 4.0
+	 */
+	public String getEndpointId() {
+		return ecfid;
+	}
+	
+	/**
+	 * @since 4.0
+	 */
+	public Long getTimestamp() {
+		return this.timestamp;
+	}
+	
+	/**
+	 * @since 4.0
+	 */
+	public Long getRemoteServiceId() {
+		return this.rsId;
+	}
+	
 	public ID getContainerID() {
 		return containerID;
 	}
@@ -225,11 +319,27 @@ public class EndpointDescription extends
 		return super.getProperties();
 	}
 
+	private String convertInterfaceToAsync(String interfaceName) {
+		if (interfaceName == null)
+			return null;
+		String asyncProxyName = (String) getProperties().get(Constants.SERVICE_ASYNC_RSPROXY_CLASS_ + interfaceName);
+		if (asyncProxyName != null)
+			return asyncProxyName;
+		if (interfaceName.endsWith(IAsyncRemoteServiceProxy.ASYNC_INTERFACE_SUFFIX))
+			return interfaceName;
+		return interfaceName + IAsyncRemoteServiceProxy.ASYNC_INTERFACE_SUFFIX;
+	}
+	
+	/**
+	 * @since 4.0
+	 */
+	public List<String> getAsyncInterfaces() {
+		return asyncInterfaces;
+	}
+	
 	public String toString() {
 		StringBuffer sb = new StringBuffer("ECFEndpointDescription["); //$NON-NLS-1$
-		sb.append("id=").append(getId()); //$NON-NLS-1$
-		sb.append(";endpoint.service.id=").append(getServiceId()); //$NON-NLS-1$
-		sb.append(";frameworkid=").append(getFrameworkUUID()).append("]"); //$NON-NLS-1$//$NON-NLS-2$
+		sb.append(getProperties()).append("]"); //$NON-NLS-1$
 		return sb.toString();
 	}
 }

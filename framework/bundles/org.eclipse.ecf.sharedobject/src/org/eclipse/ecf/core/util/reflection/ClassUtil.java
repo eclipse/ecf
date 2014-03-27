@@ -14,8 +14,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 /**
- * @since 2.2
- *
+ * @since 3.3
  */
 @SuppressWarnings("unchecked")
 public class ClassUtil {

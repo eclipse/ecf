@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: ECF Remote Service Admin Proxy
+Bundle-Name: ECF RemoteServiceAdmin Proxy
 Bundle-SymbolicName: org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

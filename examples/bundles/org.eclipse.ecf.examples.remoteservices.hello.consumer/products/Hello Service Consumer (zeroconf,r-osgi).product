@@ -26,6 +26,7 @@
    <plugins>
       <plugin id="ch.ethz.iks.r_osgi.remote"/>
       <plugin id="ch.ethz.iks.slp"/>
+      <plugin id="javax.xml"/>
       <plugin id="org.apache.felix.gogo.command"/>
       <plugin id="org.apache.felix.gogo.runtime"/>
       <plugin id="org.apache.felix.gogo.shell"/>
@@ -49,6 +50,7 @@
       <plugin id="org.eclipse.equinox.common"/>
       <plugin id="org.eclipse.equinox.concurrent"/>
       <plugin id="org.eclipse.equinox.console"/>
+      <plugin id="org.eclipse.equinox.event"/>
       <plugin id="org.eclipse.equinox.preferences"/>
       <plugin id="org.eclipse.equinox.registry"/>
       <plugin id="org.eclipse.osgi"/>
@@ -57,5 +59,8 @@
       <plugin id="org.objectweb.asm"/>
    </plugins>
 
+   <configurations>
+      <plugin id="org.eclipse.equinox.event" autoStart="false" startLevel="0" />
+   </configurations>
 
 </product>

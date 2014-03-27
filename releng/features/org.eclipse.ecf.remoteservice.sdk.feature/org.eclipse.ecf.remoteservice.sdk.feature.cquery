@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cq:componentQuery xmlns:cq="http://www.eclipse.org/buckminster/CQuery-1.0" resourceMap="ecf.rmap">
+    <cq:rootRequest name="org.eclipse.ecf.remoteservice.sdk.feature" componentType="eclipse.feature"/>
+    <cq:property key="target.arch" value="*"/>
+    <cq:property key="target.os" value="*"/>
+    <cq:property key="target.ws" value="*"/>
+    <cq:advisorNode namePattern="^ch\.ethz\.iks(\..+)?" useTargetPlatform="false" useWorkspace="false">
+    
+    <cq:documentation xmlns="http://www.w3.org/1999/xhtml">This name pattern matches ch.ethz.iks.anything.
+
+       The regex (\..+)? matches zero or more occurrences 
+       of . followed by one of more of any character.
+
+       Skip Component is not checked.
+    </cq:documentation>
+
+    </cq:advisorNode>
+    <cq:advisorNode namePattern="^org\.eclipse\.ecf(\..+)?" useTargetPlatform="false" useWorkspace="false">
+        
+    <cq:documentation xmlns="http://www.w3.org/1999/xhtml">This name pattern matchesorg.eclipse.ecf.anything.
+
+       The regex (\..+)? matches zero or more occurrences 
+       of . followed by one of more of any character.
+
+       Skip Component is not checked.
+    </cq:documentation>
+
+    </cq:advisorNode>
+    <cq:advisorNode namePattern="^org\.eclipse\.team\.ecf(\..+)?" useTargetPlatform="false" useWorkspace="false">
+    
+    <cq:documentation xmlns="http://www.w3.org/1999/xhtml">This name pattern matches org.eclipse.team.ecf.anything.
+
+       The regex (\..+)? matches zero or more occurrences 
+       of . followed by one of more of any character.
+
+       Skip Component is not checked.
+    </cq:documentation>
+    
+    </cq:advisorNode>
+    <cq:advisorNode namePattern="^org\.jivesoftware\.smack$" useTargetPlatform="false" useWorkspace="false">
+    
+    <cq:documentation xmlns="http://www.w3.org/1999/xhtml">The name pattern matches org.jivesoftware.smack exactly.
+
+       Skip Component is not checked.</cq:documentation>
+    </cq:advisorNode>
+    
+    <cq:advisorNode namePattern="^com\.mycorp\.examples(\..+)?" useTargetPlatform="false" useWorkspace="false">
+    
+    <cq:documentation xmlns="http://www.w3.org/1999/xhtml">The name pattern matches com.mycorp.examplesanything.
+
+       The regex (\..+)? matches zero or more occurrences 
+       of . followed by one of more of any character.
+
+       Skip Component is not checked.</cq:documentation>
+    </cq:advisorNode>
+    
+    <cq:advisorNode namePattern="^org\.eclipse\.osgi\.services\.remoteserviceadmin(\..+)?" useTargetPlatform="false" useWorkspace="false"/>
+    <cq:advisorNode namePattern="^org\.eclipse\.equinox\.p2\.user\.ui$" skipComponent="true" useTargetPlatform="false">
+    
+    <cq:documentation xmlns="http://www.w3.org/1999/xhtml">The name pattern matches org.eclipse.equinox.p2.user.ui exactly.
+
+       Skip Component is checked so that this component which comes from 
+       the platform is not resolved.
+    </cq:documentation>
+    
+    </cq:advisorNode>
+    <cq:advisorNode namePattern=".*" mutableLevel="REJECT" sourceLevel="REJECT">
+    
+    <cq:documentation xmlns="http://www.w3.org/1999/xhtml">Everything not picked up by the previous name patterns is
+       rejected.
+    </cq:documentation>
+    
+    </cq:advisorNode>
+</cq:componentQuery>

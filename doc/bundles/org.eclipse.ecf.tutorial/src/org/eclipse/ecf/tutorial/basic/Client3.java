@@ -21,8 +21,7 @@ public class Client3 extends XMPPChatClient {
 	private static final String DEFAULT_USERNAME = "eclipsecon@ecf.eclipse.org";
 	
 	public Client3() {
-		super();
-		setMessageReceiver(new IMessageReceiver() {
+		super(new IMessageReceiver() {
 			public void handleMessage(final IChatMessage chatMessage) {
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {

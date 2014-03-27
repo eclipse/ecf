@@ -7,7 +7,7 @@
 
    <description url="http://www.eclipse.org/ecf">
       This feature provides the ECF Discovery Service Location Protocol
-(RFC 2608) Provider.
+(RFC 2608) Provider.   This provider can be used by OSGi Remote Services Discovery to publish and discover OSGi RS EndpointDescriptions.
    </description>
 
    <copyright>
@@ -27,7 +27,7 @@
    </license>
 
    <requires>
-      <import feature="org.eclipse.ecf.discovery.feature" version="1.0.0"/>
+      <import feature="org.eclipse.ecf.discovery.feature" version="1.0.0" match="compatible"/>
    </requires>
 
    <plugin

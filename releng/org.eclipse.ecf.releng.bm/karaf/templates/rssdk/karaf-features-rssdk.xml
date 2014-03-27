@@ -1,0 +1,297 @@
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.2.0" name="ECF RemoteServices SDK v3.8.0">
+<feature name="ecf.rs.sdk" version="3.8.0" description="ECF 3.8.0 RemoteServices SDK.  See https://wiki.eclipse.org/ECF#OSGi_Remote_Services">
+
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/spf/org.eclipse.ecf.saxparserfactory_1.0.0.v20130605-1748.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/equinox/drops/R-3.8.2-201302041200/org.eclipse.equinox.supplement_1.4.100.v20120522-1813.jar</bundle>
+	<bundle>http://download.eclipse.org/equinox/drops/R-3.8.2-201302041200/org.eclipse.osgi.services_3.3.100.v20120522-1822.jar</bundle>
+	<bundle>http://download.eclipse.org/equinox/drops/R-3.8.2-201302041200/org.eclipse.equinox.log_1.2.300.v20120912-130548.jar</bundle>
+	<bundle>http://download.eclipse.org/equinox/drops/R-3.8.2-201302041200/org.eclipse.equinox.common_3.6.100.v20120522-1841.jar</bundle>
+	<bundle>http://download.eclipse.org/equinox/drops/R-3.8.2-201302041200/org.eclipse.equinox.registry_3.5.200.v20120522-1841.jar</bundle>
+	<bundle>http://download.eclipse.org/equinox/drops/R-3.8.2-201302041200/org.eclipse.equinox.event_1.2.200.v20120522-2049.jar</bundle>
+	<bundle>http://download.eclipse.org/equinox/drops/R-3.8.2-201302041200/org.eclipse.core.jobs_3.5.300.v20120912-155018.jar</bundle>
+	<bundle>http://download.eclipse.org/equinox/drops/R-3.8.2-201302041200/org.eclipse.equinox.concurrent_1.0.300.v20120912-130548.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/com.sun.syndication_0.9.0.v200803061811.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/javax.servlet_3.0.0.v201112011016.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.apache.commons.codec_1.6.0.v201305230611.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.apache.commons.logging_1.1.1.v201101211721.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.apache.httpcomponents.httpclient_4.2.6.v201311072007.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.apache.httpcomponents.httpcore_4.2.5.v201311072007.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.apache.log4j_1.2.15.v201012070815.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.jdom_1.1.1.v201101151400.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.jivesoftware.smack_3.3.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.json_1.0.0.v201011060100.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.objectweb.asm_3.3.1.v201105211655.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.identity_3.2.0.v20140309-0741.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf_3.3.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.filetransfer_5.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.sharedobject_2.4.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.datashare_3.0.100.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.discovery_5.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.presence_2.1.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.remoteservice_8.3.0.v20140309-0741.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.remoteservice.servlet_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.remoteservice.eventadmin_1.2.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.remoteservice.rest_2.3.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.remoteservice.rest.synd_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.remoteservice.soap_1.0.0.v20140309-0741.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider_4.4.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.remoteservice_4.0.100.v20140309-0741.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.filetransfer_3.2.100.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.filetransfer.httpclient4_1.0.300.v20140309-0741.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.datashare.nio_0.9.100.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.datashare_1.4.100.v20140309-0741.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.jmdns_4.2.0.v20140309-0741.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/ch.ethz.iks.r_osgi.remote_1.0.0.RC4_v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.r_osgi_3.3.0.v20140309-0741.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.xmpp.datashare_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.xmpp.remoteservice_1.1.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.xmpp_3.2.200.v20140309-0741.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.osgi.services.remoteserviceadmin_1.5.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.osgi.services.remoteserviceadmin_4.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.osgi.services.distribution_2.0.300.v20140309-0741.jar</bundle>
+</feature>
+
+<feature name="ecf rs.sdk.discovery.dnssd" version="3.8.0" description="ECF Discovery DNSSD Provider">
+	<bundle start="false">http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.dnssd_1.1.0.v20140309-0741.jar</bundle>
+	<bundle start="false">http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.xbill.dns_2.0.8.v201112050911.jar</bundle>
+</feature>
+
+<feature name="ecf rs.sdk.discovery.dnssd.source" version="3.8.0" description="ECF Discovery DNSSD Provider Source">
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.dnssd.source_1.1.0.v20140309-0741.jar</bundle>
+</feature>
+
+<feature name="ecf rs.sdk.discovery.slp" version="3.8.0" description="ECF Discovery SLP Provider">
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/ch.ethz.iks.slp_1.1.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.jslp_3.1.0.v20140309-0741.jar</bundle>
+</feature>
+
+<feature name="ecf rs.sdk.discovery.slp.source" version="3.8.0" description="ECF Discovery SLP Provider Source">
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.dnssd.source_1.1.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/ch.ethz.iks.slp.source_1.1.0.v20140309-0741.jar</bundle>
+</feature>
+
+<feature name="ecf rs.sdk.discovery.zeroconf.source" version="3.8.0" description="ECF Discovery Zeroconf/JMDNS Provider Source">
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.jmdns.source_4.2.0.v20140309-0741.jar</bundle>
+</feature>
+
+<feature name="ecf rs.sdk.discovery.zookeeper" version="3.8.0" description="ECF Discovery Zookeeper Provider">
+	<bundle start="false">http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.apache.hadoop.zookeeper_3.3.3.v201105210832.jar</bundle>
+	<bundle start="false">http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.zookeeper_1.1.0.v20140309-0741.jar</bundle>
+</feature>
+
+<feature name="ecf rs.sdk.discovery.zookeeper.source" version="3.8.0" description="ECF Discovery Zookeeper Provider Source">
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.zookeeper.source_1.1.0.v20140309-0741.jar</bundle>
+</feature>
+
+<feature name="ecf rs.sdk.discovery.composite" version="3.8.0" description="ECF Discovery Composite Provider">
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.discovery_2.2.0.v20140309-0741.jar</bundle>
+</feature>
+
+<feature name="ecf rs.sdk.discovery.composite.source" version="3.8.0" description="ECF Discovery Composite Provider Source">
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.discovery.source_2.2.0.v20140309-0741.jar</bundle>
+</feature>
+
+<feature name="ecf.rs.examples.timeservice" version="3.8.0" description="ECF RemoteService TimeService Example.  See https://wiki.eclipse.org/ECF#Introductory_Materials">
+<bundle start="false">http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/com.mycorp.examples.timeservice.consumer.ds_1.0.0.v20140309-0741.jar</bundle>
+<bundle start="false">http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/com.mycorp.examples.timeservice.consumer.filediscovery.rest_1.1.0.v20140309-0741.jar</bundle>
+<bundle start="false">http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/com.mycorp.examples.timeservice.consumer.filediscovery_1.1.0.v20140309-0741.jar</bundle>
+<bundle start="false">http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/com.mycorp.examples.timeservice.consumer_1.0.0.v20140309-0741.jar</bundle>
+<bundle start="false">http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/com.mycorp.examples.timeservice.host_1.0.0.v20140309-0741.jar</bundle>
+<bundle start="false">http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/com.mycorp.examples.timeservice.provider.rest.common_2.0.0.v20140309-0741.jar</bundle>
+<bundle start="false">http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/com.mycorp.examples.timeservice.provider.rest.consumer_1.1.0.v20140309-0741.jar</bundle>
+<bundle start="false">http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/com.mycorp.examples.timeservice.provider.rest.host_1.1.0.v20140309-0741.jar</bundle>
+<bundle start="false">http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/com.mycorp.examples.timeservice_1.0.0.v20140309-0741.jar</bundle>
+</feature>
+
+<feature name="ecf.rs.examples.timeservice.source" version="3.8.0" description="ECF RemoteService TimeService Example Source.  See https://wiki.eclipse.org/ECF#Introductory_Materials">
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/com.mycorp.examples.timeservice.consumer.ds.source_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/com.mycorp.examples.timeservice.consumer.filediscovery.rest.source_1.1.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/com.mycorp.examples.timeservice.consumer.filediscovery.source_1.1.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/com.mycorp.examples.timeservice.consumer.source_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/com.mycorp.examples.timeservice.host.source_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/com.mycorp.examples.timeservice.provider.rest.common.source_2.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/com.mycorp.examples.timeservice.provider.rest.consumer.source_1.1.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/com.mycorp.examples.timeservice.provider.rest.host.source_1.1.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/com.mycorp.examples.timeservice.source_1.0.0.v20140309-0741.jar</bundle>
+</feature>
+
+<feature name="ecf.rs.sdk.source" version="3.8.0"  description="ECF 3.8.0 RemoteServices SDK Source Code.  See https://wiki.eclipse.org/ECF#OSGi_Remote_Services">
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/ch.ethz.iks.r_osgi.remote.source_1.0.0.RC4_v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.datashare.source_3.0.100.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.discovery.source_5.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.filetransfer.source_5.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.filetransfer.httpclient4.source_1.0.300.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.filetransfer.source_3.2.100.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.identity.source_3.2.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.osgi.services.distribution.source_2.0.300.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy.source_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.osgi.services.remoteserviceadmin.source_4.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.presence.source_2.1.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.datashare.nio.source_0.9.100.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.datashare.source_1.4.100.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.jslp.source_3.1.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.r_osgi.source_3.3.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.remoteservice.source_4.0.100.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.source_4.4.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.xmpp.datashare.source_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.xmpp.remoteservice.source_1.1.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.xmpp.source_3.2.200.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.remoteservice.eventadmin.source_1.2.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.remoteservice.rest.source_2.3.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.remoteservice.rest.synd.source_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.remoteservice.servlet.source_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.remoteservice.soap.source_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.remoteservice.source_8.3.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.sharedobject.source_2.4.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.source_3.3.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.osgi.services.remoteserviceadmin.source_1.5.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.jivesoftware.smack.source_3.3.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.apache.commons.codec.source_1.6.0.v201305230611.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.apache.commons.logging.source_1.1.1.v201101211721.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.apache.httpcomponents.httpclient.source_4.2.6.v201311072007.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.apache.httpcomponents.httpcore.source_4.2.5.v201311072007.jar</bundle>
+</feature>
+
+<feature name="ecf.eclipsesdk.donotinstall" version="3.8.0" description="ECF Eclipse SDK - Do not install into Karaf">
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.console.source_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.console_1.0.0.v20140309-0741.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.discovery.ui.browser.source_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.discovery.ui.edit.source_3.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.discovery.ui.browser_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.discovery.ui.edit.source_3.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.discovery.ui.edit_3.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.discovery.ui.model.source_3.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.discovery.ui.model_3.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.discovery.ui.properties.source_3.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.discovery.ui.properties.tabbed.source_3.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.discovery.ui.properties.tabbed_3.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.discovery.ui.properties_3.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.discovery.ui.source_3.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.discovery.ui.userinput.source_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.discovery.ui.userinput_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.discovery.ui_3.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.doc.source_1.3.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.doc_1.3.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.docshare.source_3.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.docshare_3.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.example.clients.source_2.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.example.clients_2.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.example.collab.editor.source_1.0.200.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.example.collab.editor_1.0.200.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.example.collab.source_2.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.example.collab_2.0.0.v20140309-0741.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.filetransfer.ui.source_1.5.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.filetransfer.ui_1.5.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.presence.bot.source_1.3.100.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.presence.bot_1.3.100.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.presence.collab.ui.source_1.3.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.presence.collab.ui_1.3.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.presence.ui.source_2.3.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.presence.ui_2.3.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.protocol.bittorrent.source_0.3.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.protocol.bittorrent_0.3.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.protocol.msn.source_1.2.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.protocol.msn_1.2.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.bittorrent.source_0.3.200.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.bittorrent.ui.source_0.2.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.bittorrent.ui_0.2.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.bittorrent_0.3.200.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.filetransfer.efs.source_1.5.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.filetransfer.efs_1.5.0.v20140309-0741.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.filetransfer.httpclient4.ssl.source_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.filetransfer.httpclient4.ssl_1.0.0.v20140309-0741.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.filetransfer.scp.source_2.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.filetransfer.scp_2.0.0.v20140309-0741.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.filetransfer.ssl.source_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.filetransfer.ssl_1.0.0.v20140309-0741.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.irc.source_1.3.200.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.irc.ui.source_1.3.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.irc.ui_1.3.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.irc_1.3.200.v20140309-0741.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.msn.source_1.2.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.msn.ui.source_1.3.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.msn.ui_1.3.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.msn_1.2.0.v20140309-0741.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.ui.source_1.4.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.ui_1.4.0.v20140309-0741.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.remoteservice.ui.source_3.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.remoteservice.ui_3.0.0.v20140309-0741.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.xmpp.ui.source_2.1.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.provider.xmpp.ui_2.1.0.v20140309-0741.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.remoteservices.tooling.pde.source_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.remoteservices.tooling.pde_1.0.0.v20140309-0741.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.ssl.source_1.1.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.ssl_1.1.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.storage.source_2.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.storage_2.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.sync.source_2.0.100.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.sync_2.0.100.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.telephony.call.source_2.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.telephony.call.ui.source_1.3.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.telephony.call.ui_1.3.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.telephony.call_2.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.ui.capabilities.source_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.ui.capabilities_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.ui.source_2.1.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.ui_2.1.0.v20140309-0741.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.team.ecf.core.source_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.team.ecf.core_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.team.ecf.ui.source_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.team.ecf.ui_1.0.0.v20140309-0741.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.server.generic_7.0.0.v20140309-0741.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.server.generic.source_7.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.examples.eventadmin.app.source_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.examples.eventadmin.app_1.0.0.v20140309-0741.jar</bundle>
+	
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.examples.remoteservices.hello.consumer.edef.source_1.1.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.examples.remoteservices.hello.consumer.edef_1.1.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.examples.remoteservices.hello.consumer.source_3.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.examples.remoteservices.hello.consumer2.source_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.examples.remoteservices.hello.consumer2_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.examples.remoteservices.hello.consumer_3.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.examples.remoteservices.hello.ds.consumer.source_2.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.examples.remoteservices.hello.ds.consumer_2.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.examples.remoteservices.hello.ds.host.source_3.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.examples.remoteservices.hello.ds.host_3.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.examples.remoteservices.hello.host.source_3.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.examples.remoteservices.hello.host_3.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.examples.remoteservices.hello.source_3.0.100.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.examples.remoteservices.hello_3.0.100.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.examples.remoteservices.rest.rss.source_1.0.0.v20140309-0741.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.examples.remoteservices.rest.rss_1.0.0.v20140309-0741.jar</bundle>
+
+	<bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.server_2.1.0.v20140309-0741.jar</bundle>
+    <bundle>http://download.eclipse.org/rt/ecf/latest/site.p2/plugins/org.eclipse.ecf.server.source_2.1.0.v20140309-0741.jar</bundle>
+	
+</feature>
+
+</features>

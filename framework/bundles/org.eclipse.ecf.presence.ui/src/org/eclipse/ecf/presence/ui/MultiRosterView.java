@@ -21,6 +21,7 @@ import org.eclipse.ecf.internal.presence.ui.Activator;
 import org.eclipse.ecf.internal.presence.ui.Messages;
 import org.eclipse.ecf.internal.presence.ui.dialogs.*;
 import org.eclipse.ecf.presence.*;
+import org.eclipse.ecf.presence.IPresence.Mode;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
 import org.eclipse.ecf.presence.im.*;
 import org.eclipse.ecf.presence.roster.*;
@@ -95,6 +96,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 
 	private IAction showEmptyGroupsAction;
 
+	private IAction showAwayAction;
+
 	private IAction addContactAction;
 
 	private IAction searchContactAction;
@@ -141,6 +144,21 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		}
 	};
 
+	private ViewerFilter showAwayFilter = new ViewerFilter() {
+		public boolean select(Viewer viewer, Object parentElement, Object element) {
+			if (element instanceof IRosterEntry) {
+				IRosterEntry entry = (IRosterEntry) element;
+				IPresence presence = entry.getPresence();
+				if (presence != null) {
+					Mode m = presence.getMode();
+					return (m == IPresence.Mode.AVAILABLE || m == IPresence.Mode.CHAT || m == IPresence.Mode.DND);
+				}
+				return true;
+			}
+			return true;
+		}
+	};
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -171,6 +189,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		treeViewer.setLabelProvider(new MultiRosterLabelProvider());
 		treeViewer.addFilter(hideOfflineFilter);
 		treeViewer.addFilter(hideEmptyGroupsFilter);
+		treeViewer.addFilter(showAwayFilter);
 		treeViewer.setInput(rosterAccounts);
 		treeViewer.addOpenListener(new IOpenListener() {
 			public void open(OpenEvent e) {
@@ -461,6 +480,16 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			}
 		};
 
+		showAwayAction = new Action(Messages.MultiRosterView_ShowAway, IAction.AS_CHECK_BOX) {
+			public void run() {
+				if (isChecked()) {
+					treeViewer.removeFilter(showAwayFilter);
+				} else {
+					treeViewer.addFilter(showAwayFilter);
+				}
+			}
+		};
+
 		addContactAction = new Action(Messages.MultiRosterView_AddContact, SharedImages.getImageDescriptor(SharedImages.IMG_ADD_BUDDY)) {
 			public void run() {
 				AddContactDialog dialog = new AddContactDialog(treeViewer.getControl().getShell());
@@ -720,6 +749,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		setInvisibleAction.setEnabled(enabled);
 		setOfflineAction.setEnabled(enabled);
 		showOfflineAction.setEnabled(enabled);
+		showAwayAction.setEnabled(enabled);
 		showEmptyGroupsAction.setEnabled(enabled);
 		addContactAction.setEnabled(enabled);
 		searchContactAction.setEnabled(enabled);
@@ -740,6 +770,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		manager.add(showOfflineAction);
 
 		manager.add(showEmptyGroupsAction);
+
+		manager.add(showAwayAction);
 
 		manager.add(new Separator());
 		manager.add(addContactAction);

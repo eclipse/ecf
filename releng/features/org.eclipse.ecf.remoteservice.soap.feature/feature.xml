@@ -6,7 +6,9 @@
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the ECF Remote Services SOAP Support.
+      This feature installs the SOAP support for ECF Remote Services.  This SOAP support is an implementation that provides the distribution for OSGi Remote Services.  For information about both OSGi Remote Services and the SOAP support see
+
+https://wiki.eclipse.org/ECF#OSGi_Remote_Services
    </description>
 
    <copyright>
@@ -25,9 +27,9 @@
       %license
    </license>
 
-   <includes
-         id="org.eclipse.ecf.remoteservice.feature"
-         version="0.0.0"/>
+   <requires>
+      <import feature="org.eclipse.ecf.remoteservice.feature" version="2.0" match="compatible"/>
+   </requires>
 
    <plugin
          id="org.eclipse.ecf.remoteservice.soap"

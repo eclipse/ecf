@@ -141,6 +141,14 @@ public class SSLServerSOContainerGroup extends SOContainerGroup implements ISock
 			threadGroup.interrupt();
 			threadGroup = null;
 		}
+		if (this.serverSocket != null) {
+			try {
+				this.serverSocket.close();
+			} catch (IOException e) {
+				Trace.catching("org.eclipse.ecf.provider", ECFProviderDebugOptions.CONNECTION, SSLServerSOContainerGroup.class, "takeOffTheAir", e); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+			this.serverSocket = null;
+		}
 		isOnTheAir = false;
 	}
 

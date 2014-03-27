@@ -3,11 +3,11 @@
       id="org.eclipse.ecf.datashare.feature"
       label="ECF Datashare"
       version="1.0.0.qualifier"
-      provider-name="%providerName">
+      provider-name="Eclipse.org - ECF">
 
    <description url="http://www.eclipse.org/ecf">
       This feature provides the ECF Datashare API for asynchronous
-messaging within a channel.
+messaging within a named channel.
    </description>
 
    <copyright>
@@ -26,22 +26,13 @@ messaging within a channel.
       %license
    </license>
 
+   <requires>
+      <import plugin="org.eclipse.ecf"/>
+      <import plugin="org.eclipse.ecf.identity"/>
+   </requires>
+
    <plugin
          id="org.eclipse.ecf.datashare"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.provider.datashare"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.provider.datashare.nio"
          download-size="0"
          install-size="0"
          version="0.0.0"

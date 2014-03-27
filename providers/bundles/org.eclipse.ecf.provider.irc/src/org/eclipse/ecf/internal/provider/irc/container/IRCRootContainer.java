@@ -242,6 +242,8 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 
 			public void onDisconnected() {
 				trace("handleOnDisconnected()"); //$NON-NLS-1$
+				fireContainerEvent(new ContainerDisconnectingEvent(getID(),
+						targetID));
 				synchronized (connectLock) {
 					if (connectWaiting) {
 						if (connectException == null)

@@ -18,11 +18,17 @@ import org.eclipse.ecf.discovery.IServiceListener;
 
 public class TestServiceListener extends TestListener implements IServiceListener {
 
-	private IDiscoveryLocator locator;
+	private final IDiscoveryLocator locator;
+	private final String testName;
+	private final String testId;
 
 
-	public TestServiceListener(int eventsToExpect, IDiscoveryLocator aLocator) {
+	public TestServiceListener(int eventsToExpect, IDiscoveryLocator aLocator, String testName, String testId) {
 		super(eventsToExpect);
+		Assert.isNotNull(testId);
+		this.testId = testId;
+		Assert.isNotNull(testName);
+		this.testName = testName;
 		Assert.isNotNull(aLocator);
 		locator = aLocator;
 	}
@@ -31,12 +37,23 @@ public class TestServiceListener extends TestListener implements IServiceListene
 	 * @see org.eclipse.ecf.discovery.IServiceListener#serviceDiscovered(org.eclipse.ecf.discovery.IServiceEvent)
 	 */
 	public void serviceDiscovered(IServiceEvent anEvent) {
-		events.add(anEvent);
-		if(events.size() == amountOfEventsToExpect) {
-			synchronized (this) {
-				notifyAll();
+		if (matchesExpected(anEvent)) {
+			events.add(anEvent);
+			if(events.size() == amountOfEventsToExpect) {
+				synchronized (this) {
+					notifyAll();
+				}
 			}
+		} else {
+			System.err.println(toString()
+					+ "ignored unexpected events received by test listener "
+					+ anEvent);
 		}
+	}
+
+	protected boolean matchesExpected(IServiceEvent anEvent) {
+		return (testId.equals(anEvent.getServiceInfo().getServiceProperties()
+				.getProperty(testName + "testIdentifier")));
 	}
 
 	/* (non-Javadoc)
@@ -52,5 +69,15 @@ public class TestServiceListener extends TestListener implements IServiceListene
 	 */
 	public IContainer getLocator() {
 		return (IContainer) locator;
+	}
+
+	public boolean triggerDiscovery() {
+		return false;
+	}
+
+	public String toString() {
+		return "TestServiceListener [locator=" + locator + ", testName="
+				+ testName + ", events=" + getEvent() + ", amountOfEventsToExpect="
+				+ amountOfEventsToExpect + "]";
 	}
 }

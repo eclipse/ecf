@@ -97,6 +97,9 @@ public class XMPPID extends BaseID implements IChatID, IFQID {
 	public XMPPID(Namespace namespace, String unamehost)
 			throws URISyntaxException {
 		super(namespace);
+		// System.out.println("XMPPID.init unamehost=" + unamehost);
+		// Exception except = new Exception();
+		// except.printStackTrace();
 		unamehost = fixPercentEscape(unamehost);
 		if (unamehost == null)
 			throw new URISyntaxException(unamehost,
@@ -148,15 +151,11 @@ public class XMPPID extends BaseID implements IChatID, IFQID {
 		// Get resources from this and other
 		String thisResourceName = getResourceName();
 		String otherResourceName = other.getResourceName();
-		// The resources are considered equal if either one is null (not known
-		// yet), or they are equal by
-		// string comparison
 		boolean resourceEquals = false;
-		if (thisResourceName == null) {
+		if (thisResourceName == null)
 			resourceEquals = (otherResourceName == null) ? true : false;
-		} else {
+		else
 			resourceEquals = thisResourceName.equals(otherResourceName);
-		}
 		return resourceEquals
 				&& getUsernameAtHost().equals(other.getUsernameAtHost());
 	}

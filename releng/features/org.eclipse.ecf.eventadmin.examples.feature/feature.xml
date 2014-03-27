@@ -6,7 +6,9 @@
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the ECF Distributed EventAdmin Examples.
+      This feature provides the ECF Distributed EventAdmin Example Application.  For more information about Distribute EventAdmin see:
+
+https://wiki.eclipse.org/EIG:Distributed_EventAdmin_Service
    </description>
 
    <copyright>
@@ -25,9 +27,10 @@
       %license
    </license>
 
-   <includes
-         id="org.eclipse.ecf.eventadmin.feature"
-         version="0.0.0"/>
+   <requires>
+      <import feature="org.eclipse.ecf.eventadmin.feature" version="2.0" match="compatible"/>
+      <import plugin="org.eclipse.equinox.app"/>
+   </requires>
 
    <plugin
          id="org.eclipse.ecf.examples.eventadmin.app"

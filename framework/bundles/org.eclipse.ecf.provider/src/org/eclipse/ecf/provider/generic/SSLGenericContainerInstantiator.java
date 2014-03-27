@@ -108,7 +108,10 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 			return keepAlive;
 		}
 
-		InetAddress getBindAddress() {
+		/**
+		 * @since 4.5
+		 */
+		public InetAddress getBindAddress() {
 			return bindAddress;
 		}
 	}
@@ -272,19 +275,33 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 		return port;
 	}
 
+	/**
+	 * @since 4.5
+	 */
+	protected IContainer createClientContainer(GenericContainerArgs gcargs) throws Exception {
+		return new SSLClientSOContainer(new SOContainerConfig(gcargs.getID()), gcargs.getKeepAlive().intValue());
+	}
+
+	/**
+	 * @since 4.5
+	 */
+	protected IContainer createServerContainer(GenericContainerArgs gcargs) throws Exception {
+		return new SSLServerSOContainer(new SOContainerConfig(gcargs.getID()), gcargs.getBindAddress(), gcargs.getKeepAlive().intValue());
+	}
+
 	public IContainer createInstance(ContainerTypeDescription description, Object[] args) throws ContainerCreateException {
 		boolean isClient = isClient(description);
 		try {
 			GenericContainerArgs gcargs = null;
 			if (isClient) {
 				gcargs = getClientArgs(args);
-				return new SSLClientSOContainer(new SOContainerConfig(gcargs.getID()), gcargs.getKeepAlive().intValue());
+				return createClientContainer(gcargs);
 			}
 			// This synchronized block is to prevent issues with
 			// multithreaded access to ServerPort (to find available port)
 			synchronized (this) {
 				gcargs = getServerArgs(args);
-				return new SSLServerSOContainer(new SOContainerConfig(gcargs.getID()), gcargs.getBindAddress(), gcargs.getKeepAlive().intValue());
+				return createServerContainer(gcargs);
 			}
 		} catch (Exception e) {
 			Trace.catching(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "createInstance", e); //$NON-NLS-1$

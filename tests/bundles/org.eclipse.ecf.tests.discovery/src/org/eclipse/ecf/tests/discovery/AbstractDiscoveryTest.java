@@ -26,6 +26,8 @@ import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 
 public abstract class AbstractDiscoveryTest extends TestCase {
+	public static final String TEST_NAME = "testName";
+
 	private final Random random;
 
 	protected IServiceInfo serviceInfo;
@@ -41,11 +43,17 @@ public abstract class AbstractDiscoveryTest extends TestCase {
 	protected IDiscoveryAdvertiser discoveryAdvertiser = null;
 
 	private String hostname = DiscoveryTestHelper.HOSTNAME;
+
+	private String testId;
 	
 	public AbstractDiscoveryTest(String name) {
 		super();
 		this.containerUnderTest = name;
 		this.random = new Random();
+	}
+	
+	public String getTestId() {
+		return testId;
 	}
 
 	protected abstract IDiscoveryLocator getDiscoveryLocator();
@@ -96,7 +104,9 @@ public abstract class AbstractDiscoveryTest extends TestCase {
 		IServiceTypeID serviceTypeID = ServiceIDFactory.getDefault().createServiceTypeID(discoveryLocator.getServicesNamespace(), services, new String[]{scope}, new String[]{protocol}, namingAuthority);
 		assertNotNull(serviceTypeID);
 		final ServiceProperties serviceProperties = new ServiceProperties(props);
-		serviceProperties.setPropertyString(getName() + "testIdentifier", Long.toString(random.nextLong()));
+		serviceProperties.setPropertyString(TEST_NAME, getName());
+		testId = Long.toString(random.nextLong());
+		serviceProperties.setPropertyString(getName() + "testIdentifier", testId);
 		serviceProperties.setPropertyString(getName() + "servicePropertiesString", "serviceProperties");
 		serviceProperties.setProperty(getName() + "servicePropertiesIntegerMax", new Integer(Integer.MIN_VALUE));
 		serviceProperties.setProperty(getName() + "servicePropertiesIntegerMin", new Integer(Integer.MAX_VALUE));

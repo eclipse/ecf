@@ -18,6 +18,7 @@ Export-Package: org.eclipse.ecf.core;version="3.0.0",
  org.eclipse.ecf.core.status;version="1.1.0",
  org.eclipse.ecf.core.user;version="3.1.0",
  org.eclipse.ecf.core.util;version="3.2.0",
+ org.eclipse.ecf.core.util.reflection;version="2.3.0",
  org.eclipse.ecf.internal.core;x-internal:=true
 Import-Package: org.eclipse.core.runtime.jobs,
  org.eclipse.equinox.concurrent.future;version="1.0.0";resolution:=optional;x-installation:=greedy,

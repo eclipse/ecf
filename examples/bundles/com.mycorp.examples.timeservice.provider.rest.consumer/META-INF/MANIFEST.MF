@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Timeservice Provider Rest Consumer
+Bundle-Name: ECF RS Example Timeservice REST Provider Consumer
 Bundle-SymbolicName: com.mycorp.examples.timeservice.provider.rest.consumer;singleton:=true
-Bundle-Version: 1.0.0.qualifier
-Bundle-Vendor: MyCorp
+Bundle-Version: 1.1.0.qualifier
+Bundle-Vendor: Eclipse.org - ECF
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Import-Package: com.mycorp.examples.timeservice;version="1.0.0",
@@ -17,4 +17,4 @@ Import-Package: com.mycorp.examples.timeservice;version="1.0.0",
  org.json,
  org.osgi.framework
 Require-Bundle: org.eclipse.ecf,
- org.eclipse.equinox.common;bundle-version="3.6.200"
+ org.eclipse.equinox.common

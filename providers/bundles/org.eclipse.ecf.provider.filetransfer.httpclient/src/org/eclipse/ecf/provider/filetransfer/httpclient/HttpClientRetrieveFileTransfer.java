@@ -17,7 +17,6 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.Socket;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -370,16 +369,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			}
 		}
 		if (connectingSockets != null) {
-			// this should unblock socket connect calls, if any
-			for (Iterator iterator = connectingSockets.getConnectingSockets().iterator(); iterator.hasNext();) {
-				Socket socket = (Socket) iterator.next();
-				try {
-					Trace.trace(Activator.PLUGIN_ID, "Call socket.close() for socket=" + socket.toString()); //$NON-NLS-1$
-					socket.close();
-				} catch (IOException e) {
-					Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "cancel", e); //$NON-NLS-1$
-				}
-			}
+			connectingSockets.closeSockets();
 		}
 		hardClose();
 		if (fireDoneEvent) {

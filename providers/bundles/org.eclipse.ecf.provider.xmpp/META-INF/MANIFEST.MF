@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.provider.xmpp;singleton:=true
-Bundle-Version: 3.2.100.qualifier
+Bundle-Version: 3.2.200.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.provider.xmpp.XmppPlugin
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
@@ -12,7 +12,7 @@ Require-Bundle: org.eclipse.ecf;bundle-version="3.1.0",
  org.eclipse.ecf.filetransfer,
  org.jivesoftware.smack;bundle-version="3.3.0",
  org.eclipse.ecf.sharedobject,
- org.eclipse.equinox.common;bundle-version="3.5.0"
+ org.eclipse.equinox.common
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.internal.provider.xmpp;x-internal:=true,
  org.eclipse.ecf.internal.provider.xmpp.events;x-internal:=true,

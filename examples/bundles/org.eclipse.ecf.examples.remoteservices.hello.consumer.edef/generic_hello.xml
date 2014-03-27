@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <endpoint-descriptions xmlns="http://www.osgi.org/xmlns/rsa/v1.0.0">
   <endpoint-description>
+    <property name="ecf.endpoint.id" value-type="String" value="ecftcp://localhost:3787/server"/>
     <property name="ecf.endpoint.id.ns" value-type="String" value="org.eclipse.ecf.core.identity.StringID"/>
+    <property name="ecf.endpoint.ts" value-type="Long" value="1387233380373"/>
     <property name="endpoint.framework.uuid" value-type="String" value="70cd3d4b-4931-0010-1b63-d64101cefd5e"/>
-    <property name="endpoint.id" value-type="String" value="ecftcp://localhost:3787/server"/>
+    <property name="endpoint.id" value-type="String" value="87d3ef4f-8e8f-4187-873e-166dcc58c9ed"/>
     <property name="endpoint.service.id" value-type="Long" value="0"/>
 	<property name="endpoint.package.version.org.eclipse.ecf.examples.remoteservices.hello" value-type="String" value="3.0.0"/>
     <property name="objectClass" value-type="String">

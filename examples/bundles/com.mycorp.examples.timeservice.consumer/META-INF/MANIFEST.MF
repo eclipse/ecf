@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Consumer
+Bundle-Name: ECF RS Example Timeservice Consumer
 Bundle-SymbolicName: com.mycorp.examples.timeservice.consumer
 Bundle-Version: 1.0.0.qualifier
-Bundle-Vendor: MyCorp, Inc.
+Bundle-Vendor: Eclipse.org - ECF
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: com.mycorp.examples.timeservice.consumer.Activator
