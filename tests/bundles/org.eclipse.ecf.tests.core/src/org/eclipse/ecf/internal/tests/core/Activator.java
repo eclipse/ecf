@@ -23,6 +23,11 @@ public class Activator implements BundleActivator {
 
 	private static ServiceTracker containerManagerServiceTracker;
 
+	private static BundleContext context;
+	
+	public static BundleContext getContext() {
+		return context;
+	}
 	/**
 	 * The constructor
 	 */
@@ -35,8 +40,9 @@ public class Activator implements BundleActivator {
 	 * @see
 	 * org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
-	public void start(BundleContext context) throws Exception {
+	public void start(BundleContext ctxt) throws Exception {
 		plugin = this;
+		context = ctxt;
 		idFactoryServiceTracker = new ServiceTracker(context,
 				IIDFactory.class.getName(), null);
 		idFactoryServiceTracker.open();
