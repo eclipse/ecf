@@ -21,6 +21,8 @@ import org.eclipse.ecf.core.provider.BaseContainerInstantiator;
 
 public class TrivialContainerInstantiator extends BaseContainerInstantiator {
 
+	public static final String NAME = "ecf.container.trivial";
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.provider.BaseContainerInstantiator#createInstance(org.eclipse.ecf.core.ContainerTypeDescription, java.lang.Object[])
 	 */

@@ -53,6 +53,13 @@ public class ContainerTypeDescription {
 		this.hidden = hidden;
 	}
 
+	/**
+	 * @since 3.4
+	 */
+	public ContainerTypeDescription(String name, IContainerInstantiator instantiator) {
+		this(name, instantiator, null);
+	}
+
 	public ContainerTypeDescription(String name, IContainerInstantiator instantiator, String description) {
 		this(name, instantiator, description, false, false);
 	}

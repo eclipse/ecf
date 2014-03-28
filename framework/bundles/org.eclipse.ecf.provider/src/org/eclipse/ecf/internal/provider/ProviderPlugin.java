@@ -13,7 +13,8 @@ package org.eclipse.ecf.internal.provider;
 
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocketFactory;
-import org.eclipse.core.runtime.*;
+import org.eclipse.core.runtime.IAdapterManager;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.util.*;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -36,7 +37,7 @@ public class ProviderPlugin implements BundleActivator {
 
 	private ServiceTracker logServiceTracker = null;
 
-	private ServiceTracker adapterManagerTracker = null;
+	private AdapterManagerTracker adapterManagerTracker = null;
 
 	private ServiceTracker sslServerSocketFactoryTracker;
 	private ServiceTracker sslSocketFactoryTracker;
@@ -46,17 +47,10 @@ public class ProviderPlugin implements BundleActivator {
 			return null;
 		// First, try to get the adapter manager via
 		if (adapterManagerTracker == null) {
-			adapterManagerTracker = new ServiceTracker(this.context, IAdapterManager.class.getName(), null);
+			adapterManagerTracker = new AdapterManagerTracker(this.context);
 			adapterManagerTracker.open();
 		}
-		IAdapterManager adapterManager = (IAdapterManager) adapterManagerTracker.getService();
-		// Then, if the service isn't there, try to get from Platform class via
-		// PlatformHelper class
-		if (adapterManager == null)
-			adapterManager = PlatformHelper.getPlatformAdapterManager();
-		if (adapterManager == null)
-			getDefault().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, "Cannot get adapter manager", null)); //$NON-NLS-1$
-		return adapterManager;
+		return adapterManagerTracker.getAdapterManager();
 	}
 
 	/**
