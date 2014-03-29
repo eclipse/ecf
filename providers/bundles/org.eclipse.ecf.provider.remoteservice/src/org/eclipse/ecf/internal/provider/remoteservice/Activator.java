@@ -8,9 +8,12 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.provider.remoteservice;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.ecf.core.util.LogHelper;
-import org.eclipse.ecf.core.util.SystemLogService;
+import java.util.*;
+import org.eclipse.core.runtime.*;
+import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.util.*;
+import org.eclipse.ecf.provider.remoteservice.generic.RemoteServiceContainerAdapterFactory;
+import org.eclipse.ecf.provider.remoteservice.generic.RemoteServiceNamespace;
 import org.osgi.framework.*;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
@@ -39,8 +42,39 @@ public class Activator implements BundleActivator {
 		plugin = this;
 	}
 
-	public void start(BundleContext ctxt) throws Exception {
+	private List rscAdapterFactories;
+
+	private static IAdapterManager getAdapterManager(BundleContext ctx) {
+		AdapterManagerTracker t = new AdapterManagerTracker(ctx);
+		t.open();
+		IAdapterManager am = t.getAdapterManager();
+		t.close();
+		return am;
+	}
+
+	public void start(final BundleContext ctxt) throws Exception {
 		this.context = ctxt;
+		SafeRunner.run(new ExtensionRegistryRunnable(this.context) {
+			protected void runWithoutRegistry() throws Exception {
+				ctxt.registerService(Namespace.class, new RemoteServiceNamespace(org.eclipse.ecf.provider.remoteservice.generic.RemoteServiceNamespace.NAME, "Generic remote service namespace"), null); //$NON-NLS-1$
+				IAdapterManager am = getAdapterManager(ctxt);
+				if (am != null) {
+					rscAdapterFactories = new ArrayList();
+					IAdapterFactory af = new RemoteServiceContainerAdapterFactory();
+					am.registerAdapters(af, org.eclipse.ecf.provider.generic.SSLServerSOContainer.class);
+					rscAdapterFactories.add(af);
+					af = new RemoteServiceContainerAdapterFactory();
+					am.registerAdapters(af, org.eclipse.ecf.provider.generic.TCPServerSOContainer.class);
+					rscAdapterFactories.add(af);
+					af = new RemoteServiceContainerAdapterFactory();
+					am.registerAdapters(af, org.eclipse.ecf.provider.generic.SSLClientSOContainer.class);
+					rscAdapterFactories.add(af);
+					af = new RemoteServiceContainerAdapterFactory();
+					am.registerAdapters(af, org.eclipse.ecf.provider.generic.TCPClientSOContainer.class);
+					rscAdapterFactories.add(af);
+				}
+			}
+		});
 	}
 
 	public void stop(BundleContext ctxt) throws Exception {
@@ -48,6 +82,14 @@ public class Activator implements BundleActivator {
 			logServiceTracker.close();
 			logServiceTracker = null;
 			logService = null;
+		}
+		if (rscAdapterFactories != null) {
+			IAdapterManager am = getAdapterManager(this.context);
+			if (am != null) {
+				for (Iterator i = rscAdapterFactories.iterator(); i.hasNext();)
+					am.unregisterAdapters((IAdapterFactory) i.next());
+			}
+			rscAdapterFactories = null;
 		}
 		this.context = null;
 		plugin = null;

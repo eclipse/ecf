@@ -13,9 +13,11 @@ package org.eclipse.ecf.internal.provider;
 
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocketFactory;
-import org.eclipse.core.runtime.IAdapterManager;
-import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.*;
+import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.util.*;
+import org.eclipse.ecf.provider.generic.GenericContainerInstantiator;
+import org.eclipse.ecf.provider.generic.SSLGenericContainerInstantiator;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.log.LogService;
@@ -64,8 +66,16 @@ public class ProviderPlugin implements BundleActivator {
 	/**
 	 * This method is called upon plug-in activation
 	 */
-	public void start(BundleContext context1) throws Exception {
+	public void start(final BundleContext context1) throws Exception {
 		this.context = context1;
+		SafeRunner.run(new ExtensionRegistryRunnable(this.context) {
+			protected void runWithoutRegistry() throws Exception {
+				context1.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(GenericContainerInstantiator.TCPSERVER_NAME, new GenericContainerInstantiator(), "ECF Generic Server", true, false), null); //$NON-NLS-1$
+				context1.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(GenericContainerInstantiator.TCPCLIENT_NAME, new GenericContainerInstantiator(), "ECF Generic Client", false, true), null); //$NON-NLS-1$
+				context1.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(SSLGenericContainerInstantiator.SSLSERVER_NAME, new SSLGenericContainerInstantiator(), "ECF SSL Generic Server", true, false), null); //$NON-NLS-1$
+				context1.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(SSLGenericContainerInstantiator.SSLCLIENT_NAME, new SSLGenericContainerInstantiator(), "ECF SSL Generic Client", false, true), null); //$NON-NLS-1$
+			}
+		});
 	}
 
 	/**
