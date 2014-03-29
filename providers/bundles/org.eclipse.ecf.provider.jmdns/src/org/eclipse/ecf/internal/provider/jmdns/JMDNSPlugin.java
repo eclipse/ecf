@@ -12,14 +12,17 @@ package org.eclipse.ecf.internal.provider.jmdns;
 
 import java.util.Properties;
 import org.eclipse.core.runtime.IAdapterManager;
-import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.IContainer;
+import org.eclipse.core.runtime.SafeRunner;
+import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.*;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
+import org.eclipse.ecf.provider.jmdns.container.ContainerInstantiator;
 import org.eclipse.ecf.provider.jmdns.container.JMDNSDiscoveryContainer;
+import org.eclipse.ecf.provider.jmdns.identity.JMDNSNamespace;
 import org.osgi.framework.*;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
@@ -45,7 +48,7 @@ public class JMDNSPlugin implements BundleActivator {
 		plugin = this;
 	}
 
-	private ServiceTracker adapterManagerTracker = null;
+	private AdapterManagerTracker adapterManagerTracker = null;
 
 	private ServiceRegistration serviceRegistration;
 
@@ -56,15 +59,10 @@ public class JMDNSPlugin implements BundleActivator {
 	public IAdapterManager getAdapterManager() {
 		// First, try to get the adapter manager via
 		if (adapterManagerTracker == null) {
-			adapterManagerTracker = new ServiceTracker(this.context, IAdapterManager.class.getName(), null);
+			adapterManagerTracker = new AdapterManagerTracker(this.context);
 			adapterManagerTracker.open();
 		}
-		IAdapterManager adapterManager = (IAdapterManager) adapterManagerTracker.getService();
-		// Then, if the service isn't there, try to get from Platform class via
-		// PlatformHelper class
-		if (adapterManager == null)
-			adapterManager = PlatformHelper.getPlatformAdapterManager();
-		return adapterManager;
+		return adapterManagerTracker.getAdapterManager();
 	}
 
 	/**
@@ -78,6 +76,14 @@ public class JMDNSPlugin implements BundleActivator {
 		props.put(Constants.SERVICE_RANKING, new Integer(750));
 		String[] clazzes = new String[] {IDiscoveryService.class.getName(), IDiscoveryLocator.class.getName(), IDiscoveryAdvertiser.class.getName()};
 		serviceRegistration = context.registerService(clazzes, serviceFactory, props);
+		SafeRunner.run(new ExtensionRegistryRunnable(ctxt) {
+			protected void runWithoutRegistry() throws Exception {
+				ctxt.registerService(Namespace.class, new JMDNSNamespace("JMDNS Discovery Namespace"), null);
+				ctxt.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(ContainerInstantiator.JMDNS_CONTAINER_NAME, new ContainerInstantiator(), "JMDNS Discovery Container", true, false), null);
+				ctxt.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(ContainerInstantiator.JMDNS_LOCATOR_NAME, new ContainerInstantiator(), "JMDNS Discovery Locator"), null);
+				ctxt.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(ContainerInstantiator.JMDNS_ADVERTISER_NAME, new ContainerInstantiator(), "JMDNS Discovery Advertiser"), null);
+			}
+		});
 	}
 
 	private final DiscoveryServiceFactory serviceFactory = new DiscoveryServiceFactory();

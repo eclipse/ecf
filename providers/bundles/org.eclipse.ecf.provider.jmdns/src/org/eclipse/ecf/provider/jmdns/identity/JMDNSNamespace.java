@@ -23,6 +23,17 @@ public class JMDNSNamespace extends Namespace {
 
 	public static final String NAME = "ecf.namespace.jmdns"; //$NON-NLS-1$
 
+	public JMDNSNamespace() {
+		super();
+	}
+
+	/**
+	 * @since 4.3
+	 */
+	public JMDNSNamespace(String description) {
+		super(NAME, description);
+	}
+
 	private String getInitFromExternalForm(final Object[] args) {
 		if (args == null || args.length < 1 || args[0] == null)
 			return null;
