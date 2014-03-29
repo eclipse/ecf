@@ -227,6 +227,12 @@ public class ECFPlugin implements BundleActivator {
 				}
 			}
 		});
+
+		SafeRunner.run(new ExtensionRegistryRunnable(this.context) {
+			protected void runWithoutRegistry() throws Exception {
+				ECFPlugin.this.context.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(BaseContainer.Instantiator.NAME, new BaseContainer.Instantiator()), null);
+			}
+		});
 	}
 
 	private ServiceTracker containerTypeDescriptionTracker;
