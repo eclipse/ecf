@@ -9,7 +9,6 @@ import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.util.AdapterManagerTracker;
 import org.eclipse.ecf.core.util.ExtensionRegistryRunnable;
-import org.eclipse.ecf.provider.remoteservice.generic.RemoteServiceContainerAdapterFactory;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
