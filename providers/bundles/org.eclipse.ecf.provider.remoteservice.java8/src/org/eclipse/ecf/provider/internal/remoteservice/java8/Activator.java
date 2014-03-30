@@ -30,22 +30,22 @@ public class Activator implements BundleActivator {
 		SafeRunner.run(new ExtensionRegistryRunnable(context) {
 			protected void runWithoutRegistry() throws Exception {
 				context.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(J8GenericContainerInstantiator.JAVA8_SERVER_NAME, new J8GenericContainerInstantiator(), "ECF Java8 Generic Server", true, false), null); //$NON-NLS-1$
-				context.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(J8GenericContainerInstantiator.JAVA8_CLIENT_NAME, new J8GenericContainerInstantiator(), "ECF Java8 Generic Client", false, true), null); //$NON-NLS-1$
-				context.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(J8SSLGenericContainerInstantiator.JAVA8_SSL_CLIENT_NAME, new J8SSLGenericContainerInstantiator(), "ECF Java8 SSL Generic Server", true, false), null); //$NON-NLS-1$
-				context.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(J8SSLGenericContainerInstantiator.JAVA8_SSL_SERVER_NAME, new J8SSLGenericContainerInstantiator(), "ECF Java8 SSL Generic Client", false, true), null); //$NON-NLS-1$
+				context.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(J8GenericContainerInstantiator.JAVA8_CLIENT_NAME, new J8GenericContainerInstantiator(), "ECF Java8 Generic Client", false, false), null); //$NON-NLS-1$
+				context.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(J8SSLGenericContainerInstantiator.JAVA8_SSL_CLIENT_NAME, new J8SSLGenericContainerInstantiator(), "ECF Java8 SSL Generic Client", false, false), null); //$NON-NLS-1$
+				context.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(J8SSLGenericContainerInstantiator.JAVA8_SSL_SERVER_NAME, new J8SSLGenericContainerInstantiator(), "ECF Java8 SSL Generic Server", true, false), null); //$NON-NLS-1$
 				IAdapterManager am = getAdapterManager(context);
 				if (am != null) {
 					rscAdapterFactories = new ArrayList<IAdapterFactory>();
 					IAdapterFactory af = new J8RemoteServiceContainerAdapterFactory();
 					am.registerAdapters(af, J8SSLServerSOContainer.class);
 					rscAdapterFactories.add(af);
-					af = new RemoteServiceContainerAdapterFactory();
+					af = new J8RemoteServiceContainerAdapterFactory();
 					am.registerAdapters(af, J8TCPServerSOContainer.class);
 					rscAdapterFactories.add(af);
-					af = new RemoteServiceContainerAdapterFactory();
+					af = new J8RemoteServiceContainerAdapterFactory();
 					am.registerAdapters(af, J8SSLClientSOContainer.class);
 					rscAdapterFactories.add(af);
-					af = new RemoteServiceContainerAdapterFactory();
+					af = new J8RemoteServiceContainerAdapterFactory();
 					am.registerAdapters(af, J8TCPClientSOContainer.class);
 					rscAdapterFactories.add(af);
 				}
