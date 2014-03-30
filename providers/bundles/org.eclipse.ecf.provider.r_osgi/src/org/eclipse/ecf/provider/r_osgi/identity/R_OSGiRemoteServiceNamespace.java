@@ -23,6 +23,10 @@ public class R_OSGiRemoteServiceNamespace extends Namespace {
 
 	public static final String NAME = "ecf.namespace.r_osgi.remoteservice"; //$NON-NLS-1$
 
+	public R_OSGiRemoteServiceNamespace() {
+		super(NAME, "R_OSGi Remote Service Namespace"); //$NON-NLS-1$
+	}
+
 	public ID createInstance(Object[] parameters) throws IDCreateException {
 		if (parameters == null || parameters.length != 2)
 			throw new IDCreateException("Parameters incorrect for remote ID creation"); //$NON-NLS-1$

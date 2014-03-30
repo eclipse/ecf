@@ -104,6 +104,7 @@ public final class R_OSGiContainerInstantiator implements IContainerInstantiator
 	}
 
 	private static final String ROSGI_CONFIG = "ecf.r_osgi.peer"; //$NON-NLS-1$
+	public static final String NAME = ROSGI_CONFIG;
 
 	private static final String[] ROSGI_CONFIGS = new String[] {ROSGI_CONFIG};
 
