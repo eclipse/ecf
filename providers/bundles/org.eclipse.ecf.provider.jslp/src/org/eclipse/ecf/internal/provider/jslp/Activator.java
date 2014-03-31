@@ -13,13 +13,17 @@ package org.eclipse.ecf.internal.provider.jslp;
 import ch.ethz.iks.slp.Advertiser;
 import ch.ethz.iks.slp.Locator;
 import java.util.Properties;
-import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.IContainer;
+import org.eclipse.core.runtime.SafeRunner;
+import org.eclipse.ecf.core.*;
+import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.util.ExtensionRegistryRunnable;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
+import org.eclipse.ecf.provider.jslp.container.ContainerInstantiator;
 import org.eclipse.ecf.provider.jslp.container.JSLPDiscoveryContainer;
+import org.eclipse.ecf.provider.jslp.identity.JSLPNamespace;
 import org.osgi.framework.*;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -81,6 +85,15 @@ public class Activator implements BundleActivator {
 	 */
 	public void start(final BundleContext context) throws Exception {
 		bundleContext = context;
+
+		SafeRunner.run(new ExtensionRegistryRunnable(context) {
+			protected void runWithoutRegistry() throws Exception {
+				context.registerService(Namespace.class, new JSLPNamespace(), null);
+				context.registerService(ContainerTypeDescription.class, new ContainerTypeDescription("ecf.discovery.jslp", new ContainerInstantiator(), "JSLP Discovery Container", true, false), null); //$NON-NLS-1$//$NON-NLS-2$
+				context.registerService(ContainerTypeDescription.class, new ContainerTypeDescription("ecf.discovery.jslp.locator", new ContainerInstantiator(), "JSLP Discovery Locator Container", true, false), null); //$NON-NLS-1$//$NON-NLS-2$
+				context.registerService(ContainerTypeDescription.class, new ContainerTypeDescription("ecf.discovery.jslp.advertiser", new ContainerInstantiator(), "JSLP Discovery Advertiser Container", true, false), null); //$NON-NLS-1$//$NON-NLS-2$
+			}
+		});
 
 		// initially get the locator and add a life cycle listener
 		locatorSt = new ServiceTracker(context, Locator.class.getName(), null);

@@ -23,6 +23,10 @@ public class JSLPNamespace extends Namespace {
 
 	public static final String NAME = "ecf.namespace.slp"; //$NON-NLS-1$
 
+	public JSLPNamespace() {
+		super(NAME, "JSLP Namespace"); //$NON-NLS-1$
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.identity.Namespace#createInstance(java.lang.Object[])
 	 */
