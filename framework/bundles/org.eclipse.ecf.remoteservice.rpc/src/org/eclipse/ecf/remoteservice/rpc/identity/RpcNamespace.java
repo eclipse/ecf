@@ -33,7 +33,7 @@ public class RpcNamespace extends Namespace {
 	public static final String SCHEME = "xmlrpc"; //$NON-NLS-1$
 
 	public RpcNamespace() {
-		// nothing
+		super(NAME, "Rpc Namespace"); //$NON-NLS-1$
 	}
 
 	public RpcNamespace(String name, String desc) {

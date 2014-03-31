@@ -10,8 +10,11 @@
 package org.eclipse.ecf.internal.remoteservice.rpc;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.ecf.core.util.LogHelper;
-import org.eclipse.ecf.core.util.SystemLogService;
+import org.eclipse.core.runtime.SafeRunner;
+import org.eclipse.ecf.core.ContainerTypeDescription;
+import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.util.*;
+import org.eclipse.ecf.remoteservice.rpc.identity.RpcNamespace;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.log.LogService;
@@ -39,9 +42,16 @@ public class Activator implements BundleActivator {
 	 * (non-Javadoc)
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
 	 */
-	public void start(BundleContext bundleContext) throws Exception {
+	public void start(final BundleContext bundleContext) throws Exception {
 		plugin = this;
 		Activator.context = bundleContext;
+		SafeRunner.run(new ExtensionRegistryRunnable(bundleContext) {
+			protected void runWithoutRegistry() throws Exception {
+				bundleContext.registerService(Namespace.class, new RpcNamespace(), null);
+				bundleContext.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(
+						"ecf.xmlrpc.client", new RpcClientContainerInstantiator(), "Rpc Client Container"), null); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+		});
 	}
 
 	/*
