@@ -26,7 +26,7 @@ public class ZooDiscoveryNamespace extends Namespace {
 	public static final String NAME = "ecf.namespace.zoodiscovery"; //$NON-NLS-1$	
 
 	public ZooDiscoveryNamespace() {
-		super(NAME, "ZooKeeper Based Discovery Namespace"); //$NON-NLS-1$
+		super(NAME, "ZooKeeper Discovery Namespace"); //$NON-NLS-1$
 	}
 
 	public ID createInstance(Object[] parameters) throws IDCreateException {
