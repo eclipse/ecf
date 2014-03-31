@@ -11,11 +11,11 @@
 
 package org.eclipse.ecf.internal.provider.datashare;
 
-import org.eclipse.core.runtime.IAdapterManager;
-import org.eclipse.core.runtime.IStatus;
+import java.util.List;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.IContainerManager;
-import org.eclipse.ecf.core.util.AdapterManagerTracker;
-import org.eclipse.ecf.core.util.LogHelper;
+import org.eclipse.ecf.core.util.*;
+import org.eclipse.ecf.provider.datashare.DatashareContainerAdapterFactory;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.log.LogService;
@@ -61,11 +61,32 @@ public class Activator implements BundleActivator {
 		}
 	}
 
+	List rscAdapterFactories;
+
 	/**
 	 * This method is called upon plug-in activation
 	 */
-	public void start(BundleContext ctxt) throws Exception {
+	public void start(final BundleContext ctxt) throws Exception {
 		this.context = ctxt;
+		SafeRunner.run(new ExtensionRegistryRunnable(ctxt) {
+			protected void runWithoutRegistry() throws Exception {
+				IAdapterManager am = getAdapterManager();
+				if (am != null) {
+					IAdapterFactory af = new DatashareContainerAdapterFactory();
+					am.registerAdapters(af, org.eclipse.ecf.provider.generic.SSLServerSOContainer.class);
+					rscAdapterFactories.add(af);
+					af = new DatashareContainerAdapterFactory();
+					am.registerAdapters(af, org.eclipse.ecf.provider.generic.TCPServerSOContainer.class);
+					rscAdapterFactories.add(af);
+					af = new DatashareContainerAdapterFactory();
+					am.registerAdapters(af, org.eclipse.ecf.provider.generic.SSLClientSOContainer.class);
+					rscAdapterFactories.add(af);
+					af = new DatashareContainerAdapterFactory();
+					am.registerAdapters(af, org.eclipse.ecf.provider.generic.TCPClientSOContainer.class);
+					rscAdapterFactories.add(af);
+				}
+			}
+		});
 	}
 
 	/**
