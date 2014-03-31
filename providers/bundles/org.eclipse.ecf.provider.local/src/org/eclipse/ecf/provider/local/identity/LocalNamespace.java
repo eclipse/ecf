@@ -19,6 +19,10 @@ public class LocalNamespace extends Namespace {
 	public static final String NAME = "ecf.namespace.local"; //$NON-NLS-1$
 	public static final String SCHEME = "local"; //$NON-NLS-1$
 
+	public LocalNamespace() {
+		super(NAME, "Local Namespace"); //$NON-NLS-1$
+	}
+
 	public ID createInstance(Object[] parameters) throws IDCreateException {
 		try {
 			final String init = getInitStringFromExternalForm(parameters);
