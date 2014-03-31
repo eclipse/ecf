@@ -15,7 +15,7 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 /**
- * @since 3.3
+ * @since 3.4
  */
 public class AdapterManagerTracker extends ServiceTracker {
 

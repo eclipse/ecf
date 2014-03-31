@@ -260,7 +260,7 @@ public class IDFactory implements IIDFactory {
 	}
 
 	/**
-	 * @since 3.3
+	 * @since 3.4
 	 */
 	public final static Namespace removeNamespace0(Namespace n) {
 		if (n == null)

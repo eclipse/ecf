@@ -14,7 +14,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
- * @since 3.3
+ * @since 3.4
  */
 public class ExtensionRegistryRunnable implements ISafeRunnable {
 
