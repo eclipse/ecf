@@ -5,7 +5,7 @@
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
             class="org.eclipse.ecf.provider.dnssd.ContainerInstantiator"
-            description="Discovery Locator Container "
+            description="Discovery Locator Container"
             name="ecf.discovery.dnssd.locator">
       </containerFactory>
    </extension>
@@ -13,7 +13,7 @@
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
             class="org.eclipse.ecf.provider.dnssd.ContainerInstantiator"
-            description="Discovery Advertiser Container "
+            description="Discovery Advertiser Container"
             name="ecf.discovery.dnssd.advertiser">
       </containerFactory>
    </extension>

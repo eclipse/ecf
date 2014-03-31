@@ -16,8 +16,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
+import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.ecf.core.ContainerConnectException;
+import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.util.ExtensionRegistryRunnable;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.osgi.framework.Bundle;
@@ -46,8 +50,16 @@ public class Activator implements BundleActivator {
 	 * (non-Javadoc)
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
 	 */
-	public void start(BundleContext context) throws Exception {
+	public void start(final BundleContext context) throws Exception {
 		this.context = context;
+		
+		SafeRunner.run(new ExtensionRegistryRunnable(context) {
+			protected void runWithoutRegistry() throws Exception {
+				context.registerService(Namespace.class, new DnsSdNamespace(), null);
+				context.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(DISCOVERY_CONTAINER_NAME_VALUE + LOCATOR,new ContainerInstantiator(),"Discovery Locator Container"), null);
+				context.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(DISCOVERY_CONTAINER_NAME_VALUE + ADVERTISER,new ContainerInstantiator(),"Discovery Advertiser Container"), null);
+			}
+		});
 		
 		// register a managed factory for the locator service
 		final Properties locCmProps = new Properties();

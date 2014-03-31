@@ -26,6 +26,10 @@ public class DnsSdNamespace extends Namespace {
 	public static final String SCHEME = "dnssd"; //$NON-NLS-1$
 	public static final String NAME = "ecf.namespace.dnssd"; //$NON-NLS-1$
 
+	public DnsSdNamespace() {
+		super(NAME,"Dns SD Namespace");
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.identity.Namespace#createInstance(java.lang.Object[])
 	 */
