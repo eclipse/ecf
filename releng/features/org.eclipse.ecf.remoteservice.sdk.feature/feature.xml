@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.remoteservice.sdk.feature"
       label="OSGi Remote Services SDK"
-      version="3.8.0.qualifier"
+      version="3.8.1.qualifier"
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">

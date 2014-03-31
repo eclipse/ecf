@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Async
+Bundle-SymbolicName: com.mycorp.examples.timeservice.consumer.ds.async
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: MYCORP
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Import-Package: com.mycorp.examples.timeservice;version="2.0.0"
+Service-Component: OSGI-INF/timeservicecomponentasync.xml
+Bundle-ActivationPolicy: lazy

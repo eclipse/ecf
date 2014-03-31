@@ -25,6 +25,12 @@ import org.eclipse.ecf.core.security.IConnectContext;
 public class BaseContainer extends AbstractContainer {
 
 	public static class Instantiator extends BaseContainerInstantiator {
+
+		/**
+		 * @since 3.4
+		 */
+		public static final String NAME = "ecf.base"; //$NON-NLS-1$
+
 		private static long nextBaseContainerID = 0L;
 
 		public IContainer createInstance(ContainerTypeDescription description, Object[] parameters) throws ContainerCreateException {

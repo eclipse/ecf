@@ -10,8 +10,11 @@
 package org.eclipse.ecf.internal.remoteservice.rest;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.ecf.core.util.LogHelper;
-import org.eclipse.ecf.core.util.SystemLogService;
+import org.eclipse.core.runtime.SafeRunner;
+import org.eclipse.ecf.core.ContainerTypeDescription;
+import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.util.*;
+import org.eclipse.ecf.remoteservice.rest.identity.RestNamespace;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.log.LogService;
@@ -40,9 +43,15 @@ public class Activator implements BundleActivator {
 	 * @see
 	 * org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
-	public void start(BundleContext context1) throws Exception {
+	public void start(final BundleContext context1) throws Exception {
 		plugin = this;
 		this.context = context1;
+		SafeRunner.run(new ExtensionRegistryRunnable(context1) {
+			protected void runWithoutRegistry() throws Exception {
+				context1.registerService(Namespace.class, new RestNamespace(), null);
+				context1.registerService(ContainerTypeDescription.class, new ContainerTypeDescription("ecf.rest.client", new RestClientContainerInstantiator(), "Rest Client Container"), null); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+		});
 	}
 
 	/*

@@ -12,12 +12,16 @@ package org.eclipse.ecf.internal.provider.discovery;
 
 import java.util.HashSet;
 import java.util.Properties;
+import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.ecf.core.ContainerConnectException;
+import org.eclipse.ecf.core.ContainerTypeDescription;
+import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.util.ExtensionRegistryRunnable;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
-import org.eclipse.ecf.provider.discovery.CompositeDiscoveryContainer;
+import org.eclipse.ecf.provider.discovery.*;
 import org.osgi.framework.*;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -47,6 +51,17 @@ public class Activator implements BundleActivator {
 	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(final BundleContext context) throws Exception {
+
+		SafeRunner.run(new ExtensionRegistryRunnable(context) {
+			protected void runWithoutRegistry() throws Exception {
+				context.registerService(Namespace.class, new CompositeNamespace(), null);
+				context.registerService(ContainerTypeDescription.class, new ContainerTypeDescription("ecf.discovery.composite", new CompositeDiscoveryContainerInstantiator(), "Composite Discovery Container", true, false), null); //$NON-NLS-1$ //$NON-NLS-2$
+				context.registerService(ContainerTypeDescription.class, new ContainerTypeDescription("ecf.singleton.discovery", new SingletonDiscoveryContainerInstantiator(), "Composite Discovery Container Locator", true, false), null); //$NON-NLS-1$ //$NON-NLS-2$
+				context.registerService(ContainerTypeDescription.class, new ContainerTypeDescription("ecf.discovery.composite.locator", new CompositeDiscoveryContainerInstantiator(), "Composite Discovery Container Locator"), null); //$NON-NLS-1$ //$NON-NLS-2$
+				context.registerService(ContainerTypeDescription.class, new ContainerTypeDescription("ecf.discovery.composite.advertiser", new CompositeDiscoveryContainerInstantiator(), "Composite Discovery Container Advertiser"), null); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+		});
+
 		final Properties props = new Properties();
 		props.put(IDiscoveryLocator.CONTAINER_NAME, CompositeDiscoveryContainer.NAME);
 		props.put(Constants.SERVICE_RANKING, new Integer(1000));
@@ -119,6 +134,7 @@ public class Activator implements BundleActivator {
 				((CompositeDiscoveryContainer) service).dispose();
 			}
 		}, props);
+
 	}
 
 	/*

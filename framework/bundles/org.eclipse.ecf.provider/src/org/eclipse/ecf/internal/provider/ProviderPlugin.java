@@ -14,7 +14,10 @@ package org.eclipse.ecf.internal.provider;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocketFactory;
 import org.eclipse.core.runtime.*;
+import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.util.*;
+import org.eclipse.ecf.provider.generic.GenericContainerInstantiator;
+import org.eclipse.ecf.provider.generic.SSLGenericContainerInstantiator;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.log.LogService;
@@ -36,7 +39,7 @@ public class ProviderPlugin implements BundleActivator {
 
 	private ServiceTracker logServiceTracker = null;
 
-	private ServiceTracker adapterManagerTracker = null;
+	private AdapterManagerTracker adapterManagerTracker = null;
 
 	private ServiceTracker sslServerSocketFactoryTracker;
 	private ServiceTracker sslSocketFactoryTracker;
@@ -46,17 +49,10 @@ public class ProviderPlugin implements BundleActivator {
 			return null;
 		// First, try to get the adapter manager via
 		if (adapterManagerTracker == null) {
-			adapterManagerTracker = new ServiceTracker(this.context, IAdapterManager.class.getName(), null);
+			adapterManagerTracker = new AdapterManagerTracker(this.context);
 			adapterManagerTracker.open();
 		}
-		IAdapterManager adapterManager = (IAdapterManager) adapterManagerTracker.getService();
-		// Then, if the service isn't there, try to get from Platform class via
-		// PlatformHelper class
-		if (adapterManager == null)
-			adapterManager = PlatformHelper.getPlatformAdapterManager();
-		if (adapterManager == null)
-			getDefault().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, "Cannot get adapter manager", null)); //$NON-NLS-1$
-		return adapterManager;
+		return adapterManagerTracker.getAdapterManager();
 	}
 
 	/**
@@ -70,8 +66,16 @@ public class ProviderPlugin implements BundleActivator {
 	/**
 	 * This method is called upon plug-in activation
 	 */
-	public void start(BundleContext context1) throws Exception {
+	public void start(final BundleContext context1) throws Exception {
 		this.context = context1;
+		SafeRunner.run(new ExtensionRegistryRunnable(this.context) {
+			protected void runWithoutRegistry() throws Exception {
+				context1.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(GenericContainerInstantiator.TCPSERVER_NAME, new GenericContainerInstantiator(), "ECF Generic Server", true, false), null); //$NON-NLS-1$
+				context1.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(GenericContainerInstantiator.TCPCLIENT_NAME, new GenericContainerInstantiator(), "ECF Generic Client", false, true), null); //$NON-NLS-1$
+				context1.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(SSLGenericContainerInstantiator.SSLSERVER_NAME, new SSLGenericContainerInstantiator(), "ECF SSL Generic Server", true, false), null); //$NON-NLS-1$
+				context1.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(SSLGenericContainerInstantiator.SSLCLIENT_NAME, new SSLGenericContainerInstantiator(), "ECF SSL Generic Client", false, true), null); //$NON-NLS-1$
+			}
+		});
 	}
 
 	/**

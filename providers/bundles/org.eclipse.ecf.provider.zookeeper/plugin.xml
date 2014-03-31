@@ -5,17 +5,17 @@
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
             class="org.eclipse.ecf.provider.zookeeper.core.ZooDiscoveryContainerInstantiator"
-            description="Discovery Container"
+            description="Zookeeper Discovery Container"
             name="ecf.discovery.zoodiscovery">
       </containerFactory>
       <containerFactory
             class="org.eclipse.ecf.provider.zookeeper.core.ZooDiscoveryContainerInstantiator"
-            description="Discovery Container"
+            description="Zookeeper Discovery Advertiser Container"
             name="ecf.discovery.zoodiscovery.advertiser">
       </containerFactory>
       <containerFactory
             class="org.eclipse.ecf.provider.zookeeper.core.ZooDiscoveryContainerInstantiator"
-            description="Discovery Container"
+            description="Zookeeper Discovery Locator Container"
             name="ecf.discovery.zoodiscovery.locator">
       </containerFactory>
    </extension>
@@ -23,7 +23,7 @@
          point="org.eclipse.ecf.identity.namespace">
       <namespace
             class="org.eclipse.ecf.provider.zookeeper.core.ZooDiscoveryNamespace"
-            description="ZooKeeper Based  Discovery Namespace"
+            description="ZooKeeper Based Discovery Namespace"
             name="ecf.namespace.zoodiscovery">
       </namespace>
    </extension>

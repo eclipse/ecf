@@ -32,7 +32,7 @@ public class RestNamespace extends Namespace {
 	public static final String SCHEME = "rest"; //$NON-NLS-1$
 
 	public RestNamespace() {
-		// nothing
+		super(NAME, "Rest Namespace"); //$NON-NLS-1$
 	}
 
 	public RestNamespace(String name, String desc) {

@@ -21,3 +21,4 @@ Import-Package: com.mycorp.examples.timeservice;version="1.0.0",
  org.osgi.service.http
 Service-Component: OSGI-INF/httpservicecomponent.xml
 Bundle-ActivationPolicy: lazy
+Bundle-Activator: com.mycorp.examples.timeservice.internal.provider.rest.host.Activator

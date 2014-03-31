@@ -17,8 +17,18 @@ public class RestID extends URIID {
 
 	private static final long serialVersionUID = 2082626839598770167L;
 
+	private long rsId = 0;
+
 	public RestID(Namespace namespace, URI uri) {
 		super(namespace, uri);
+	}
+
+	public long getRsId() {
+		return rsId;
+	}
+
+	public void setRsId(long rsId) {
+		this.rsId = rsId;
 	}
 
 	public String toString() {

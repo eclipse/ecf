@@ -12,6 +12,12 @@
 package org.eclipse.ecf.internal.provider.r_osgi;
 
 import ch.ethz.iks.r_osgi.RemoteOSGiService;
+import org.eclipse.core.runtime.SafeRunner;
+import org.eclipse.ecf.core.ContainerTypeDescription;
+import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.util.ExtensionRegistryRunnable;
+import org.eclipse.ecf.provider.r_osgi.identity.R_OSGiNamespace;
+import org.eclipse.ecf.provider.r_osgi.identity.R_OSGiRemoteServiceNamespace;
 import org.eclipse.equinox.concurrent.future.IExecutor;
 import org.osgi.framework.*;
 import org.osgi.util.tracker.ServiceTracker;
@@ -64,6 +70,13 @@ public final class Activator implements BundleActivator {
 		this.context = bc;
 		r_osgi_tracker = new ServiceTracker(context, RemoteOSGiService.class.getName(), null);
 		r_osgi_tracker.open();
+		SafeRunner.run(new ExtensionRegistryRunnable(bc) {
+			protected void runWithoutRegistry() throws Exception {
+				bc.registerService(Namespace.class, new R_OSGiNamespace(), null);
+				bc.registerService(Namespace.class, new R_OSGiRemoteServiceNamespace(), null);
+				bc.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(R_OSGiContainerInstantiator.NAME, new R_OSGiContainerInstantiator(), "R_OSGi Container", true, false), null); //$NON-NLS-1$
+			}
+		});
 	}
 
 	/**

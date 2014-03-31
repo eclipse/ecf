@@ -12,6 +12,8 @@
 package org.eclipse.ecf.remoteservice.util;
 
 import java.util.*;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.internal.remoteservice.Activator;
 import org.eclipse.ecf.remoteservice.IRemoteFilter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
@@ -23,13 +25,44 @@ import org.osgi.framework.*;
  */
 public class RemoteFilterImpl implements IRemoteFilter {
 
+	/**
+	 * @since 8.4
+	 */
+	public static final String REMOTE_SERVICEID_PREFIX = "(&(" + org.eclipse.ecf.remoteservice.Constants.SERVICE_ID + "="; //$NON-NLS-1$ //$NON-NLS-2$
+
 	Filter filter;
+
+	long rsId = 0;
 
 	/**
 	 * @param createFilter
 	 */
 	public RemoteFilterImpl(String createFilter) throws InvalidSyntaxException {
 		this(Activator.getDefault().getContext(), createFilter);
+	}
+
+	private void parseForRsId(String createFilter) {
+		if (createFilter == null)
+			return;
+		if (createFilter.startsWith(REMOTE_SERVICEID_PREFIX)) {
+			String f = createFilter.substring(REMOTE_SERVICEID_PREFIX.length());
+			int rightParenIndex = f.indexOf(')');
+			if (rightParenIndex == -1)
+				return;
+			f = f.substring(0, rightParenIndex);
+			try {
+				this.rsId = Long.parseLong(f);
+			} catch (NumberFormatException e) {
+				Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Exception parsing remote service filter=" + filter, e)); //$NON-NLS-1$
+			}
+		}
+	}
+
+	/**
+	 * @since 8.4
+	 */
+	public long getRsId() {
+		return rsId;
 	}
 
 	/**
@@ -39,6 +72,7 @@ public class RemoteFilterImpl implements IRemoteFilter {
 	public RemoteFilterImpl(BundleContext context, String createFilter) throws InvalidSyntaxException {
 		if (createFilter == null)
 			throw new InvalidSyntaxException("Filter cannot be null", createFilter); //$NON-NLS-1$
+		parseForRsId(createFilter);
 		this.filter = context.createFilter(createFilter);
 	}
 

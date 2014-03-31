@@ -18,3 +18,4 @@ Import-Package: com.mycorp.examples.timeservice;version="1.0.0",
  org.osgi.framework
 Require-Bundle: org.eclipse.ecf,
  org.eclipse.equinox.common
+Bundle-Activator: com.mycorp.examples.timeservice.internal.provider.rest.consumer.Activator

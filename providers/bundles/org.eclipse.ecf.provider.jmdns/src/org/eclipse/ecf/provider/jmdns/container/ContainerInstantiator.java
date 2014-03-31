@@ -17,13 +17,25 @@ import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 
 public class ContainerInstantiator implements IContainerInstantiator {
 
+	/**
+	 * @since 4.3
+	 */
+	public static final String JMDNS_CONTAINER_NAME = "ecf.container.jmdns";
+	/**
+	 * @since 4.3
+	 */
+	public static final String JMDNS_LOCATOR_NAME = "ecf.container.jmdns.locator";
+	/**
+	 * @since 4.3
+	 */
+	public static final String JMDNS_ADVERTISER_NAME = "ecf.container.jmdns.advertiser";
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#createInstance(org.eclipse.ecf.core.ContainerTypeDescription, java.lang.Object[])
 	 */
 	public IContainer createInstance(final ContainerTypeDescription description, final Object[] args) throws ContainerCreateException {
 		try {
-			final AbstractContainer container = new JMDNSDiscoveryContainer();
-			return container;
+			return new JMDNSDiscoveryContainer();
 		} catch (final IDCreateException e) {
 			final ContainerCreateException excep = new ContainerCreateException("Jmdns container create failed", e); //$NON-NLS-1$
 			excep.setStackTrace(e.getStackTrace());

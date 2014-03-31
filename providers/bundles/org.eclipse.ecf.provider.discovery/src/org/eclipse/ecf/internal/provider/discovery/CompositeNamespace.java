@@ -20,6 +20,10 @@ public class CompositeNamespace extends Namespace {
 	private static final long serialVersionUID = -4774766051014928510L;
 	public static final String NAME = "ecf.namespace.composite"; //$NON-NLS-1$
 
+	public CompositeNamespace() {
+		super(NAME, "Composite Namespace"); //$NON-NLS-1$
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.identity.Namespace#createInstance(java.lang.Object[])
 	 */

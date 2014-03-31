@@ -16,10 +16,15 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
+import org.eclipse.core.runtime.SafeRunner;
+import org.eclipse.ecf.core.ContainerTypeDescription;
+import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.util.ExtensionRegistryRunnable;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.provider.zookeeper.core.ZooDiscoveryContainer;
 import org.eclipse.ecf.provider.zookeeper.core.ZooDiscoveryContainerInstantiator;
+import org.eclipse.ecf.provider.zookeeper.core.ZooDiscoveryNamespace;
 import org.eclipse.ecf.provider.zookeeper.core.internal.BundleStoppingListener;
 import org.eclipse.ecf.provider.zookeeper.util.Logger;
 import org.eclipse.ecf.provider.zookeeper.util.PrettyPrinter;
@@ -41,6 +46,15 @@ public class DiscoveryActivator implements BundleActivator {
 
 	public void start(final BundleContext ctxt) {
 		context = ctxt;
+		
+		SafeRunner.run(new ExtensionRegistryRunnable(ctxt) {
+			protected void runWithoutRegistry() throws Exception {
+				ctxt.registerService(Namespace.class,new ZooDiscoveryNamespace(), null);
+				ctxt.registerService(ContainerTypeDescription.class,new ContainerTypeDescription(ZooDiscoveryContainerInstantiator.NAME,new ZooDiscoveryContainerInstantiator(),"Zookeeper Discovery Container"), null);
+				ctxt.registerService(ContainerTypeDescription.class,new ContainerTypeDescription(ZooDiscoveryContainerInstantiator.NAME+".advertiser",new ZooDiscoveryContainerInstantiator(),"Zookeeper Discovery Advertiser Container"), null);
+				ctxt.registerService(ContainerTypeDescription.class,new ContainerTypeDescription(ZooDiscoveryContainerInstantiator.NAME+".locator",new ZooDiscoveryContainerInstantiator(),"Zookeeper Discovery Locator Container"), null);				
+			}
+		});
 		
 		final Properties props = new Properties();
 		props.put(IDiscoveryLocator.CONTAINER_NAME, ZooDiscoveryContainerInstantiator.NAME);

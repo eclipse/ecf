@@ -199,6 +199,13 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		}
 	}
 
+	/**
+	 * @since 4.1
+	 */
+	protected RemoteServiceImpl createRemoteService(RemoteServiceRegistrationImpl registration) {
+		return new RemoteServiceImpl(this, registration);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter#getRemoteService(org.eclipse.ecf.remoteservice.IRemoteServiceReference)
 	 */
@@ -207,7 +214,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		final RemoteServiceRegistrationImpl registration = getRemoteServiceRegistrationImpl(reference);
 		if (registration == null)
 			return null;
-		final RemoteServiceImpl remoteService = new RemoteServiceImpl(this, registration);
+		final RemoteServiceImpl remoteService = createRemoteService(registration);
 		synchronized (refToImplMap) {
 			List remoteServiceImplList = (List) refToImplMap.get(reference);
 			if (remoteServiceImplList == null)

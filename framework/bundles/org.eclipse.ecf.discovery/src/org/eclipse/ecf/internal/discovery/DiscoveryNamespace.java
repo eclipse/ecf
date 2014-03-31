@@ -20,6 +20,14 @@ public class DiscoveryNamespace extends Namespace {
 	private static final long serialVersionUID = 6474091408790223505L;
 	public static final String NAME = "ecf.namespace.discovery"; //$NON-NLS-1$
 
+	public DiscoveryNamespace() {
+		super();
+	}
+
+	public DiscoveryNamespace(String description) {
+		super(NAME, description);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 

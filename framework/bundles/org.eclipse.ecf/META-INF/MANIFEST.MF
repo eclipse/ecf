@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf;singleton:=true
-Bundle-Version: 3.3.0.qualifier
+Bundle-Version: 3.4.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.core.ECFPlugin
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
@@ -17,7 +17,7 @@ Export-Package: org.eclipse.ecf.core;version="3.0.0",
  org.eclipse.ecf.core.start;version="3.1.0",
  org.eclipse.ecf.core.status;version="1.1.0",
  org.eclipse.ecf.core.user;version="3.1.0",
- org.eclipse.ecf.core.util;version="3.2.0",
+ org.eclipse.ecf.core.util;version="3.4.0",
  org.eclipse.ecf.core.util.reflection;version="2.3.0",
  org.eclipse.ecf.internal.core;x-internal:=true
 Import-Package: org.eclipse.core.runtime.jobs,
@@ -26,6 +26,7 @@ Import-Package: org.eclipse.core.runtime.jobs,
  org.osgi.service.log;version="1.3.0",
  org.osgi.util.tracker;version="1.3.2"
 Require-Bundle: org.eclipse.equinox.common,
- org.eclipse.equinox.registry,
+ org.eclipse.equinox.registry;resolution:=optional,
  org.eclipse.ecf.identity;visibility:=reexport
 Bundle-ActivationPolicy: lazy
+Provide-Capability: ecf.containertype;names:List<String>=”ecf.base”; version:Version=3.3

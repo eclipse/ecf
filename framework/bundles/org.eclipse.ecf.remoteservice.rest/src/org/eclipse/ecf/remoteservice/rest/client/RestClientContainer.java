@@ -10,11 +10,15 @@
 package org.eclipse.ecf.remoteservice.rest.client;
 
 import java.util.Dictionary;
+import java.util.Hashtable;
+import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.client.*;
 import org.eclipse.ecf.remoteservice.rest.identity.RestID;
 import org.eclipse.ecf.remoteservice.rest.identity.RestNamespace;
+import org.eclipse.ecf.remoteservice.util.RemoteFilterImpl;
+import org.osgi.framework.InvalidSyntaxException;
 
 /**
  * A container for REST services. 
@@ -28,6 +32,20 @@ public class RestClientContainer extends AbstractClientContainer implements IRem
 		setResponseDeserializer(new XMLRemoteResponseDeserializer());
 	}
 
+	public IRemoteServiceReference[] getRemoteServiceReferences(ID target, ID[] idFilter, String clazz, String filter) throws InvalidSyntaxException, ContainerConnectException {
+		return super.getRemoteServiceReferences(transformTarget(target, filter), idFilter, clazz, filter);
+	}
+
+	public IRemoteServiceReference[] getRemoteServiceReferences(ID target, String clazz, String filter) throws InvalidSyntaxException, ContainerConnectException {
+		return super.getRemoteServiceReferences(transformTarget(target, filter), clazz, filter);
+	}
+
+	protected ID transformTarget(ID originalTarget, String filter) throws InvalidSyntaxException {
+		if (originalTarget != null && filter != null && originalTarget instanceof RestID)
+			((RestID) originalTarget).setRsId(new RemoteFilterImpl(filter).getRsId());
+		return originalTarget;
+	}
+
 	protected class RestRemoteServiceClientRegistration extends RemoteServiceClientRegistration {
 
 		public RestRemoteServiceClientRegistration(Namespace namespace, IRemoteCallable[] restCalls, Dictionary properties, RemoteServiceClientRegistry registry) {
@@ -35,7 +53,13 @@ public class RestClientContainer extends AbstractClientContainer implements IRem
 			ID cID = getConnectedID();
 			if (cID != null)
 				this.containerId = cID;
-			this.serviceID = new RemoteServiceID(namespace, containerId, registry.getNextServiceId());
+			long rsId = ((RestID) containerId).getRsId();
+			this.serviceID = new RemoteServiceID(namespace, containerId, rsId);
+			if (rsId > 0) {
+				if (this.properties == null)
+					this.properties = new Hashtable();
+				this.properties.put(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID, new Long(rsId));
+			}
 		}
 
 		public RestRemoteServiceClientRegistration(Namespace namespace, String[] classNames, IRemoteCallable[][] restCalls, Dictionary properties, RemoteServiceClientRegistry registry) {
@@ -43,7 +67,13 @@ public class RestClientContainer extends AbstractClientContainer implements IRem
 			ID cID = getConnectedID();
 			if (cID != null)
 				this.containerId = cID;
-			this.serviceID = new RemoteServiceID(namespace, containerId, registry.getNextServiceId());
+			long rsId = ((RestID) containerId).getRsId();
+			this.serviceID = new RemoteServiceID(namespace, containerId, rsId);
+			if (rsId > 0) {
+				if (this.properties == null)
+					this.properties = new Hashtable();
+				this.properties.put(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID, new Long(rsId));
+			}
 		}
 	}
 

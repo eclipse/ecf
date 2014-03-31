@@ -8,7 +8,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.identity;
 
-import java.security.AccessController;
 import java.util.*;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -23,11 +22,7 @@ public class IDFactory implements IIDFactory {
 	public static final String SECURITY_PROPERTY = IDFactory.class.getName()
 			+ ".security"; //$NON-NLS-1$
 
-	private static final int IDENTITY_CREATION_ERRORCODE = 2001;
-
 	private static Hashtable namespaces = new Hashtable();
-
-	private static boolean securityEnabled = false;
 
 	protected static IIDFactory instance = null;
 
@@ -67,8 +62,6 @@ public class IDFactory implements IIDFactory {
 	public Namespace addNamespace(Namespace namespace) throws SecurityException {
 		if (namespace == null)
 			return null;
-		checkPermission(new NamespacePermission(namespace.toString(),
-				NamespacePermission.ADD_NAMESPACE));
 		initialize();
 		return addNamespace0(namespace);
 	}
@@ -81,8 +74,6 @@ public class IDFactory implements IIDFactory {
 
 	protected final static void checkPermission(
 			NamespacePermission namespacepermission) throws SecurityException {
-		if (securityEnabled)
-			AccessController.checkPermission(namespacepermission);
 	}
 
 	/*
@@ -96,8 +87,6 @@ public class IDFactory implements IIDFactory {
 			throws SecurityException {
 		if (namespace == null)
 			return false;
-		checkPermission(new NamespacePermission(namespace.toString(),
-				NamespacePermission.CONTAINS_NAMESPACE));
 		initialize();
 		return containsNamespace0(namespace);
 	}
@@ -128,8 +117,6 @@ public class IDFactory implements IIDFactory {
 	public Namespace getNamespace(Namespace namespace) throws SecurityException {
 		if (namespace == null)
 			return null;
-		checkPermission(new NamespacePermission(namespace.toString(),
-				NamespacePermission.GET_NAMESPACE));
 		initialize();
 		return getNamespace0(namespace);
 	}
@@ -187,8 +174,8 @@ public class IDFactory implements IIDFactory {
 			e = new IDCreateException(s);
 		}
 		Activator.getDefault().log(
-				new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-						IDENTITY_CREATION_ERRORCODE, s, e));
+				new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR,
+						s, e));
 		throw e;
 	}
 
@@ -268,13 +255,14 @@ public class IDFactory implements IIDFactory {
 	public Namespace removeNamespace(Namespace n) throws SecurityException {
 		if (n == null)
 			return null;
-		checkPermission(new NamespacePermission(n.toString(),
-				NamespacePermission.REMOVE_NAMESPACE));
 		initialize();
 		return removeNamespace0(n);
 	}
 
-	protected final static Namespace removeNamespace0(Namespace n) {
+	/**
+	 * @since 3.4
+	 */
+	public final static Namespace removeNamespace0(Namespace n) {
 		if (n == null)
 			return null;
 		return (Namespace) namespaces.remove(n.getName());

@@ -21,6 +21,10 @@ public class TrivialNamespace extends Namespace {
 	public static final String SCHEME = "trivial";
 	public static final String NAME = "ecf.namespace.trivial";
 
+	public TrivialNamespace(String name) {
+		super(name,null);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.identity.Namespace#createInstance(java.lang.Object[])
 	 */

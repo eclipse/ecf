@@ -23,6 +23,10 @@ public class TimeServiceRestNamespace extends RestNamespace {
 	
 	private static final long serialVersionUID = -3632048418135041788L;
 
+	public TimeServiceRestNamespace() {
+		super(NAME,"Time Service REST Namespace");
+	}
+	
 	@Override
 	public ID createInstance(Object[] parameters) throws IDCreateException {
 		return new TimeServiceRestID(this, URI.create((String) parameters[0]));
