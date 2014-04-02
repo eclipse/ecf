@@ -4,9 +4,6 @@
     materializer="p2" 
     url="org.eclipse.ecf.provider.generic.remoteservice.cquery">
     
-    <md:mspecNode namePattern="^org\.eclipse\.ecf\.provider(\..+)?" materializer="workspace"/>
-    <md:mspecNode namePattern="^org\.eclipse\.ecf\.remoteservice\.feature?" materializer="workspace"/>
-    
     <md:mspecNode namePattern="^org\.eclipse\.ecf\.tests\.remoteservice?" materializer="workspace"/>
     <md:mspecNode namePattern="^org\.eclipse\.ecf\.tests\.remoteservice\.generic?" materializer="workspace"/>
     <md:mspecNode namePattern="^org\.eclipse\.ecf\.tests\.osgi\.services\.distribution\.generic?" materializer="workspace"/>
