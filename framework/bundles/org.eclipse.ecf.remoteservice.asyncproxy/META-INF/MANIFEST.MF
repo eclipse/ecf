@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %bundle.name
-Bundle-SymbolicName: org.eclipse.ecf.remoteservice.asyncproxy
+Bundle-SymbolicName: org.eclipse.ecf.remoteservice.asyncproxy;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: %bundle.provider
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
