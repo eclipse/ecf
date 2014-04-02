@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %bundle.name
 Bundle-SymbolicName: org.eclipse.ecf.tests.osgi.services.remoteserviceadmin
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.1.0.qualifier
 Bundle-Activator: org.eclipse.ecf.tests.osgi.services.remoteserviceadmin.Activator
 Bundle-Vendor: %bundle.provider
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
@@ -15,6 +15,7 @@ Import-Package: org.eclipse.ecf.core,
  org.eclipse.ecf.discovery.identity;version="3.0.0",
  org.eclipse.ecf.osgi.services.remoteserviceadmin,
  org.eclipse.ecf.remoteservice,
+ org.eclipse.ecf.remoteservice.asyncproxy;version="1.0.0",
  org.eclipse.ecf.remoteservice.events,
  org.eclipse.ecf.tests.remoteservice,
  org.eclipse.equinox.concurrent.future;version="1.0.0",

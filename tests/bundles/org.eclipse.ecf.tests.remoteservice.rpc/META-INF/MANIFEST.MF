@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.tests.remoteservice.rpc
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.1.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.tests.remoteservice.rpc.Activator
 Bundle-Vendor: %plugin.provider
 Require-Bundle: org.eclipse.core.runtime,
@@ -19,6 +19,7 @@ Bundle-ActivationPolicy: lazy
 Import-Package: javax.servlet;version="2.5.0",
  javax.servlet.http;version="2.5.0",
  org.eclipse.ecf.remoteservice;version="6.0.0",
+ org.eclipse.ecf.remoteservice.asyncproxy;version="1.0.0",
  org.eclipse.ecf.remoteservice.client;version="6.0.0",
  org.eclipse.ecf.remoteservice.events;version="6.0.0",
  org.eclipse.equinox.concurrent.future;version="1.0.0",

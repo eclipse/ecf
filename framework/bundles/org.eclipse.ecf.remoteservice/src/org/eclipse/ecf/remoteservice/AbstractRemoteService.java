@@ -16,6 +16,9 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.jobs.JobsExecutor;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.remoteservice.Activator;
+import org.eclipse.ecf.remoteservice.asyncproxy.*;
+import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
+import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
 import org.eclipse.equinox.concurrent.future.*;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceException;
@@ -28,7 +31,7 @@ import org.osgi.util.tracker.ServiceTracker;
  * @since 4.1
  */
 //@ProviderType
-public abstract class AbstractRemoteService implements IRemoteService, InvocationHandler {
+public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteService implements IRemoteService, InvocationHandler {
 
 	protected static final Object[] EMPTY_ARGS = new Object[0];
 
@@ -106,6 +109,11 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 
 	protected long getDefaultTimeout() {
 		return IRemoteCall.DEFAULT_TIMEOUT;
+	}
+
+	@Override
+	protected IFuture callAsync(AbstractAsyncProxyRemoteCall call) {
+		return callAsync((IRemoteCall) call);
 	}
 
 	public IFuture callAsync(final IRemoteCall call) {
@@ -437,35 +445,9 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 	protected Object invokeAsync(final Method method, final Object[] args) throws Throwable {
 		final String invokeMethodName = getAsyncInvokeMethodName(method);
 		final AsyncArgs asyncArgs = getAsyncArgs(method, args);
-		return callAsync(new IRemoteCall() {
-			public String getMethod() {
-				return invokeMethodName;
-			}
-
-			public Object[] getParameters() {
-				return asyncArgs.getArgs();
-			}
-
-			public long getTimeout() {
-				return DEFAULT_TIMEOUT;
-			}
-		}, asyncArgs.getListener(), asyncArgs.getReturnType());
-	}
-
-	/**
-	 * @since 8.4
-	 */
-	protected Object callAsync(IRemoteCall call, IRemoteCallListener listener, Class returnType) {
-		return (listener != null) ? callAsyncWithResult(call, listener) : callFuture(call, returnType);
-	}
-
-	/**
-	 * @since 8.4
-	 */
-	protected Object callFuture(IRemoteCall call, Class returnType) {
-		if (IFuture.class.isAssignableFrom(returnType))
-			return callAsync(call);
-		return callFutureAsync(call);
+		IRemoteCallListener listener = asyncArgs.getListener();
+		RemoteCall remoteCall = new RemoteCall(invokeMethodName, asyncArgs.getArgs(), IRemoteCall.DEFAULT_TIMEOUT);
+		return (listener != null) ? callAsyncWithResult(remoteCall, listener) : callFuture(remoteCall, asyncArgs.getReturnType());
 	}
 
 	/**
@@ -474,6 +456,26 @@ public abstract class AbstractRemoteService implements IRemoteService, Invocatio
 	protected Object callAsyncWithResult(IRemoteCall call, IRemoteCallListener listener) {
 		callAsync(call, listener);
 		return null;
+	}
+
+	/**
+	 * @since 8.4
+	 */
+	@Override
+	protected void callCompletableAsync(AbstractAsyncProxyRemoteCall call, final IAsyncProxyCompletable completable) {
+		callAsync((IRemoteCall) call, new IRemoteCallListener() {
+			public void handleEvent(IRemoteCallEvent event) {
+				if (event instanceof IRemoteCallCompleteEvent) {
+					IRemoteCallCompleteEvent cce = (IRemoteCallCompleteEvent) event;
+					completable.handleComplete(cce.getResponse(), cce.hadException(), cce.getException());
+				}
+			}
+		});
+	}
+
+	@Override
+	protected Future callFutureAsync(AbstractAsyncProxyRemoteCall call) {
+		return callFutureAsync((IRemoteCall) call);
 	}
 
 	/**

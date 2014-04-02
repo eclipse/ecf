@@ -2,11 +2,12 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.tests.osgi.services.distribution
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.1.0.qualifier
 Bundle-Activator: org.eclipse.ecf.tests.internal.osgi.services.distribution.Activator
 Bundle-Vendor: %plugin.provider
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Import-Package: org.osgi.framework,
+Import-Package: org.eclipse.ecf.remoteservice.asyncproxy;version="1.0.0",
+ org.osgi.framework,
  org.osgi.util.tracker;version="1.4.2"
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
