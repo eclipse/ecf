@@ -7,6 +7,7 @@
 		<!-- the feature -->
 		<dependency name="org.eclipse.platform" componentType="eclipse.feature"/>
 		<dependency name="org.eclipse.equinox.concurrent" componentType="osgi.bundle"/>
+		<dependency name="org.eclipse.ecf.remoteservice.asyncproxy" componentType="osgi.bundle"/>
 		<!-- tests -->
 		<dependency name="org.eclipse.jdt" componentType="eclipse.feature"/>
 		<dependency name="org.eclipse.ecf.tests.provider.xmpp" componentType="osgi.bundle"/>
