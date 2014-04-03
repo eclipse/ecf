@@ -51,7 +51,7 @@
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy"/>
       <plugin id="org.eclipse.ecf.provider"/>
       <plugin id="org.eclipse.ecf.provider.remoteservice"/>
-      <plugin id="org.eclipse.ecf.remoteservice"/>
+      <plugin id="org.eclipse.ecf.remoteservice"/> <plugin id="org.eclipse.ecf.remoteservice.asyncproxy"/>
       <plugin id="org.eclipse.ecf.sharedobject"/>
       <plugin id="org.eclipse.equinox.common"/>
       <plugin id="org.eclipse.equinox.concurrent"/>
@@ -82,7 +82,7 @@
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.provider" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.provider.remoteservice" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.ecf.remoteservice" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.ecf.remoteservice" autoStart="true" startLevel="0" /> <plugin id="org.eclipse.ecf.remoteservice.asyncproxy" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.sharedobject" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.concurrent" autoStart="true" startLevel="0" />

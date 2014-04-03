@@ -41,7 +41,7 @@
       <plugin id="org.eclipse.ecf.provider.jms"/>
       <plugin id="org.eclipse.ecf.provider.jms.activemq"/>
       <plugin id="org.eclipse.ecf.provider.remoteservice"/>
-      <plugin id="org.eclipse.ecf.remoteservice"/>
+      <plugin id="org.eclipse.ecf.remoteservice"/> <plugin id="org.eclipse.ecf.remoteservice.asyncproxy"/>
       <plugin id="org.eclipse.ecf.sharedobject"/>
       <plugin id="org.eclipse.equinox.app"/>
       <plugin id="org.eclipse.equinox.common"/>

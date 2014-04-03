@@ -31,7 +31,7 @@
       <plugin id="org.eclipse.ecf.identity"/>
       <plugin id="org.eclipse.ecf.provider"/>
       <plugin id="org.eclipse.ecf.provider.remoteservice"/>
-      <plugin id="org.eclipse.ecf.remoteservice"/>
+      <plugin id="org.eclipse.ecf.remoteservice"/> <plugin id="org.eclipse.ecf.remoteservice.asyncproxy"/>
       <plugin id="org.eclipse.ecf.server.generic"/>
       <plugin id="org.eclipse.ecf.sharedobject"/>
       <plugin id="org.eclipse.ecf.ssl" fragment="true"/>

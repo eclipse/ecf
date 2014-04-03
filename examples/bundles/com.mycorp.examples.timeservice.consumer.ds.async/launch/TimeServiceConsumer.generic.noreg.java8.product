@@ -10,11 +10,7 @@
       <programArgs>-consoleLog -console
       </programArgs>
       <vmArgs>-Declipse.ignoreApp=true 
--Dosgi.noShutdown=true 
--DverboseRemoteServiceAdmin=true
--Dservice.exported.configs=ecf.generic.server.java8
--Decf.generic.server.java8.port=3288
--Decf.generic.server.java8.hostname=localhost
+-Dosgi.noShutdown=true
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
@@ -50,8 +46,8 @@
       <plugin id="org.eclipse.ecf.provider"/>
       <plugin id="org.eclipse.ecf.provider.jmdns"/>
       <plugin id="org.eclipse.ecf.provider.remoteservice"/>
-      <plugin id="org.eclipse.ecf.provider.remoteservice.java8"/>
       <plugin id="org.eclipse.ecf.remoteservice"/>
+      <plugin id="org.eclipse.ecf.remoteservice.asyncproxy" version="2.0.0"/>
       <plugin id="org.eclipse.ecf.sharedobject"/>
       <plugin id="org.eclipse.equinox.common"/>
       <plugin id="org.eclipse.equinox.concurrent"/>
@@ -82,14 +78,15 @@
       <plugin id="org.eclipse.ecf.provider" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.provider.jmdns" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.provider.remoteservice" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.ecf.provider.remoteservice.java8" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.remoteservice" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.ecf.remoteservice.asyncproxy" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.sharedobject" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.concurrent" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.console" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="1" />
       <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.equinox.util" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.osgi" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.osgi.services" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.osgi.services.remoteserviceadmin" autoStart="true" startLevel="0" />
