@@ -10,6 +10,7 @@
 		<dependency name="org.eclipse.ecf.provider.datashare.nio" componentType="osgi.bundle"/>
 		<dependency name="org.eclipse.ecf.provider.msn" componentType="osgi.bundle"/>
 		<dependency name="org.eclipse.osgi.services.remoteserviceadmin" componentType="osgi.bundle"/>
+		<dependency name="org.eclipse.ecf.remoteservice.asyncproxy" componentType="osgi.bundle"/>
 	</dependencies>
 	<generators>
 		<!-- Place your Generators here -->
