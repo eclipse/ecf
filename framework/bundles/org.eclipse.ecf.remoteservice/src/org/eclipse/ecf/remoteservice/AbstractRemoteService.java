@@ -440,13 +440,20 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 	}
 
 	/**
+	 * @since 8.4
+	 */
+	protected RemoteCall getAsyncRemoteCall(String invokeMethodName, Object[] asyncArgs) {
+		return new RemoteCall(invokeMethodName, asyncArgs, IRemoteCall.DEFAULT_TIMEOUT);
+	}
+
+	/**
 	 * @since 3.3
 	 */
 	protected Object invokeAsync(final Method method, final Object[] args) throws Throwable {
 		final String invokeMethodName = getAsyncInvokeMethodName(method);
 		final AsyncArgs asyncArgs = getAsyncArgs(method, args);
+		RemoteCall remoteCall = getAsyncRemoteCall(invokeMethodName, asyncArgs.getArgs());
 		IRemoteCallListener listener = asyncArgs.getListener();
-		RemoteCall remoteCall = new RemoteCall(invokeMethodName, asyncArgs.getArgs(), IRemoteCall.DEFAULT_TIMEOUT);
 		return (listener != null) ? callAsyncWithResult(remoteCall, listener) : callFuture(remoteCall, asyncArgs.getReturnType());
 	}
 
