@@ -8,6 +8,7 @@
     
     <cq:advisorNode namePattern="^org\.eclipse\.ecf\.provider\.generic\.remoteservice\.feature?" useTargetPlatform="false" useWorkspace="false"/>
     <cq:advisorNode namePattern="^org\.eclipse\.ecf\.provider\.remoteservice(\..+)?" useTargetPlatform="false" useWorkspace="false"/>
+    <cq:advisorNode namePattern="^org\.eclipse\.ecf\.remoteservice\.feature?" useTargetPlatform="false" useWorkspace="false"/>
     <cq:advisorNode namePattern="^org\.eclipse\.ecf\.tests\.remoteservice?" useTargetPlatform="false" useWorkspace="false"/>
     <cq:advisorNode namePattern="^org\.eclipse\.ecf\.tests\.remoteservice\.generic?" useTargetPlatform="false" useWorkspace="false"/>
     <cq:advisorNode namePattern="^org\.eclipse\.ecf\.tests\.osgi\.services\.distribution\.generic?" useTargetPlatform="false" useWorkspace="false"/>
