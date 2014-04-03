@@ -25,8 +25,9 @@ Contributors: Composent, Inc. - initial API and implementation
    </license>
 
    <requires>
-      <import feature="org.eclipse.ecf.remoteservice.feature" version="2.0" match="compatible"/>
-      <import feature="org.eclipse.ecf.provider.generic.feature" version="1.0" match="compatible"/>
+      <import plugin="org.eclipse.ecf.provider"/>
+      <import plugin="org.eclipse.ecf.remoteservice"/>
+      <import plugin="org.eclipse.ecf.remoteservice.asyncproxy"/>
    </requires>
 
    <plugin
