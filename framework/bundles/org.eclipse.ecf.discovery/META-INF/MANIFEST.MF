@@ -14,7 +14,7 @@ Export-Package: org.eclipse.ecf.discovery;version="4.1.0",
 Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
  J2SE-1.4
 Require-Bundle: org.eclipse.equinox.common,
- org.eclipse.ecf
+ org.eclipse.ecf;bundle-version="3.4.0"
 Import-Package: org.eclipse.core.runtime.jobs,
  org.eclipse.equinox.concurrent.future;version="1.0.0",
  org.osgi.framework,
