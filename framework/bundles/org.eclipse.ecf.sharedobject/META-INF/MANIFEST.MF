@@ -18,7 +18,7 @@ Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.equinox.registry;resolution:=optional,
- org.eclipse.ecf
+ org.eclipse.ecf;bundle-version="3.4.0"
 Import-Package: org.eclipse.equinox.concurrent.future;version="1.0.0",
  org.osgi.framework,
  org.osgi.service.log,
