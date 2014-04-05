@@ -50,7 +50,14 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
          id="org.eclipse.ecf.remoteservice.asyncproxy"
          download-size="0"
          install-size="0"
-         version="1.0.0"
+         version="1.0.0.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.ecf.remoteservice.asyncproxy"
+         download-size="0"
+         install-size="0"
+         version="2.0.0.qualifier"
          unpack="false"/>
 
 </feature>
