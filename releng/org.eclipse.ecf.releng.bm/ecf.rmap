@@ -88,16 +88,14 @@
   </rm:searchPath>
   
   <rm:searchPath name="org.eclipse.ecf.remoteservice.asyncproxy">
-    <rm:provider resolutionFilter="(version>=2.0)" componentTypes="osgi.bundle" readerType="local">
-      <rm:uri format="file:{0}/{1}.j8/">
+    <rm:provider componentTypes="osgi.bundle" readerType="local">
+      <rm:uri format="file:{0}/org.eclipse.ecf.remoteservice.asyncproxy.j8/">
         <bc:propertyRef key="projectsPath"/>
-        <bc:propertyRef key="buckminster.component"/>
       </rm:uri>
     </rm:provider>
-    <rm:provider resolutionFilter="(version<2.0)" componentTypes="osgi.bundle" readerType="local">
-      <rm:uri format="file:{0}/{1}/">
+    <rm:provider componentTypes="osgi.bundle" readerType="local">
+      <rm:uri format="file:{0}/org.eclipse.ecf.remoteservice.asyncproxy/">
         <bc:propertyRef key="projectsPath"/>
-        <bc:propertyRef key="buckminster.component"/>
       </rm:uri>
     </rm:provider>
     <rm:provider componentTypes="osgi.bundle,eclipse.feature,buckminster" readerType="p2" source="false" mutable="false">
