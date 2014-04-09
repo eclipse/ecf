@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rm:rmap xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bc="http://www.eclipse.org/buckminster/Common-1.0" xmlns:pde="http://www.eclipse.org/buckminster/PDEMapProvider-1.0" xmlns:rm="http://www.eclipse.org/buckminster/RMap-1.0">
+  <rm:locator pattern="^org\.eclipse\.ecf\.remoteservice\.asyncproxy(\..+)?" searchPathRef="org.eclipse.ecf.remoteservice.asyncproxy"/>
   <rm:locator pattern="^ch\.ethz\.iks(\..+)?" searchPathRef="org.eclipse.ecf"/>
   <rm:locator pattern="^org\.eclipse\.ecf(\..+)?" searchPathRef="org.eclipse.ecf"/>
   <rm:locator pattern="^org\.eclipse\.team\.ecf(\..+)?" searchPathRef="org.eclipse.ecf"/>
@@ -14,7 +15,7 @@
   <rm:locator pattern="^org\.eclipse(\..+)?" searchPathRef="org.eclipse"/>
   <rm:locator pattern="^org\.osgi(\..+)?" searchPathRef="org.eclipse"/>
   <rm:locator pattern="^org\.pluginbuilder(\..+)?" searchPathRef="org.pluginbuilder"/>
-  <rm:locator pattern=".*" searchPathRef="default"/>
+   <rm:locator pattern=".*" searchPathRef="default"/>
   <rm:searchPath name="org.eclipse">
     <rm:provider componentTypes="osgi.bundle,eclipse.feature,buckminster" readerType="p2" source="false" mutable="false">
       <rm:property key="buckminster.source" value="false"/>
@@ -85,6 +86,29 @@
       </rm:uri>
     </rm:provider>
   </rm:searchPath>
+  
+  <rm:searchPath name="org.eclipse.ecf.remoteservice.asyncproxy">
+    <rm:provider filter="(version>=2.0)" componentTypes="osgi.bundle" readerType="local">
+      <rm:uri format="file:{0}/{1}.j8/">
+        <bc:propertyRef key="projectsPath"/>
+        <bc:propertyRef key="buckminster.component"/>
+      </rm:uri>
+    </rm:provider>
+    <rm:provider filter="(version<2.0)" componentTypes="osgi.bundle" readerType="local">
+      <rm:uri format="file:{0}/{1}/">
+        <bc:propertyRef key="projectsPath"/>
+        <bc:propertyRef key="buckminster.component"/>
+      </rm:uri>
+    </rm:provider>
+    <rm:provider componentTypes="osgi.bundle,eclipse.feature,buckminster" readerType="p2" source="false" mutable="false">
+      <rm:property key="buckminster.source" value="false"/>
+      <rm:property key="buckminster.mutable" value="false"/>
+      <rm:uri format="{0}?importType=binary">
+        <bc:propertyRef key="ecf.p2.repository"/>
+      </rm:uri>
+    </rm:provider>
+  </rm:searchPath>
+  
   <rm:searchPath name="org.pluginbuilder">
     <rm:provider componentTypes="osgi.bundle,eclipse.feature,buckminster" readerType="p2" source="false" mutable="false">
       <rm:property key="buckminster.source" value="false"/>

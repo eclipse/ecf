@@ -4,10 +4,7 @@
     materializer="p2" 
     url="org.eclipse.ecf.remoteservice.cquery">
     
-    <md:mspecNode namePattern="^org\.eclipse\.ecf\.remoteservice?" materializer="workspace"/>
-    <md:mspecNode namePattern="^org\.eclipse\.ecf\.remoteservice\.asyncproxy?" materializer="workspace"/>
-    <md:mspecNode namePattern="^org\.eclipse\.ecf\.remoteservice\.asyncproxy\.j8?" materializer="workspace"/>
-
+    <md:mspecNode namePattern="^org\.eclipse\.ecf\.remoteservice(\..+)?" materializer="workspace"/>
     <md:mspecNode namePattern="^org\.eclipse\.ecf\.remoteservice\.feature?" materializer="workspace"/>
     
     <md:mspecNode namePattern="^org\.eclipse\.ecf\.tests\.remoteservice?" materializer="workspace"/>
