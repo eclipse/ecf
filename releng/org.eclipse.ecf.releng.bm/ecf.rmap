@@ -88,10 +88,10 @@
   </rm:searchPath>
   
   <rm:searchPath name="org.eclipse.ecf.remoteservice.asyncproxy">
-    <rm:provider componentTypes="osgi.bundle,eclipse.feature,buckminster" readerType="p2" source="false" mutable="false">
+    <rm:provider componentTypes="osgi.bundle" readerType="p2" source="false" mutable="false">
       <rm:property key="buckminster.source" value="false"/>
       <rm:property key="buckminster.mutable" value="false"/>
-      <rm:uri format="http://download.eclipse.org/rt/ecf/asyncproxy/site.p2/"/>
+      <rm:uri format="http://download.eclipse.org/rt/ecf/asyncproxy/site.p2/?importType=binary"/>
     </rm:provider>
     <!--
     <rm:provider componentTypes="osgi.bundle" readerType="local">
@@ -105,13 +105,6 @@
       </rm:uri>
     </rm:provider>
     -->
-    <rm:provider componentTypes="osgi.bundle,eclipse.feature,buckminster" readerType="p2" source="false" mutable="false">
-      <rm:property key="buckminster.source" value="false"/>
-      <rm:property key="buckminster.mutable" value="false"/>
-      <rm:uri format="{0}?importType=binary">
-        <bc:propertyRef key="ecf.p2.repository"/>
-      </rm:uri>
-    </rm:provider>
   </rm:searchPath>
   
   <rm:searchPath name="org.pluginbuilder">
