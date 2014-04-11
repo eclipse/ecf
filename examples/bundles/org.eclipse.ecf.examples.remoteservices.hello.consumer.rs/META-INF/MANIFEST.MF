@@ -12,7 +12,7 @@ Bundle-ActivationPolicy: lazy
 Bundle-Localization: bundle
 Import-Package: org.eclipse.ecf.core,
  org.eclipse.ecf.core.identity;version="3.0.0",
- org.eclipse.ecf.examples.remoteservices.hello;version="3.0.0",
+ org.eclipse.ecf.examples.remoteservices.hello;version="4.0.0",
  org.eclipse.ecf.remoteservice,
  org.eclipse.ecf.remoteservice.asyncproxy;version="1.0.0",
  org.eclipse.ecf.remoteservice.events,

@@ -10,6 +10,9 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.examples.remoteservices.hello.consumer;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ecf.core.IContainerFactory;
@@ -184,7 +187,7 @@ public class HelloConsumerApplication implements IApplication,
 			
 			// Call asynchronously with future
 			System.out.println("STARTING async remote call via future...");
-			IFuture future = helloA.helloAsync(CONSUMER_NAME + " via async proxy with future");
+			Future<String> future = helloA.helloAsync(CONSUMER_NAME + " via async proxy with future");
 			System.out.println("LOCAL async future invocation complete");
 			System.out.println();
 			try {
@@ -194,7 +197,7 @@ public class HelloConsumerApplication implements IApplication,
 					Thread.sleep(200);
 				}
 				// Now it's done, so this will not block
-				Object result = future.get();
+				String result = future.get();
 				System.out.println("COMPLETED remote call with future SUCCEEDED with result="+result);
 				System.out.println();
 			} catch (OperationCanceledException e) {
@@ -202,6 +205,10 @@ public class HelloConsumerApplication implements IApplication,
 				System.out.println();
 				e.printStackTrace();
 			} catch (InterruptedException e) {
+				System.out.println("COMPLETED remote call with callback INTERRUPTED with exception="+e);
+				System.out.println();
+				e.printStackTrace();
+			} catch (ExecutionException e) {
 				System.out.println("COMPLETED remote call with callback INTERRUPTED with exception="+e);
 				System.out.println();
 				e.printStackTrace();
@@ -226,7 +233,7 @@ public class HelloConsumerApplication implements IApplication,
 					Thread.sleep(200);
 				}
 				// Now it's done, so this will not block
-				Object result = future.get();
+				String result = future.get();
 				System.out.println("COMPLETED remote call with future SUCCEEDED with result="+result);
 				System.out.println();
 			} catch (OperationCanceledException e) {
@@ -234,6 +241,10 @@ public class HelloConsumerApplication implements IApplication,
 				System.out.println();
 				e.printStackTrace();
 			} catch (InterruptedException e) {
+				System.out.println("COMPLETED remote call with callback INTERRUPTED with exception="+e);
+				System.out.println();
+				e.printStackTrace();
+			} catch (ExecutionException e) {
 				System.out.println("COMPLETED remote call with callback INTERRUPTED with exception="+e);
 				System.out.println();
 				e.printStackTrace();
