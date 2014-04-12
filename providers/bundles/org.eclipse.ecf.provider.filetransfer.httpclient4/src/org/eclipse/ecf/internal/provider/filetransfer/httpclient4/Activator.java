@@ -97,7 +97,7 @@ public class Activator implements BundleActivator {
 		return plugin;
 	}
 
-	protected LogService getLogService() {
+	private synchronized LogService getLogService() {
 		if (logServiceTracker == null) {
 			logServiceTracker = new ServiceTracker(this.context, LogService.class.getName(), null);
 			logServiceTracker.open();
@@ -112,7 +112,7 @@ public class Activator implements BundleActivator {
 		}
 	}
 
-	public SSLSocketFactory getSSLSocketFactory() {
+	public synchronized SSLSocketFactory getSSLSocketFactory() {
 		if (sslSocketFactoryTracker == null) {
 			sslSocketFactoryTracker = new ServiceTracker(this.context, SSLSocketFactory.class.getName(), null);
 			sslSocketFactoryTracker.open();
