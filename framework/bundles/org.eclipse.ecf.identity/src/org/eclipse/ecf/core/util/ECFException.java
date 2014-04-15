@@ -8,7 +8,9 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.util;
 
-import org.eclipse.core.runtime.*;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.internal.core.identity.Activator;
 
 public class ECFException extends CoreException {
@@ -39,8 +41,7 @@ public class ECFException extends CoreException {
 	 * @param cause
 	 */
 	public ECFException(String message, Throwable cause) {
-		this(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0,
-				((message == null) ? "" : message), cause)); //$NON-NLS-1$
+		this(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, ((message == null) ? "" : message), cause)); //$NON-NLS-1$
 	}
 
 	/**
@@ -49,6 +50,5 @@ public class ECFException extends CoreException {
 	 */
 	public ECFException(IStatus status) {
 		super(status);
-		initCause(status.getException());
 	}
 }
