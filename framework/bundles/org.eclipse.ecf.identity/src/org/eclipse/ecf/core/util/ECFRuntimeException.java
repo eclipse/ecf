@@ -49,29 +49,32 @@ public class ECFRuntimeException extends RuntimeException {
 	 * @param cause
 	 */
 	public ECFRuntimeException(String message, Throwable cause) {
-		this(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, ((message == null) ? "" : message), cause)); //$NON-NLS-1$
+		this(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0,
+				((message == null) ? "" : message), cause)); //$NON-NLS-1$
 	}
 
 	/**
-	 * Creates a new exception with the given status object.  The message
-	 * of the given status is used as the exception message.
+	 * Creates a new exception with the given status object. The message of the
+	 * given status is used as the exception message.
 	 *
-	 * @param status the status object to be associated with this exception
+	 * @param status
+	 *            the status object to be associated with this exception
 	 */
 	public ECFRuntimeException(IStatus status) {
 		super(status.getMessage());
+		initCause(status.getException());
 		this.status = status;
 	}
 
 	/**
 	 * Returns the status object for this exception.
 	 * <p>
-	 *   <b>IMPORTANT:</b><br>
-	 *   The result must NOT be used to log a <code>CoreException</code>
-	 *   (e.g., using <code>yourPlugin.getLog().log(status);</code>),
-	 *   since that code pattern hides the original stacktrace.
-	 *   Instead, create a new {@link Status} with your plug-in ID and
-	 *   this <code>CoreException</code>, and log that new status.
+	 * <b>IMPORTANT:</b><br>
+	 * The result must NOT be used to log a <code>CoreException</code> (e.g.,
+	 * using <code>yourPlugin.getLog().log(status);</code>), since that code
+	 * pattern hides the original stacktrace. Instead, create a new
+	 * {@link Status} with your plug-in ID and this <code>CoreException</code>,
+	 * and log that new status.
 	 * </p>
 	 *
 	 * @return a status object
