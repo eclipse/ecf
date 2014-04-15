@@ -60,7 +60,7 @@ public abstract class AbstractTopologyManager {
 	
 	public AbstractTopologyManager(BundleContext context) {
 		serviceInfoFactoryTracker = new ServiceTracker(
-				Activator.getContext(), createISIFFilter(Activator.getContext()), null);
+				context, createISIFFilter(context), null);
 		serviceInfoFactoryTracker.open();
 		this.context = context;
 		// Use a FAIR lock here to guarantee that an endpoint removed operation
