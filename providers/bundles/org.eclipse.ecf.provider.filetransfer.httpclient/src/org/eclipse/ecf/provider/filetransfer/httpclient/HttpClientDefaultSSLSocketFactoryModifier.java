@@ -32,7 +32,7 @@ public class HttpClientDefaultSSLSocketFactoryModifier implements ISSLSocketFact
 		// empty
 	}
 
-	public SSLSocketFactory getSSLSocketFactory() throws IOException {
+	public synchronized SSLSocketFactory getSSLSocketFactory() throws IOException {
 		if (null == sslContext) {
 			try {
 				sslContext = getSSLContext(defaultProtocolNames);
@@ -45,7 +45,7 @@ public class HttpClientDefaultSSLSocketFactoryModifier implements ISSLSocketFact
 		return (sslContext == null) ? (SSLSocketFactory) SSLSocketFactory.getDefault() : sslContext.getSocketFactory();
 	}
 
-	public SSLContext getSSLContext(String protocols) {
+	public synchronized SSLContext getSSLContext(String protocols) {
 		SSLContext rtvContext = null;
 
 		if (protocols != null) {
