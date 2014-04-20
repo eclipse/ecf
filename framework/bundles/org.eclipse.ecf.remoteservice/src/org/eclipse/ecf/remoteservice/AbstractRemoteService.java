@@ -480,6 +480,9 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 		});
 	}
 
+	/**
+	 * @since 8.4
+	 */
 	@Override
 	protected Future callFutureAsync(AbstractAsyncProxyRemoteCall call) {
 		return callFutureAsync((IRemoteCall) call);
