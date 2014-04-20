@@ -43,6 +43,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 public class Activator implements BundleActivator {
 
@@ -64,7 +65,9 @@ public class Activator implements BundleActivator {
 	}
 
 	private ServiceRegistration remoteServiceAdminRegistration;
-
+	private Dictionary rsaProps;
+	private ServiceTracker<ContainerTypeDescription,ContainerTypeDescription> ctdTracker;
+	
 	private EndpointDescriptionLocator endpointDescriptionLocator;
 	private ServiceRegistration<?> iServiceInfoFactoryRegistration;
 
@@ -115,35 +118,65 @@ public class Activator implements BundleActivator {
 	private Map<Bundle, RemoteServiceAdmin> remoteServiceAdmins = new HashMap<Bundle, RemoteServiceAdmin>(
 			1);
 
-	private String[][] getSupportedConfigsAndIntents() {
-		IContainerManager containerManager = getContainerManager();
-		Assert.isNotNull(containerManager,
-				"Container manager must be present to start ECF Remote Service Admin"); //$NON-NLS-1$
-		ContainerTypeDescription[] remoteServiceDescriptions = containerManager
-				.getContainerFactory().getDescriptionsForContainerAdapter(
-						IRemoteServiceContainerAdapter.class);
-		List<String> supportedConfigs = new ArrayList<String>();
-		List<String> supportedIntents = new ArrayList<String>();
-		for (int i = 0; i < remoteServiceDescriptions.length; i++) {
-			String[] descSupportedConfigs = remoteServiceDescriptions[i]
-					.getSupportedConfigs();
-			if (descSupportedConfigs != null) {
-				for (int j = 0; j < descSupportedConfigs.length; j++)
-					supportedConfigs.add(descSupportedConfigs[j]);
-				String[] descSupportedIntents = remoteServiceDescriptions[i]
-						.getSupportedIntents();
-				for (int j = 0; j < descSupportedIntents.length; j++)
-					supportedIntents.add(descSupportedIntents[j]);
-			}
-		}
-		String[][] result = new String[2][];
-		result[0] = supportedConfigs
-				.toArray(new String[supportedConfigs.size()]);
-		result[1] = supportedIntents
-				.toArray(new String[supportedIntents.size()]);
-		return result;
-	}
+	private void removeSupportedConfigsAndIntents(ContainerTypeDescription ctd) {
+		String[] remoteConfigsSupported = (String[]) rsaProps.get(
+				org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED);
+		List<String> rcs = new ArrayList<String>();
+		if (remoteConfigsSupported != null) 
+			for(int i=0; i < remoteConfigsSupported.length; i++) rcs.add(remoteConfigsSupported[i]);
+		String[] remoteIntentsSupported = (String[]) rsaProps.get(
+				org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_INTENTS_SUPPORTED);
+		List<String> ris = new ArrayList<String>();
+		if (remoteIntentsSupported != null) 
+			for(int i=0; i < remoteIntentsSupported.length; i++) ris.add(remoteIntentsSupported[i]);
 
+		String[] descSupportedConfigs = ctd.getSupportedConfigs();
+		if (descSupportedConfigs != null) {
+			for (int j = 0; j < descSupportedConfigs.length; j++)
+				rcs.remove(descSupportedConfigs[j]);
+			String[] descSupportedIntents = ctd.getSupportedIntents();
+			for (int j = 0; j < descSupportedIntents.length; j++)
+				ris.remove(descSupportedIntents);
+		}
+		// set rsaProps to new values
+		rsaProps.put(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED, rcs.toArray(new String[rcs.size()]));
+		rsaProps.put(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_INTENTS_SUPPORTED, ris.toArray(new String[ris.size()]));
+	}
+	
+	void addSupportedConfigsAndIntents(ContainerTypeDescription desc) {
+		// Get the existing remoteConfigsSupported from rsaProps
+		String[] remoteConfigsSupported = (String[]) rsaProps.get(
+				org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED);
+		// Add all the existing to rcs list
+		List<String> rcs = new ArrayList<String>();
+		if (remoteConfigsSupported != null) 
+			for(int i=0; i < remoteConfigsSupported.length; i++) rcs.add(remoteConfigsSupported[i]);
+		// Get the existing remoteIntentsSupported from rsaProps
+		String[] remoteIntentsSupported = (String[]) rsaProps.get(
+				org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_INTENTS_SUPPORTED);
+		// Add all the existing to ris list
+		List<String> ris = new ArrayList<String>();
+		if (remoteIntentsSupported != null) 
+			for(int i=0; i < remoteIntentsSupported.length; i++) ris.add(remoteIntentsSupported[i]);
+
+		// Get the supported configs from the given description
+		String[] descSupportedConfigs = desc.getSupportedConfigs();
+		
+		if (descSupportedConfigs != null) {
+			// Add all supported configs...as long as they are not already present
+			for (int j = 0; j < descSupportedConfigs.length; j++)
+				if (!rcs.contains(descSupportedConfigs[j])) rcs.add(descSupportedConfigs[j]);
+			// Get supported intents
+			String[] descSupportedIntents = desc.getSupportedIntents();
+			// Add them all
+			for (int j = 0; j < descSupportedIntents.length; j++)
+				ris.add(descSupportedIntents[j]);
+		}
+		// set rsaProps to new values
+		rsaProps.put(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED, rcs.toArray(new String[rcs.size()]));
+		rsaProps.put(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_INTENTS_SUPPORTED, ris.toArray(new String[ris.size()]));
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -163,16 +196,22 @@ public class Activator implements BundleActivator {
 		initializeProxyServiceFactoryBundle();
 
 		// make remote service admin available
-		Properties rsaProps = new Properties();
+		rsaProps = new Properties();
 		rsaProps.put(RemoteServiceAdmin.SERVICE_PROP, new Boolean(true));
-		String[][] supportedConfigsAndIntents = getSupportedConfigsAndIntents();
-		rsaProps.put(
-				org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED,
-				supportedConfigsAndIntents[0]);
-		rsaProps.put(
-				org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_INTENTS_SUPPORTED,
-				supportedConfigsAndIntents[1]);
+		
+		IContainerManager containerManager = getContainerManager();
+		Assert.isNotNull(containerManager,
+				"Container manager service must be present to start ECF Remote Service Admin"); //$NON-NLS-1$
+		
+		ContainerTypeDescription[] remoteServiceDescriptions = containerManager
+				.getContainerFactory().getDescriptionsForContainerAdapter(
+						IRemoteServiceContainerAdapter.class);
+		// The following adds the standard supported configs and supported intents
+		// values for all remote service descriptions to rsaProps
+		for (int i = 0; i < remoteServiceDescriptions.length; i++) 
+			addSupportedConfigsAndIntents(remoteServiceDescriptions[i]);
 
+		// Register Remote Service Admin factory, with rsaProps
 		remoteServiceAdminRegistration = context.registerService(
 				org.osgi.service.remoteserviceadmin.RemoteServiceAdmin.class
 						.getName(), new ServiceFactory() {
@@ -202,6 +241,41 @@ public class Activator implements BundleActivator {
 					}
 				}, (Dictionary) rsaProps);
 
+		ctdTracker = new ServiceTracker<ContainerTypeDescription,ContainerTypeDescription>(context,ContainerTypeDescription.class,new ServiceTrackerCustomizer<ContainerTypeDescription,ContainerTypeDescription>() {
+			public ContainerTypeDescription addingService(
+					ServiceReference<ContainerTypeDescription> reference) {
+				ContainerTypeDescription ctd = null;
+				if (reference != null && context != null) {
+					ctd = context.getService(reference);
+					if (ctd != null) {
+						// Add any new supported configs to rsaProps
+						addSupportedConfigsAndIntents(ctd);
+						if (remoteServiceAdminRegistration != null) 
+							// Set the new properties for remoteServiceRegistration
+							remoteServiceAdminRegistration.setProperties(rsaProps);
+					}
+				} 
+				return ctd;
+			}
+
+			public void modifiedService(
+					ServiceReference<ContainerTypeDescription> reference,
+					ContainerTypeDescription service) {
+			}
+
+			public void removedService(
+					ServiceReference<ContainerTypeDescription> reference,
+					ContainerTypeDescription service) {
+				if (remoteServiceAdminRegistration != null && service != null) {
+					// Remove supported configs and intents from rsaProps
+					removeSupportedConfigsAndIntents(service);
+					// Reset properties for remoteServiceAdmin
+					remoteServiceAdminRegistration.setProperties(rsaProps);
+				}
+			}
+});
+		ctdTracker.open();
+		
 		// create endpoint description locator
 		endpointDescriptionLocator = new EndpointDescriptionLocator(context);
 		// create and register endpoint description advertiser
@@ -238,6 +312,10 @@ public class Activator implements BundleActivator {
 		if (endpointDescriptionLocator != null) {
 			endpointDescriptionLocator.close();
 			endpointDescriptionLocator = null;
+		}
+		if (ctdTracker != null) {
+			ctdTracker.close();
+			ctdTracker = null;
 		}
 		if (remoteServiceAdminRegistration != null) {
 			remoteServiceAdminRegistration.unregister();

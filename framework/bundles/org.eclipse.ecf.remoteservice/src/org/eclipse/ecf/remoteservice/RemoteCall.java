@@ -11,11 +11,12 @@ package org.eclipse.ecf.remoteservice;
 
 import java.util.Arrays;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.ecf.remoteservice.asyncproxy.AbstractAsyncProxyRemoteCall;
 
 /**
  * @since 4.0
  */
-public class RemoteCall implements IRemoteCall {
+public class RemoteCall extends AbstractAsyncProxyRemoteCall implements IRemoteCall {
 
 	protected String method;
 	protected Object[] parameters;

@@ -9,8 +9,9 @@
 ******************************************************************************/
 package org.eclipse.ecf.examples.remoteservices.hello;
 
+import java.util.concurrent.Future;
+
 import org.eclipse.ecf.remoteservice.IAsyncCallback;
-import org.eclipse.equinox.concurrent.future.IFuture;
 
 /**
  * @since 2.0
@@ -18,15 +19,18 @@ import org.eclipse.equinox.concurrent.future.IFuture;
 public interface IHelloAsync {
 
 	public void helloAsync(String from, IAsyncCallback<String> callback);
-	public IFuture helloAsync(String from);
+	/**
+	 * @since 4.0
+	 */
+	public Future<String> helloAsync(String from);
 
 	/**
 	 * @since 3.0
 	 */
 	public void helloMessageAsync(HelloMessage message, IAsyncCallback<String> callback);
 	/**
-	 * @since 3.0
+	 * @since 4.0
 	 */
-	public IFuture helloMessageAsync(HelloMessage message);
+	public Future<String> helloMessageAsync(HelloMessage message);
 
 }

@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="ECF Remote Service Example DS Host" uid="org.eclipse.ecf.examples.remoteservices.hello.ds.host.product" application="org.eclipse.ecf.examples.remoteservices.hello.ds.host.HelloHostDS" version="2.0.1.qualifier" useFeatures="false" includeLaunchers="false">
+<product name="ECF Remote Service Example DS Host" uid="org.eclipse.ecf.examples.remoteservices.hello.ds.host.product" application="org.eclipse.ecf.examples.remoteservices.hello.ds.host.HelloHostDS" version="2.1.0.qualifier" useFeatures="false" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>
 
    <launcherArgs>
-      <programArgs>-console -consoleLog</programArgs>
-      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
+      <programArgs>-console -consoleLog
+      </programArgs>
+      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
+      </vmArgsMac>
    </launcherArgs>
 
    <windowImages/>
@@ -43,6 +45,7 @@
       <plugin id="org.eclipse.ecf.provider.jmdns"/>
       <plugin id="org.eclipse.ecf.provider.remoteservice"/>
       <plugin id="org.eclipse.ecf.remoteservice"/>
+      <plugin id="org.eclipse.ecf.remoteservice.asyncproxy" version="2.0.0"/>
       <plugin id="org.eclipse.ecf.sharedobject"/>
       <plugin id="org.eclipse.equinox.app"/>
       <plugin id="org.eclipse.equinox.common"/>
@@ -59,15 +62,18 @@
    </plugins>
 
    <configurations>
-      <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="2" />
-      <plugin id="org.eclipse.ecf" autoStart="true" startLevel="1" />
-      <plugin id="org.eclipse.ecf.osgi.services.distribution" autoStart="true" startLevel="1" />
-      <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin" autoStart="true" startLevel="1" />
-      <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy" autoStart="true" startLevel="1" />
-      <plugin id="org.eclipse.equinox.app" autoStart="true" startLevel="2" />
-      <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
-      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
-      <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="1" />
+      <plugin id="org.eclipse.ecf.discovery" autoStart="true" startLevel="1" />
+      <plugin id="org.eclipse.ecf.osgi.services.distribution" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.ecf.provider.jmdns" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.app" autoStart="true" startLevel="4" />
+      <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="1" />
+      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.registry" autoStart="true" startLevel="1" />
+      <plugin id="org.eclipse.osgi" autoStart="true" startLevel="-1" />
    </configurations>
 
 </product>

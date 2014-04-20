@@ -6,4 +6,4 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Eclipse.org - ECF
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Service-Component: OSGI-INF/timeservicecomponent.xml
-Import-Package: com.mycorp.examples.timeservice;version="1.0.0"
+Import-Package: com.mycorp.examples.timeservice;version="[1.0.0,2.0.0)"

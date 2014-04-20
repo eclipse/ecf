@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rm:rmap xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bc="http://www.eclipse.org/buckminster/Common-1.0" xmlns:pde="http://www.eclipse.org/buckminster/PDEMapProvider-1.0" xmlns:rm="http://www.eclipse.org/buckminster/RMap-1.0">
+  <rm:locator pattern="^org\.eclipse\.ecf\.remoteservice\.asyncproxy(\..+)?" searchPathRef="org.eclipse.ecf.remoteservice.asyncproxy"/>
   <rm:locator pattern="^ch\.ethz\.iks(\..+)?" searchPathRef="org.eclipse.ecf"/>
   <rm:locator pattern="^org\.eclipse\.ecf(\..+)?" searchPathRef="org.eclipse.ecf"/>
   <rm:locator pattern="^org\.eclipse\.team\.ecf(\..+)?" searchPathRef="org.eclipse.ecf"/>
@@ -71,6 +72,11 @@
    </rm:searchPath>
     
    <rm:searchPath name="org.eclipse.ecf">
+    <rm:provider componentTypes="osgi.bundle" readerType="p2" source="false" mutable="false">
+      <rm:property key="buckminster.source" value="false"/>
+      <rm:property key="buckminster.mutable" value="false"/>
+      <rm:uri format="http://download.eclipse.org/rt/ecf/asyncproxy/site.p2/?importType=binary"/>
+    </rm:provider>
     <rm:provider componentTypes="osgi.bundle,eclipse.feature" readerType="local">
       <rm:uri format="file:{0}/{1}/">
         <bc:propertyRef key="projectsPath"/>
@@ -85,6 +91,27 @@
       </rm:uri>
     </rm:provider>
   </rm:searchPath>
+  
+  <rm:searchPath name="org.eclipse.ecf.remoteservice.asyncproxy">
+    <rm:provider componentTypes="osgi.bundle" readerType="p2" source="false" mutable="false">
+      <rm:property key="buckminster.source" value="false"/>
+      <rm:property key="buckminster.mutable" value="false"/>
+      <rm:uri format="http://download.eclipse.org/rt/ecf/asyncproxy/site.p2/?importType=binary"/>
+    </rm:provider>
+    <!--
+    <rm:provider componentTypes="osgi.bundle" readerType="local">
+      <rm:uri format="file:{0}/org.eclipse.ecf.remoteservice.asyncproxy.j8/">
+        <bc:propertyRef key="projectsPath"/>
+      </rm:uri>
+    </rm:provider>
+    <rm:provider componentTypes="osgi.bundle" readerType="local">
+      <rm:uri format="file:{0}/org.eclipse.ecf.remoteservice.asyncproxy/">
+        <bc:propertyRef key="projectsPath"/>
+      </rm:uri>
+    </rm:provider>
+    -->
+  </rm:searchPath>
+  
   <rm:searchPath name="org.pluginbuilder">
     <rm:provider componentTypes="osgi.bundle,eclipse.feature,buckminster" readerType="p2" source="false" mutable="false">
       <rm:property key="buckminster.source" value="false"/>

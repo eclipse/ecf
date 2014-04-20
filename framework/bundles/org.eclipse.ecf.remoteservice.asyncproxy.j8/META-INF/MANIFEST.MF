@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %bundle.name
+Bundle-SymbolicName: org.eclipse.ecf.remoteservice.asyncproxy
+Bundle-Version: 2.0.0.qualifier
+Bundle-Vendor: %bundle.provider
+Bundle-ActivationPolicy: lazy
+Import-Package: org.eclipse.equinox.concurrent.future
+Bundle-Localization: bundle
+Export-Package: org.eclipse.ecf.remoteservice.asyncproxy;version="2.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8

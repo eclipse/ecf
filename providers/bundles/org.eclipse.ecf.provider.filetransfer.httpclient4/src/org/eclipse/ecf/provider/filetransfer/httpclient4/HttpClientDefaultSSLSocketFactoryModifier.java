@@ -12,8 +12,6 @@
 
 package org.eclipse.ecf.provider.filetransfer.httpclient4;
 
-import org.eclipse.ecf.internal.provider.filetransfer.httpclient4.ISSLSocketFactoryModifier;
-
 import java.io.IOException;
 import java.net.Socket;
 import javax.net.ssl.SSLContext;
@@ -21,6 +19,7 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import org.eclipse.ecf.core.util.StringUtils;
 import org.eclipse.ecf.filetransfer.events.socketfactory.INonconnectedSocketFactory;
+import org.eclipse.ecf.internal.provider.filetransfer.httpclient4.ISSLSocketFactoryModifier;
 
 public class HttpClientDefaultSSLSocketFactoryModifier implements ISSLSocketFactoryModifier, INonconnectedSocketFactory {
 	public static final String DEFAULT_SSL_PROTOCOL = "https.protocols"; //$NON-NLS-1$
@@ -33,7 +32,7 @@ public class HttpClientDefaultSSLSocketFactoryModifier implements ISSLSocketFact
 		// empty
 	}
 
-	public SSLSocketFactory getSSLSocketFactory() throws IOException {
+	public synchronized SSLSocketFactory getSSLSocketFactory() throws IOException {
 		if (null == sslContext) {
 			try {
 				sslContext = getSSLContext(defaultProtocolNames);
@@ -46,7 +45,7 @@ public class HttpClientDefaultSSLSocketFactoryModifier implements ISSLSocketFact
 		return (sslContext == null) ? (SSLSocketFactory) SSLSocketFactory.getDefault() : sslContext.getSocketFactory();
 	}
 
-	public SSLContext getSSLContext(String protocols) {
+	public synchronized SSLContext getSSLContext(String protocols) {
 		SSLContext rtvContext = null;
 
 		if (protocols != null) {

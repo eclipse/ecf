@@ -231,10 +231,11 @@ public class RemoteServiceAdmin implements
 			final ServiceReference<?> serviceReference, Map<String, ?> op) {
 		trace("exportService", "serviceReference=" + serviceReference //$NON-NLS-1$ //$NON-NLS-2$
 				+ ",properties=" + op); //$NON-NLS-1$
+		
 		final Map<String, ?> overridingProperties = PropertiesUtil
 				.mergeProperties(serviceReference,
 						op == null ? Collections.EMPTY_MAP : op);
-		// First get exported interfaces
+		// get exported interfaces
 		final String[] exportedInterfaces = PropertiesUtil
 				.getExportedInterfaces(serviceReference, overridingProperties);
 		if (exportedInterfaces == null)
@@ -259,99 +260,124 @@ public class RemoteServiceAdmin implements
 		final String[] serviceIntents = PropertiesUtil.getServiceIntents(
 				serviceReference, overridingProperties);
 
-		// Get a host container selector, and use it to
-		final IHostContainerSelector hostContainerSelector = getHostContainerSelector();
-		// select ECF remote service containers that match given exported
-		// interfaces, configs, and intents
-		IRemoteServiceContainer[] rsContainers = null;
-		try {
-			rsContainers = AccessController
-					.doPrivileged(new PrivilegedExceptionAction() {
-						public Object run() throws SelectContainerException {
-							return hostContainerSelector.selectHostContainers(
+		// Create result registrations.  This collection will be returned
+		Collection<ExportRegistration> resultRegistrations = new ArrayList<ExportRegistration>();
+		
+		// check for previously exported registration for the serviceReference
+		synchronized (exportedRegistrations) {
+			ExportEndpoint exportEndpoint = findExistingExportEndpoint(
+					serviceReference, null);
+			// If found then create a second ExportRegistration from endpoint
+			if (exportEndpoint != null) {
+				trace("exportService", "serviceReference=" + serviceReference + " export endpoint already exists=" + exportEndpoint + ".  Returning new ExportRegistration for existing endpoint"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+				ExportRegistration reg = new ExportRegistration(exportEndpoint);
+				addExportRegistration(reg);
+				resultRegistrations.add(reg);
+			}
+		}
+		// If the serviceReference hasn't already been exported before (above)
+		if (resultRegistrations.size() == 0) {
+			// Get a host container selector
+			final IHostContainerSelector hostContainerSelector = getHostContainerSelector();
+			// and use it to select ECF remote service containers that match given exported
+			// interfaces, configs, and intents
+			IRemoteServiceContainer[] rsContainers = null;
+			try {
+				rsContainers = AccessController
+						.doPrivileged(new PrivilegedExceptionAction() {
+							public Object run() throws SelectContainerException {
+								return hostContainerSelector
+										.selectHostContainers(
+												serviceReference,
+												(Map<String, Object>) overridingProperties,
+												exportedInterfaces,
+												exportedConfigs, serviceIntents);
+							}
+						});
+			} catch (PrivilegedActionException e) {
+				// If exception, create error export registration
+				ExportRegistration errorRegistration = createErrorExportRegistration(
+						serviceReference,
+						(Map<String, Object>) overridingProperties,
+						"Error selecting or creating host container for serviceReference=" //$NON-NLS-1$
+								+ serviceReference + " properties=" //$NON-NLS-1$
+								+ overridingProperties,
+						(SelectContainerException) e.getException());
+				
+				addExportRegistration(errorRegistration);
+				resultRegistrations.add(errorRegistration);
+			}
+			// If no registration exist (no errorRegistration added above)
+			if (resultRegistrations.size() == 0) {
+				// If no containers found above, log warning and return
+				if (rsContainers == null || rsContainers.length == 0) {
+					String errorMessage = "No containers found for serviceReference=" //$NON-NLS-1$ 
+							+ serviceReference
+							+ " properties=" + overridingProperties + ". Remote service NOT EXPORTED"; //$NON-NLS-1$//$NON-NLS-2$
+					logWarning("exportService", errorMessage); //$NON-NLS-1$
+					return Collections.EMPTY_LIST;
+				}
+				// actually do the export
+				synchronized (exportedRegistrations) {
+					// For all selected containers
+					for (int i = 0; i < rsContainers.length; i++) {
+						ExportRegistration exportRegistration = null;
+						// If we've already got an export endpoint
+						// for this service reference/containerID combination,
+						// then create an ExportRegistration that uses the
+						// endpoint
+						ExportEndpoint exportEndpoint = findExistingExportEndpoint(
+								serviceReference, rsContainers[i]
+										.getContainer().getID());
+						// If we've already got one, then create a new
+						// ExportRegistration for it and we're done
+						if (exportEndpoint != null)
+							exportRegistration = new ExportRegistration(
+									exportEndpoint);
+						else {
+							Map endpointDescriptionProperties = createExportEndpointDescriptionProperties(
 									serviceReference,
 									(Map<String, Object>) overridingProperties,
-									exportedInterfaces, exportedConfigs,
-									serviceIntents);
-						}
-					});
-		} catch (PrivilegedActionException e) {
-			// If exception, create error export registration
-			ExportRegistration errorRegistration = createErrorExportRegistration(
-					serviceReference,
-					(Map<String, Object>) overridingProperties,
-					"Error selecting or creating host container for serviceReference=" //$NON-NLS-1$
-							+ serviceReference + " properties=" //$NON-NLS-1$
-							+ overridingProperties,
-					(SelectContainerException) e.getException());
-			// Add to exportedRegistrations
-			synchronized (exportedRegistrations) {
-				exportedRegistrations.add(errorRegistration);
-			}
-			// Publish export event
-			publishExportEvent(errorRegistration);
-			// Return collection
-			Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> result = new ArrayList<org.osgi.service.remoteserviceadmin.ExportRegistration>();
-			result.add(errorRegistration);
-			return result;
-		}
-		// If none found, log warning and return
-		if (rsContainers == null || rsContainers.length == 0) {
-			String errorMessage = "No containers found for serviceReference=" //$NON-NLS-1$ 
-					+ serviceReference
-					+ " properties=" + overridingProperties + ". Remote service NOT EXPORTED"; //$NON-NLS-1$//$NON-NLS-2$
-			logWarning("exportService", errorMessage); //$NON-NLS-1$
-			return Collections.EMPTY_LIST;
-		}
-		Collection<ExportRegistration> exportRegistrations = new ArrayList<ExportRegistration>();
-		synchronized (exportedRegistrations) {
-			for (int i = 0; i < rsContainers.length; i++) {
-				ExportRegistration exportRegistration = null;
-				// If we've already got an export endpoint
-				// for this service reference/containerID combination,
-				// then create an ExportRegistration that uses the endpoint
-				ExportEndpoint exportEndpoint = findExistingExportEndpoint(
-						serviceReference, rsContainers[i].getContainer()
-								.getID());
-				// If we've already got one, then create a new
-				// ExportRegistration for it and we're done
-				if (exportEndpoint != null)
-					exportRegistration = new ExportRegistration(exportEndpoint);
-				else {
-					Map endpointDescriptionProperties = createExportEndpointDescriptionProperties(
-							serviceReference,
-							(Map<String, Object>) overridingProperties,
-							exportedInterfaces, serviceIntents, rsContainers[i]);
-					// otherwise, actually export the service to create a new
-					// ExportEndpoint and use it to create a new
-					// ExportRegistration
-					EndpointDescription endpointDescription = new EndpointDescription(
-							serviceReference, endpointDescriptionProperties);
+									exportedInterfaces, serviceIntents,
+									rsContainers[i]);
+							// otherwise, actually export the service to create
+							// a
+							// new
+							// ExportEndpoint and use it to create a new
+							// ExportRegistration
+							EndpointDescription endpointDescription = new EndpointDescription(
+									serviceReference,
+									endpointDescriptionProperties);
 
-					checkEndpointPermission(endpointDescription,
-							EndpointPermission.EXPORT);
-					try {
-						// Check security access for export
-						// Actually do the export and return export registration
-						exportRegistration = exportService(serviceReference,
-								overridingProperties, exportedInterfaces,
-								rsContainers[i], endpointDescriptionProperties);
-					} catch (Exception e) {
-						exportRegistration = new ExportRegistration(e,
-								endpointDescription);
+							checkEndpointPermission(endpointDescription,
+									EndpointPermission.EXPORT);
+							try {
+								// Check security access for export
+								// Actually do the export and return export
+								// registration
+								exportRegistration = exportService(
+										serviceReference, overridingProperties,
+										exportedInterfaces, rsContainers[i],
+										endpointDescriptionProperties);
+							} catch (Exception e) {
+								exportRegistration = new ExportRegistration(e,
+										endpointDescription);
+							}
+						}
+						addExportRegistration(exportRegistration);
+						// We add it to the results in either case
+						resultRegistrations.add(exportRegistration);
 					}
 				}
-				addExportRegistration(exportRegistration);
-				// We add it to the results in either case
-				exportRegistrations.add(exportRegistration);
 			}
 		}
+		
 		// publish all activeExportRegistrations
-		for (ExportRegistration exportReg : exportRegistrations)
+		for (ExportRegistration exportReg : resultRegistrations)
 			publishExportEvent(exportReg);
 		// and return
 		return new ArrayList<org.osgi.service.remoteserviceadmin.ExportRegistration>(
-				exportRegistrations);
+				resultRegistrations);
 	}
 
 	private ExportRegistration createErrorExportRegistration(

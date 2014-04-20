@@ -175,7 +175,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		registerSchemes(socketEventSource, connectingSockets);
 	}
 
-	private void registerSchemes(ISocketEventSource source, ISocketListener socketListener) {
+	private synchronized void registerSchemes(ISocketEventSource source, ISocketListener socketListener) {
 		SchemeRegistry schemeRegistry = this.httpClient.getConnectionManager().getSchemeRegistry();
 
 		Scheme http = new Scheme(HttpClientRetrieveFileTransfer.HTTP, HTTP_PORT, new ECFHttpClientProtocolSocketFactory(SocketFactory.getDefault(), source, socketListener));

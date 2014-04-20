@@ -6,9 +6,9 @@
     <cq:property key="target.os" value="*"/>
     <cq:property key="target.ws" value="*"/>
     
-    <cq:advisorNode namePattern="^org\.eclipse\.ecf\.provider\.remoteservice(\..+)?" useTargetPlatform="false" useWorkspace="false"/>
+    <cq:advisorNode namePattern="^org\.eclipse\.ecf\.remoteservice(\..+)?" useTargetPlatform="false" useWorkspace="false"/>
     <cq:advisorNode namePattern="^org\.eclipse\.ecf\.remoteservice\.feature?" useTargetPlatform="false" useWorkspace="false"/>
-    
+
     <cq:advisorNode namePattern="^org\.eclipse\.ecf\.tests\.remoteservice?" useTargetPlatform="false" useWorkspace="false"/>
     <cq:advisorNode namePattern="^org\.eclipse\.ecf\.tests\.remoteservice\.generic?" useTargetPlatform="false" useWorkspace="false"/>
     <cq:advisorNode namePattern="^org\.eclipse\.ecf\.tests\.osgi\.services\.distribution\.generic?" useTargetPlatform="false" useWorkspace="false"/>

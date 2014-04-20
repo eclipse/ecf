@@ -9,6 +9,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -59,9 +60,14 @@ public abstract class AbstractTopologyManager {
 			new HashMap<org.osgi.service.remoteserviceadmin.EndpointDescription, ServiceRegistration<IServiceInfo>>();
 	private final ReentrantLock registrationLock;
 	
+	private boolean requireServiceExportedConfigs = new Boolean(
+			System.getProperty(
+					"org.eclipse.ecf.osgi.services.remoteserviceadmin.AbstractTopologyManager.requireServiceExportedConfigs", //$NON-NLS-1$
+					"false")).booleanValue(); //$NON-NLS-1$
+	
 	public AbstractTopologyManager(BundleContext context) {
 		serviceInfoFactoryTracker = new ServiceTracker(
-				Activator.getContext(), createISIFFilter(Activator.getContext()), null);
+				context, createISIFFilter(context), null);
 		serviceInfoFactoryTracker.open();
 		this.context = context;
 		// Use a FAIR lock here to guarantee that an endpoint removed operation
@@ -423,14 +429,25 @@ public abstract class AbstractTopologyManager {
 	}
 
 	protected void handleServiceRegistering(ServiceReference serviceReference) {
-		// Using OSGI 4.2 Chap 13 Remote Services spec, get the specified remote
+		// Using OSGI 5 Chap 13 Remote Services spec, get the specified remote
 		// interfaces for the given service reference
 		String[] exportedInterfaces = PropertiesUtil
 				.getExportedInterfaces(serviceReference);
 		// If no remote interfaces set, then we don't do anything with it
 		if (exportedInterfaces == null)
 			return;
-
+		
+		// Get serviceExportedConfigs property
+		String[] serviceExportedConfigs = PropertiesUtil
+				.getStringArrayFromPropertyValue(serviceReference
+						.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_CONFIGS));
+		// If requireServiceExportedConfigs is set to true (default is false) then if serviceExportedConfigs 
+		// is null/not set, then we don't do anything with this service registration
+		if (requireServiceExportedConfigs
+				&& (serviceExportedConfigs == null || Arrays.asList(
+						serviceExportedConfigs).size() == 0))
+			return;
+		// If we get this far, then we are going to export it
 		// prepare export properties
 		Map<String, Object> exportProperties = new TreeMap<String, Object>(
 				String.CASE_INSENSITIVE_ORDER);

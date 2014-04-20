@@ -10,13 +10,15 @@
  *****************************************************************************/
 package org.eclipse.ecf.examples.internal.remoteservices.hello.consumer2;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ecf.examples.remoteservices.hello.HelloMessage;
 import org.eclipse.ecf.examples.remoteservices.hello.IHello;
 import org.eclipse.ecf.examples.remoteservices.hello.IHelloAsync;
 import org.eclipse.ecf.osgi.services.distribution.IDistributionConstants;
 import org.eclipse.ecf.remoteservice.IAsyncCallback;
-import org.eclipse.equinox.concurrent.future.IFuture;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
@@ -94,7 +96,7 @@ public class Activator implements BundleActivator, IDistributionConstants {
 				
 				// Call asynchronously with future
 				System.out.println("STARTING async remote call via future...");
-				IFuture future = helloA.helloAsync(CONSUMER_NAME + " via async proxy with future");
+				Future<String> future = helloA.helloAsync(CONSUMER_NAME + " via async proxy with future");
 				System.out.println("LOCAL async future invocation complete");
 				System.out.println();
 				try {
@@ -104,7 +106,7 @@ public class Activator implements BundleActivator, IDistributionConstants {
 						Thread.sleep(200);
 					}
 					// Now it's done, so this will not block
-					Object result = future.get();
+					String result = future.get();
 					System.out.println("COMPLETED remote call with future SUCCEEDED with result="+result);
 					System.out.println();
 				} catch (OperationCanceledException e) {
@@ -112,6 +114,10 @@ public class Activator implements BundleActivator, IDistributionConstants {
 					System.out.println();
 					e.printStackTrace();
 				} catch (InterruptedException e) {
+					System.out.println("COMPLETED remote call with callback INTERRUPTED with exception="+e);
+					System.out.println();
+					e.printStackTrace();
+				} catch (ExecutionException e) {
 					System.out.println("COMPLETED remote call with callback INTERRUPTED with exception="+e);
 					System.out.println();
 					e.printStackTrace();
@@ -136,7 +142,7 @@ public class Activator implements BundleActivator, IDistributionConstants {
 						Thread.sleep(200);
 					}
 					// Now it's done, so this will not block
-					Object result = future.get();
+					String result = future.get();
 					System.out.println("COMPLETED remote call with future SUCCEEDED with result="+result);
 					System.out.println();
 				} catch (OperationCanceledException e) {
@@ -147,10 +153,12 @@ public class Activator implements BundleActivator, IDistributionConstants {
 					System.out.println("COMPLETED remote call with callback INTERRUPTED with exception="+e);
 					System.out.println();
 					e.printStackTrace();
+				} catch (ExecutionException e) {
+					System.out.println("COMPLETED remote call with callback INTERRUPTED with exception="+e);
+					System.out.println();
+					e.printStackTrace();
 				}
-
 			}
-			
 		}
 
 		public void modifiedService(ServiceReference<IHello> reference,

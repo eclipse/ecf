@@ -4,6 +4,8 @@
     materializer="p2" 
     url="org.eclipse.ecf.sdk.cquery">
 
+    <md:mspecNode namePattern="^org\.eclipse\.ecf\.remoteservice\.asyncproxy(\..+)?" installLocation="${targetPlatformPath}"/>
+    
     <md:mspecNode namePattern="^ch\.ethz\.iks(\..+)?" materializer="workspace"/>
     <md:mspecNode namePattern="^org\.eclipse\.team\.ecf(\..+)?" materializer="workspace"/>
     <md:mspecNode namePattern="^org\.eclipse\.ecf(\..+)?" materializer="workspace"/>
