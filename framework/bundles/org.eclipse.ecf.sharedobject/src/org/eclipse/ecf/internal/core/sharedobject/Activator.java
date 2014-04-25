@@ -63,7 +63,6 @@ public class Activator implements BundleActivator {
 		plugin = this;
 
 		SafeRunner.run(new ExtensionRegistryRunnable(context) {
-			@Override
 			protected void runWithRegistry(IExtensionRegistry registry) throws Exception {
 				if (registry != null) {
 					IExtensionPoint extensionPoint = registry.getExtensionPoint(SHAREDOBJECT_FACTORY_EPOINT);
@@ -110,7 +109,6 @@ public class Activator implements BundleActivator {
 
 	private LogService systemLogService = null;
 
-	@SuppressWarnings("unchecked")
 	protected LogService getLogService() {
 		if (context == null) {
 			if (systemLogService == null)
