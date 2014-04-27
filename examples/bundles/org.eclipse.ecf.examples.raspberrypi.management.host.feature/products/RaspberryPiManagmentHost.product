@@ -27,7 +27,6 @@
       </vmArgsMac>
    </launcherArgs>
 
-
    <launcher>
       <solaris/>
       <win useIco="false">
@@ -46,6 +45,7 @@
       <plugin id="org.apache.felix.gogo.shell"/>
       <plugin id="org.eclipse.core.jobs"/>
       <plugin id="org.eclipse.ecf"/>
+      <plugin id="org.eclipse.ecf.console"/>
       <plugin id="org.eclipse.ecf.discovery"/>
       <plugin id="org.eclipse.ecf.examples.raspberrypi.management"/>
       <plugin id="org.eclipse.ecf.examples.raspberrypi.management.host"/>
@@ -53,25 +53,20 @@
       <plugin id="org.eclipse.ecf.osgi.services.distribution"/>
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin"/>
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy"/>
+      <plugin id="org.eclipse.ecf.provider"/>
+      <plugin id="org.eclipse.ecf.provider.jmdns"/>
+      <plugin id="org.eclipse.ecf.provider.remoteservice"/>
       <plugin id="org.eclipse.ecf.remoteservice"/>
-      <plugin id="org.eclipse.ecf.remoteservice.asyncproxy"/>
+      <plugin id="org.eclipse.ecf.remoteservice.asyncproxy" version="2.0.0"/>
+      <plugin id="org.eclipse.ecf.sharedobject"/>
       <plugin id="org.eclipse.equinox.common"/>
       <plugin id="org.eclipse.equinox.concurrent"/>
       <plugin id="org.eclipse.equinox.console"/>
       <plugin id="org.eclipse.equinox.event"/>
-      <plugin id="org.eclipse.equinox.launcher"/>
       <plugin id="org.eclipse.osgi"/>
       <plugin id="org.eclipse.osgi.services"/>
       <plugin id="org.eclipse.osgi.services.remoteserviceadmin"/>
    </plugins>
-
-   <features>
-      <feature id="org.eclipse.ecf.rpi.discovery.jmdns.feature" version="1.0.0.qualifier"/>
-      <feature id="org.eclipse.ecf.rpi.equinox.feature" version="1.0.0.qualifier"/>
-      <feature id="org.eclipse.ecf.rpi.remoteservice.feature" version="1.0.0.qualifier"/>
-      <feature id="org.eclipse.ecf.rpi.remoteservice.generic.feature" version="1.0.0.qualifier"/>
-      <feature id="org.eclipse.ecf.examples.raspberrypi.management.host.feature" version="1.0.0.qualifier"/>
-   </features>
 
    <configurations>
       <plugin id="org.apache.felix.gogo.command" autoStart="true" startLevel="0" />
@@ -84,8 +79,8 @@
       <plugin id="org.eclipse.ecf.examples.raspberrypi.management.host" autoStart="true" startLevel="6" />
       <plugin id="org.eclipse.ecf.identity" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.osgi.services.distribution" autoStart="true" startLevel="5" />
-      <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin" autoStart="true" startLevel="5" />
+      <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy" autoStart="true" startLevel="5" />
       <plugin id="org.eclipse.ecf.provider" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.provider.jmdns" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.provider.remoteservice" autoStart="true" startLevel="0" />
