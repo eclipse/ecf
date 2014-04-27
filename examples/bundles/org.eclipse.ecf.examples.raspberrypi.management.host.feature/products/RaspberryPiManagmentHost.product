@@ -57,7 +57,7 @@
       <plugin id="org.eclipse.ecf.provider.jmdns"/>
       <plugin id="org.eclipse.ecf.provider.remoteservice"/>
       <plugin id="org.eclipse.ecf.remoteservice"/>
-      <plugin id="org.eclipse.ecf.remoteservice.asyncproxy" version="2.0.0"/>
+      <plugin id="org.eclipse.ecf.remoteservice.asyncproxy" version="2.0.0.v20140410-1838"/>
       <plugin id="org.eclipse.ecf.sharedobject"/>
       <plugin id="org.eclipse.equinox.common"/>
       <plugin id="org.eclipse.equinox.concurrent"/>
@@ -74,6 +74,7 @@
       <plugin id="org.apache.felix.gogo.shell" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.core.jobs" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.ecf.console" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.discovery" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.examples.raspberrypi.management" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.examples.raspberrypi.management.host" autoStart="true" startLevel="6" />
