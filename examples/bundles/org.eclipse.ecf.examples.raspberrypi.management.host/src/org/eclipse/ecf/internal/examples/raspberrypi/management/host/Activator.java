@@ -46,7 +46,7 @@ public class Activator implements BundleActivator {
 	@Override
 	public void stop(BundleContext context) throws Exception {
 		registration.unregister();
-		System.out.println("IRaspberryPi registration unregistered");
+		System.out.println("IRaspberryPi remote service unregistered");
 	}
 
 }

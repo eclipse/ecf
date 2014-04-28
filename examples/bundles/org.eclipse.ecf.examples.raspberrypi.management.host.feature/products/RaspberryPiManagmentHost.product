@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="ECF RaspberryPi Remote Service Example" uid="org.eclipse.ecf.examples.raspberrypi.management.host.feature" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="false">
+<product name="ECF RaspberryPi Remote Service Example" uid="org.eclipse.ecf.examples.raspberrypi.management.host.feature" version="1.0.0.qualifier" useFeatures="true" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>
@@ -67,6 +67,10 @@
       <plugin id="org.eclipse.osgi.services"/>
       <plugin id="org.eclipse.osgi.services.remoteserviceadmin"/>
    </plugins>
+
+   <features>
+      <feature id="org.eclipse.ecf.examples.raspberrypi.management.host.feature" version="1.0.0.qualifier"/>
+   </features>
 
    <configurations>
       <plugin id="org.apache.felix.gogo.command" autoStart="true" startLevel="0" />
