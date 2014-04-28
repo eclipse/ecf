@@ -27,8 +27,7 @@ public class RaspberryPi implements IRaspberryPi {
 		for (final String name: props.stringPropertyNames())
 		    result.put(name, props.getProperty(name));
 		
-		System.out.println("REMOTE getSystemProperties().  Returning="+result);
-		
+		System.out.println("REMOTE CALL: getSystemProperties()");
 		return result;
 	}
 

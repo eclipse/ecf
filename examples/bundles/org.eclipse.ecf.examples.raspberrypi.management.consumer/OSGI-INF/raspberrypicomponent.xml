@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" enabled="true" name="org.eclipse.ecf.examples.raspberrypi.management.consumer">
+   <implementation class="org.eclipse.ecf.internal.examples.raspberrypi.management.consumer.RaspberryPiComponent"/>
+   <reference bind="bindRaspberryPi" cardinality="0..n" interface="org.eclipse.ecf.examples.raspberrypi.management.IRaspberryPiAsync" name="IRaspberryPiAsync" policy="dynamic"/>
+</scr:component>
