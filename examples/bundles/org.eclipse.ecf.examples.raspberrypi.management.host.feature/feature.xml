@@ -108,13 +108,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.ecf.provider.jmdns"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.ecf.remoteservice"
          download-size="0"
          install-size="0"
@@ -193,6 +186,20 @@
 
    <plugin
          id="org.eclipse.ecf.provider.remoteservice"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="ch.ethz.iks.slp"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.ecf.provider.jslp"
          download-size="0"
          install-size="0"
          version="0.0.0"
