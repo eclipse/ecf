@@ -36,6 +36,8 @@ public class PropertiesUtil {
 					// OSGi properties
 					org.osgi.framework.Constants.OBJECTCLASS,
 					org.osgi.framework.Constants.SERVICE_ID,
+					org.osgi.framework.Constants.SERVICE_BUNDLEID,
+					org.osgi.framework.Constants.SERVICE_SCOPE,
 					org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID,
 					org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
 					org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID,
