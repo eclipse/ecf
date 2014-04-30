@@ -36,6 +36,11 @@ public class PropertiesUtil {
 					// OSGi properties
 					org.osgi.framework.Constants.OBJECTCLASS,
 					org.osgi.framework.Constants.SERVICE_ID,
+					// Adding these for bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=433799
+					// Adding them as strings because old version of Constants class (pre R6)
+					// Don't have them
+					"service.bundleid", //$NON-NLS-1$ 
+					"service.scope", //$NON-NLS-1$
 					org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID,
 					org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
 					org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID,

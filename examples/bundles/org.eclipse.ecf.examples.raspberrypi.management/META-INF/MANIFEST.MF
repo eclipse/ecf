@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Raspberry Pi Management API
+Bundle-SymbolicName: org.eclipse.ecf.examples.raspberrypi.management
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Eclipse.org - ECF
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: org.eclipse.ecf.examples.raspberrypi.management;version="1.0.0"

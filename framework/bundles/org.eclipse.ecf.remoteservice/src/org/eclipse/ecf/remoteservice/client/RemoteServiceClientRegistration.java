@@ -114,6 +114,8 @@ public class RemoteServiceClientRegistration implements IRemoteServiceRegistrati
 			for (int j = 0; j < subArray.length; j++) {
 				IRemoteCallable def = subArray[j];
 				String defMethod = def.getMethod();
+				if (defMethod != null && defMethod.equals(methodToFind))
+					return def;
 				String fqDefMethod = getFQMethod(className, defMethod);
 				if (fqDefMethod.equals(methodToFind))
 					return def;

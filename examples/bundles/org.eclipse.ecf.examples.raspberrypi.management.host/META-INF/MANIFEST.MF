@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Raspberry Pi Management Remote Service Host
+Bundle-SymbolicName: org.eclipse.ecf.examples.raspberrypi.management.host
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Eclipse.org - ECF
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-Activator: org.eclipse.ecf.internal.examples.raspberrypi.management.host.Activator
+Import-Package: org.eclipse.ecf.examples.raspberrypi.management,
+ org.osgi.framework;version="1.8.0"

@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Raspberry Pi Management Consumer
+Bundle-SymbolicName: org.eclipse.ecf.examples.raspberrypi.management.consumer
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Eclipse.org - ECF
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Import-Package: org.eclipse.ecf.examples.raspberrypi.management;version="1.0.0"
+Service-Component: OSGI-INF/raspberrypicomponent.xml
+Bundle-ActivationPolicy: lazy
