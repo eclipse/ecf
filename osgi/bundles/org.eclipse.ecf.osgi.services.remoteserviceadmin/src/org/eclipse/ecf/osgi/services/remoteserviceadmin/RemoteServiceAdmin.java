@@ -1004,9 +1004,13 @@ public class RemoteServiceAdmin implements
 			return importReference.getException();
 		}
 
-		public void update(
+		public boolean update(
 				org.osgi.service.remoteserviceadmin.EndpointDescription endpoint) {
-			if (!closed) importReference.update(endpoint);
+			if (closed) return false;
+			org.osgi.service.remoteserviceadmin.ImportReference ir = getImportReference();
+			if (ir == null) return false;
+			importReference.update(endpoint);
+			return true;
 		}
 
 	}
