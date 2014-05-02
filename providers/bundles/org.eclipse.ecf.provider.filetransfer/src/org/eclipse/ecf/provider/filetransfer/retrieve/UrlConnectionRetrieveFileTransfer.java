@@ -114,9 +114,14 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 		if (this.bytesReceived <= 0 || this.fileLength <= this.bytesReceived)
 			throw new IOException(Messages.UrlConnectionRetrieveFileTransfer_RESUME_START_ERROR);
 		setRangeHeader("bytes=" + this.bytesReceived + "-"); //$NON-NLS-1$ //$NON-NLS-2$
-		// set max-age for cache control to 0 for bug
-		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=249990
-		urlConnection.setRequestProperty("Cache-Control", "max-age=0"); //$NON-NLS-1$//$NON-NLS-2$
+		int maxAge = Integer.getInteger("org.eclipse.ecf.http.cache.max-age", 0).intValue(); //$NON-NLS-1$
+		// set max-age for cache control to 0 for bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=249990
+		// fix the fix for bug 249990 with bug 410813
+		if (maxAge == 0) {
+			urlConnection.setRequestProperty("Cache-Control", "max-age=0"); //$NON-NLS-1$//$NON-NLS-2$
+		} else if (maxAge > 0) {
+			urlConnection.setRequestProperty("Cache-Control", "max-age=" + maxAge); //$NON-NLS-1$//$NON-NLS-2$
+		}
 		setRequestHeaderValuesFromOptions();
 	}
 
@@ -154,9 +159,14 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 		// also see http 1.1 rfc section 14-10 in
 		// http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
 		urlConnection.setRequestProperty("Connection", "close"); //$NON-NLS-1$ //$NON-NLS-2$
-		// set max-age for cache control to 0 for bug
-		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=249990
-		urlConnection.setRequestProperty("Cache-Control", "max-age=0"); //$NON-NLS-1$//$NON-NLS-2$
+		int maxAge = Integer.getInteger("org.eclipse.ecf.http.cache.max-age", 0).intValue(); //$NON-NLS-1$
+		// set max-age for cache control to 0 for bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=249990
+		// fix the fix for bug 249990 with bug 410813
+		if (maxAge == 0) {
+			urlConnection.setRequestProperty("Cache-Control", "max-age=0"); //$NON-NLS-1$//$NON-NLS-2$
+		} else if (maxAge > 0) {
+			urlConnection.setRequestProperty("Cache-Control", "max-age=" + maxAge); //$NON-NLS-1$//$NON-NLS-2$
+		}
 		setRequestHeaderValuesFromOptions();
 	}
 
