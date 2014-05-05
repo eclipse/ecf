@@ -43,7 +43,7 @@
 	        	<exclude name="**/collab/**"/>
 	        	<exclude name="**/osgi/services/discovery/**"/>
 	        	<exclude name="**/com/mycorp/examples/timeservice/**"/>
-	        	<exclude name="**/j8/**"/>
+	        	<exclude name="**/org.eclipse.ecf.remoteservice.asyncproxy.j8/**"/>
 	        	<exclude name="**/org.eclipse.ecf.remoteservices.tooling.pde/templates/**"/>
         	</fileset>
     	</javadoc>
