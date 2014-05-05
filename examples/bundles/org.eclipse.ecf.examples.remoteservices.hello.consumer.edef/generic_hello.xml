@@ -7,7 +7,7 @@
     <property name="endpoint.framework.uuid" value-type="String" value="70cd3d4b-4931-0010-1b63-d64101cefd5e"/>
     <property name="endpoint.id" value-type="String" value="87d3ef4f-8e8f-4187-873e-166dcc58c9ed"/>
     <property name="endpoint.service.id" value-type="Long" value="0"/>
-	<property name="endpoint.package.version.org.eclipse.ecf.examples.remoteservices.hello" value-type="String" value="3.0.0"/>
+	<property name="endpoint.package.version.org.eclipse.ecf.examples.remoteservices.hello" value-type="String" value="4.0.0"/>
     <property name="objectClass" value-type="String">
       <array>
         <value>org.eclipse.ecf.examples.remoteservices.hello.IHello</value>
