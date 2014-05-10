@@ -361,8 +361,14 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			Trace.trace(Activator.PLUGIN_ID, "retrieve range header=" + rangeHeader); //$NON-NLS-1$
 			setRangeHeader(rangeHeader);
 		}
+		int maxAge = Integer.getInteger("org.eclipse.ecf.http.cache.max-age", 0); //$NON-NLS-1$
 		// set max-age for cache control to 0 for bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=249990
-		getMethod.addHeader("Cache-Control", "max-age=0"); //$NON-NLS-1$//$NON-NLS-2$
+		// fix the fix for bug 249990 with bug 410813
+		if (maxAge == 0) {
+			getMethod.addHeader("Cache-Control", "max-age=0"); //$NON-NLS-1$//$NON-NLS-2$
+		} else if (maxAge > 0) {
+			getMethod.addHeader("Cache-Control", "max-age=" + maxAge); //$NON-NLS-1$//$NON-NLS-2$
+		}
 		setRequestHeaderValuesFromOptions();
 	}
 
@@ -815,8 +821,14 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		if (this.bytesReceived <= 0 || this.fileLength <= this.bytesReceived)
 			throw new IOException(Messages.HttpClientRetrieveFileTransfer_RESUME_START_ERROR);
 		setRangeHeader("bytes=" + this.bytesReceived + "-"); //$NON-NLS-1$ //$NON-NLS-2$
+		int maxAge = Integer.getInteger("org.eclipse.ecf.http.cache.max-age", 0); //$NON-NLS-1$
 		// set max-age for cache control to 0 for bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=249990
-		getMethod.addHeader("Cache-Control", "max-age=0"); //$NON-NLS-1$//$NON-NLS-2$
+		// fix the fix for bug 249990 with bug 410813
+		if (maxAge == 0) {
+			getMethod.addHeader("Cache-Control", "max-age=0"); //$NON-NLS-1$//$NON-NLS-2$
+		} else if (maxAge > 0) {
+			getMethod.addHeader("Cache-Control", "max-age=" + maxAge); //$NON-NLS-1$//$NON-NLS-2$
+		}
 		setRequestHeaderValuesFromOptions();
 	}
 
