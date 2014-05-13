@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.ecf.core.featurepatch"
-      label="ECF Filetransfer Patch for Eclipse 4.3"
+      label="ECF Patch for Eclipse Kepler (4.3).  Not needed for Eclipse Luna (4.4)."
       version="3.8.1.qualifier"
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
       This feature provides a patch update of the ECF Core and Filetransfer
-bundles.  Use this feature to update ECF core, identity, and filetransfer bundles within Eclipse.
+bundles.  Use this feature to update ECF core, identity, and filetransfer bundles within Eclipse Kepler.  Not 
+needed for Eclipse Luna (4.4) or beyond.
    </description>
 
    <copyright>
