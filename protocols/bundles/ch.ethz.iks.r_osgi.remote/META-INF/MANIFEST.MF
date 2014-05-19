@@ -2,9 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: ch.ethz.iks.r_osgi.remote
-Bundle-Version: 1.0.0.RC4_qualifier
+Bundle-Version: 1.0.1.RC1_qualifier
 Bundle-Vendor: %plugin.provider
-Import-Package: org.objectweb.asm;version="[3.1.0,4.0.0)",
+Import-Package: org.objectweb.asm;version="[5.0.1,6.0.0)",
  org.osgi.framework,
  org.osgi.service.event,
  org.osgi.service.log,
