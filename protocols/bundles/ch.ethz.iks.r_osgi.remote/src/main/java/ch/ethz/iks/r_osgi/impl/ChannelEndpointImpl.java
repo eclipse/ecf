@@ -820,10 +820,6 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 				proxyBundles.put(ref.getURI().getFragment(), bundle);
 			}
 			
-			// FIXME: debug output
-			System.err.println(RemoteOSGiActivator.getActivator().getContext().getDataFile("fii").getAbsolutePath());
-
-			
 			// start the bundle
 			bundle.start();			
 			
