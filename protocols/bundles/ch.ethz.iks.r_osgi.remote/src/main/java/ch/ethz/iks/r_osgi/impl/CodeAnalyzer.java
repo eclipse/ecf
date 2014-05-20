@@ -245,8 +245,6 @@ final class CodeAnalyzer extends ClassVisitor {
 			}
 		}
 
-		System.out.println("INJECTIONS: " + injections);
-
 		final DeliverServiceMessage message = new DeliverServiceMessage();
 		message.setInterfaceNames(ifaces);
 		message.setSmartProxyName(smartProxy);
