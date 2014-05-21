@@ -44,7 +44,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
@@ -85,6 +84,7 @@ import ch.ethz.iks.r_osgi.streams.InputStreamProxy;
 import ch.ethz.iks.r_osgi.streams.OutputStreamHandle;
 import ch.ethz.iks.r_osgi.streams.OutputStreamProxy;
 import ch.ethz.iks.util.CollectionUtils;
+import ch.ethz.iks.util.StringUtils;
 
 /**
  * <p>
@@ -819,10 +819,10 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 				// store the bundle for state updates and cleanup
 				proxyBundles.put(ref.getURI().getFragment(), bundle);
 			}
-
+			
 			// start the bundle
-			bundle.start();
-
+			bundle.start();			
+			
 		} catch (final BundleException e) {
 			final Throwable nested = e.getNestedException() == null ? e : e
 					.getNestedException();
@@ -866,13 +866,14 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	 */
 	private String[] getTokens(final String str) {
 		final ArrayList result = new ArrayList();
-		final StringTokenizer tokenizer = new StringTokenizer(str, ",");
-		while (tokenizer.hasMoreTokens()) {
-			final String token = tokenizer.nextToken();
+		//final StringTokenizer tokenizer = new StringTokenizer(str, ",");
+		final String[] tokens = StringUtils.stringToArray(str, ",");
+		
+		for (int i=0; i<tokens.length; i++) {
 			final int pos;
 			// TODO: handle versions for R4!
-			final String pkg = (pos = token.indexOf(";")) > -1 ? token
-					.substring(0, pos).trim() : token.trim();
+			final String pkg = (pos = tokens[i].indexOf(";")) > -1 ? tokens[i]
+					.substring(0, pos).trim() : tokens[i].trim();
 			if (!RemoteOSGiServiceImpl.checkPackageImport(pkg)) {
 				result.add(pkg);
 			}

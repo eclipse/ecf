@@ -50,7 +50,7 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
          id="org.objectweb.asm"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="5.0.1.v201404251740"
          unpack="false"/>
 
 </feature>

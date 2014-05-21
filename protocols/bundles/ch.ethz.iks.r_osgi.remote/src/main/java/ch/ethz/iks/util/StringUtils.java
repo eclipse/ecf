@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * String utilities.
@@ -58,34 +57,65 @@ public final class StringUtils {
 	 * @return the array of strings.
 	 * @since 0.2
 	 */
-	public static String[] stringToArray(final String data, final String delim) {
-		final StringTokenizer tokenizer = new StringTokenizer(data, delim);
-		final String[] tokens = new String[tokenizer.countTokens()];
-		final int tokenCount = tokenizer.countTokens();
-		for (int i = 0; i < tokenCount; i++) {
-			tokens[i] = tokenizer.nextToken().trim();
+	public static String[] stringToArray(final String data,
+			final String delim) {
+
+		if (data == null) {
+			return new String[0];
 		}
 
-		return tokens;
+		final List tokens = new ArrayList(data.length() / 10);
+		int pointer = 0;
+		int quotePointer = 0;
+		int tokenStart = 0;
+		int nextDelimiter;
+		while ((nextDelimiter = data.indexOf(delim, pointer)) > -1) {
+			final int openingQuote = data.indexOf("\"", quotePointer);
+			int closingQuote = data.indexOf("\"", openingQuote + 1);
+			if (openingQuote > closingQuote) {
+				throw new IllegalArgumentException(
+						"Missing closing quotation mark.");
+			}
+			if (openingQuote > -1 && openingQuote < nextDelimiter
+					&& closingQuote < nextDelimiter) {
+				quotePointer = ++closingQuote;
+				continue;
+			}
+			if (openingQuote < nextDelimiter && nextDelimiter < closingQuote) {
+				pointer = ++closingQuote;
+				continue;
+			}
+			// TODO: for performance, fold the trim into the splitting
+			tokens.add(data.substring(tokenStart, nextDelimiter).trim());
+			pointer = ++nextDelimiter;
+			quotePointer = pointer;
+			tokenStart = pointer;
+		}
+		tokens.add(data.substring(tokenStart).trim());
+		return (String[]) tokens.toArray(new String[tokens.size()]);
 	}
 
 	/**
 	 * R \ L (comparison operation allows wildcards)
-	 * @param left A set of matchers (supports wildcard at end)
-	 * @param right A set of inputs
-	 * @return The subset of right with all elements removed matching left 
+	 * 
+	 * @param left
+	 *            A set of matchers (supports wildcard at end)
+	 * @param right
+	 *            A set of inputs
+	 * @return The subset of right with all elements removed matching left
 	 * @since 1.0
 	 */
 	public static Collection rightDifference(Collection left, Collection right) {
 		// This is O(n²) due to substring (wildcard) matching
 		// It's also quick and dirty (better use pattern matcher instead)
 		// TODO use pattern matcher
-		// (pattern matcher would increase the BREE dependency, but we could hide
-		// the FilterUtils implementation behind an interface and provide different
+		// (pattern matcher would increase the BREE dependency, but we could
+		// hide
+		// the FilterUtils implementation behind an interface and provide
+		// different
 		// service implementations)
 		// A trie would also allow for faster lookup.
 
-		
 		// Have to convert c1 into List to support remove operation
 		final List result = new ArrayList(right);
 
