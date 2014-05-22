@@ -26,11 +26,18 @@ import org.eclipse.osgi.util.NLS;
  */
 public class ScpUtil implements UserInfo, UIKeyboardInteractive {
 
-	public static final String SCP_SSHHOMEDIRECTORY = "sshHomeDirectory"; //$NON-NLS-1$
-	public static final String SCP_PUBLICKEYFILE = "keyFile"; //$NON-NLS-1$
-	public static final String SCP_KNOWNHOSTSFILE = "knownHostsFile"; //$NON-NLS-1$
+	public static final String SCP_SSHHOMEDIRECTORY = System
+			.getProperty(
+					"org.eclipse.ecf.filetransfer.scp.util.sshHomeDirectory", "sshHomeDirectory"); //$NON-NLS-1$
+	public static final String SCP_PUBLICKEYFILE = System.getProperty(
+			"org.eclipse.ecf.filetransfer.scp.util.keyFile", "keyFile"); //$NON-NLS-1$
+	public static final String SCP_KNOWNHOSTSFILE = System
+			.getProperty(
+					"org.eclipse.ecf.filetransfer.scp.util.knownHostsFile", "knownHostsFile"); //$NON-NLS-1$
 
-	public static final int DEFAULT_SCP_PORT = 22;
+	public static final int DEFAULT_SCP_PORT = Integer
+			.parseInt(System.getProperty(
+					"org.eclipse.ecf.filetransfer.scp.util.scpPort", "22"));
 
 	private IScpFileTransfer handler;
 	private String password;
@@ -41,7 +48,8 @@ public class ScpUtil implements UserInfo, UIKeyboardInteractive {
 	private String keyFile = null;
 	private String knownHostsFile = null;
 
-	public ScpUtil(IScpFileTransfer handler) throws JSchException, IOException, UnsupportedCallbackException {
+	public ScpUtil(IScpFileTransfer handler) throws JSchException, IOException,
+			UnsupportedCallbackException {
 		this.handler = handler;
 		final JSch jsch = new JSch();
 		final URL url = handler.getTargetURL();
@@ -65,15 +73,18 @@ public class ScpUtil implements UserInfo, UIKeyboardInteractive {
 	void promptUsername() throws IOException, UnsupportedCallbackException {
 		final IConnectContext connectContext = handler.getConnectContext();
 		if (connectContext != null) {
-			final CallbackHandler callbackHandler = connectContext.getCallbackHandler();
+			final CallbackHandler callbackHandler = connectContext
+					.getCallbackHandler();
 			if (handler != null) {
 				final Callback[] callbacks = new Callback[2];
-				final NameCallback nc = new NameCallback(Messages.ScpOutgoingFileTransfer_USERNAME_PROMPT);
+				final NameCallback nc = new NameCallback(
+						Messages.ScpOutgoingFileTransfer_USERNAME_PROMPT);
 				String user = handler.getUsername();
 				if (user != null)
 					nc.setName(user);
 				callbacks[0] = nc;
-				callbacks[1] = new PasswordCallback(Messages.ScpOutgoingFileTransfer_PASSWORD_PROMPT);
+				callbacks[1] = new PasswordCallback(
+						Messages.ScpOutgoingFileTransfer_PASSWORD_PROMPT);
 				callbackHandler.handle(callbacks);
 				handler.setUsername(nc.getName());
 			}
@@ -84,24 +95,30 @@ public class ScpUtil implements UserInfo, UIKeyboardInteractive {
 		try {
 			final IConnectContext connectContext = handler.getConnectContext();
 			if (connectContext != null) {
-				final CallbackHandler callbackHandler = connectContext.getCallbackHandler();
+				final CallbackHandler callbackHandler = connectContext
+						.getCallbackHandler();
 				if (handler != null) {
 					final Callback[] callbacks = new Callback[2];
-					final NameCallback nc = new NameCallback(Messages.ScpOutgoingFileTransfer_USERNAME_PROMPT);
+					final NameCallback nc = new NameCallback(
+							Messages.ScpOutgoingFileTransfer_USERNAME_PROMPT);
 					String user = handler.getUsername();
 					if (user != null)
 						nc.setName(user);
 					callbacks[0] = nc;
 					if (usePassphrase) {
-						callbacks[1] = new PassphraseCallback(Messages.ScpOutgoingFileTransfer_PASSPHRASE_PROMPT);
+						callbacks[1] = new PassphraseCallback(
+								Messages.ScpOutgoingFileTransfer_PASSPHRASE_PROMPT);
 					} else
-						callbacks[1] = new PasswordCallback(Messages.ScpOutgoingFileTransfer_PASSWORD_PROMPT);
+						callbacks[1] = new PasswordCallback(
+								Messages.ScpOutgoingFileTransfer_PASSWORD_PROMPT);
 					callbackHandler.handle(callbacks);
 					handler.setUsername(nc.getName());
 					if (usePassphrase) {
-						passphrase = ((PassphraseCallback) callbacks[1]).getPassphrase();
+						passphrase = ((PassphraseCallback) callbacks[1])
+								.getPassphrase();
 					} else
-						password = ((PasswordCallback) callbacks[1]).getPassword();
+						password = ((PasswordCallback) callbacks[1])
+								.getPassword();
 				}
 			}
 			return (usePassphrase) ? this.passphrase : this.password;
@@ -110,54 +127,72 @@ public class ScpUtil implements UserInfo, UIKeyboardInteractive {
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.jcraft.jsch.UserInfo#getPassphrase()
 	 */
 	public String getPassphrase() {
 		return promptCredentials(true);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.jcraft.jsch.UserInfo#getPassword()
 	 */
 	public String getPassword() {
 		return promptCredentials(false);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.jcraft.jsch.UserInfo#promptPassphrase(java.lang.String)
 	 */
 	public boolean promptPassphrase(String message) {
 		return (keyFile != null);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.jcraft.jsch.UserInfo#promptPassword(java.lang.String)
 	 */
 	public boolean promptPassword(String message) {
 		return true;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.jcraft.jsch.UserInfo#promptYesNo(java.lang.String)
 	 */
 	public boolean promptYesNo(String message) {
 		return true;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.jcraft.jsch.UserInfo#showMessage(java.lang.String)
 	 */
 	public void showMessage(String message) {
 		// do nothing
 	}
 
-	/* (non-Javadoc)
-	 * @see com.jcraft.jsch.UIKeyboardInteractive#promptKeyboardInteractive(java.lang.String, java.lang.String, java.lang.String, java.lang.String[], boolean[])
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.jcraft.jsch.UIKeyboardInteractive#promptKeyboardInteractive(java.
+	 * lang.String, java.lang.String, java.lang.String, java.lang.String[],
+	 * boolean[])
 	 */
-	public String[] promptKeyboardInteractive(String destination, String name, String instruction, String[] prompt, boolean[] echo) {
+	public String[] promptKeyboardInteractive(String destination, String name,
+			String instruction, String[] prompt, boolean[] echo) {
 		promptCredentials(false);
-		return new String[] {password};
+		return new String[] { password };
 	}
 
 	/**
@@ -217,7 +252,14 @@ public class ScpUtil implements UserInfo, UIKeyboardInteractive {
 			try {
 				jsch.addIdentity(keyFile);
 			} catch (final JSchException e) {
-				Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, Messages.ScpOutgoingFileTransfer_EXCEPTION_SETTING_SSH_IDENTITY, e));
+				Activator
+						.getDefault()
+						.log(new Status(
+								IStatus.ERROR,
+								Activator.PLUGIN_ID,
+								IStatus.ERROR,
+								Messages.ScpOutgoingFileTransfer_EXCEPTION_SETTING_SSH_IDENTITY,
+								e));
 			}
 		}
 		knownHostsFile = getProperty(SCP_KNOWNHOSTSFILE);
@@ -236,7 +278,14 @@ public class ScpUtil implements UserInfo, UIKeyboardInteractive {
 			try {
 				jsch.setKnownHosts(knownHostsFile);
 			} catch (final JSchException e) {
-				Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, Messages.ScpOutgoingFileTransfer_EXCEPTION_SETTING_KNOWN_HOSTS, e));
+				Activator
+						.getDefault()
+						.log(new Status(
+								IStatus.ERROR,
+								Activator.PLUGIN_ID,
+								IStatus.ERROR,
+								Messages.ScpOutgoingFileTransfer_EXCEPTION_SETTING_KNOWN_HOSTS,
+								e));
 			}
 		}
 	}
@@ -256,8 +305,6 @@ public class ScpUtil implements UserInfo, UIKeyboardInteractive {
 	}
 
 	String trimTargetFile(String string) {
-		if (string.charAt(0) == '/')
-			return string.substring(1);
 		return string;
 	}
 
@@ -279,10 +326,12 @@ public class ScpUtil implements UserInfo, UIKeyboardInteractive {
 				sb.append((char) c);
 			} while (c != '\n');
 			if (b == 1) { // error
-				throw new IOException(NLS.bind(Messages.ScpUtil_SCP_ERROR, sb.toString()));
+				throw new IOException(NLS.bind(Messages.ScpUtil_SCP_ERROR,
+						sb.toString()));
 			}
 			if (b == 2) { // fatal error
-				throw new IOException(NLS.bind(Messages.ScpUtil_SCP_ERROR, sb.toString()));
+				throw new IOException(NLS.bind(Messages.ScpUtil_SCP_ERROR,
+						sb.toString()));
 			}
 		}
 

@@ -28,13 +28,14 @@ import org.eclipse.ecf.tests.ContainerAbstractTestCase;
  */
 public class SCPOutgoingTest extends ContainerAbstractTestCase {
 
-	private static final String TESTSRCFILE = "test.txt"; //$NON-NLS-1$
+	String sendFile = System.getProperty("sendFile", "test.txt"); //$NON-NLS-1$ //$NON-NLS-2$
+
+	String host = System.getProperty("host", "localhost"); //$NON-NLS-1$ //$NON-NLS-2$
+	String file = System.getProperty("file", "test.txt"); //$NON-NLS-1$ //$NON-NLS-2$
 
 	// URL (example:  scp://slewis@ecf1.osuosl.org/test.txt 
 	String username = System.getProperty("username", "nobody"); //$NON-NLS-1$ //$NON-NLS-2$
 	String password = System.getProperty("password", "password"); //$NON-NLS-1$ //$NON-NLS-2$
-
-	String host = System.getProperty("host", "localhost"); //$NON-NLS-1$ //$NON-NLS-2$
 
 	protected ISendFileTransferContainerAdapter adapter = null;
 	protected IFileTransferListener senderTransferListener = null;
@@ -61,11 +62,11 @@ public class SCPOutgoingTest extends ContainerAbstractTestCase {
 	}
 
 	public void testSend() throws Exception {
-		String targetURL = "scp://" + username + "@" + host + "/" + TESTSRCFILE; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		String targetURL = "scp://" + username + "@" + host + (file.startsWith("/") ? "" : "/") + file; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 		System.out.println("Sending to " + targetURL); //$NON-NLS-1$
 		final IFileID targetID = FileIDFactory.getDefault().createFileID(adapter.getOutgoingNamespace(), new URL(targetURL));
 		adapter.setConnectContextForAuthentication(ConnectContextFactory.createPasswordConnectContext(password));
-		adapter.sendOutgoingRequest(targetID, new File(TESTSRCFILE), senderTransferListener, null);
+		adapter.sendOutgoingRequest(targetID, new File(sendFile), senderTransferListener, null);
 
 		sleep(10000);
 	}

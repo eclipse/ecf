@@ -27,10 +27,14 @@ import org.eclipse.osgi.util.NLS;
 /**
  *
  */
-public class ScpOutgoingFileTransfer extends AbstractOutgoingFileTransfer implements IScpFileTransfer {
+public class ScpOutgoingFileTransfer extends AbstractOutgoingFileTransfer
+		implements IScpFileTransfer {
 
-	private static final String SCP_COMMAND = "scp -p -t "; //$NON-NLS-1$
-	private static final String SCP_EXEC = "exec"; //$NON-NLS-1$
+	private static final String SCP_COMMAND = System
+			.getProperty(
+					"org.eclipse.ecf.filetransfer.scp.outgoing.scpcommand", "scp -p -t "); //$NON-NLS-1$; //$NON-NLS-1$
+	private static final String SCP_EXEC = System.getProperty(
+			"org.eclipse.ecf.filetransfer.scp.outgoing.scpcommand", "exec"); //$NON-NLS-1$
 
 	String username;
 
@@ -39,14 +43,19 @@ public class ScpOutgoingFileTransfer extends AbstractOutgoingFileTransfer implem
 	private InputStream responseStream;
 	private ScpUtil scpUtil;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.filetransfer.outgoing.AbstractOutgoingFileTransfer#openStreams()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.provider.filetransfer.outgoing.AbstractOutgoingFileTransfer
+	 * #openStreams()
 	 */
 	protected void openStreams() throws SendFileTransferException {
 		try {
 			final File localFile = getFileTransferInfo().getFile();
 			// Set input stream from local file
-			setInputStream(new BufferedInputStream(new FileInputStream(localFile)));
+			setInputStream(new BufferedInputStream(new FileInputStream(
+					localFile)));
 			final URL url = getRemoteFileURL();
 			this.username = url.getUserInfo();
 			scpUtil = new ScpUtil(this);
@@ -63,7 +72,9 @@ public class ScpOutgoingFileTransfer extends AbstractOutgoingFileTransfer implem
 			sendFileNameAndSize(localFile, targetFileName, outs, responseStream);
 			setOutputStream(outs);
 		} catch (final Exception e) {
-			throw new SendFileTransferException(NLS.bind(Messages.ScpOutgoingFileTransfer_EXCEPTION_CONNECTING, getRemoteFileURL().toString()), e);
+			throw new SendFileTransferException(NLS.bind(
+					Messages.ScpOutgoingFileTransfer_EXCEPTION_CONNECTING,
+					getRemoteFileURL().toString()), e);
 		}
 
 	}
@@ -80,29 +91,31 @@ public class ScpOutgoingFileTransfer extends AbstractOutgoingFileTransfer implem
 		return this.proxy;
 	}
 
-	private void sendFileNameAndSize(File localFile, String fileName, OutputStream outs, InputStream ins) throws IOException {
+	private void sendFileNameAndSize(File localFile, String fileName,
+			OutputStream outs, InputStream ins) throws IOException {
 		// send "C0644 filesize filename", where filename should not include '/'
 		final long filesize = localFile.length();
 		String[] targetFile = StringUtils.split(fileName, '/');
 		final StringBuffer command = new StringBuffer("C0644 "); //$NON-NLS-1$
-		command.append(filesize).append(" ").append(targetFile[targetFile.length - 1]).append("\n"); //$NON-NLS-1$ //$NON-NLS-2$
+		command.append(filesize)
+				.append(" ").append(targetFile[targetFile.length - 1]).append("\n"); //$NON-NLS-1$ //$NON-NLS-2$
 		outs.write(command.toString().getBytes());
 		outs.flush();
 		scpUtil.checkAck(ins);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.filetransfer.outgoing.AbstractOutgoingFileTransfer#hardClose()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.provider.filetransfer.outgoing.AbstractOutgoingFileTransfer
+	 * #hardClose()
 	 */
 	protected void hardClose() {
 		try {
 			if (scpUtil != null) {
 				scpUtil.sendZeroToStream(remoteFileContents);
 				scpUtil.checkAck(responseStream);
-			}
-			if (remoteFileContents != null) {
-				remoteFileContents.close();
-				remoteFileContents = null;
 			}
 			if (channel != null) {
 				channel.disconnect();
@@ -119,29 +132,42 @@ public class ScpOutgoingFileTransfer extends AbstractOutgoingFileTransfer implem
 		super.hardClose();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.filetransfer.outgoing.AbstractOutgoingFileTransfer#setupProxy(org.eclipse.ecf.core.util.Proxy)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.provider.filetransfer.outgoing.AbstractOutgoingFileTransfer
+	 * #setupProxy(org.eclipse.ecf.core.util.Proxy)
 	 */
 	protected void setupProxy(Proxy proxy) {
 		this.proxy = proxy;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.filetransfer.scp.IScpFileTransfer#getUsername()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.provider.filetransfer.scp.IScpFileTransfer#getUsername()
 	 */
 	public String getUsername() {
 		return username;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.internal.provider.filetransfer.scp.IScpFileTransfer#getConnectContext()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.internal.provider.filetransfer.scp.IScpFileTransfer#
+	 * getConnectContext()
 	 */
 	public IConnectContext getConnectContext() {
 		return connectContext;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.internal.provider.filetransfer.scp.IScpFileTransfer#setUsername(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.internal.provider.filetransfer.scp.IScpFileTransfer#
+	 * setUsername(java.lang.String)
 	 */
 	public void setUsername(String username) {
 		this.username = username;

@@ -77,8 +77,8 @@ public class FileTransferID extends BaseID implements IFileID {
 	}
 
 	protected String getFileNameOnly() {
-		final String path = this.fileURL.getPath();
-		return path.substring(path.lastIndexOf("/") + 1); //$NON-NLS-1$;
+		String path = (fileURI != null) ? fileURI.getPath() : fileURL.getPath();
+		return (path == null) ? null : path.substring(path.lastIndexOf("/") + 1); //$NON-NLS-1$;
 	}
 
 	public String toString() {
