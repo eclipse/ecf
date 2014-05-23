@@ -2,11 +2,9 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc label="Tutorials" link_to="toc.xml#tutorials"> 
-	<topic label="REST API" href="http://wiki.eclipse.org/REST_abstraction_for_ECF"/>
-	<topic label="Getting Started with ECF's RFC119/Distributed OSGi" href="http://wiki.eclipse.org/Getting_Started_with_ECF%27s_RFC119_Implementation"/>
-	<topic label="Getting Started with ECF's Remote Services API" href="http://wiki.eclipse.org/Getting_Started_with_Using_the_ECF_Remote_Services_API"/>
-	<topic label="Distributed EventAdmin Service" href="http://wiki.eclipse.org/Distributed_EventAdmin_Service"/>
-	<topic label="Real-Time Shared Editing" href="http://wiki.eclipse.org/DocShare_Plugin"/>
-	<topic label="Create an IRC bot" href="html/tutorials/bot.html"/>
+	<topic label="Building your first OSGi Remote Service" href="https://wiki.eclipse.org/Tutorial:_Building_your_first_OSGi_Remote_Service"/>
+	<topic label="Building your first Asynchronous OSGi Remote Service" href="https://wiki.eclipse.org/Tutorial:_Building_your_first_Asynchronous_OSGi_Remote_Service"/>
+	<topic label="OSGi Remote Services for the Raspberry Pi" href="https://wiki.eclipse.org/Tutorial:_OSGi_Remote_Services_for_the_Raspberry_Pi"/>
+	<topic label="Creating a RESTful Remote Service Provider" href="https://wiki.eclipse.org/Tutorial:_Creating_a_RESTful_Remote_Service_Provider"/>
 	<topic label="Other Info" href="http://wiki.eclipse.org/ECF"/>
 </toc>

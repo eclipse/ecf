@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <introContent>
-  	<extensionContent id="orgeclipseecfdoc-introExtension" style="css/overview.css" name="Communications" path="overview/@">
+  	<extensionContent id="orgeclipseecfdoc-introExtension" style="css/overview.css" name="ECF OSGi Remote Services" path="overview/@">
 		<group style-id="content-group" id="orgeclipseecfdoc-introLink-group">
-       		<link label="Communications" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.eclipse.ecf.doc/html/gettingstarted/ecf_overview.html" id="orgeclipseecfdoc-introLink" style-id="content-link">
-          		<text>Learn how to use ECF to communicate with other developers.</text>
+       		<link label="ECF OSGi Remote Services" url="http://org.eclipse.ui.intro/showHelpTopic?id=https://wiki.eclipse.org/ECF" id="orgeclipseecfdoc-introLink" style-id="content-link">
+          		<text>Learn how to use OSGi Remote Services for Standardized Inter-Process Communications</text>
        		</link>
        	</group>
   	</extensionContent>

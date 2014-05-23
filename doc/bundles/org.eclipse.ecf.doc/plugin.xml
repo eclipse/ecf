@@ -10,10 +10,9 @@
 <!-- ============================================================================= -->
    <extension point="org.eclipse.help.toc">
       <toc file="toc.xml" primary="true"/>
-      <toc file="tocpics_Concepts.xml"/>
+      <toc file="topics_Tutorials.xml"/>
       <toc file="topics_Reference.xml"/>
       <toc file="topics_Extpoint.xml"/>
-      <toc file="topics_Tutorials.xml"/>
       <toc
             file="tocapi.xml"
             primary="false">
@@ -40,6 +39,10 @@
       <configExtension
          configId="org.eclipse.ui.intro.universalConfig"
          content="$nl$/intro/tutorialsExtensionContent.xml">
+      </configExtension>
+      <configExtension
+         configId="org.eclipse.ui.intro.universalConfig"
+         content="$nl$/intro/samplesExtensionContent.xml">
       </configExtension>
    </extension>
 </plugin>

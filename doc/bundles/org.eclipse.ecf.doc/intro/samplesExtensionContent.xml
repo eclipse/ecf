@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <introContent>
 	<extensionContent id="orgeclipseecfdoc-introExtension" name="ECF OSGi Remote Services"
-		style="css/tutorials.css" path="tutorials/@">
+		style="css/samples.css" path="samples/@">
 		<group label="ECF OSGi Remote Services" id="orgeclipseecfdoc-introLink-group" style-id="content-group">
 			<link 
 				url="http://org.eclipse.ui.intro/showHelpTopic?id=https://wiki.eclipse.org/Tutorial:_Building_your_first_OSGi_Remote_Service" 

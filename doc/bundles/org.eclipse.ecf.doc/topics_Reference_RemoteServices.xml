@@ -1,10 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?NLS TYPE="org.eclipse.help.toc"?>
 <toc label="OSGi Remote Services"> 
-	<topic label="REST API" href="http://wiki.eclipse.org/REST_abstraction_for_ECF"/>
-    <topic label="Getting Started with OSGi Remote Services" href="http://wiki.eclipse.org/Getting_Started_with_ECF%27s_OSGi_Remote_Services_Implementation"/>
-    <topic label="Remote Services Admin" href="http://wiki.eclipse.org/Remote_Services_Admin"/>
-    <topic label="Asynchronous Proxies" href="http://wiki.eclipse.org/Asynchronous_Proxies_for_Remote_Services"/>
-    <topic label="OSGi Remote Services and ECF" href="http://wiki.eclipse.org/OSGi_4.2_Remote_Services_and_ECF"/>
+	<topic label="Tutorials and Getting Started">
+	  <topic label="Building your first OSGi Remote Service" href="https://wiki.eclipse.org/Tutorial:_Building_your_first_OSGi_Remote_Service"/>
+	  <topic label="Using Java8's CompletableFuture for Non-blocking Remote Services" href="https://wiki.eclipse.org/Tutorial:_Building_your_first_Asynchronous_OSGi_Remote_Service#Using_Java8_CompletableFuture"/>
+      <topic label="Building your first Asynchronous OSGi Remote Service" href="https://wiki.eclipse.org/Tutorial:_Building_your_first_Asynchronous_OSGi_Remote_Service"/>
+      <topic label="OSGi Remote Services for the Raspberry Pi" href="https://wiki.eclipse.org/Tutorial:_OSGi_Remote_Services_for_the_Raspberry_Pi"/>
+      <topic label="Creating a RESTful Remote Service Provider" href="https://wiki.eclipse.org/Tutorial:_Creating_a_RESTful_Remote_Service_Provider"/>
+      <topic label="Getting Started with OSGi Remote Services" href="https://wiki.eclipse.org/EIG:Getting_Started_with_OSGi_Remote_Services"/>
+      <topic label="OSGi Remote Services and ECF" href="https://wiki.eclipse.org/OSGi_Remote_Services_and_ECF"/>
+    </topic>
+    <topic label="Download and Install into Eclipse or Apache Karaf">
+	  <topic label="Download and Install into Eclipse" href="http://www.eclipse.org/ecf/downloads.php"/>
+      <topic label="Install into Apache Karaf" href="https://wiki.eclipse.org/EIG:Install_into_Apache_Karaf"/>
+      <topic label="Install and run Timeline Tutorial in Apache Karaf" href="https://wiki.eclipse.org/EIG:Install_Timeline_Example_into_Apache_Karaf"/>
+    </topic>
+	<topic label="Java8's CompletableFuture for Non-blocking Remote Services" href="https://wiki.eclipse.org/Tutorial:_Building_your_first_Asynchronous_OSGi_Remote_Service#Using_Java8_CompletableFuture"/>
+    <topic label="Asynchronous/Non-Blocking Remote Services" href="https://wiki.eclipse.org/ECF/Asynchronous_Remote_Services"/>
     <topic label="File-based Discovery of Remote Services" href="http://wiki.eclipse.org/File-based_Discovery"/>
+    <topic label="Distributed EventAdmin Service" href="https://wiki.eclipse.org/Distributed_EventAdmin_Service"/>
+    <topic label="Tracing Options for Remote Services" href="https://wiki.eclipse.org/Tracing_Options_for_Remote_Services"/>
+    <topic label="Discovery and Distribution Provider Configuration Properties" href="https://wiki.eclipse.org/EIG:Configuration_Properties"/>
+    <topic label="JavaDoc">
+	      <link toc="tocapi.xml"/>
+	</topic>
 </toc>
