@@ -25,13 +25,12 @@ import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 
 public class SCPRetrieveTest extends ContainerAbstractTestCase {
 
-	private static final String TESTSRCFILE = "test.txt"; //$NON-NLS-1$
+	String host = System.getProperty("host", "localhost"); //$NON-NLS-1$ //$NON-NLS-2$
+	String file = System.getProperty("file", "test.txt"); //$NON-NLS-1$ //$NON-NLS-2$
 
 	// URL (example:  scp://slewis@ecf1.osuosl.org/test.txt 
 	String username = System.getProperty("username", "nobody"); //$NON-NLS-1$ //$NON-NLS-2$
 	String password = System.getProperty("password", "password"); //$NON-NLS-1$ //$NON-NLS-2$
-
-	String host = System.getProperty("host", "localhost"); //$NON-NLS-1$ //$NON-NLS-2$
 
 	IRetrieveFileTransferContainerAdapter adapter = null;
 
@@ -69,7 +68,6 @@ public class SCPRetrieveTest extends ContainerAbstractTestCase {
 	List receiveDoneEvents;
 
 	public void testReceive() throws Exception {
-		final Object lock = new Object();
 		assertNotNull(adapter);
 		final IFileTransferListener listener = new IFileTransferListener() {
 			public void handleTransferEvent(IFileTransferEvent event) {
@@ -87,25 +85,25 @@ public class SCPRetrieveTest extends ContainerAbstractTestCase {
 					receiveDataEvents.add(event);
 				} else if (event instanceof IIncomingFileTransferReceiveDoneEvent) {
 					receiveDoneEvents.add(event);
-					synchronized (lock) {
-						lock.notify();
-					}
+					syncNotify();
 				}
 			}
 		};
 
-		String targetURL = "scp://" + host + "/" + TESTSRCFILE; //$NON-NLS-1$ //$NON-NLS-2$
+		String targetURL = "scp://" + host + (file.startsWith("/") ? "" : "/") + file; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		System.out.println("Retrieving from " + targetURL + " with username=" + username); //$NON-NLS-1$ //$NON-NLS-2$
 		adapter.setConnectContextForAuthentication(ConnectContextFactory.createUsernamePasswordConnectContext(username, password));
 		adapter.sendRetrieveRequest(FileIDFactory.getDefault().createFileID(adapter.getRetrieveNamespace(), targetURL), listener, null);
 
-		synchronized (lock) {
-			lock.wait(30000);
-		}
+		syncWaitForNotify(60000);
 
 		assertHasEvent(receiveStartEvents, IIncomingFileTransferReceiveStartEvent.class);
 		assertHasMoreThanEventCount(receiveDataEvents, IIncomingFileTransferReceiveDataEvent.class, 0);
 		assertHasEvent(receiveDoneEvents, IIncomingFileTransferReceiveDoneEvent.class);
 
+	}
+
+	public void syncNotify() {
+		super.syncNotify();
 	}
 }

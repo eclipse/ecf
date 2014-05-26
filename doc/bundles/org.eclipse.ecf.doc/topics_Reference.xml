@@ -2,20 +2,22 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc label="Reference" link_to="toc.xml#reference">
-    <topic label="What's New and Noteworthy" href="http://www.eclipse.org/ecf/NewAndNoteworthy.html"/>
-	<topic label="ECF Architecture" href="http://www.eclipse.org/ecf/documentation.php"/>
-	<topic label="ECF API" href="http://wiki.eclipse.org/index.php/ECF_API_Docs"/>
-	<topic label="API JavaDoc" href="http://download.eclipse.org/rt/ecf/3.5Test/javadoc">
-		<link toc="tocapi.xml"/>
-	</topic>
-	<topic label="Homepage" href="http://www.eclipse.org/ecf"/>
-	<topic label="Summary" href="http://www.eclipse.org/projects/project_summary.php?projectid=rt.ecf"/>
-	<topic label="Wiki" href="http://wiki.eclipse.org/ECF"/>
+	<topic label="Project Homepage" href="http://www.eclipse.org/ecf"/>
+	<topic label="Dashboard" href="https://projects.eclipse.org/projects/rt.ecf"/>
 	<topic label="Mailing List" href="https://dev.eclipse.org/mailman/listinfo/ecf-dev"/>
 	<topic label="Newsgroup" href="http://www.eclipse.org/forums/index.php"/>
-	<topic label="IP Log" href="http://www.eclipse.org/projects/ip_log.php?projectid=rt.ecf"/>
-    <topic label="Project Blog" href="http://eclipseecf.blogspot.com/"/>
-	<topic label="Extension Points">
-		<link toc="topics_Extpoint.xml"/>
+    <topic label="Blog" href="http://eclipseecf.blogspot.com/"/>
+    <topic label="Recent Presentations">
+      <topic label="Democamp presentation by committer Markus Kuppe" href="http://www.lemmster.de/publications/Discover_Remote_Services_-_Democamp_HH_2013_-_Markus_Alexander_Kuppe.pdf"/>
+      <topic label="Discover OSGi Remote Services" href="http://www.eclipsecon.org/europe2013/discover-remote-osgi-services"/>
+      <topic label="Fun with OSGi Remote Services" href="http://vimeo.com/14247502"/>
+    </topic>
+	<topic label="Reference Documentation" href="http://wiki.eclipse.org/ECF">
+	  <topic label="JavaDoc" href="http://download.eclipse.org/rt/ecf/latest/javadoc">
+		  <link toc="tocapi.xml"/>
+	  </topic>
+	   <topic label="Extension Points">
+	      <link toc="topics_Extpoint.xml"/>
+	   </topic>
 	</topic>
 </toc>

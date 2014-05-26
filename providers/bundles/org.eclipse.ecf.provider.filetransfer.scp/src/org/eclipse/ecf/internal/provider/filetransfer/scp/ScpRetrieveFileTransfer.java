@@ -26,10 +26,13 @@ import org.eclipse.osgi.util.NLS;
 /**
  *
  */
-public class ScpRetrieveFileTransfer extends AbstractRetrieveFileTransfer implements IScpFileTransfer {
+public class ScpRetrieveFileTransfer extends AbstractRetrieveFileTransfer
+		implements IScpFileTransfer {
 
-	private static final String SCP_COMMAND = "scp -f "; //$NON-NLS-1$
-	private static final String SCP_EXEC = "exec"; //$NON-NLS-1$
+	private static final String SCP_COMMAND = System.getProperty(
+			"org.eclipse.ecf.filetransfer.scp.retrieve.scpcommand", "scp -f "); //$NON-NLS-1$
+	private static final String SCP_EXEC = System.getProperty(
+			"org.eclipse.ecf.filetransfer.scp.retrieve.scpcommand", "exec"); //$NON-NLS-1$
 
 	String username;
 
@@ -39,15 +42,23 @@ public class ScpRetrieveFileTransfer extends AbstractRetrieveFileTransfer implem
 
 	private ScpUtil scpUtil;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#doPause()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer
+	 * #doPause()
 	 */
 	protected boolean doPause() {
 		return false;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#doResume()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer
+	 * #doResume()
 	 */
 	protected boolean doResume() {
 		return false;
@@ -61,8 +72,12 @@ public class ScpRetrieveFileTransfer extends AbstractRetrieveFileTransfer implem
 		return options;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.filetransfer.outgoing.AbstractOutgoingFileTransfer#openStreams()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.provider.filetransfer.outgoing.AbstractOutgoingFileTransfer
+	 * #openStreams()
 	 */
 	protected void openStreams() throws IncomingFileTransferException {
 		try {
@@ -74,7 +89,8 @@ public class ScpRetrieveFileTransfer extends AbstractRetrieveFileTransfer implem
 			final Session s = scpUtil.getSession();
 			s.connect();
 
-			final String command = SCP_COMMAND + scpUtil.trimTargetFile(url.getPath());
+			final String command = SCP_COMMAND
+					+ scpUtil.trimTargetFile(url.getPath());
 			channel = s.openChannel(SCP_EXEC);
 			((ChannelExec) channel).setCommand(command);
 			channel.connect();
@@ -82,10 +98,11 @@ public class ScpRetrieveFileTransfer extends AbstractRetrieveFileTransfer implem
 			final InputStream ins = channel.getInputStream();
 			responseStream = channel.getOutputStream();
 			scpUtil.sendZeroToStream(responseStream);
-			// read and set filesize
-			final int c = ins.read();
+
+			final int c = checkAck(ins);
 			if (c != 'C')
-				throw new IOException(Messages.ScpRetrieveFileTransfer_EXCEPTION_SCP_PROTOCOL);
+				throw new IOException(
+						Messages.ScpRetrieveFileTransfer_EXCEPTION_SCP_PROTOCOL);
 			// read '0644 '
 			final byte[] buf = new byte[1024];
 			ins.read(buf, 0, 5);
@@ -93,22 +110,58 @@ public class ScpRetrieveFileTransfer extends AbstractRetrieveFileTransfer implem
 			setFileLength(readFileSize(ins, buf));
 			readFileName(ins, buf);
 			// set input stream for reading rest of file
-			setInputStream(ins);
+			remoteFileContents = ins;
+
 			scpUtil.sendZeroToStream(responseStream);
 
 			fireReceiveStartEvent();
 		} catch (final Exception e) {
 			channel = null;
 			username = null;
-			throw new IncomingFileTransferException(NLS.bind(Messages.ScpRetrieveFileTransfer_EXCEPTION_CONNECTING, getRemoteFileURL().toString()), e);
+			throw new IncomingFileTransferException(NLS.bind(
+					Messages.ScpRetrieveFileTransfer_EXCEPTION_CONNECTING,
+					getRemoteFileURL().toString()), e);
 		}
 
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#handleReceivedData(byte[], int, double, org.eclipse.core.runtime.IProgressMonitor)
+	static int checkAck(InputStream in) throws IOException {
+		int b = in.read();
+		// b may be 0 for success,
+		// 1 for error,
+		// 2 for fatal error,
+		// -1
+		if (b == 0)
+			return b;
+		if (b == -1)
+			return b;
+
+		if (b == 1 || b == 2) {
+			StringBuffer sb = new StringBuffer();
+			int c;
+			do {
+				c = in.read();
+				sb.append((char) c);
+			} while (c != '\n');
+			if (b == 1 || b == 2) { // error
+				throw new IOException(
+						Messages.ScpRetrieveFileTransfer_EXCEPTION_SCP_PROTOCOL
+								+ ": " + sb.toString());
+			}
+		}
+		return b;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer
+	 * #handleReceivedData(byte[], int, double,
+	 * org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	protected void handleReceivedData(byte[] buf, int bytes, double factor, IProgressMonitor monitor) throws IOException {
+	protected void handleReceivedData(byte[] buf, int bytes, double factor,
+			IProgressMonitor monitor) throws IOException {
 		if (bytes == -1) {
 			done = true;
 		} else {
@@ -131,7 +184,8 @@ public class ScpRetrieveFileTransfer extends AbstractRetrieveFileTransfer implem
 		long filesize = 0L;
 		while (true) {
 			if (ins.read(buf, 0, 1) < 0) {
-				throw new IOException(Messages.ScpRetrieveFileTransfer_EXCEPTION_ERROR_READING_FILE);
+				throw new IOException(
+						Messages.ScpRetrieveFileTransfer_EXCEPTION_ERROR_READING_FILE);
 			}
 			if (buf[0] == ' ')
 				break;
@@ -152,8 +206,12 @@ public class ScpRetrieveFileTransfer extends AbstractRetrieveFileTransfer implem
 		return file;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.filetransfer.outgoing.AbstractOutgoingFileTransfer#hardClose()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.provider.filetransfer.outgoing.AbstractOutgoingFileTransfer
+	 * #hardClose()
 	 */
 	protected void hardClose() {
 		try {
@@ -177,7 +235,9 @@ public class ScpRetrieveFileTransfer extends AbstractRetrieveFileTransfer implem
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#getAdapter(java.lang.Class)
+	 * @see
+	 * org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer
+	 * #getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class adapter) {
 		if (adapter == null)
@@ -187,22 +247,33 @@ public class ScpRetrieveFileTransfer extends AbstractRetrieveFileTransfer implem
 		return super.getAdapter(adapter);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#setupProxy(org.eclipse.ecf.core.util.Proxy)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer
+	 * #setupProxy(org.eclipse.ecf.core.util.Proxy)
 	 */
 	protected void setupProxy(Proxy proxy) {
 		this.proxy = proxy;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.filetransfer.scp.IScpFileTransfer#getConnectContext()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.provider.filetransfer.scp.IScpFileTransfer#getConnectContext
+	 * ()
 	 */
 	public IConnectContext getConnectContext() {
 		return connectContext;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.filetransfer.scp.IScpFileTransfer#getUsername()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.provider.filetransfer.scp.IScpFileTransfer#getUsername()
 	 */
 	public String getUsername() {
 		return username;
@@ -212,12 +283,16 @@ public class ScpRetrieveFileTransfer extends AbstractRetrieveFileTransfer implem
 		this.username = username;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.filetransfer.scp.IScpFileTransfer#promptPassphrase()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ecf.provider.filetransfer.scp.IScpFileTransfer#promptPassphrase
+	 * ()
 	 */
 	public boolean promptPassphrase() {
 		// XXX TODO
-		//return (keyFile != null);
+		// return (keyFile != null);
 		return false;
 	}
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="MyCorp Remote TimeService ROSGi Consumer No Extension Registry Java8" uid="com.mycorp.examples.timeservice.consumer.rosgi.noreg.java8.product" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="false">
+<product name="MyCorp Remote TimeService Generic Consumer No Extension Registry Java8" uid="com.mycorp.examples.timeservice.consumer.generic.noreg.java8.product" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>
@@ -30,7 +30,6 @@
    </vm>
 
    <plugins>
-      <plugin id="ch.ethz.iks.r_osgi.remote"/>
       <plugin id="com.mycorp.examples.timeservice.async"/>
       <plugin id="com.mycorp.examples.timeservice.consumer.ds.async"/>
       <plugin id="org.apache.felix.gogo.command"/>
@@ -46,7 +45,7 @@
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy"/>
       <plugin id="org.eclipse.ecf.provider"/>
       <plugin id="org.eclipse.ecf.provider.jmdns"/>
-      <plugin id="org.eclipse.ecf.provider.r_osgi"/>
+      <plugin id="org.eclipse.ecf.provider.remoteservice"/>
       <plugin id="org.eclipse.ecf.remoteservice"/>
       <plugin id="org.eclipse.ecf.remoteservice.asyncproxy" version="2.0.0"/>
       <plugin id="org.eclipse.ecf.sharedobject"/>
@@ -60,11 +59,9 @@
       <plugin id="org.eclipse.osgi.services"/>
       <plugin id="org.eclipse.osgi.services.remoteserviceadmin"/>
       <plugin id="org.eclipse.osgi.util"/>
-      <plugin id="org.objectweb.asm"/>
    </plugins>
 
    <configurations>
-      <plugin id="ch.ethz.iks.r_osgi.remote" autoStart="true" startLevel="0" />
       <plugin id="com.mycorp.examples.timeservice.async" autoStart="true" startLevel="0" />
       <plugin id="com.mycorp.examples.timeservice.consumer.ds.async" autoStart="true" startLevel="0" />
       <plugin id="org.apache.felix.gogo.command" autoStart="true" startLevel="0" />
@@ -80,7 +77,7 @@
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.provider" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.provider.jmdns" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.ecf.provider.r_osgi" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.ecf.provider.remoteservice" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.remoteservice" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.remoteservice.asyncproxy" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.sharedobject" autoStart="true" startLevel="0" />
@@ -94,7 +91,6 @@
       <plugin id="org.eclipse.osgi.services" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.osgi.services.remoteserviceadmin" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.osgi.util" autoStart="true" startLevel="0" />
-      <plugin id="org.objectweb.asm" autoStart="true" startLevel="0" />
    </configurations>
 
 </product>
