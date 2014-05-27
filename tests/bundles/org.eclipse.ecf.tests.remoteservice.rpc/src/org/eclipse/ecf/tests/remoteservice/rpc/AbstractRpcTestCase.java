@@ -22,7 +22,7 @@ import org.eclipse.ecf.tests.ECFAbstractTestCase;
 public abstract class AbstractRpcTestCase extends ECFAbstractTestCase {
 	
 	protected IContainer createRpcContainer(String uri) throws ContainerCreateException {
-		return getContainerFactory().createContainer(RpcConstants.RPC_CONTAINER_TYPE, uri);
+		return getContainerFactory().createContainer(RpcConstants.RPC_CONTAINER_TYPE, uri); 
 	}
 
 	protected IContainer createRpcContainer(ID rpcId) throws ContainerCreateException {
