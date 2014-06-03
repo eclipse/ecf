@@ -53,6 +53,8 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.remoteserviceadmin.EndpointDescription;
+import org.osgi.service.remoteserviceadmin.EndpointEvent;
+import org.osgi.service.remoteserviceadmin.EndpointEventListener;
 import org.osgi.service.remoteserviceadmin.EndpointListener;
 import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
@@ -96,6 +98,7 @@ public class EndpointDescriptionLocator {
 	private Map<IDiscoveryLocator, LocatorServiceListener> locatorListeners;
 
 	private ServiceTracker endpointListenerTracker;
+	private ServiceTracker endpointEventListenerTracker;
 
 	private ServiceTracker advertiserTracker;
 	private Object advertiserTrackerLock = new Object();
@@ -222,6 +225,49 @@ public class EndpointDescriptionLocator {
 
 		endpointListenerTracker.open();
 
+		// Register the endpoint event listener tracker, so that endpoint event listeners
+		// that are subsequently added
+		// will then be notified of discovered endpoints
+		endpointEventListenerTracker = new ServiceTracker(context,
+				EndpointEventListener.class.getName(),
+				new ServiceTrackerCustomizer() {
+					public Object addingService(ServiceReference reference) {
+						if (context == null)
+							return null;
+						EndpointEventListener listener = (EndpointEventListener) context
+								.getService(reference);
+						if (listener == null)
+							return null;
+						Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> allDiscoveredEndpointDescriptions = getAllDiscoveredEndpointDescriptions();
+						for (org.osgi.service.remoteserviceadmin.EndpointDescription ed : allDiscoveredEndpointDescriptions) {
+							EndpointDescriptionLocator.EndpointEventListenerHolder[] endpointEventListenerHolders = getMatchingEndpointEventListenerHolders(
+									new ServiceReference[] { reference }, ed);
+							if (endpointEventListenerHolders != null) {
+								for (int i = 0; i < endpointEventListenerHolders.length; i++) {
+									queueEndpointDescription(
+											endpointEventListenerHolders[i]
+													.getListener(),
+											endpointEventListenerHolders[i]
+													.getDescription(),
+											endpointEventListenerHolders[i]
+													.getMatchingFilter(), EndpointEvent.ADDED);
+								}
+							}
+						}
+						return listener;
+					}
+
+					public void modifiedService(ServiceReference reference,
+							Object service) {
+					}
+
+					public void removedService(ServiceReference reference,
+							Object service) {
+					}
+				});
+
+		endpointEventListenerTracker.open();
+
 		locatorListeners = new HashMap();
 		localLocatorServiceListener = new LocatorServiceListener(null);
 		// Create locator service tracker, so new IDiscoveryLocators can
@@ -290,6 +336,12 @@ public class EndpointDescriptionLocator {
 			endpointListenerTracker.close();
 			endpointListenerTracker = null;
 		}
+		
+		if (endpointEventListenerTracker != null) {
+			endpointEventListenerTracker.close();
+			endpointEventListenerTracker = null;
+		}
+		
 		// Shutdown asynchronous event manager
 		if (eventManager != null) {
 			eventManager.close();
@@ -394,6 +446,22 @@ public class EndpointDescriptionLocator {
 	}
 
 	void queueEndpointDescription(
+			EndpointEventListener listener,
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
+			String matchingFilters, int eventType) {
+		if (eventQueue == null)
+			return;
+		trace("queueEndpointDescription", "endpointDescription=" //$NON-NLS-1$ //$NON-NLS-2$
+				+ endpointDescription);
+		synchronized (eventQueue) {
+			eventQueue
+					.dispatchEventAsynchronous(0, new EndpointEventListenerEvent(
+							listener, new EndpointEvent(eventType, endpointDescription), matchingFilters));
+		}
+	}
+
+
+	void queueEndpointDescription(
 			EndpointListener listener,
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
 			String matchingFilters, boolean discovered) {
@@ -425,6 +493,35 @@ public class EndpointDescriptionLocator {
 		return result;
 	}
 
+	void queueEndpointEvent(org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription, int type) {
+		EndpointEventListenerHolder[] endpointEventListenerHolders = getMatchingEndpointEventListenerHolders(endpointDescription);
+		if (endpointEventListenerHolders != null) {
+			for (int i = 0; i < endpointEventListenerHolders.length; i++) {
+				queueEndpointDescription(
+						endpointEventListenerHolders[i].getListener(),
+						endpointEventListenerHolders[i].getDescription(),
+						endpointEventListenerHolders[i].getMatchingFilter(),
+						type);
+
+			}
+		} else {
+			LogUtility.logWarning(
+					"queueEndpointDescription", //$NON-NLS-1$
+					DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, this.getClass(),
+					"No matching EndpointEventListeners found for event type" //$NON-NLS-1$
+							+ getEndpointEventTypeAsString(type)
+							+ " endpointDescription=" + endpointDescription); //$NON-NLS-1$
+		}
+	}
+	
+	String getEndpointEventTypeAsString(int eventType) {
+		if (eventType==EndpointEvent.ADDED) return "added"; //$NON-NLS-1$
+		if (eventType==EndpointEvent.MODIFIED) return "modified"; //$NON-NLS-1$
+		if (eventType==EndpointEvent.MODIFIED_ENDMATCH) return "modified endmatch"; //$NON-NLS-1$
+		if (eventType==EndpointEvent.REMOVED) return "removed"; //$NON-NLS-1$
+		return "unknown"; //$NON-NLS-1$
+	}
+	
 	void queueEndpointDescription(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
 			boolean discovered) {
@@ -478,6 +575,35 @@ public class EndpointDescriptionLocator {
 				shutdownLocator((IDiscoveryLocator) locators[i]);
 			}
 		}
+	}
+
+	private class EndpointEventListenerEvent {
+
+		private EndpointEventListener endpointEventListener;
+		private EndpointEvent event;
+		private String matchingFilter;
+
+		public EndpointEventListenerEvent(
+				EndpointEventListener endpointEventListener,
+				EndpointEvent event,
+				String matchingFilter) {
+			this.endpointEventListener = endpointEventListener;
+			this.event = event;
+			this.matchingFilter = matchingFilter;
+		}
+
+		public EndpointEventListener getEndpointEventListener() {
+			return endpointEventListener;
+		}
+
+		public EndpointEvent getEndpointEvent() {
+			return event;
+		}
+
+		public String getMatchingFilter() {
+			return matchingFilter;
+		}
+
 	}
 
 	private class EndpointListenerEvent {
@@ -574,6 +700,9 @@ public class EndpointDescriptionLocator {
 
 	private Object endpointListenerServiceTrackerLock = new Object();
 
+	private Object endpointEventListenerServiceTrackerLock = new Object();
+
+
 	protected EndpointListenerHolder[] getMatchingEndpointListenerHolders(
 			final EndpointDescription description) {
 		return AccessController
@@ -589,6 +718,51 @@ public class EndpointDescriptionLocator {
 				});
 	}
 
+	/**
+	 * @since 4.1
+	 */
+	protected EndpointEventListenerHolder[] getMatchingEndpointEventListenerHolders(
+			final EndpointDescription description) {
+		return AccessController
+				.doPrivileged(new PrivilegedAction<EndpointEventListenerHolder[]>() {
+					public EndpointEventListenerHolder[] run() {
+						synchronized (endpointEventListenerServiceTrackerLock) {
+							return getMatchingEndpointEventListenerHolders(
+									endpointEventListenerTracker
+											.getServiceReferences(),
+									description);
+						}
+					}
+				});
+	}
+
+	/**
+	 * @since 4.1
+	 */
+	public class EndpointEventListenerHolder {
+		private EndpointEventListener listener;
+		private EndpointDescription description;
+		private String matchingFilter;
+		
+		public EndpointEventListenerHolder(EndpointEventListener l, EndpointDescription d, String f) {
+			this.listener = l;
+			this.description = d;
+			this.matchingFilter = f;
+		}
+		
+		public EndpointEventListener getListener() {
+			return listener;
+		}
+		
+		public EndpointDescription getDescription() {
+			return description;
+		}
+		
+		public String getMatchingFilter() {
+			return matchingFilter;
+		}
+	}
+	
 	public class EndpointListenerHolder {
 
 		private EndpointListener listener;
@@ -613,6 +787,33 @@ public class EndpointDescriptionLocator {
 		public String getMatchingFilter() {
 			return matchingFilter;
 		}
+	}
+
+	/**
+	 * @since 4.1
+	 */
+	public EndpointEventListenerHolder[] getMatchingEndpointEventListenerHolders(
+			ServiceReference[] refs, EndpointDescription description) {
+		if (refs == null)
+			return null;
+		List results = new ArrayList();
+		for (int i = 0; i < refs.length; i++) {
+			EndpointEventListener listener = (EndpointEventListener) context
+					.getService(refs[i]);
+			if (listener == null)
+				continue;
+			List<String> filters = PropertiesUtil.getStringPlusProperty(
+					getMapFromProperties(refs[i]),
+					EndpointEventListener.ENDPOINT_LISTENER_SCOPE);
+			if (filters.size() > 0) {
+				String matchingFilter = isMatch(description, filters);
+				if (matchingFilter != null)
+					results.add(new EndpointEventListenerHolder(listener,
+							description, matchingFilter));
+			}
+		}
+		return (EndpointEventListenerHolder[]) results
+				.toArray(new EndpointEventListenerHolder[results.size()]);
 	}
 
 	public EndpointListenerHolder[] getMatchingEndpointListenerHolders(
