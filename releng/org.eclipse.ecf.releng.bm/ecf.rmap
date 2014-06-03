@@ -162,7 +162,7 @@
     <rm:provider componentTypes="osgi.bundle" readerType="p2" source="false" mutable="false">
       <rm:property key="buckminster.source" value="false"/>
       <rm:property key="buckminster.mutable" value="false"/>
-      <rm:uri format="http://download.eclipse.org/tools/orbit/downloads/drops/S20140428023358/repository"/>
+      <rm:uri format="http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository"/>
     </rm:provider>
     <!-- As a last resort, go to platform repo (e.g. right now Orbit does not host org.sat4j.core [2.3.5,3.0.0) which only exists in 4.3 -->
     <rm:provider componentTypes="osgi.bundle,eclipse.feature,buckminster" readerType="p2" source="false" mutable="false">
