@@ -254,11 +254,15 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		props.put("testonekey", "1");
 		// Actually register with default service (IConcatService) as a remote service
 		registration = registerDefaultService(props);
+		ExportReference exportRef = null;
 		Thread.sleep(REGISTER_WAIT/2);
+		for(RemoteServiceAdminEvent e: remoteServiceAdminEvents) 
+			if (e.getType() == RemoteServiceAdminEvent.EXPORT_REGISTRATION) exportRef = e.getExportReference();
+		
+		assertTrue(exportRef != null);
 		// remoteServiceAdminEvents should have the Export registration
 		assertTrue(remoteServiceAdminEvents.size() > 0);
 		// Get ExportReference
-		ExportReference exportRef = remoteServiceAdminEvents.get(0).getExportReference();
 		EndpointDescription oldED = exportRef.getExportedEndpoint();
 		assertNotNull(oldED);
 		Map<String,?> oldEDProperties = oldED.getProperties();
