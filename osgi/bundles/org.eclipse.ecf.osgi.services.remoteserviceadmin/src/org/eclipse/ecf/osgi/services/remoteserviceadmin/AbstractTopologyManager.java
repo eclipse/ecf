@@ -9,6 +9,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -56,8 +57,8 @@ public abstract class AbstractTopologyManager {
 	private ServiceTracker remoteServiceAdminTracker;
 	private Object remoteServiceAdminTrackerLock = new Object();
 
-	private final Map<org.osgi.service.remoteserviceadmin.EndpointDescription, ServiceRegistration<IServiceInfo>> registrations =
-			new HashMap<org.osgi.service.remoteserviceadmin.EndpointDescription, ServiceRegistration<IServiceInfo>>();
+	private final Map<org.osgi.service.remoteserviceadmin.EndpointDescription, List<ServiceRegistration<IServiceInfo>>> registrations =
+			new HashMap<org.osgi.service.remoteserviceadmin.EndpointDescription, List<ServiceRegistration<IServiceInfo>>>();
 	private final ReentrantLock registrationLock;
 	
 	private boolean requireServiceExportedConfigs = new Boolean(
@@ -159,6 +160,49 @@ public abstract class AbstractTopologyManager {
 				.getService();
 	}
 
+	private void addRegistration(org.osgi.service.remoteserviceadmin.EndpointDescription ed, ServiceRegistration<IServiceInfo> reg) {
+		List<ServiceRegistration<IServiceInfo>> regs = this.registrations.get(ed);
+		if (regs == null) regs = new ArrayList<ServiceRegistration<IServiceInfo>>();
+		regs.add(reg);
+		this.registrations.put(ed, regs);
+	}
+	
+	/**
+	 * @since 4.1
+	 */
+	protected void advertiseModifyEndpointDescription(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
+		this.registrationLock.lock();
+		try {
+			final IServiceInfoFactory service = serviceInfoFactoryTracker
+					.getService();
+			if (service != null) {
+				final IServiceInfo serviceInfo = service.createServiceInfo(null,
+						endpointDescription);
+				if (serviceInfo != null) {
+					trace("advertiseModifyEndpointDescription", //$NON-NLS-1$
+							"advertising modify endpointDescription=" + endpointDescription +  //$NON-NLS-1$
+							" and IServiceInfo " + serviceInfo); //$NON-NLS-1$
+					
+					final ServiceRegistration<IServiceInfo> registerService = this.context
+							.registerService(IServiceInfo.class, serviceInfo, null);
+					
+					addRegistration(endpointDescription, registerService);
+				} else {
+					logError(
+							"advertiseModifyEndpointDescription",  //$NON-NLS-1$
+							"IServiceInfoFactory failed to convert EndpointDescription " + endpointDescription); //$NON-NLS-1$1
+				}
+			} else {
+				logError(
+						"advertiseModifyEndpointDescription",  //$NON-NLS-1$
+						"no IServiceInfoFactory service found"); //$NON-NLS-1$
+			}
+		} finally {
+			this.registrationLock.unlock();
+		}
+	}
+
 	/**
 	 * @since 3.0
 	 */
@@ -181,7 +225,8 @@ public abstract class AbstractTopologyManager {
 					
 					final ServiceRegistration<IServiceInfo> registerService = this.context
 							.registerService(IServiceInfo.class, serviceInfo, null);
-					this.registrations.put(endpointDescription, registerService);
+					
+					addRegistration(endpointDescription, registerService);
 				} else {
 					logError(
 							"advertiseEndpointDescription",  //$NON-NLS-1$
@@ -204,10 +249,11 @@ public abstract class AbstractTopologyManager {
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
 		this.registrationLock.lock();
 		try {
-			final ServiceRegistration<IServiceInfo> serviceRegistration = this.registrations
+			final List<ServiceRegistration<IServiceInfo>> serviceRegistrations = this.registrations
 					.remove(endpointDescription);
-			if (serviceRegistration != null) {
-				serviceRegistration.unregister();
+			if (serviceRegistrations != null) {
+				for(ServiceRegistration<IServiceInfo> serviceRegistration: serviceRegistrations) 
+					serviceRegistration.unregister();
 				return;
 			}
 		} finally {
@@ -473,13 +519,6 @@ public abstract class AbstractTopologyManager {
 								new HashMap<String, Object>())));
 			}
 		}
-	}
-
-	/**
-	 * @since 4.1
-	 */
-	protected void advertiseModifyEndpointDescription(EndpointDescription updatedEndpointDescription) {
-		advertiseEndpointDescription(updatedEndpointDescription);
 	}
 
 	protected void handleServiceUnregistering(ServiceReference serviceReference) {

@@ -635,6 +635,8 @@ public class RemoteServiceAdmin implements
 			if (properties != null)
 				edProps = PropertiesUtil.mergeProperties(edProps,
 						(Map<String, Object>) properties);
+			// set timestamp
+			edProps.put(RemoteConstants.ENDPOINT_TIMESTAMP, System.currentTimeMillis());
 			// Create new endpoint description, and this is now our new EndpointDescription
 			endpointDescription = new EndpointDescription(serviceReference,
 					edProps);

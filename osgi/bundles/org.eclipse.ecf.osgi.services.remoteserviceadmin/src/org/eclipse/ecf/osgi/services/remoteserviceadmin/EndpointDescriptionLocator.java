@@ -1089,20 +1089,64 @@ public class EndpointDescriptionLocator {
 								+ serviceInfo + ",discovered=" + discovered); //$NON-NLS-1$
 		}
 
+		EndpointDescription isEndpointDescriptionUpdate(org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
+			if (endpointDescription instanceof org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription) {
+				org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription ed = (org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription) endpointDescription;
+				Long receivedTS = ed.getTimestamp();
+				if (receivedTS == null) return null;
+				String receivedId = ed.getId();
+				boolean update = false;
+				org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription ped = null;
+				for(EndpointDescription previousEndpointId: discoveredEndpointDescriptions) {
+					if (previousEndpointId instanceof org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription) {
+						ped = (org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription) previousEndpointId;
+						// Test pedId against receivedId...we only care about matches
+						if (!ped.getId().equals(receivedId)) continue;
+						Long pedTS = ped.getTimestamp();
+						// Now, it's only an update if the received timestamp is after the
+						// previous timestamp
+						if (pedTS != null && pedTS.longValue() < receivedTS.longValue()) update = true;
+					}
+				}
+				if (update) {
+					discoveredEndpointDescriptions.remove(ped);
+					discoveredEndpointDescriptions.add(ed);
+					return ped;
+				}
+			}
+			return null;
+		}
+		
 		void handleEndpointDescription(
 				org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
 				boolean discovered) {
 			synchronized (listenerLock) {
 				if (discovered) {
+					EndpointDescription prevEd = isEndpointDescriptionUpdate(endpointDescription);
+					if (prevEd != null) {
+						trace("handleEndpointDescription","endpointDescription updated. prev="+prevEd+", update="+endpointDescription); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						queueEndpointEvent(endpointDescription, EndpointEvent.MODIFIED);
+						queueEndpointDescription(prevEd, false);
+						queueEndpointDescription(endpointDescription, true);
+						return;
+					}
+					// If it was previously discovered then ignore
 					if (discoveredEndpointDescriptions
 							.contains(endpointDescription)) {
 						trace("handleEndpointDescription", "endpointDescription previously discovered...ignoring"); //$NON-NLS-1$ //$NON-NLS-2$
 						return;
 					}
+					// Otherwise add
+					trace("handleEndpointDescription","endpointDescription added.  ed="+endpointDescription); //$NON-NLS-1$ //$NON-NLS-2$
 					discoveredEndpointDescriptions.add(endpointDescription);
-				} else
+					queueEndpointEvent(endpointDescription, EndpointEvent.ADDED);
+				} else {
+					// Remove
+					trace("handleEndpointDescription","endpointDescription removed. ed="+endpointDescription); //$NON-NLS-1$ //$NON-NLS-2$
 					discoveredEndpointDescriptions.remove(endpointDescription);
-
+					queueEndpointEvent(endpointDescription, EndpointEvent.REMOVED);
+				}
+				// in any case, notify 
 				queueEndpointDescription(endpointDescription, discovered);
 			}
 		}
