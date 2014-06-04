@@ -255,7 +255,7 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		// Actually register with default service (IConcatService) as a remote service
 		registration = registerDefaultService(props);
 		ExportReference exportRef = null;
-		Thread.sleep(REGISTER_WAIT/2);
+		Thread.sleep(15000);
 		for(RemoteServiceAdminEvent e: remoteServiceAdminEvents) 
 			if (e.getType() == RemoteServiceAdminEvent.EXPORT_REGISTRATION) exportRef = e.getExportReference();
 		
@@ -283,6 +283,8 @@ public abstract class AbstractRemoteServiceRegisterTest extends
 		assertNotNull(updatedEDProperties);
 		assertTrue("two".equals(updatedEDProperties.get("testonekey")));
 		assertTrue("2".equals(updatedEDProperties.get("testtwokey")));
+		
+		Thread.sleep(15000);
 		
 		listenerReg.unregister();
 	}
