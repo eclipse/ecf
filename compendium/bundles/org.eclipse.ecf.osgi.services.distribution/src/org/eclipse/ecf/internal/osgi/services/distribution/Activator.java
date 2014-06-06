@@ -21,7 +21,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.hooks.service.EventListenerHook;
 import org.osgi.service.log.LogService;
-import org.osgi.service.remoteserviceadmin.EndpointListener;
+import org.osgi.service.remoteserviceadmin.EndpointEventListener;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -52,7 +52,7 @@ public class Activator implements BundleActivator {
 	private LogService logService = null;
 
 	private BasicTopologyManagerImpl basicTopologyManagerImpl;
-	private ServiceRegistration endpointListenerReg;
+	private ServiceRegistration endpointEventListenerReg;
 	private BasicTopologyManagerComponent basicTopologyManagerComp;
 	private ServiceRegistration eventListenerHookRegistration;
 	private ServiceRegistration eventAdminListenerRegistration;
@@ -116,11 +116,11 @@ public class Activator implements BundleActivator {
 		// gets notified when Endpoints are discovered
 		Properties props = new Properties();
 		props.put(
-				org.osgi.service.remoteserviceadmin.EndpointListener.ENDPOINT_LISTENER_SCOPE,
+				org.osgi.service.remoteserviceadmin.EndpointEventListener.ENDPOINT_LISTENER_SCOPE,
 				basicTopologyManagerImpl.getScope());
-		endpointListenerReg = getContext().registerService(
-				EndpointListener.class.getName(), basicTopologyManagerImpl,
-				(Dictionary) props);
+		endpointEventListenerReg = getContext().registerService(
+				EndpointEventListener.class.getName(),
+				basicTopologyManagerImpl, (Dictionary) props);
 
 		// Like EventAdmin, if equinox ds is running, then we simply return (no
 		// more to do)
@@ -147,7 +147,8 @@ public class Activator implements BundleActivator {
 		// Otherwise (no DS), we create a basicTopologyManagerComponent
 		basicTopologyManagerComp = new BasicTopologyManagerComponent();
 		// bind the topology manager to it
-		basicTopologyManagerComp.bindEndpointListener(basicTopologyManagerImpl);
+		basicTopologyManagerComp
+				.bindEndpointEventListener(basicTopologyManagerImpl);
 		// Register RemoteServiceAdminListener
 		eventAdminListenerRegistration = this.context.registerService(
 				RemoteServiceAdminListener.class, basicTopologyManagerComp,
@@ -172,12 +173,12 @@ public class Activator implements BundleActivator {
 		}
 		if (basicTopologyManagerComp != null) {
 			basicTopologyManagerComp
-					.unbindEndpointListener(basicTopologyManagerImpl);
+					.unbindEndpointEventListener(basicTopologyManagerImpl);
 			basicTopologyManagerComp = null;
 		}
-		if (endpointListenerReg != null) {
-			endpointListenerReg.unregister();
-			endpointListenerReg = null;
+		if (endpointEventListenerReg != null) {
+			endpointEventListenerReg.unregister();
+			endpointEventListenerReg = null;
 		}
 		if (eventAdminListenerRegistration != null) {
 			eventAdminListenerRegistration.unregister();

@@ -147,38 +147,69 @@ public class EndpointDescriptionLocator {
 			public void dispatchEvent(Object eventListener,
 					Object listenerObject, int eventAction, Object eventObject) {
 				final String logMethodName = "dispatchEvent"; //$NON-NLS-1$
-				final EndpointListenerEvent event = (EndpointListenerEvent) eventObject;
-				final EndpointListener endpointListener = event
-						.getEndpointListener();
-				final EndpointDescription endpointDescription = event
-						.getEndointDescription();
-				final String matchingFilter = event.getMatchingFilter();
+				// We now dispatch both EndpointListenerEvents
+				if (eventObject instanceof EndpointListenerEvent) {
+					final EndpointListenerEvent event = (EndpointListenerEvent) eventObject;
+					final EndpointListener endpointListener = event
+							.getEndpointListener();
+					final EndpointDescription endpointDescription = event
+							.getEndointDescription();
+					final String matchingFilter = event.getMatchingFilter();
 
-				try {
-					if (event.isDiscovered())
-						endpointListener.endpointAdded(endpointDescription,
-								matchingFilter);
-					else
-						endpointListener.endpointRemoved(endpointDescription,
-								matchingFilter);
-				} catch (Exception e) {
-					String message = "Exception in EndpointListener listener=" //$NON-NLS-1$
-							+ endpointListener + " description=" //$NON-NLS-1$
-							+ endpointDescription + " matchingFilter=" //$NON-NLS-1$
-							+ matchingFilter;
-					logError(logMethodName, message, e);
-				} catch (LinkageError e) {
-					String message = "LinkageError in EndpointListener listener=" //$NON-NLS-1$
-							+ endpointListener + " description=" //$NON-NLS-1$
-							+ endpointDescription + " matchingFilter=" //$NON-NLS-1$
-							+ matchingFilter;
-					logError(logMethodName, message, e);
-				} catch (AssertionError e) {
-					String message = "AssertionError in EndpointListener listener=" //$NON-NLS-1$
-							+ endpointListener + " description=" //$NON-NLS-1$
-							+ endpointDescription + " matchingFilter=" //$NON-NLS-1$
-							+ matchingFilter;
-					logError(logMethodName, message, e);
+					try {
+						if (event.isDiscovered())
+							endpointListener.endpointAdded(endpointDescription,
+									matchingFilter);
+						else
+							endpointListener.endpointRemoved(
+									endpointDescription, matchingFilter);
+					} catch (Exception e) {
+						String message = "Exception in EndpointListener listener=" //$NON-NLS-1$
+								+ endpointListener + " description=" //$NON-NLS-1$
+								+ endpointDescription + " matchingFilter=" //$NON-NLS-1$
+								+ matchingFilter;
+						logError(logMethodName, message, e);
+					} catch (LinkageError e) {
+						String message = "LinkageError in EndpointListener listener=" //$NON-NLS-1$
+								+ endpointListener + " description=" //$NON-NLS-1$
+								+ endpointDescription + " matchingFilter=" //$NON-NLS-1$
+								+ matchingFilter;
+						logError(logMethodName, message, e);
+					} catch (AssertionError e) {
+						String message = "AssertionError in EndpointListener listener=" //$NON-NLS-1$
+								+ endpointListener + " description=" //$NON-NLS-1$
+								+ endpointDescription + " matchingFilter=" //$NON-NLS-1$
+								+ matchingFilter;
+						logError(logMethodName, message, e);
+					}
+				// and EndpointEventListenerEvents
+				} else if (eventObject instanceof EndpointEventListenerEvent) {
+					final EndpointEventListenerEvent event = (EndpointEventListenerEvent) eventObject;
+					final EndpointEventListener endpointEventListener = event.getEndpointEventListener();
+					final EndpointEvent endpointEvent = event.getEndpointEvent();
+					final String matchingFilter = event.getMatchingFilter();
+					try {
+						endpointEventListener.endpointChanged(endpointEvent, matchingFilter);
+					} catch (Exception e) {
+						String message = "Exception in EndpointEventListener listener=" //$NON-NLS-1$
+								+ endpointEventListener + " event=" //$NON-NLS-1$
+								+ endpointEvent + " matchingFilter=" //$NON-NLS-1$
+								+ matchingFilter;
+						logError(logMethodName, message, e);
+					} catch (LinkageError e) {
+						String message = "LinkageError in EndpointEventListener listener=" //$NON-NLS-1$
+								+ endpointEventListener + " event=" //$NON-NLS-1$
+								+ endpointEvent + " matchingFilter=" //$NON-NLS-1$
+								+ matchingFilter;
+						logError(logMethodName, message, e);
+					} catch (AssertionError e) {
+						String message = "AssertionError in EndpointEventListener listener=" //$NON-NLS-1$
+								+ endpointEventListener + " event=" //$NON-NLS-1$
+								+ endpointEvent + " matchingFilter=" //$NON-NLS-1$
+								+ matchingFilter;
+						logError(logMethodName, message, e);
+						
+					}
 				}
 			}
 		});
@@ -448,7 +479,7 @@ public class EndpointDescriptionLocator {
 	void queueEndpointDescription(
 			EndpointEventListener listener,
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
-			String matchingFilters, int eventType) {
+			String matchingFilter, int eventType) {
 		if (eventQueue == null)
 			return;
 		trace("queueEndpointDescription", "endpointDescription=" //$NON-NLS-1$ //$NON-NLS-2$
@@ -456,7 +487,7 @@ public class EndpointDescriptionLocator {
 		synchronized (eventQueue) {
 			eventQueue
 					.dispatchEventAsynchronous(0, new EndpointEventListenerEvent(
-							listener, new EndpointEvent(eventType, endpointDescription), matchingFilters));
+							listener, new EndpointEvent(eventType, endpointDescription), matchingFilter));
 		}
 	}
 
