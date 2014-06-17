@@ -321,51 +321,36 @@ public class RemoteServiceAdmin implements
 				synchronized (exportedRegistrations) {
 					// For all selected containers
 					for (int i = 0; i < rsContainers.length; i++) {
-						ExportRegistration exportRegistration = null;
-						// If we've already got an export endpoint
-						// for this service reference/containerID combination,
-						// then create an ExportRegistration that uses the
-						// endpoint
-						ExportEndpoint exportEndpoint = findExistingExportEndpoint(
-								serviceReference, rsContainers[i]
-										.getContainer().getID());
-						// If we've already got one, then create a new
-						// ExportRegistration for it and we're done
-						if (exportEndpoint != null)
-							exportRegistration = new ExportRegistration(
-									exportEndpoint);
-						else {
-							Map endpointDescriptionProperties = createExportEndpointDescriptionProperties(
-									serviceReference,
-									(Map<String, Object>) overridingProperties,
-									exportedInterfaces, serviceIntents,
-									rsContainers[i]);
-							// otherwise, actually export the service to create
-							// a
-							// new
-							// ExportEndpoint and use it to create a new
-							// ExportRegistration
-							EndpointDescription endpointDescription = new EndpointDescription(
-									serviceReference,
-									endpointDescriptionProperties);
+						Map endpointDescriptionProperties = createExportEndpointDescriptionProperties(
+								serviceReference,
+								(Map<String, Object>) overridingProperties,
+								exportedInterfaces, serviceIntents,
+								rsContainers[i]);
+						// otherwise, actually export the service to create
+						// a new ExportEndpoint and use it to create a new
+						// ExportRegistration
+						EndpointDescription endpointDescription = new EndpointDescription(
+								serviceReference, endpointDescriptionProperties);
 
-							checkEndpointPermission(endpointDescription,
-									EndpointPermission.EXPORT);
-							try {
-								// Check security access for export
-								// Actually do the export and return export
-								// registration
-								exportRegistration = exportService(
-										serviceReference, overridingProperties,
-										exportedInterfaces, rsContainers[i],
-										endpointDescriptionProperties);
-							} catch (Exception e) {
-								exportRegistration = new ExportRegistration(e,
-										endpointDescription);
-							}
+						checkEndpointPermission(endpointDescription,
+								EndpointPermission.EXPORT);
+
+						ExportRegistration exportRegistration = null;
+
+						try {
+							// Actually do the export and return export
+							// registration
+							exportRegistration = exportService(
+									serviceReference, overridingProperties,
+									exportedInterfaces, rsContainers[i],
+									endpointDescriptionProperties);
+						} catch (Exception e) {
+							exportRegistration = new ExportRegistration(e,
+									endpointDescription);
 						}
-						addExportRegistration(exportRegistration);
-						// We add it to the results in either case
+
+						addExportRegistration(exportRegistration);						
+						// We add it to the results in either success or error case
 						resultRegistrations.add(exportRegistration);
 					}
 				}
