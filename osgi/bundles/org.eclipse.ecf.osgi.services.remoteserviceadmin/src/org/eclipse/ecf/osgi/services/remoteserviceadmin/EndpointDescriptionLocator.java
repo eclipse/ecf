@@ -272,7 +272,7 @@ public class EndpointDescriptionLocator {
 						Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> allDiscoveredEndpointDescriptions = getAllDiscoveredEndpointDescriptions();
 						for (org.osgi.service.remoteserviceadmin.EndpointDescription ed : allDiscoveredEndpointDescriptions) {
 							EndpointDescriptionLocator.EndpointEventListenerHolder[] endpointEventListenerHolders = getMatchingEndpointEventListenerHolders(
-									new ServiceReference[] { reference }, ed);
+									new ServiceReference[] { reference }, ed, EndpointEvent.ADDED);
 							if (endpointEventListenerHolders != null) {
 								for (int i = 0; i < endpointEventListenerHolders.length; i++) {
 									queueEndpointDescription(
@@ -281,7 +281,8 @@ public class EndpointDescriptionLocator {
 											endpointEventListenerHolders[i]
 													.getDescription(),
 											endpointEventListenerHolders[i]
-													.getMatchingFilter(), EndpointEvent.ADDED);
+													.getMatchingFilter(), 
+											endpointEventListenerHolders[i].getType());
 								}
 							}
 						}
@@ -525,14 +526,14 @@ public class EndpointDescriptionLocator {
 	}
 
 	void queueEndpointEvent(org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription, int type) {
-		EndpointEventListenerHolder[] endpointEventListenerHolders = getMatchingEndpointEventListenerHolders(endpointDescription);
+		EndpointEventListenerHolder[] endpointEventListenerHolders = getMatchingEndpointEventListenerHolders(endpointDescription, type);
 		if (endpointEventListenerHolders != null) {
 			for (int i = 0; i < endpointEventListenerHolders.length; i++) {
 				queueEndpointDescription(
 						endpointEventListenerHolders[i].getListener(),
 						endpointEventListenerHolders[i].getDescription(),
 						endpointEventListenerHolders[i].getMatchingFilter(),
-						type);
+						endpointEventListenerHolders[i].getType());
 
 			}
 		} else {
@@ -753,7 +754,7 @@ public class EndpointDescriptionLocator {
 	 * @since 4.1
 	 */
 	protected EndpointEventListenerHolder[] getMatchingEndpointEventListenerHolders(
-			final EndpointDescription description) {
+			final EndpointDescription description, final int type) {
 		return AccessController
 				.doPrivileged(new PrivilegedAction<EndpointEventListenerHolder[]>() {
 					public EndpointEventListenerHolder[] run() {
@@ -761,7 +762,7 @@ public class EndpointDescriptionLocator {
 							return getMatchingEndpointEventListenerHolders(
 									endpointEventListenerTracker
 											.getServiceReferences(),
-									description);
+									description, type);
 						}
 					}
 				});
@@ -774,11 +775,13 @@ public class EndpointDescriptionLocator {
 		private EndpointEventListener listener;
 		private EndpointDescription description;
 		private String matchingFilter;
+		private int type;
 		
-		public EndpointEventListenerHolder(EndpointEventListener l, EndpointDescription d, String f) {
+		public EndpointEventListenerHolder(EndpointEventListener l, EndpointDescription d, String f, int t) {
 			this.listener = l;
 			this.description = d;
 			this.matchingFilter = f;
+			this.type = t;
 		}
 		
 		public EndpointEventListener getListener() {
@@ -791,6 +794,10 @@ public class EndpointDescriptionLocator {
 		
 		public String getMatchingFilter() {
 			return matchingFilter;
+		}
+		
+		public int getType() {
+			return type;
 		}
 	}
 	
@@ -824,7 +831,7 @@ public class EndpointDescriptionLocator {
 	 * @since 4.1
 	 */
 	public EndpointEventListenerHolder[] getMatchingEndpointEventListenerHolders(
-			ServiceReference[] refs, EndpointDescription description) {
+			ServiceReference[] refs, EndpointDescription description, int type) {
 		if (refs == null)
 			return null;
 		List results = new ArrayList();
@@ -836,11 +843,30 @@ public class EndpointDescriptionLocator {
 			List<String> filters = PropertiesUtil.getStringPlusProperty(
 					getMapFromProperties(refs[i]),
 					EndpointEventListener.ENDPOINT_LISTENER_SCOPE);
+			// Only proceed if there is a filter present
 			if (filters.size() > 0) {
-				String matchingFilter = isMatch(description, filters);
-				if (matchingFilter != null)
-					results.add(new EndpointEventListenerHolder(listener,
-							description, matchingFilter));
+				if (type == EndpointEvent.MODIFIED) {
+					EndpointEventListenerHolder eh = null;
+					// If the type is modified, we determine whether it's a simple
+					// MODIFIED, or whether it's MODIFIED_ENDMATCH by whether
+					// there is still a matching filter for the new/modified 
+					// EndpointDescription
+					String matchingFilter = isMatch(description, filters);
+					if (matchingFilter == null) 
+						// no filters match, so this is a MODIFIED_ENDMATCH for the given
+						// EndpointEventListener
+						eh = new EndpointEventListenerHolder(listener, description, "", EndpointEvent.MODIFIED_ENDMATCH); //$NON-NLS-1$
+					else 
+						// it still matches, so it's a simple MODIFIED
+						eh = new EndpointEventListenerHolder(listener, description, matchingFilter, EndpointEvent.MODIFIED);
+					// Add the eh to the results (to be notified)
+					results.add(eh);
+				} else {
+					String matchingFilter = isMatch(description, filters);
+					if (matchingFilter != null)
+						results.add(new EndpointEventListenerHolder(listener,
+							description, matchingFilter, type));
+				}
 			}
 		}
 		return (EndpointEventListenerHolder[]) results
