@@ -24,12 +24,13 @@ public class BasicTopologyManagerComponent implements EventListenerHook,
 	private BasicTopologyManagerImpl basicTopologyManagerImpl;
 
 	void bindEndpointEventListener(EndpointEventListener el) {
-		if (el instanceof BasicTopologyManagerImpl)
-			basicTopologyManagerImpl = (BasicTopologyManagerImpl) el;
+		if (el instanceof Activator.ProxyEndpointEventListener)
+			basicTopologyManagerImpl = ((Activator.ProxyEndpointEventListener) el)
+					.getBasicTopologyManagerImpl();
 	}
 
 	void unbindEndpointEventListener(EndpointEventListener el) {
-		if (el instanceof BasicTopologyManagerImpl)
+		if (el instanceof Activator.ProxyEndpointEventListener)
 			basicTopologyManagerImpl = null;
 	}
 
