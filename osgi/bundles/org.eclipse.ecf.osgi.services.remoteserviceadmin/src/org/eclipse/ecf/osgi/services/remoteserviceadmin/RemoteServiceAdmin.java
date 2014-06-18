@@ -1155,8 +1155,16 @@ public class RemoteServiceAdmin implements
 		if (signers != null && signers.length > 0)
 			eventProperties.put("bundle.signer", signers); //$NON-NLS-1$
 		Throwable t = event.getException();
-		if (t != null)
+		if (t != null) {
 			eventProperties.put("cause", t); //$NON-NLS-1$
+			// Additions for RSA 1.1 section 122.7.1
+			eventProperties.put("exception", t); //$NON-NLS-1$
+			eventProperties.put("exception.class", t.getClass().getName()); //$NON-NLS-1$
+			String exceptionMessage = t.getMessage();
+			if (exceptionMessage != null)
+				eventProperties.put("exception.message", exceptionMessage); //$NON-NLS-1$
+		}
+		
 		long serviceId = endpointDescription.getServiceId();
 		if (serviceId != 0)
 			eventProperties
