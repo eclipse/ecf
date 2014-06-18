@@ -52,7 +52,7 @@
     <rm:provider componentTypes="osgi.bundle,eclipse.feature,buckminster" readerType="p2" source="false" mutable="false">
       <rm:property key="buckminster.source" value="false"/>
       <rm:property key="buckminster.mutable" value="false"/>
-      <rm:uri format="http://ftp.osuosl.org/pub/eclipse/modeling/emf/emf/updates/2.9milestones/"/>
+      <rm:uri format="http://ftp.osuosl.org/pub/eclipse/modeling/emf/emf/updates/2.9/"/>
     </rm:provider>
   </rm:searchPath>
   <rm:searchPath name="org.eclipse.ecf.rsa">
