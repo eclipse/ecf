@@ -40,3 +40,4 @@ Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.ecf.identity
 Service-Component: META-INF/dspresent.xml
 Bundle-Localization: plugin
+Provide-Capability: osgi.remoteserviceadmin.distribution; configs:List<String>=”ecf.rest.client”; version:Version=1.1 

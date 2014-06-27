@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %bundle.name
 Bundle-SymbolicName: org.eclipse.ecf.osgi.services.remoteserviceadmin
-Bundle-Version: 4.0.0.qualifier
+Bundle-Version: 4.1.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator
 Bundle-Vendor: %bundle.provider
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
@@ -29,9 +29,12 @@ Import-Package: javax.xml.parsers,
  org.osgi.framework.wiring;version="[1.0,2.0)",
  org.osgi.service.event,
  org.osgi.service.log,
- org.osgi.service.remoteserviceadmin;version="1.0",
+ org.osgi.service.remoteserviceadmin;version="1.1",
  org.osgi.util.tracker,
  org.xml.sax
 DynamicImport-Package: *
 Bundle-ActivationPolicy: lazy
+Provide-Capability: osgi.extender; osgi.extender=osgi.remoteserviceadmin; version:Version=1.1; uses:="org.osgi.service.remoteserviceadmin",
+ osgi.remoteserviceadmin.discovery;protocols:List<String>=”local”;version:Version=1.1
+
 

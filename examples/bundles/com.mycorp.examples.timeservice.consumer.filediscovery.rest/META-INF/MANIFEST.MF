@@ -2,7 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF RS Example REST Timeservice Consumer FileDiscovery
 Bundle-SymbolicName: com.mycorp.examples.timeservice.consumer.filediscovery.rest
-Bundle-Version: 1.1.0.qualifier
+Bundle-Version: 1.2.0.qualifier
 Bundle-Vendor: Eclipse.org - ECF
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Remote-Service: timeservicerestendpointdescription.xml
+Require-Capability: osgi.extender; filter:=(&(osgi.extender=osgi.remoteserviceadmin) (version>=1.1) (!(version>=2.0)))
+

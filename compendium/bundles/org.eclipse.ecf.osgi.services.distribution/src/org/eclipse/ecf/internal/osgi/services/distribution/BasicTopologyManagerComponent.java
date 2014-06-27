@@ -3,7 +3,7 @@ package org.eclipse.ecf.internal.osgi.services.distribution;
 import java.util.Map;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.hooks.service.EventListenerHook;
-import org.osgi.service.remoteserviceadmin.EndpointListener;
+import org.osgi.service.remoteserviceadmin.EndpointEventListener;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener;
 
@@ -23,13 +23,14 @@ public class BasicTopologyManagerComponent implements EventListenerHook,
 
 	private BasicTopologyManagerImpl basicTopologyManagerImpl;
 
-	void bindEndpointListener(EndpointListener el) {
-		if (el instanceof BasicTopologyManagerImpl)
-			basicTopologyManagerImpl = (BasicTopologyManagerImpl) el;
+	void bindEndpointEventListener(EndpointEventListener el) {
+		if (el instanceof Activator.ProxyEndpointEventListener)
+			basicTopologyManagerImpl = ((Activator.ProxyEndpointEventListener) el)
+					.getBasicTopologyManagerImpl();
 	}
 
-	void unbindEndpointListener(EndpointListener el) {
-		if (el instanceof BasicTopologyManagerImpl)
+	void unbindEndpointEventListener(EndpointEventListener el) {
+		if (el instanceof Activator.ProxyEndpointEventListener)
 			basicTopologyManagerImpl = null;
 	}
 

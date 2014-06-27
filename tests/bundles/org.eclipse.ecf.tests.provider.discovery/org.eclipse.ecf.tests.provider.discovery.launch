@@ -30,7 +30,7 @@
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog -console -clean"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.eclipse.ecf.tests.provider.discovery"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xms40m -Xmx384m&#10;-Dnet.mdns.port=65353&#10;-Dnet.mdns.interface=127.0.0.1&#10;-Dnet.slp.port=65427&#10;-Dnet.slp.interfaces=127.0.0.1&#10;-Dnet.slp.rediscover=15000&#10;-Dch.ethz.iks.slp.debug=false&#10;-Dnet.slp.traceDATraffic=false&#10;-Dnet.slp.traceMsg=false&#10;-Dnet.slp.traceDrop=false&#10;-Dnet.slp.traceReg=false&#10;-Dnet.slp.failercount=3&#13;&#10;-Dnet.slp.multicastTimeouts=10,25,50,100,250,500,1000&#13;&#10;-Dnet.slp.multicastMaximumWait=2000"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xms40m -Xmx384m&#13;&#10;-Dnet.mdns.port=65353&#13;&#10;-Dnet.mdns.interface=127.0.0.1&#13;&#10;-Dnet.slp.port=65427&#13;&#10;-Dnet.slp.interfaces=127.0.0.1&#13;&#10;-Dnet.slp.rediscover=15000&#13;&#10;-Dch.ethz.iks.slp.debug=false&#13;&#10;-Dnet.slp.traceDATraffic=false&#13;&#10;-Dnet.slp.traceMsg=false&#13;&#10;-Dnet.slp.traceDrop=false&#13;&#10;-Dnet.slp.traceReg=false&#13;&#10;-Dnet.slp.failercount=3&#13;&#13;&#10;-Dnet.slp.multicastTimeouts=10,25,50,100,250,500,1000&#13;&#13;&#10;-Dnet.slp.multicastMaximumWait=2000"/>
 <stringAttribute key="pde.version" value="3.3"/>
 <stringAttribute key="product" value="org.eclipse.sdk.ide"/>
 <booleanAttribute key="run_in_ui_thread" value="true"/>

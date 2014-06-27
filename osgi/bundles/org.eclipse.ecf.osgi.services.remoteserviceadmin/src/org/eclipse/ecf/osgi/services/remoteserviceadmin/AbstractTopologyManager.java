@@ -9,6 +9,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,6 +31,7 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.remoteserviceadmin.EndpointEventListener;
 import org.osgi.service.remoteserviceadmin.EndpointListener;
 import org.osgi.service.remoteserviceadmin.ImportRegistration;
 import org.osgi.util.tracker.ServiceTracker;
@@ -55,8 +57,8 @@ public abstract class AbstractTopologyManager {
 	private ServiceTracker remoteServiceAdminTracker;
 	private Object remoteServiceAdminTrackerLock = new Object();
 
-	private final Map<org.osgi.service.remoteserviceadmin.EndpointDescription, ServiceRegistration<IServiceInfo>> registrations =
-			new HashMap<org.osgi.service.remoteserviceadmin.EndpointDescription, ServiceRegistration<IServiceInfo>>();
+	private final Map<org.osgi.service.remoteserviceadmin.EndpointDescription, List<ServiceRegistration<IServiceInfo>>> registrations =
+			new HashMap<org.osgi.service.remoteserviceadmin.EndpointDescription, List<ServiceRegistration<IServiceInfo>>>();
 	private final ReentrantLock registrationLock;
 	
 	private boolean requireServiceExportedConfigs = new Boolean(
@@ -158,6 +160,49 @@ public abstract class AbstractTopologyManager {
 				.getService();
 	}
 
+	private void addRegistration(org.osgi.service.remoteserviceadmin.EndpointDescription ed, ServiceRegistration<IServiceInfo> reg) {
+		List<ServiceRegistration<IServiceInfo>> regs = this.registrations.get(ed);
+		if (regs == null) regs = new ArrayList<ServiceRegistration<IServiceInfo>>();
+		regs.add(reg);
+		this.registrations.put(ed, regs);
+	}
+	
+	/**
+	 * @since 4.1
+	 */
+	protected void advertiseModifyEndpointDescription(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
+		this.registrationLock.lock();
+		try {
+			final IServiceInfoFactory service = serviceInfoFactoryTracker
+					.getService();
+			if (service != null) {
+				final IServiceInfo serviceInfo = service.createServiceInfo(null,
+						endpointDescription);
+				if (serviceInfo != null) {
+					trace("advertiseModifyEndpointDescription", //$NON-NLS-1$
+							"advertising modify endpointDescription=" + endpointDescription +  //$NON-NLS-1$
+							" and IServiceInfo " + serviceInfo); //$NON-NLS-1$
+					
+					final ServiceRegistration<IServiceInfo> registerService = this.context
+							.registerService(IServiceInfo.class, serviceInfo, null);
+					
+					addRegistration(endpointDescription, registerService);
+				} else {
+					logError(
+							"advertiseModifyEndpointDescription",  //$NON-NLS-1$
+							"IServiceInfoFactory failed to convert EndpointDescription " + endpointDescription); //$NON-NLS-1$1
+				}
+			} else {
+				logError(
+						"advertiseModifyEndpointDescription",  //$NON-NLS-1$
+						"no IServiceInfoFactory service found"); //$NON-NLS-1$
+			}
+		} finally {
+			this.registrationLock.unlock();
+		}
+	}
+
 	/**
 	 * @since 3.0
 	 */
@@ -180,7 +225,8 @@ public abstract class AbstractTopologyManager {
 					
 					final ServiceRegistration<IServiceInfo> registerService = this.context
 							.registerService(IServiceInfo.class, serviceInfo, null);
-					this.registrations.put(endpointDescription, registerService);
+					
+					addRegistration(endpointDescription, registerService);
 				} else {
 					logError(
 							"advertiseEndpointDescription",  //$NON-NLS-1$
@@ -203,10 +249,11 @@ public abstract class AbstractTopologyManager {
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
 		this.registrationLock.lock();
 		try {
-			final ServiceRegistration<IServiceInfo> serviceRegistration = this.registrations
+			final List<ServiceRegistration<IServiceInfo>> serviceRegistrations = this.registrations
 					.remove(endpointDescription);
-			if (serviceRegistration != null) {
-				serviceRegistration.unregister();
+			if (serviceRegistrations != null) {
+				for(ServiceRegistration<IServiceInfo> serviceRegistration: serviceRegistrations) 
+					serviceRegistration.unregister();
 				return;
 			}
 		} finally {
@@ -244,7 +291,7 @@ public abstract class AbstractTopologyManager {
 	 */
 	protected void handleECFEndpointAdded(
 			EndpointDescription endpointDescription) {
-		trace("handleEndpointAdded", "endpointDescription=" //$NON-NLS-1$ //$NON-NLS-2$
+		trace("handleECFEndpointAdded", "endpointDescription=" //$NON-NLS-1$ //$NON-NLS-2$
 				+ endpointDescription);
 		// Import service
 		getRemoteServiceAdmin().importService(endpointDescription);
@@ -255,7 +302,7 @@ public abstract class AbstractTopologyManager {
 	 */
 	protected void handleECFEndpointRemoved(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
-		trace("handleEndpointRemoved", "endpointDescription=" //$NON-NLS-1$ //$NON-NLS-2$
+		trace("handleECFEndpointRemoved", "endpointDescription=" //$NON-NLS-1$ //$NON-NLS-2$
 				+ endpointDescription);
 		RemoteServiceAdmin rsa = (RemoteServiceAdmin) getRemoteServiceAdmin();
 		List<RemoteServiceAdmin.ImportRegistration> importedRegistrations = rsa
@@ -266,6 +313,25 @@ public abstract class AbstractTopologyManager {
 				trace("handleEndpointRemoved", "closing importedRegistration=" //$NON-NLS-1$ //$NON-NLS-2$
 						+ importedRegistration);
 				importedRegistration.close();
+			}
+		}
+	}
+
+	/**
+	 * @since 4.1
+	 */
+	protected void handleECFEndpointModified(EndpointDescription endpoint) {
+		trace("handleECFEndpointModified", "endpointDescription=" //$NON-NLS-1$ //$NON-NLS-2$
+				+ endpoint);
+		RemoteServiceAdmin rsa = (RemoteServiceAdmin) getRemoteServiceAdmin();
+		List<RemoteServiceAdmin.ImportRegistration> importedRegistrations = rsa
+				.getImportedRegistrations();
+		org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription ed = (org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription) endpoint;
+		for (RemoteServiceAdmin.ImportRegistration importedRegistration : importedRegistrations) {
+			if (importedRegistration.match(ed)) {
+				trace("handleECFEndpointModified", "updating importedRegistration=" //$NON-NLS-1$ //$NON-NLS-2$
+						+ importedRegistration);
+				importedRegistration.update(endpoint);
 			}
 		}
 	}
@@ -354,6 +420,16 @@ public abstract class AbstractTopologyManager {
 	}
 
 	/**
+	 * @since 4.1
+	 */
+	protected void handleNonECFEndpointModified(
+			EndpointEventListener basicTopologyManagerImpl,
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint) {
+		// TODO Auto-generated method stub
+
+	}
+
+	/**
 	 * @since 3.0
 	 */
 	protected void handleNonECFEndpointRemoved(
@@ -432,8 +508,17 @@ public abstract class AbstractTopologyManager {
 	}
 
 	protected void handleServiceModifying(ServiceReference serviceReference) {
-		logWarning(
-				"handleServiceModifying", "serviceReference=" + serviceReference + " modified with no response"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		List<RemoteServiceAdmin.ExportRegistration> exportedRegistrations = ((RemoteServiceAdmin) getRemoteServiceAdmin())
+				.getExportedRegistrations();
+		for (RemoteServiceAdmin.ExportRegistration exportedRegistration : exportedRegistrations) {
+			if (exportedRegistration.match(serviceReference)) {
+				trace("handleServiceModifying", "modifying exportRegistration for serviceReference=" //$NON-NLS-1$ //$NON-NLS-2$
+								+ serviceReference);
+				advertiseModifyEndpointDescription((EndpointDescription) exportedRegistration
+						.update(PropertiesUtil.copyProperties(serviceReference,
+								new HashMap<String, Object>())));
+			}
+		}
 	}
 
 	protected void handleServiceUnregistering(ServiceReference serviceReference) {

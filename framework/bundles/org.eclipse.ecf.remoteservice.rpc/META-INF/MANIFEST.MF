@@ -40,3 +40,4 @@ Export-Package: org.eclipse.ecf.internal.remoteservice.rpc;x-internal:=true,
  org.eclipse.ecf.remoteservice.rpc.server
 Bundle-Localization: plugin
 DynamicImport-Package: *
+Provide-Capability: osgi.remoteserviceadmin.distribution; configs:List<String>=”ecf.xmlrpc.client”; version:Version=1.1 

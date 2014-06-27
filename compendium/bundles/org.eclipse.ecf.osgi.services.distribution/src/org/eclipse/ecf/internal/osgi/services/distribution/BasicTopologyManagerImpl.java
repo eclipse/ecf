@@ -9,11 +9,13 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.remoteserviceadmin.EndpointEvent;
+import org.osgi.service.remoteserviceadmin.EndpointEventListener;
 import org.osgi.service.remoteserviceadmin.EndpointListener;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent;
 
 public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
-		EndpointListener {
+		EndpointListener, EndpointEventListener {
 
 	private static final boolean allowLoopbackReference = new Boolean(
 			System.getProperty(
@@ -118,6 +120,12 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 	public void endpointAdded(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
 			String matchedFilter) {
+		handleEndpointAdded(endpoint, matchedFilter);
+	}
+
+	protected void handleEndpointAdded(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
+			String matchedFilter) {
 		if (matchedFilter.equals(endpointListenerScope))
 			if (endpoint instanceof EndpointDescription)
 				handleECFEndpointAdded((EndpointDescription) endpoint);
@@ -139,6 +147,12 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 	 * java.lang.String)
 	 */
 	public void endpointRemoved(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
+			String matchedFilter) {
+		handleEndpointRemoved(endpoint, matchedFilter);
+	}
+
+	protected void handleEndpointRemoved(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
 			String matchedFilter) {
 		if (matchedFilter.equals(endpointListenerScope))
@@ -195,4 +209,54 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 					"handleRemoteAdminEvent", "RemoteServiceAdminEvent=" + rsaEvent + " received with unrecognized type"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 	}
+
+	/**
+	 * Implementation of
+	 * org.osgi.service.remoteserviceadmin.EndpointEventListener for rfc 203/RSA
+	 * 1.1
+	 * 
+	 * @see EndpointEventListener#endpointChanged(EndpointEvent, String)
+	 */
+	public void endpointChanged(EndpointEvent event, String matchedFilter) {
+		int eventType = event.getType();
+		org.osgi.service.remoteserviceadmin.EndpointDescription ed = event
+				.getEndpoint();
+		switch (eventType) {
+		case EndpointEvent.ADDED:
+			handleEndpointAdded(ed, matchedFilter);
+			break;
+		case EndpointEvent.REMOVED:
+			handleEndpointRemoved(ed, matchedFilter);
+			break;
+		case EndpointEvent.MODIFIED:
+			handleEndpointModified(ed, matchedFilter);
+			break;
+		case EndpointEvent.MODIFIED_ENDMATCH:
+			handleEndpointModifiedEndmatch(ed, matchedFilter);
+			break;
+		}
+	}
+
+	protected void handleEndpointModifiedEndmatch(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
+			String matchedFilter) {
+		// By default do nothing for end match. subclasses may decide
+		// to change this behavior
+	}
+
+	protected void handleEndpointModified(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
+			String matchedFilter) {
+		if (matchedFilter.equals(endpointListenerScope))
+			if (endpoint instanceof EndpointDescription)
+				handleECFEndpointModified((EndpointDescription) endpoint);
+			else
+				handleNonECFEndpointModified(this, endpoint);
+		else if (matchedFilter.equals(NO_ECF_SCOPE))
+			if (endpoint instanceof EndpointDescription)
+				handleECFEndpointModified((EndpointDescription) endpoint);
+			else
+				advertiseEndpointDescription(endpoint);
+	}
+
 }

@@ -67,15 +67,11 @@ public class DiscoveredEndpointDescriptionFactory extends
 					locator, discoveredServiceInfo);
 			synchronized (discoveredEndpointDescriptions) {
 				DiscoveredEndpointDescription ded = findDiscoveredEndpointDescription(endpointDescription);
-				if (ded != null)
-					return ded;
-				else {
-					ded = createDiscoveredEndpointDescription(locator,
-							discoveredServiceInfo, endpointDescription);
-					// put into discoveredEndpointDescriptions
-					discoveredEndpointDescriptions.add(ded);
-					return ded;
-				}
+				ded = createDiscoveredEndpointDescription(locator,
+						discoveredServiceInfo, endpointDescription);
+				// put into discoveredEndpointDescriptions
+				discoveredEndpointDescriptions.add(ded);
+				return ded;
 			}
 		} catch (Exception e) {
 			logError("createDiscoveredEndpointDescription", //$NON-NLS-1$

@@ -5,6 +5,6 @@
       <provide interface="org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener"/>
       <provide interface="org.osgi.framework.hooks.service.EventListenerHook"/>
    </service>
-   <reference bind="bindEndpointListener" cardinality="1..n" interface="org.osgi.service.remoteserviceadmin.EndpointListener" name="EndpointListener" policy="static" unbind="unbindEndpointListener"/>
+   <reference bind="bindEndpointEventListener" cardinality="1..n" interface="org.osgi.service.remoteserviceadmin.EndpointEventListener" name="EndpointEventListener" policy="static" unbind="unbindEndpointEventListener"/>
    <property name="event.topics" type="String" value="org/osgi/service/remoteserviceadmin/*"/>
 </scr:component>
