@@ -17,6 +17,7 @@
 # 
 (org.osgi.service.remoteserviceadmin.EndpointPermission "*" "read,export,import")
 (org.osgi.framework.ServicePermission "org.osgi.service.remoteserviceadmin.EndpointListener" "register,get")
+(org.osgi.framework.ServicePermission "org.osgi.service.remoteserviceadmin.EndpointEventListener" "get,register")
 (org.osgi.framework.ServicePermission "org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener" "register")
 (org.osgi.framework.ServicePermission "org.osgi.framework.hooks.service.EventListenerHook" "register")
 (org.osgi.framework.ServicePermission "org.osgi.service.remoteserviceadmin.RemoteServiceAdmin" "get")
