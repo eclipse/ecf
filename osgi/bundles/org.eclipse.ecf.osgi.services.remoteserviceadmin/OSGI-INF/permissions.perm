@@ -39,6 +39,7 @@
 (org.osgi.framework.ServicePermission "org.osgi.framework.hooks.service.EventListenerHook" "register")
 (org.osgi.framework.ServicePermission "org.eclipse.ecf.discovery.IDiscoveryAdvertiser" "get")
 (org.osgi.framework.ServicePermission "org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener" "get,register")
+(org.osgi.framework.ServicePermission "org.osgi.service.remoteserviceadmin.EndpointEventListener" "get,register")
 (org.osgi.framework.ServicePermission "*" "get,register")
 #  
 (org.osgi.service.event.TopicPermission "org/osgi/service/remoteserviceadmin/*" "publish,subscribe")
