@@ -32,6 +32,7 @@ import org.osgi.service.log.LogService;
 import org.osgi.service.remoteserviceadmin.EndpointDescription;
 import org.osgi.service.remoteserviceadmin.EndpointEvent;
 import org.osgi.service.remoteserviceadmin.EndpointEventListener;
+import org.osgi.service.remoteserviceadmin.EndpointListener;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -62,6 +63,7 @@ public class Activator implements BundleActivator {
 	private LogService logService = null;
 
 	private BasicTopologyManagerImpl basicTopologyManagerImpl;
+	private ServiceRegistration endpointListenerReg;
 	private ServiceRegistration endpointEventListenerReg;
 	private Map<Bundle, List<EndpointEventHolder>> bundleEndpointEventListenerMap = new HashMap<Bundle, List<EndpointEventHolder>>();
 
@@ -236,6 +238,7 @@ public class Activator implements BundleActivator {
 		this.context = ctxt;
 		// Create basicTopologyManagerImpl
 		basicTopologyManagerImpl = new BasicTopologyManagerImpl(context);
+
 		// Register basicTopologyManagerImpl as EndpointListener always, so that
 		// gets notified when Endpoints are discovered
 		Properties props = new Properties();
@@ -243,6 +246,10 @@ public class Activator implements BundleActivator {
 				org.osgi.service.remoteserviceadmin.EndpointEventListener.ENDPOINT_LISTENER_SCOPE,
 				basicTopologyManagerImpl.getScope());
 
+		// Register as deprecated EndpointListener
+		endpointListenerReg = getContext().registerService(
+				EndpointListener.class.getName(), basicTopologyManagerImpl,
+				(Dictionary) props);
 		// As per section 122.6.3/Tracking providers -Tracking providers – An
 		// Endpoint Event
 		// Listener or Endpoint Listener must track the bundles that provide it
@@ -332,6 +339,10 @@ public class Activator implements BundleActivator {
 		}
 		if (endpointEventListenerReg != null) {
 			endpointEventListenerReg.unregister();
+			endpointEventListenerReg = null;
+		}
+		if (endpointListenerReg != null) {
+			endpointListenerReg.unregister();
 			endpointEventListenerReg = null;
 		}
 		if (eventAdminListenerRegistration != null) {
