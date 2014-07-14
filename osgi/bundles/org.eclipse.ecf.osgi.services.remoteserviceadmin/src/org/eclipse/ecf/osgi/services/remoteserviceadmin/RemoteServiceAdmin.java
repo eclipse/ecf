@@ -71,6 +71,8 @@ import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.osgi.service.remoteserviceadmin.EndpointPermission;
+import org.osgi.service.remoteserviceadmin.ExportRegistration;
+import org.osgi.service.remoteserviceadmin.ImportRegistration;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -105,9 +107,6 @@ public class RemoteServiceAdmin implements
 					"org.eclipse.ecf.osgi.services.remoteserviceadmin.consumerAutoCreateContainer", //$NON-NLS-1$
 					"true")).booleanValue(); //$NON-NLS-1$
 
-	private ServiceTracker packageAdminTracker;
-	private Object packageAdminTrackerLock = new Object();
-
 	private Object eventAdminTrackerLock = new Object();
 	private ServiceTracker eventAdminTracker;
 
@@ -120,9 +119,12 @@ public class RemoteServiceAdmin implements
 	private ConsumerContainerSelector defaultConsumerContainerSelector;
 	private ServiceRegistration defaultConsumerContainerSelectorRegistration;
 
-	private Collection<ExportRegistration> exportedRegistrations = new ArrayList<ExportRegistration>();
-	private Collection<ImportRegistration> importedRegistrations = new ArrayList<ImportRegistration>();
+	private Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> exportedRegistrations;
+	private Collection<org.osgi.service.remoteserviceadmin.ImportRegistration> importedRegistrations;
 
+	private Collection<ExportRegistration> localExportedRegistrations = new ArrayList<ExportRegistration>();
+	private Collection<ImportRegistration> localImportedRegistrations = new ArrayList<ImportRegistration>();
+	
 	private ServiceRegistration eventListenerHookRegistration;
 
 	List<ExportRegistration> getExportedRegistrations() {
@@ -137,9 +139,11 @@ public class RemoteServiceAdmin implements
 		}
 	}
 
-	public RemoteServiceAdmin(Bundle clientBundle) {
+	public RemoteServiceAdmin(Bundle clientBundle, Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> exportedRegistrations, Collection<org.osgi.service.remoteserviceadmin.ImportRegistration> importedRegistrations) {
 		this.clientBundle = clientBundle;
 		Assert.isNotNull(this.clientBundle);
+		this.exportedRegistrations = exportedRegistrations;
+		this.importedRegistrations = importedRegistrations;
 		// Only setup defaults if it hasn't already been done by some other
 		// Remote Service Admin instance
 		Properties props = new Properties();
@@ -448,7 +452,7 @@ public class RemoteServiceAdmin implements
 			// assumes that a SecurityException is thrown when accessed without READ permission
 			if (exportedRegistrations.isEmpty())
 				checkRSAReadAccess();
-			for (ExportRegistration reg : exportedRegistrations) {
+			for (org.osgi.service.remoteserviceadmin.ExportRegistration reg : exportedRegistrations) {
 				org.osgi.service.remoteserviceadmin.ExportReference eRef = reg
 						.getExportReference();
 				if (eRef != null
@@ -479,7 +483,7 @@ public class RemoteServiceAdmin implements
 			// assumes that a SecurityException is thrown when accessed without READ permission
 			if (importedRegistrations.isEmpty())
 				checkRSAReadAccess();
-			for (ImportRegistration reg : importedRegistrations) {
+			for (org.osgi.service.remoteserviceadmin.ImportRegistration reg : importedRegistrations) {
 				org.osgi.service.remoteserviceadmin.ImportReference iRef = reg
 						.getImportReference();
 				if (iRef != null
@@ -517,24 +521,29 @@ public class RemoteServiceAdmin implements
 	}
 
 	private Bundle getRSABundle() {
-		return getRSABundleContext().getBundle();
+		BundleContext bc = Activator.getContext();
+		if (bc == null) return null;
+		return bc.getBundle();
 	}
 
 	private void addImportRegistration(ImportRegistration importRegistration) {
 		synchronized (importedRegistrations) {
 			importedRegistrations.add(importRegistration);
+			localImportedRegistrations.add(importRegistration);
 		}
 	}
 
 	private void addExportRegistration(ExportRegistration exportRegistration) {
 		synchronized (exportedRegistrations) {
 			exportedRegistrations.add(exportRegistration);
+			localExportedRegistrations.add(exportRegistration);
 		}
 	}
 
 	private boolean removeExportRegistration(
 			ExportRegistration exportRegistration) {
 		synchronized (exportedRegistrations) {
+			localExportedRegistrations.remove(exportRegistration);
 			return exportedRegistrations.remove(exportRegistration);
 		}
 	}
@@ -542,6 +551,7 @@ public class RemoteServiceAdmin implements
 	private boolean removeImportRegistration(
 			ImportRegistration importRegistration) {
 		synchronized (importedRegistrations) {
+			localExportedRegistrations.remove(importRegistration);
 			return importedRegistrations.remove(importRegistration);
 		}
 	}
@@ -1292,11 +1302,14 @@ public class RemoteServiceAdmin implements
 
 	private ExportEndpoint findExistingExportEndpoint(
 			ServiceReference serviceReference, ID containerID) {
-		for (ExportRegistration eReg : exportedRegistrations) {
-			ExportEndpoint exportEndpoint = eReg.getExportEndpoint(
-					serviceReference, containerID);
-			if (exportEndpoint != null)
-				return exportEndpoint;
+		for (org.osgi.service.remoteserviceadmin.ExportRegistration eReg : exportedRegistrations) {
+			if (eReg instanceof ExportRegistration) {
+
+				ExportEndpoint exportEndpoint = ((ExportRegistration) eReg)
+						.getExportEndpoint(serviceReference, containerID);
+				if (exportEndpoint != null)
+					return exportEndpoint;
+			}
 		}
 		return null;
 	}
@@ -1333,7 +1346,7 @@ public class RemoteServiceAdmin implements
 						synchronized (consumerContainerSelectorTrackerLock) {
 							if (consumerContainerSelectorTracker == null) {
 								consumerContainerSelectorTracker = new ServiceTracker(
-										getClientBundleContext(),
+										getRSABundleContext(),
 										IConsumerContainerSelector.class
 												.getName(), null);
 								consumerContainerSelectorTracker.open();
@@ -2232,6 +2245,23 @@ public class RemoteServiceAdmin implements
 	public void close() {
 		trace("close", "closing importedRegistrations=" + importedRegistrations //$NON-NLS-1$ //$NON-NLS-2$
 				+ " exportedRegistrations=" + exportedRegistrations); //$NON-NLS-1$
+		// close any imported and exported registrations
+		List<org.osgi.service.remoteserviceadmin.ImportRegistration> toClose = null;
+		synchronized (importedRegistrations) {
+			toClose = new ArrayList<org.osgi.service.remoteserviceadmin.ImportRegistration>(localImportedRegistrations);
+			localImportedRegistrations.clear();
+		}
+		for (org.osgi.service.remoteserviceadmin.ImportRegistration reg : toClose)
+			reg.close();
+		
+		List<org.osgi.service.remoteserviceadmin.ExportRegistration> toClose1 = null;
+		synchronized (localExportedRegistrations) {
+			toClose1 = new ArrayList<org.osgi.service.remoteserviceadmin.ExportRegistration>(localExportedRegistrations);
+			localExportedRegistrations.clear();
+		}
+		for (org.osgi.service.remoteserviceadmin.ExportRegistration reg1 : toClose1)
+			reg1.close();
+
 		synchronized (remoteServiceAdminListenerTrackerLock) {
 			if (remoteServiceAdminListenerTracker != null) {
 				remoteServiceAdminListenerTracker.close();
@@ -2242,12 +2272,6 @@ public class RemoteServiceAdmin implements
 			if (eventAdminTracker != null) {
 				eventAdminTracker.close();
 				eventAdminTracker = null;
-			}
-		}
-		synchronized (packageAdminTrackerLock) {
-			if (packageAdminTracker != null) {
-				packageAdminTracker.close();
-				packageAdminTracker = null;
 			}
 		}
 		synchronized (proxyClassLoaders) {
@@ -2289,32 +2313,20 @@ public class RemoteServiceAdmin implements
 			defaultConsumerContainerSelector.close();
 			defaultConsumerContainerSelector = null;
 		}
-		List<ImportRegistration> toClose = null;
-		synchronized (importedRegistrations) {
-			toClose = new ArrayList<ImportRegistration>(importedRegistrations);
-			importedRegistrations.clear();
-		}
-		for (ImportRegistration reg : toClose)
-			reg.close();
-		List<ExportRegistration> toClose1 = null;
-		synchronized (exportedRegistrations) {
-			toClose1 = new ArrayList<ExportRegistration>(exportedRegistrations);
-			exportedRegistrations.clear();
-		}
-		for (ExportRegistration reg1 : toClose1)
-			reg1.close();
 		if (eventListenerHookRegistration != null) {
 			eventListenerHookRegistration.unregister();
 			eventListenerHookRegistration = null;
 		}
-		this.clientBundle = null;
 	}
 
 	private ImportEndpoint findImportEndpoint(EndpointDescription ed) {
-		for (ImportRegistration reg : importedRegistrations) {
-			ImportEndpoint endpoint = reg.getImportEndpoint(ed);
-			if (endpoint != null)
-				return endpoint;
+		for (org.osgi.service.remoteserviceadmin.ImportRegistration reg : importedRegistrations) {
+			if (reg instanceof ImportRegistration) {
+				ImportEndpoint endpoint = ((ImportRegistration) reg)
+						.getImportEndpoint(ed);
+				if (endpoint != null)
+					return endpoint;
+			}
 		}
 		return null;
 	}
@@ -2322,12 +2334,15 @@ public class RemoteServiceAdmin implements
 	private void unimportService(IRemoteServiceID remoteServiceID) {
 		List<ImportRegistration> removedRegistrations = new ArrayList<ImportRegistration>();
 		synchronized (importedRegistrations) {
-			for (Iterator<ImportRegistration> i = importedRegistrations
+			for (Iterator<org.osgi.service.remoteserviceadmin.ImportRegistration> i = importedRegistrations
 					.iterator(); i.hasNext();) {
-				ImportRegistration importRegistration = i.next();
-				if (importRegistration != null
-						&& importRegistration.match(remoteServiceID))
-					removedRegistrations.add(importRegistration);
+				org.osgi.service.remoteserviceadmin.ImportRegistration iReg = i
+						.next();
+				if (iReg instanceof ImportRegistration) {
+					ImportRegistration importRegistration = (ImportRegistration) iReg;
+					if (importRegistration.match(remoteServiceID))
+						removedRegistrations.add(importRegistration);
+				}
 			}
 		}
 		// Now close all of them

@@ -10,6 +10,7 @@
 package org.eclipse.ecf.internal.osgi.services.remoteserviceadmin;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -42,6 +43,8 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
 import org.osgi.service.log.LogService;
+import org.osgi.service.remoteserviceadmin.ExportRegistration;
+import org.osgi.service.remoteserviceadmin.ImportRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
@@ -82,6 +85,9 @@ public class Activator implements BundleActivator {
 	private static final String RSA_PROXY_BUNDLE_SYMBOLIC_ID = "org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy"; //$NON-NLS-1$
 
 	private BundleContext proxyServiceFactoryBundleContext;
+
+	private Collection<ExportRegistration> exportedRegistrations;
+	private Collection<ImportRegistration> importedRegistrations;
 
 	private void initializeProxyServiceFactoryBundle() throws Exception {
 		// First, find proxy bundle
@@ -187,6 +193,8 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
 		Activator.instance = this;
+		this.exportedRegistrations = new ArrayList<ExportRegistration>();
+		this.importedRegistrations = new ArrayList<ImportRegistration>();
 		// initialize the RSA proxy service factory bundle...so that we
 		// can get/use *that bundle's BundleContext for registering the
 		// proxy ServiceFactory.
@@ -222,7 +230,7 @@ public class Activator implements BundleActivator {
 							RemoteServiceAdmin rsa = remoteServiceAdmins
 									.get(bundle);
 							if (rsa == null) {
-								rsa = new RemoteServiceAdmin(bundle);
+								rsa = new RemoteServiceAdmin(bundle, exportedRegistrations,importedRegistrations);
 								remoteServiceAdmins.put(bundle, rsa);
 							}
 							result = rsa;
@@ -290,18 +298,6 @@ public class Activator implements BundleActivator {
 		endpointDescriptionLocator.start();
 	}
 
-	private void clearRSAs() {
-		synchronized (remoteServiceAdmins) {
-			for (Iterator<Entry<Bundle, RemoteServiceAdmin>> i = remoteServiceAdmins
-					.entrySet().iterator(); i.hasNext();) {
-				Entry<Bundle, RemoteServiceAdmin> entry = i.next();
-				RemoteServiceAdmin rsa = entry.getValue();
-				rsa.close();
-				i.remove();
-			}
-		}
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -321,7 +317,6 @@ public class Activator implements BundleActivator {
 			remoteServiceAdminRegistration.unregister();
 			remoteServiceAdminRegistration = null;
 		}
-		clearRSAs();
 		if (iServiceInfoFactoryRegistration != null) {
 			iServiceInfoFactoryRegistration.unregister();
 			iServiceInfoFactoryRegistration = null;
@@ -340,6 +335,18 @@ public class Activator implements BundleActivator {
 			}
 		}
 		stopProxyServiceFactoryBundle();
+		synchronized (importedRegistrations) {
+			if (importedRegistrations != null) {
+				importedRegistrations.clear();
+				importedRegistrations = null;
+			}
+		}
+		synchronized (exportedRegistrations) {
+			if (exportedRegistrations != null) {
+				exportedRegistrations.clear();
+				exportedRegistrations = null;
+			}
+		}
 		Activator.context = null;
 		Activator.instance = null;
 	}
