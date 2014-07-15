@@ -71,8 +71,6 @@ import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.osgi.service.remoteserviceadmin.EndpointPermission;
-import org.osgi.service.remoteserviceadmin.ExportRegistration;
-import org.osgi.service.remoteserviceadmin.ImportRegistration;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -139,6 +137,16 @@ public class RemoteServiceAdmin implements
 		}
 	}
 
+	public RemoteServiceAdmin(Bundle clientBundle) {
+		this(
+				clientBundle,
+				new ArrayList<org.osgi.service.remoteserviceadmin.ExportRegistration>(),
+				new ArrayList<org.osgi.service.remoteserviceadmin.ImportRegistration>());
+	}
+	
+	/**
+	 * @since 4.1
+	 */
 	public RemoteServiceAdmin(Bundle clientBundle, Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> exportedRegistrations, Collection<org.osgi.service.remoteserviceadmin.ImportRegistration> importedRegistrations) {
 		this.clientBundle = clientBundle;
 		Assert.isNotNull(this.clientBundle);
@@ -299,17 +307,8 @@ public class RemoteServiceAdmin implements
 							}
 						});
 			} catch (PrivilegedActionException e) {
-				// If exception, create error export registration
-				ExportRegistration errorRegistration = createErrorExportRegistration(
-						serviceReference,
-						(Map<String, Object>) overridingProperties,
-						"Error selecting or creating host container for serviceReference=" //$NON-NLS-1$
-								+ serviceReference + " properties=" //$NON-NLS-1$
-								+ overridingProperties,
-						(SelectContainerException) e.getException());
-				
-				addExportRegistration(errorRegistration);
-				resultRegistrations.add(errorRegistration);
+				// see discussion on osgi bug https://www.osgi.org/members/bugzilla/show_bug.cgi?id=2591
+				throw new IllegalArgumentException("Failed to select, create, or configure ECF host container",e.getException()); //$NON-NLS-1$
 			}
 			// If no registration exist (no errorRegistration added above)
 			if (resultRegistrations.size() == 0) {
@@ -658,22 +657,21 @@ public class RemoteServiceAdmin implements
 			Assert.isNotNull(exception);
 			this.exportReference = new ExportReference(exception,
 					errorEndpointDescription);
-			this.closed = true;
 		}
 
 		ID getContainerID() {
-			return exportReference.getContainerID();
+			return (closed)?null:exportReference.getContainerID();
 		}
 
 		ServiceReference getServiceReference() {
-			return exportReference.getExportedService();
+			return (closed)?null:exportReference.getExportedService();
 		}
 
 		public org.osgi.service.remoteserviceadmin.ExportReference getExportReference() {
 			Throwable t = getException();
 			if (t != null)
 				return null;
-			return exportReference;
+			return (closed)?null:exportReference;
 		}
 
 		boolean match(ServiceReference serviceReference) {
@@ -699,16 +697,16 @@ public class RemoteServiceAdmin implements
 
 		synchronized ExportEndpoint getExportEndpoint(
 				ServiceReference serviceReference, ID containerID) {
-			return match(serviceReference, containerID) ? exportReference
-					.getExportEndpoint() : null;
+			return (closed?null:(match(serviceReference, containerID) ? exportReference
+					.getExportEndpoint() : null));
 		}
 
 		IRemoteServiceRegistration getRemoteServiceRegistration() {
-			return exportReference.getRemoteServiceRegistration();
+			return (closed)?null:exportReference.getRemoteServiceRegistration();
 		}
 
 		EndpointDescription getEndpointDescription() {
-			return exportReference.getEndpointDescription();
+			return (closed)?null:exportReference.getEndpointDescription();
 		}
 
 		public void close() {
@@ -716,34 +714,36 @@ public class RemoteServiceAdmin implements
 			ID containerID = null;
 			Throwable exception = null;
 			EndpointDescription endpointDescription = null;
+			ExportReference exRef = null;
 			synchronized (this) {
 				// Only do this once
 				if (!closed) {
 					containerID = getContainerID();
 					exception = getException();
 					endpointDescription = getEndpointDescription();
+					exRef = this.exportReference;
 					publish = exportReference.close(this);
+					this.exportReference = null;
 					closed = true;
 				}
 			}
 			removeExportRegistration(this);
 			Bundle rsaBundle = getRSABundle();
 			// Only publish events
-			if (publish && rsaBundle != null)
+			if (publish && rsaBundle != null && exRef != null)
 				publishEvent(new RemoteServiceAdminEvent(containerID,
 						RemoteServiceAdminEvent.EXPORT_UNREGISTRATION,
-						rsaBundle, exportReference, exception,
+						rsaBundle, exRef, exception,
 						endpointDescription), endpointDescription);
 		}
 
 		public Throwable getException() {
-			return exportReference.getException();
+			return (closed)?null:exportReference.getException();
 		}
 
 		public org.osgi.service.remoteserviceadmin.EndpointDescription update(
 				Map<String, ?> properties) {
-			if (closed) return null;
-			return exportReference.update(properties);
+			return (closed)?null:exportReference.update(properties);
 		}
 
 	}
@@ -946,15 +946,15 @@ public class RemoteServiceAdmin implements
 		}
 
 		ID getContainerID() {
-			return importReference.getContainerID();
+			return (closed)?null:importReference.getContainerID();
 		}
 
 		EndpointDescription getEndpointDescription() {
-			return importReference.getEndpointDescription();
+			return (closed)?null:importReference.getEndpointDescription();
 		}
 
 		boolean match(IRemoteServiceID remoteServiceID) {
-			return importReference.match(remoteServiceID);
+			return (closed)?null:importReference.match(remoteServiceID);
 		}
 
 		boolean match(EndpointDescription ed) {
@@ -962,14 +962,14 @@ public class RemoteServiceAdmin implements
 		}
 
 		ImportEndpoint getImportEndpoint(EndpointDescription ed) {
-			return importReference.match(ed);
+			return (closed)?null:importReference.match(ed);
 		}
 
 		public org.osgi.service.remoteserviceadmin.ImportReference getImportReference() {
 			Throwable t = getException();
 			if (t != null)
 				return null;
-			return importReference;
+			return (closed)?null:importReference;
 		}
 
 		public void close() {
@@ -977,28 +977,31 @@ public class RemoteServiceAdmin implements
 			ID containerID = null;
 			Throwable exception = null;
 			EndpointDescription endpointDescription = null;
+			ImportReference imRef = null;
 			synchronized (this) {
 				// only do this once
 				if (!closed) {
 					containerID = getContainerID();
 					exception = getException();
 					endpointDescription = getEndpointDescription();
+					imRef = this.importReference;
 					publish = importReference.close(this);
+					this.importReference = null;
 					closed = true;
 				}
 			}
 			removeImportRegistration(this);
 			Bundle rsaBundle = getRSABundle();
-			if (publish && rsaBundle != null)
+			if (publish && rsaBundle != null && imRef != null)
 				publishEvent(new RemoteServiceAdminEvent(containerID,
 						RemoteServiceAdminEvent.IMPORT_UNREGISTRATION,
-						rsaBundle, importReference, exception,
+						rsaBundle, imRef, exception,
 						endpointDescription), endpointDescription);
 
 		}
 
 		public Throwable getException() {
-			return importReference.getException();
+			return (closed)?null:importReference.getException();
 		}
 
 		public boolean update(
@@ -2249,7 +2252,6 @@ public class RemoteServiceAdmin implements
 		List<org.osgi.service.remoteserviceadmin.ImportRegistration> toClose = null;
 		synchronized (importedRegistrations) {
 			toClose = new ArrayList<org.osgi.service.remoteserviceadmin.ImportRegistration>(localImportedRegistrations);
-			localImportedRegistrations.clear();
 		}
 		for (org.osgi.service.remoteserviceadmin.ImportRegistration reg : toClose)
 			reg.close();
@@ -2257,11 +2259,13 @@ public class RemoteServiceAdmin implements
 		List<org.osgi.service.remoteserviceadmin.ExportRegistration> toClose1 = null;
 		synchronized (localExportedRegistrations) {
 			toClose1 = new ArrayList<org.osgi.service.remoteserviceadmin.ExportRegistration>(localExportedRegistrations);
-			localExportedRegistrations.clear();
 		}
 		for (org.osgi.service.remoteserviceadmin.ExportRegistration reg1 : toClose1)
 			reg1.close();
 
+		this.localExportedRegistrations.clear();
+		this.localImportedRegistrations.clear();
+		
 		synchronized (remoteServiceAdminListenerTrackerLock) {
 			if (remoteServiceAdminListenerTracker != null) {
 				remoteServiceAdminListenerTracker.close();
