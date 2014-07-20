@@ -25,11 +25,7 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 	private static final String defaultScope = System
 			.getProperty("org.eclipse.ecf.osgi.services.discovery.endpointListenerScope"); //$NON-NLS-1$
 
-	private static final boolean disableDiscovery = new Boolean(
-			System.getProperty(
-					"org.eclipse.ecf.osgi.services.discovery.disableDiscovery", "false")).booleanValue(); //$NON-NLS-1$ //$NON-NLS-2$
-
-	private String endpointListenerScope;
+	private String ecfEndpointListenerScope;
 	private static final String ONLY_ECF_SCOPE = "(" + RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE + "=*)"; //$NON-NLS-1$ //$NON-NLS-2$
 	private static final String NO_ECF_SCOPE = "(!(" //$NON-NLS-1$
 			+ RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE + "=*))"; //$NON-NLS-1$
@@ -37,11 +33,11 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 	BasicTopologyManagerImpl(BundleContext context) {
 		super(context);
 		if (defaultScope != null)
-			this.endpointListenerScope = defaultScope;
+			this.ecfEndpointListenerScope = defaultScope;
 		// If loopback is allowed, then for this endpoint listener we only
 		// consider those that have a namespace (only ECF endpoint descriptions)
 		if (allowLoopbackReference)
-			endpointListenerScope = ONLY_ECF_SCOPE;
+			ecfEndpointListenerScope = ONLY_ECF_SCOPE;
 		else {
 			// If loopback not allowed, then we have our scope include
 			// both !frameworkUUID same, and ONLY_ECF_SCOPE
@@ -51,12 +47,12 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 			elScope.append("(&(!(").append(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID).append("=").append(getFrameworkUUID()).append("))"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			elScope.append(ONLY_ECF_SCOPE);
 			elScope.append(")"); //$NON-NLS-1$
-			endpointListenerScope = elScope.toString();
+			ecfEndpointListenerScope = elScope.toString();
 		}
 	}
 
 	String[] getScope() {
-		return new String[] { endpointListenerScope, NO_ECF_SCOPE };
+		return new String[] { ecfEndpointListenerScope, NO_ECF_SCOPE };
 	}
 
 	protected String getFrameworkUUID() {
@@ -126,16 +122,10 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 	protected void handleEndpointAdded(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
 			String matchedFilter) {
-		if (matchedFilter.equals(endpointListenerScope))
-			if (endpoint instanceof EndpointDescription)
-				handleECFEndpointAdded((EndpointDescription) endpoint);
-			else
-				handleNonECFEndpointAdded(this, endpoint);
-		else if (matchedFilter.equals(NO_ECF_SCOPE))
-			if (endpoint instanceof EndpointDescription)
-				handleECFEndpointAdded((EndpointDescription) endpoint);
-			else
-				advertiseEndpointDescription(endpoint);
+		if (matchedFilter.equals(ecfEndpointListenerScope)
+				&& (endpoint instanceof EndpointDescription)) {
+			handleECFEndpointAdded((EndpointDescription) endpoint);
+		}
 	}
 
 	/*
@@ -155,16 +145,10 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 	protected void handleEndpointRemoved(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
 			String matchedFilter) {
-		if (matchedFilter.equals(endpointListenerScope))
-			if (endpoint instanceof EndpointDescription)
-				handleECFEndpointRemoved((EndpointDescription) endpoint);
-			else
-				handleNonECFEndpointRemoved(this, endpoint);
-		else if (matchedFilter.equals(NO_ECF_SCOPE))
-			if (endpoint instanceof EndpointDescription)
-				handleECFEndpointRemoved((EndpointDescription) endpoint);
-			else
-				unadvertiseEndpointDescription(endpoint);
+		if (matchedFilter.equals(ecfEndpointListenerScope)
+				&& (endpoint instanceof EndpointDescription)) {
+			handleECFEndpointRemoved((EndpointDescription) endpoint);
+		}
 	}
 
 	// EventListenerHook impl
@@ -181,12 +165,6 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 		int eventType = event.getType();
 		EndpointDescription endpointDescription = rsaEvent
 				.getEndpointDescription();
-
-		if (disableDiscovery) {
-			logWarning(
-					"handleRemoteAdminEvent", "discovery disabled.  RemoteServiceAdminEvent type=" + eventType + " description=" + endpointDescription); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			return;
-		}
 
 		switch (eventType) {
 		case RemoteServiceAdminEvent.EXPORT_REGISTRATION:
@@ -247,16 +225,9 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 	protected void handleEndpointModified(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
 			String matchedFilter) {
-		if (matchedFilter.equals(endpointListenerScope))
-			if (endpoint instanceof EndpointDescription)
-				handleECFEndpointModified((EndpointDescription) endpoint);
-			else
-				handleNonECFEndpointModified(this, endpoint);
-		else if (matchedFilter.equals(NO_ECF_SCOPE))
-			if (endpoint instanceof EndpointDescription)
-				handleECFEndpointModified((EndpointDescription) endpoint);
-			else
-				advertiseEndpointDescription(endpoint);
+		if (matchedFilter.equals(ecfEndpointListenerScope)
+				&& (endpoint instanceof EndpointDescription)) {
+			handleECFEndpointModified((EndpointDescription) endpoint);
+		}
 	}
-
 }

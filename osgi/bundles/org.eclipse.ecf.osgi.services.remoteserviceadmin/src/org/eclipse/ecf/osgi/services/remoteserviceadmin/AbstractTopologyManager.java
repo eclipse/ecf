@@ -93,6 +93,8 @@ public abstract class AbstractTopologyManager {
 	public void close() {
 		registrationLock.lock();
 		try {
+			for(org.osgi.service.remoteserviceadmin.EndpointDescription ed: registrations.keySet()) 
+				unadvertiseEndpointDescription(ed);
 			registrations.clear();
 		} finally {
 			registrationLock.unlock();
@@ -259,10 +261,6 @@ public abstract class AbstractTopologyManager {
 		} finally {
 			this.registrationLock.unlock();
 		}
-		logWarning("unadvertiseEndpointDescription", //$NON-NLS-1$
-				"Failed to unadvertise endpointDescription: " //$NON-NLS-1$
-						+ endpointDescription
-						+ ". Seems it was never advertised."); //$NON-NLS-1$
 	}
 
 	protected void logError(String methodName, String message,
@@ -366,48 +364,13 @@ public abstract class AbstractTopologyManager {
 		return null;
 	}
 
-	private void notifyOtherEndpointListeners(
-			EndpointListener exceptEndpointListener,
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
-			boolean added) {
-		ServiceReference[] listeners = null;
-		try {
-			listeners = context.getServiceReferences(
-					EndpointListener.class.getName(),
-					"(" + EndpointListener.ENDPOINT_LISTENER_SCOPE + "=*)"); //$NON-NLS-1$//$NON-NLS-2$
-		} catch (InvalidSyntaxException doesNotHappen) {
-			// Should never happen
-			doesNotHappen.printStackTrace();
-		}
-		if (listeners != null) {
-			for (int i = 0; i < listeners.length; i++) {
-				EndpointListener listener = (EndpointListener) getContext()
-						.getService(listeners[i]);
-				if (listener != exceptEndpointListener) {
-					Object scope = listeners[i]
-							.getProperty(EndpointListener.ENDPOINT_LISTENER_SCOPE);
-					String matchedFilter = isInterested(scope,
-							endpointDescription);
-					if (matchedFilter != null) {
-						if (added)
-							listener.endpointAdded(endpointDescription,
-									matchedFilter);
-						else
-							listener.endpointRemoved(endpointDescription,
-									matchedFilter);
-					}
-				}
-			}
-		}
-	}
-
 	/**
 	 * @since 3.0
 	 */
 	protected void handleNonECFEndpointAdded(
 			EndpointListener listener,
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
-		notifyOtherEndpointListeners(listener, endpointDescription, true);
+		trace("handleNonECFEndpointAdded","ed="+endpointDescription); //$NON-NLS-2$
 	}
 
 	/**
@@ -416,7 +379,7 @@ public abstract class AbstractTopologyManager {
 	protected void handleNonECFEndpointRemoved(
 			EndpointListener listener,
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
-		notifyOtherEndpointListeners(listener, endpointDescription, false);
+		trace("handleNonECFEndpointRemoved","ed="+endpointDescription);  //$NON-NLS-1$//$NON-NLS-2$
 	}
 
 	/**
@@ -424,9 +387,8 @@ public abstract class AbstractTopologyManager {
 	 */
 	protected void handleNonECFEndpointModified(
 			EndpointEventListener basicTopologyManagerImpl,
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint) {
-		// TODO Auto-generated method stub
-
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
+		trace("handleNonECFEndpointModified","ed="+endpointDescription); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**

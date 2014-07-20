@@ -71,6 +71,13 @@ public class Activator implements BundleActivator {
 	private ServiceRegistration eventListenerHookRegistration;
 	private ServiceRegistration eventAdminListenerRegistration;
 
+	private static final boolean disableBasicTopologyManager = new Boolean(
+			System.getProperty(
+					"org.eclipse.ecf.osgi.services.distribution.disableBasicTopologyManager", //$NON-NLS-1$
+					"false")).booleanValue(); //$NON-NLS-1$
+
+	private OSGiTopologyManagerImpl osgiTopologyManagerImpl;
+
 	public static Activator getDefault() {
 		return plugin;
 	}
@@ -236,89 +243,126 @@ public class Activator implements BundleActivator {
 		// Always set plugin and context
 		plugin = this;
 		this.context = ctxt;
-		// Create basicTopologyManagerImpl
-		basicTopologyManagerImpl = new BasicTopologyManagerImpl(context);
+		// If BasicTopologyManager has been disabled (default), then
+		// use OSGiTopologyManager
+		if (disableBasicTopologyManager) {
+			osgiTopologyManagerImpl = new OSGiTopologyManagerImpl(context);
 
-		// Register basicTopologyManagerImpl as EndpointListener always, so that
-		// gets notified when Endpoints are discovered
-		Properties props = new Properties();
-		props.put(
-				org.osgi.service.remoteserviceadmin.EndpointEventListener.ENDPOINT_LISTENER_SCOPE,
-				basicTopologyManagerImpl.getScope());
+			Properties props = new Properties();
+			props.put(
+					org.osgi.service.remoteserviceadmin.EndpointEventListener.ENDPOINT_LISTENER_SCOPE,
+					osgiTopologyManagerImpl.getScope());
 
-		// Register as deprecated EndpointListener
-		endpointListenerReg = getContext().registerService(
-				EndpointListener.class.getName(), basicTopologyManagerImpl,
-				(Dictionary) props);
-		// As per section 122.6.3/Tracking providers -Tracking providers – An
-		// Endpoint Event
-		// Listener or Endpoint Listener must track the bundles that provide it
-		// with
-		// Endpoint Descriptions. If a bundle that provided Endpoint
-		// Descriptions is
-		// stopped, all Endpoint Descriptions that were provided by that bundle
-		// must
-		// be removed. This can be implemented straightforwardly with a Service
-		// Factory
-		endpointEventListenerReg = getContext().registerService(
-				EndpointEventListener.class.getName(), new ServiceFactory() {
-					public Object getService(Bundle bundle,
-							ServiceRegistration registration) {
-						return new ProxyEndpointEventListener(bundle);
-					}
+			// Register as deprecated EndpointListener
+			endpointListenerReg = getContext().registerService(
+					EndpointListener.class.getName(), osgiTopologyManagerImpl,
+					(Dictionary) props);
+			// Also register as EndpointEventListener
+			endpointEventListenerReg = getContext().registerService(
+					EndpointEventListener.class.getName(),
+					osgiTopologyManagerImpl, (Dictionary) props);
 
-					public void ungetService(Bundle bundle,
-							ServiceRegistration registration, Object service) {
-						ProxyEndpointEventListener peel = (service instanceof ProxyEndpointEventListener) ? (ProxyEndpointEventListener) service
-								: null;
-						if (peel == null)
-							return;
-						synchronized (bundleEndpointEventListenerMap) {
-							List<EndpointEventHolder> endpointEventHolders = bundleEndpointEventListenerMap
-									.get(bundle);
-							if (endpointEventHolders != null)
-								for (EndpointEventHolder eh : endpointEventHolders)
-									peel.deliverRemoveEventForBundle(eh);
+			// export any previously registered remote services by calling
+			// activate
+			osgiTopologyManagerImpl.activate();
+
+		} else {
+			// Create basicTopologyManagerImpl
+			basicTopologyManagerImpl = new BasicTopologyManagerImpl(context);
+
+			// Register basicTopologyManagerImpl as EndpointListener always, so
+			// that
+			// gets notified when Endpoints are discovered
+			Properties props = new Properties();
+			props.put(
+					org.osgi.service.remoteserviceadmin.EndpointEventListener.ENDPOINT_LISTENER_SCOPE,
+					basicTopologyManagerImpl.getScope());
+
+			// Register as deprecated EndpointListener
+			endpointListenerReg = getContext().registerService(
+					EndpointListener.class.getName(), basicTopologyManagerImpl,
+					(Dictionary) props);
+			// As per section 122.6.3/Tracking providers -Tracking providers –
+			// An
+			// Endpoint Event
+			// Listener or Endpoint Listener must track the bundles that provide
+			// it
+			// with
+			// Endpoint Descriptions. If a bundle that provided Endpoint
+			// Descriptions is
+			// stopped, all Endpoint Descriptions that were provided by that
+			// bundle
+			// must
+			// be removed. This can be implemented straightforwardly with a
+			// Service
+			// Factory
+			endpointEventListenerReg = getContext().registerService(
+					EndpointEventListener.class.getName(),
+					new ServiceFactory() {
+						public Object getService(Bundle bundle,
+								ServiceRegistration registration) {
+							return new ProxyEndpointEventListener(bundle);
 						}
-					}
-				}, (Dictionary) props);
 
-		// Like EventAdmin, if equinox ds is running, then we simply return (no
-		// more to do)
-		if (Boolean.valueOf(context.getProperty(PROP_USE_DS)).booleanValue())
-			return; // If this property is set we assume DS is being used.
+						public void ungetService(Bundle bundle,
+								ServiceRegistration registration, Object service) {
+							ProxyEndpointEventListener peel = (service instanceof ProxyEndpointEventListener) ? (ProxyEndpointEventListener) service
+									: null;
+							if (peel == null)
+								return;
+							synchronized (bundleEndpointEventListenerMap) {
+								List<EndpointEventHolder> endpointEventHolders = bundleEndpointEventListenerMap
+										.get(bundle);
+								if (endpointEventHolders != null)
+									for (EndpointEventHolder eh : endpointEventHolders)
+										peel.deliverRemoveEventForBundle(eh);
+							}
+						}
+					}, (Dictionary) props);
 
-		// The following code is to make sure that we don't do any more if
-		// EventListenerHook has already been registered for us by DS
-		// Create serviceFilter for EventListenerHook classname
-		String serviceName = EventListenerHook.class.getName();
-		Filter serviceFilter = context
-				.createFilter("(objectclass=" + serviceName + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-		// if this bundle has already registered EventListenerHook service via
-		// ds, then
-		// we're done
-		ServiceReference[] refs = context.getBundle().getRegisteredServices();
-		if (refs != null) {
-			for (int i = 0; i < refs.length; i++)
-				if (serviceFilter.match(refs[i]))
-					return; // We found a service registered by this bundle
-							// already so we return
+			// Like EventAdmin, if equinox ds is running, then we simply return
+			// (no
+			// more to do)
+			if (Boolean.valueOf(context.getProperty(PROP_USE_DS))
+					.booleanValue())
+				return; // If this property is set we assume DS is being used.
+
+			// The following code is to make sure that we don't do any more if
+			// EventListenerHook has already been registered for us by DS
+			// Create serviceFilter for EventListenerHook classname
+			String serviceName = EventListenerHook.class.getName();
+			Filter serviceFilter = context
+					.createFilter("(objectclass=" + serviceName + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+			// if this bundle has already registered EventListenerHook service
+			// via
+			// ds, then
+			// we're done
+			ServiceReference[] refs = context.getBundle()
+					.getRegisteredServices();
+			if (refs != null) {
+				for (int i = 0; i < refs.length; i++)
+					if (serviceFilter.match(refs[i]))
+						return; // We found a service registered by this bundle
+								// already so we return
+			}
+
+			// Otherwise (no DS), we create a basicTopologyManagerComponent
+			basicTopologyManagerComp = new BasicTopologyManagerComponent();
+			// bind the topology manager to it
+			basicTopologyManagerComp
+					.bindEndpointEventListener(basicTopologyManagerImpl);
+			// Register RemoteServiceAdminListener
+			eventAdminListenerRegistration = this.context.registerService(
+					RemoteServiceAdminListener.class, basicTopologyManagerComp,
+					null);
+			// register the basic topology manager as EventListenerHook service
+			eventListenerHookRegistration = this.context.registerService(
+					EventListenerHook.class, basicTopologyManagerComp, null);
+			// export any previously registered remote services by calling
+			// activate
+			basicTopologyManagerComp.activate();
+
 		}
-
-		// Otherwise (no DS), we create a basicTopologyManagerComponent
-		basicTopologyManagerComp = new BasicTopologyManagerComponent();
-		// bind the topology manager to it
-		basicTopologyManagerComp
-				.bindEndpointEventListener(basicTopologyManagerImpl);
-		// Register RemoteServiceAdminListener
-		eventAdminListenerRegistration = this.context.registerService(
-				RemoteServiceAdminListener.class, basicTopologyManagerComp,
-				null);
-		// register the basic topology manager as EventListenerHook service
-		eventListenerHookRegistration = this.context.registerService(
-				EventListenerHook.class, basicTopologyManagerComp, null);
-		// export any previously registered remote services by calling activate
-		basicTopologyManagerComp.activate();
 	}
 
 	/*

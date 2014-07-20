@@ -36,6 +36,8 @@ public class BasicTopologyManagerComponent implements EventListenerHook,
 	}
 
 	void activate() {
+		if (basicTopologyManagerImpl == null)
+			return;
 		if (exportRegisteredSvcs)
 			basicTopologyManagerImpl.exportRegisteredServices(
 					exportRegisteredSvcsClassname, exportRegisteredSvcsFilter);
@@ -43,11 +45,15 @@ public class BasicTopologyManagerComponent implements EventListenerHook,
 
 	// RemoteServiceAdminListener impl
 	public void remoteAdminEvent(RemoteServiceAdminEvent event) {
+		if (basicTopologyManagerImpl == null)
+			return;
 		basicTopologyManagerImpl.handleRemoteAdminEvent(event);
 	}
 
 	// EventListenerHook impl
 	public void event(ServiceEvent event, Map listeners) {
+		if (basicTopologyManagerImpl == null)
+			return;
 		basicTopologyManagerImpl.event(event, listeners);
 	}
 

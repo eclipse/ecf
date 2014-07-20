@@ -225,4 +225,9 @@ public final class RemoteConstants {
 	 * about the endpoint remote service id.
 	 */
 	public static final String SERVICE_IMPORTED_ENDPOINT_SERVICE_ID = org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID;
+
+	public static final String OSGI_ENDPOINT_MODIFIED = "ecf.osgi.endpoint.modified"; //$NON-NLS-1$
+	public static final String OSGI_CONTAINER_ID_NS = "ecf.osgi.ns"; //$NON-NLS-1$
+	
+	
 }

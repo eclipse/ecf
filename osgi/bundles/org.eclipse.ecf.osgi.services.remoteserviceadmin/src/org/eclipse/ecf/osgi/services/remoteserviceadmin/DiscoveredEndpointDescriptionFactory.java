@@ -29,50 +29,12 @@ public class DiscoveredEndpointDescriptionFactory extends
 		AbstractMetadataFactory implements
 		IDiscoveredEndpointDescriptionFactory {
 
-	protected List<DiscoveredEndpointDescription> discoveredEndpointDescriptions = new ArrayList();
-
-	private DiscoveredEndpointDescription findDiscoveredEndpointDescription(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
-		synchronized (discoveredEndpointDescriptions) {
-			for (DiscoveredEndpointDescription d : discoveredEndpointDescriptions) {
-				org.osgi.service.remoteserviceadmin.EndpointDescription ed = d
-						.getEndpointDescription();
-				if (ed.equals(endpointDescription))
-					return d;
-			}
-		}
-		return null;
-	}
-
-	private DiscoveredEndpointDescription findUniscoveredEndpointDescription(
-			IDiscoveryLocator locator, IServiceID serviceID) {
-		synchronized (discoveredEndpointDescriptions) {
-			for (DiscoveredEndpointDescription d : discoveredEndpointDescriptions) {
-				Namespace dln = d.getDiscoveryLocatorNamespace();
-				IServiceID svcId = d.getServiceID();
-				if (dln.getName().equals(
-						locator.getServicesNamespace().getName())
-						&& svcId.equals(serviceID)) {
-					return d;
-				}
-			}
-		}
-		return null;
-	}
-
 	public DiscoveredEndpointDescription createDiscoveredEndpointDescription(
 			IDiscoveryLocator locator, IServiceInfo discoveredServiceInfo) {
 		try {
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription = createEndpointDescription(
 					locator, discoveredServiceInfo);
-			synchronized (discoveredEndpointDescriptions) {
-				DiscoveredEndpointDescription ded = findDiscoveredEndpointDescription(endpointDescription);
-				ded = createDiscoveredEndpointDescription(locator,
-						discoveredServiceInfo, endpointDescription);
-				// put into discoveredEndpointDescriptions
-				discoveredEndpointDescriptions.add(ded);
-				return ded;
-			}
+			return createDiscoveredEndpointDescription(locator,discoveredServiceInfo, endpointDescription);
 		} catch (Exception e) {
 			logError("createDiscoveredEndpointDescription", //$NON-NLS-1$
 					"Exception creating discovered endpoint description", e); //$NON-NLS-1$
@@ -82,15 +44,6 @@ public class DiscoveredEndpointDescriptionFactory extends
 
 	public DiscoveredEndpointDescription removeDiscoveredEndpointDescription(
 			IDiscoveryLocator locator, IServiceID serviceID) {
-		synchronized (discoveredEndpointDescriptions) {
-			DiscoveredEndpointDescription ded = findUniscoveredEndpointDescription(
-					locator, serviceID);
-			if (ded != null) {
-				// remove
-				discoveredEndpointDescriptions.remove(ded);
-				return ded;
-			}
-		}
 		return null;
 	}
 
@@ -112,25 +65,14 @@ public class DiscoveredEndpointDescriptionFactory extends
 	}
 
 	public void close() {
-		removeAllDiscoveredEndpointDescriptions();
 		super.close();
 	}
 
 	public boolean removeDiscoveredEndpointDescription(
 			EndpointDescription endpointDescription) {
-		synchronized (discoveredEndpointDescriptions) {
-			DiscoveredEndpointDescription d = findDiscoveredEndpointDescription(endpointDescription);
-			if (d != null) {
-				discoveredEndpointDescriptions.remove(d);
-				return true;
-			}
-		}
-		return false;
+		return true;
 	}
 
 	public void removeAllDiscoveredEndpointDescriptions() {
-		synchronized (discoveredEndpointDescriptions) {
-			discoveredEndpointDescriptions.clear();
-		}
 	}
 }
