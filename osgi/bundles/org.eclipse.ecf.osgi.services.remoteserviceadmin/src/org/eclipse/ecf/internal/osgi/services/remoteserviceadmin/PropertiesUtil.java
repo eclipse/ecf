@@ -416,4 +416,12 @@ public class PropertiesUtil {
 
 		return target;
 	}
+	
+	public static Long getOSGiEndpointModifiedValue(Map<String,Object> properties) {
+		Object modifiedValue = properties.get(RemoteConstants.OSGI_ENDPOINT_MODIFIED);
+		if (modifiedValue != null && modifiedValue instanceof String) 
+			return Long.valueOf((String) modifiedValue);
+		return null;
+	}
+	
 }

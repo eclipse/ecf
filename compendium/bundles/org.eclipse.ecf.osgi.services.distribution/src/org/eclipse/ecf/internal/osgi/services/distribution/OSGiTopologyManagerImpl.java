@@ -245,13 +245,21 @@ public class OSGiTopologyManagerImpl extends AbstractTopologyManager implements
 		// to change this behavior
 	}
 
+	private static Long getOSGiEndpointModifiedValue(
+			Map<String, Object> properties) {
+		Object modifiedValue = properties
+				.get(RemoteConstants.OSGI_ENDPOINT_MODIFIED);
+		if (modifiedValue != null && modifiedValue instanceof String)
+			return Long.valueOf((String) modifiedValue);
+		return null;
+	}
+
 	protected void handleEndpointModified(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
 			String matchedFilter) {
 		if (matchedFilter.equals(osgiLocalEndpointListenerScope)) {
 			Map<String, Object> edProperties = endpoint.getProperties();
-			Object modified = edProperties
-					.get(RemoteConstants.OSGI_ENDPOINT_MODIFIED);
+			Long modified = getOSGiEndpointModifiedValue(edProperties);
 			Map<String, Object> newEdProperties = new HashMap<String, Object>();
 			newEdProperties.putAll(endpoint.getProperties());
 			if (modified != null) {
@@ -262,7 +270,7 @@ public class OSGiTopologyManagerImpl extends AbstractTopologyManager implements
 								newEdProperties));
 			} else {
 				newEdProperties.put(RemoteConstants.OSGI_ENDPOINT_MODIFIED,
-						new Long(System.currentTimeMillis()));
+						String.valueOf(System.currentTimeMillis()));
 				advertiseModifyEndpointDescription(new org.osgi.service.remoteserviceadmin.EndpointDescription(
 						newEdProperties));
 			}

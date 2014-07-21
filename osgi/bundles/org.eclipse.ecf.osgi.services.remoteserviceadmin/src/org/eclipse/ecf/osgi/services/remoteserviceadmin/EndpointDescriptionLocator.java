@@ -1218,8 +1218,7 @@ public class EndpointDescriptionLocator {
 			} else {
 				Map<String, Object> edProperties = endpointDescription
 						.getProperties();
-				Long receivedTS = (Long) edProperties
-						.get(RemoteConstants.OSGI_ENDPOINT_MODIFIED);
+				Long receivedTS = PropertiesUtil.getOSGiEndpointModifiedValue(edProperties);
 				if (receivedTS != null) {
 					String receivedId = endpointDescription.getId();
 					boolean update = false;
