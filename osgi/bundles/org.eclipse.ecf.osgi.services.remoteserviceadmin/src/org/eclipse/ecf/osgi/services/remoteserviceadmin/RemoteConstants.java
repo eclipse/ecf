@@ -25,6 +25,7 @@ import org.eclipse.ecf.remoteservice.IRemoteService;
  * 
  * @noinstantiate This class is not intended to be instantiated by clients.
  * @noextend This class is not intended to be subclassed by clients.
+ * @since 4.1
  */
 public final class RemoteConstants {
 
@@ -226,7 +227,13 @@ public final class RemoteConstants {
 	 */
 	public static final String SERVICE_IMPORTED_ENDPOINT_SERVICE_ID = org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID;
 
+	/**
+	 * @since 4.1
+	 */
 	public static final String OSGI_ENDPOINT_MODIFIED = "ecf.osgi.endpoint.modified"; //$NON-NLS-1$
+	/**
+	 * @since 4.1
+	 */
 	public static final String OSGI_CONTAINER_ID_NS = "ecf.osgi.ns"; //$NON-NLS-1$
 	
 	
