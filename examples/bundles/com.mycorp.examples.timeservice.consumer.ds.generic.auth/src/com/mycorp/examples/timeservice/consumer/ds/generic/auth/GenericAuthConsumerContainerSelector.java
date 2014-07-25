@@ -48,8 +48,8 @@ public class GenericAuthConsumerContainerSelector extends
 				public Object createConnectData(IContainer container,
 						ID targetID, IConnectContext context) {
 					// This is called when the client.connect method
-					// is called. Here is our chance to send the username
-					// and password to the server.
+					// is called. Here is our chance to send credentials
+					// to the server.
 					return getConnectData();
 				}
 
