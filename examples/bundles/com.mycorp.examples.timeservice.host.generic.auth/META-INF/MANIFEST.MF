@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ECF Remote Service Example Host using Authentication
+Bundle-SymbolicName: com.mycorp.examples.timeservice.host.generic.auth
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Eclipse.org - ECF
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Import-Package: com.mycorp.examples.timeservice;version="1.0.0",
+ org.eclipse.ecf.core;version="3.0.0",
+ org.eclipse.ecf.core.identity;version="3.2.0",
+ org.eclipse.ecf.core.security;version="3.1.0",
+ org.eclipse.ecf.core.sharedobject;version="2.3.0",
+ org.osgi.framework,
+ org.osgi.service.remoteserviceadmin,
+ org.osgi.util.tracker;version="1.5.1"
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.equinox.common;bundle-version="3.6.200"
+Bundle-Activator: com.mycorp.examples.timeservice.host.generic.auth.Activator
