@@ -174,13 +174,27 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 			unadvertiseEndpointDescription(endpointDescription);
 			break;
 		case RemoteServiceAdminEvent.EXPORT_ERROR:
-			logError("handleExportError", "Export error with event=" + rsaEvent); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(
+					"handleRemoteAdminEvent.EXPORT_ERROR", "Export error with event=" + rsaEvent); //$NON-NLS-1$ //$NON-NLS-2$
+			break;
+		case RemoteServiceAdminEvent.EXPORT_WARNING:
+			logWarning(
+					"handleRemoteAdminEvent.EXPORT_WARNING", "Export warning with event=" + rsaEvent); //$NON-NLS-1$ //$NON-NLS-2$
+			break;
+		case RemoteServiceAdminEvent.EXPORT_UPDATE:
+			advertiseModifyEndpointDescription(endpointDescription);
 			break;
 		case RemoteServiceAdminEvent.IMPORT_REGISTRATION:
 			break;
 		case RemoteServiceAdminEvent.IMPORT_UNREGISTRATION:
 			break;
 		case RemoteServiceAdminEvent.IMPORT_ERROR:
+			logError(
+					"handleRemoteAdminEvent.IMPORT_ERROR", "Import error with event=" + rsaEvent); //$NON-NLS-1$//$NON-NLS-2$
+			break;
+		case RemoteServiceAdminEvent.IMPORT_WARNING:
+			logWarning(
+					"handleRemoteAdminEvent.IMPORT_WARNING", "Import warning with event=" + rsaEvent); //$NON-NLS-1$ //$NON-NLS-2$
 			break;
 		default:
 			logWarning(

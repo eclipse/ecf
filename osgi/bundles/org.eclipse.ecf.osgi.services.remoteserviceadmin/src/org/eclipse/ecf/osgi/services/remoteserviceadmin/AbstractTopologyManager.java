@@ -476,9 +476,9 @@ public abstract class AbstractTopologyManager {
 			if (exportedRegistration.match(serviceReference)) {
 				trace("handleServiceModifying", "modifying exportRegistration for serviceReference=" //$NON-NLS-1$ //$NON-NLS-2$
 								+ serviceReference);
-				advertiseModifyEndpointDescription((EndpointDescription) exportedRegistration
-						.update(PropertiesUtil.copyProperties(serviceReference,
-								new HashMap<String, Object>())));
+				EndpointDescription updatedED = (EndpointDescription) exportedRegistration.update(null);
+				if (updatedED == null)
+					logWarning("handleServiceModifying", "ExportRegistration.update failed with exception="+exportedRegistration.getException());  //$NON-NLS-1$//$NON-NLS-2$
 			}
 		}
 	}

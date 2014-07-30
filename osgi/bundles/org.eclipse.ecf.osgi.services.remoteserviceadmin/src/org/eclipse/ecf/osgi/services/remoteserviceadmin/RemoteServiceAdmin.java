@@ -573,15 +573,19 @@ public class RemoteServiceAdmin implements
 		private IRemoteServiceRegistration rsRegistration;
 		private Set<ExportRegistration> activeExportRegistrations = new HashSet<ExportRegistration>();
 
+		private Map<String,Object> originalProperties;
+		
 		ExportEndpoint(ServiceReference serviceReference,
 				EndpointDescription endpointDescription,
-				IRemoteServiceRegistration reg) {
+				IRemoteServiceRegistration reg, Map<String,Object> originalProperties) {
 			Assert.isNotNull(serviceReference);
 			this.serviceReference = serviceReference;
 			Assert.isNotNull(endpointDescription);
 			this.endpointDescription = endpointDescription;
 			Assert.isNotNull(reg);
 			this.rsRegistration = reg;
+			Assert.isNotNull(originalProperties);
+			this.originalProperties = originalProperties;
 		}
 
 		synchronized ID getContainerID() {
@@ -615,27 +619,32 @@ public class RemoteServiceAdmin implements
 				}
 				serviceReference = null;
 				endpointDescription = null;
+				originalProperties = null;
 			}
 			return removed;
 		}
 
-		synchronized org.osgi.service.remoteserviceadmin.EndpointDescription update(
-				Map<String, ?> properties) {
-			// Get the existing properties
-			Map<String, Object> edProps = endpointDescription.getProperties();
-			// As per RemoteRegistration.update javadocs, if the given properties
-			// are null, the original properties are used to create the new endpoint description
-			// if non-null then they override the previous ed properties
-			if (properties != null)
-				edProps = PropertiesUtil.mergeProperties(edProps,
-						(Map<String, Object>) properties);
-			// set timestamp
-			edProps.put(RemoteConstants.ENDPOINT_TIMESTAMP, System.currentTimeMillis());
-			// Create new endpoint description, and this is now our new EndpointDescription
-			endpointDescription = new EndpointDescription(serviceReference,
-					edProps);
-			// Return so that it can be advertised by topology manager
-			return endpointDescription;
+		synchronized EndpointDescription update(Map properties) {
+			// As per ExportRegistraiton.update javadocs, query the
+			// serviceReference for current properties
+			Map<String, Object> serviceReferenceProperties = PropertiesUtil
+					.copyProperties(serviceReference, new HashMap());
+			// As per ExportRegistraiton.update javadocs, if properties is null,
+			// use the original ED properties
+			Map<String, Object> updateProperties = PropertiesUtil
+					.copyProperties(
+							((properties == null) ? this.originalProperties
+									: properties), new HashMap());
+			Map<String, Object> updatedEDProperties = PropertiesUtil
+					.mergeProperties(updateProperties,
+							serviceReferenceProperties);
+			// update timestamp
+			updatedEDProperties.put(RemoteConstants.ENDPOINT_TIMESTAMP,
+					System.currentTimeMillis());
+			// Create new endpoint description, and this will be our new
+			// EndpointDescription
+			this.endpointDescription = new EndpointDescription(updatedEDProperties);
+			return this.endpointDescription;
 		}
 	}
 
@@ -738,12 +747,43 @@ public class RemoteServiceAdmin implements
 		}
 
 		public Throwable getException() {
-			return (closed)?null:exportReference.getException();
+			return (closed)?updateException:exportReference.getException();
 		}
 
+		private Throwable updateException;
+		
 		public org.osgi.service.remoteserviceadmin.EndpointDescription update(
 				Map<String, ?> properties) {
-			return (closed)?null:exportReference.update(properties);
+			// If this registration has been closed then set updateException 
+			// to IllegalStateException and return null
+			if (closed) {
+				updateException = new IllegalStateException("Update failed since ExportRegistration already closed"); //$NON-NLS-1$
+				return null;
+			}
+			// Update exportReference. If exception is thrown, or update
+			// returns null then set updateException and return null;
+			EndpointDescription updatedED = null;
+			try {
+				updatedED = exportReference.update(properties);
+			} catch (RuntimeException e) {
+				updateException = e;
+				return null;
+			}
+			// If the exportReference returned null, then the underlying ExportEndpoint was null
+			if (updatedED == null) {
+				updateException = new IllegalStateException("Update failed because ExportEndpoint was null"); //$NON-NLS-1$
+				return null;
+			}
+			// We've succeeded in the update to set updateException to null
+			// in case it was set by previous update
+			this.updateException = null;
+			Bundle rsaBundle = getRSABundle();
+			// Notify with EXPORT_UPDATE
+			if (rsaBundle != null) 
+				publishEvent(new RemoteServiceAdminEvent(getContainerID(),
+						RemoteServiceAdminEvent.EXPORT_UPDATE,
+						rsaBundle, this.exportReference, null, updatedED), updatedED);
+			return updatedED;
 		}
 
 	}
@@ -761,8 +801,7 @@ public class RemoteServiceAdmin implements
 			this.exportEndpoint = exportEndpoint;
 		}
 
-		synchronized org.osgi.service.remoteserviceadmin.EndpointDescription update(
-				Map<String, ?> properties) {
+		synchronized EndpointDescription update(Map<String, ?> properties) {
 			if (exportEndpoint == null) return null;
 			return exportEndpoint.update(properties);
 		}
@@ -1006,11 +1045,27 @@ public class RemoteServiceAdmin implements
 
 		public boolean update(
 				org.osgi.service.remoteserviceadmin.EndpointDescription endpoint) {
-			if (closed) return false;
+			if (closed)
+				return false;
 			org.osgi.service.remoteserviceadmin.ImportReference ir = getImportReference();
-			if (ir == null) return false;
-			importReference.update(endpoint);
-			return true;
+			if (ir == null)
+				return false;
+			Exception updateException = null;
+			boolean result = true;
+			try {
+				importReference.update(endpoint);
+			} catch (Exception e) {
+				updateException = e;
+				result = false;
+			}
+			Bundle rsaBundle = getRSABundle();
+			EndpointDescription ed = getEndpointDescription();
+			if (rsaBundle != null)
+				publishEvent(new RemoteServiceAdminEvent(getContainerID(),
+						RemoteServiceAdminEvent.IMPORT_UPDATE, rsaBundle,
+						this.importReference, updateException, ed), ed);
+
+			return result;
 		}
 
 	}
@@ -1124,6 +1179,10 @@ public class RemoteServiceAdmin implements
 			eventTypeName = "EXPORT_WARNING"; //$NON-NLS-1$
 			registrationTypeName = "export.registration";//$NON-NLS-1$
 			break;
+		case (RemoteServiceAdminEvent.EXPORT_UPDATE):
+			eventTypeName = "EXPORT_UPDATE"; //$NON-NLS-1$
+			registrationTypeName = "export.registration"; //$NON-NLS-1$
+			break;
 		case (RemoteServiceAdminEvent.IMPORT_REGISTRATION):
 			eventTypeName = "IMPORT_REGISTRATION"; //$NON-NLS-1$
 			registrationTypeName = "import.registration";//$NON-NLS-1$
@@ -1139,6 +1198,10 @@ public class RemoteServiceAdmin implements
 		case (RemoteServiceAdminEvent.IMPORT_WARNING):
 			eventTypeName = "IMPORT_WARNING"; //$NON-NLS-1$
 			registrationTypeName = "import.registration";//$NON-NLS-1$
+			break;
+		case (RemoteServiceAdminEvent.IMPORT_UPDATE):
+			eventTypeName = "IMPORT_UPDATE"; //$NON-NLS-1$
+			registrationTypeName = "import.registration"; //$NON-NLS-1$
 			break;
 		}
 		if (eventTypeName == null) {
@@ -2155,7 +2218,7 @@ public class RemoteServiceAdmin implements
 		// Create ExportEndpoint/ExportRegistration
 		return new ExportRegistration(new ExportEndpoint(serviceReference,
 				new EndpointDescription(serviceReference,
-						endpointDescriptionProperties), remoteRegistration));
+						endpointDescriptionProperties), remoteRegistration,endpointDescriptionProperties));
 	}
 
 	private ImportRegistration importService(
