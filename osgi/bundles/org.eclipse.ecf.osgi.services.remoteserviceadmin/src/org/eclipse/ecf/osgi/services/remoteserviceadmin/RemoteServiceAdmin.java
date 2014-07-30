@@ -629,21 +629,24 @@ public class RemoteServiceAdmin implements
 			// serviceReference for current properties
 			Map<String, Object> serviceReferenceProperties = PropertiesUtil
 					.copyProperties(serviceReference, new HashMap());
-			// As per ExportRegistraiton.update javadocs, if properties is null,
+			// As per ExportRegistration.update javadocs, if properties argument
+			// is null,
 			// use the original ED properties
-			Map<String, Object> updateProperties = PropertiesUtil
-					.copyProperties(
-							((properties == null) ? this.originalProperties
-									: properties), new HashMap());
+			// Get copy of original remote service properties
+			Map<String, Object> rsProperties = PropertiesUtil.copyProperties(
+					this.originalProperties, new HashMap<String, Object>());
+			Map<String, Object> updateProperties = (properties == null) ? rsProperties
+					: PropertiesUtil.copyProperties(properties, rsProperties);
 			Map<String, Object> updatedEDProperties = PropertiesUtil
 					.mergeProperties(updateProperties,
 							serviceReferenceProperties);
 			// update timestamp
 			updatedEDProperties.put(RemoteConstants.ENDPOINT_TIMESTAMP,
 					System.currentTimeMillis());
-			// Create new endpoint description, and this will be our new
+			// Create new endpoint description, and this will be our updated
 			// EndpointDescription
-			this.endpointDescription = new EndpointDescription(updatedEDProperties);
+			this.endpointDescription = new EndpointDescription(
+					updatedEDProperties);
 			return this.endpointDescription;
 		}
 	}
@@ -1526,7 +1529,7 @@ public class RemoteServiceAdmin implements
 		Long serviceId = (Long) serviceReference
 				.getProperty(org.osgi.framework.Constants.SERVICE_ID);
 		endpointDescriptionProperties.put(
-				org.osgi.framework.Constants.SERVICE_ID, serviceId);
+				org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID, serviceId);
 
 		// ENDPOINT_FRAMEWORK_ID
 		String frameworkId = (String) PropertiesUtil
@@ -2156,16 +2159,12 @@ public class RemoteServiceAdmin implements
 				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS,
 						importedConfigs);
 
-		// Set endpoint.id and endpoint.service.id
+		// Set endpoint.id 
 		String endpointId = endpointDescription.getId();
 		resultProperties
 				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
 						endpointId);
-		Long endpointServiceId = new Long(endpointDescription.getServiceId());
-		resultProperties
-				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID,
-						endpointServiceId);
-
+		
 		return resultProperties;
 	}
 
