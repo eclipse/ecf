@@ -1043,17 +1043,20 @@ public class RemoteServiceAdmin implements
 		}
 
 		public Throwable getException() {
-			return (closed)?null:importReference.getException();
+			return (closed)?updateException:importReference.getException();
 		}
 
+		private Throwable updateException;
+		
 		public boolean update(
 				org.osgi.service.remoteserviceadmin.EndpointDescription endpoint) {
-			if (closed)
+			// If this registration has been closed then set updateException
+			// to IllegalStateException and return null
+			if (closed) {
+				updateException = new IllegalStateException(
+						"Update failed since ImportRegistration already closed"); //$NON-NLS-1$
 				return false;
-			org.osgi.service.remoteserviceadmin.ImportReference ir = getImportReference();
-			if (ir == null)
-				return false;
-			Exception updateException = null;
+			}
 			boolean result = true;
 			try {
 				importReference.update(endpoint);
@@ -1061,13 +1064,19 @@ public class RemoteServiceAdmin implements
 				updateException = e;
 				result = false;
 			}
+			// If the importReference returned null, then the underlying
+			// ExportEndpoint was null
+			if (!result) {
+				updateException = new IllegalStateException(
+						"Update failed because ImportEndpoint was null"); //$NON-NLS-1$
+				return false;
+			}
 			Bundle rsaBundle = getRSABundle();
 			EndpointDescription ed = getEndpointDescription();
 			if (rsaBundle != null)
 				publishEvent(new RemoteServiceAdminEvent(getContainerID(),
 						RemoteServiceAdminEvent.IMPORT_UPDATE, rsaBundle,
-						this.importReference, updateException, ed), ed);
-
+						this.importReference, null, ed), ed);
 			return result;
 		}
 
