@@ -1057,18 +1057,10 @@ public class RemoteServiceAdmin implements
 						"Update failed since ImportRegistration already closed"); //$NON-NLS-1$
 				return false;
 			}
-			boolean result = true;
 			try {
 				importReference.update(endpoint);
 			} catch (Exception e) {
 				updateException = e;
-				result = false;
-			}
-			// If the importReference returned null, then the underlying
-			// ExportEndpoint was null
-			if (!result) {
-				updateException = new IllegalStateException(
-						"Update failed because ImportEndpoint was null"); //$NON-NLS-1$
 				return false;
 			}
 			Bundle rsaBundle = getRSABundle();
@@ -1077,7 +1069,7 @@ public class RemoteServiceAdmin implements
 				publishEvent(new RemoteServiceAdminEvent(getContainerID(),
 						RemoteServiceAdminEvent.IMPORT_UPDATE, rsaBundle,
 						this.importReference, null, ed), ed);
-			return result;
+			return true;
 		}
 
 	}
