@@ -22,4 +22,4 @@ Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
 DynamicImport-Package: *
-Provide-Capability: osgi.remoteserviceadmin.distribution; configs:List<String>=”ecf.r_osgi.peer”; version:Version=1.1 
+Provide-Capability: osgi.remoteserviceadmin.distribution; configs:List<String>="ecf.r_osgi.peer"; version:Version=1.1 
