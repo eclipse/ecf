@@ -77,10 +77,6 @@ public class WatchManager implements BundleStoppingListener {
 
 	public void publish(AdvertisedService published) {
 		Assert.isNotNull(published);
-		String serviceid = published.getServiceID().getServiceTypeID()
-				.getInternal();
-		if (getNodeWriters().containsKey(serviceid))
-			return;
 		try {
 			/* wait for the server to get ready */
 			while (!writeRootLock.isOpen())
@@ -88,9 +84,10 @@ public class WatchManager implements BundleStoppingListener {
 		} catch (InterruptedException e) {
 			Logger.log(LogService.LOG_DEBUG, e.getMessage(), e);
 		}
+		String serviceName = published.getServiceID().getName();
 		NodeWriter nodeWriter = new NodeWriter(published, writeRoot);
-		getNodeWriters().put(serviceid, nodeWriter);
-		allKnownServices.put(published.getServiceID().getName(), published);
+		getNodeWriters().put(serviceName, nodeWriter);
+		allKnownServices.put(serviceName, published);
 		nodeWriter.publish();
 	}
 

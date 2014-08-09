@@ -387,7 +387,7 @@ public class ZooDiscoveryContainer extends AbstractDiscoveryContainerAdapter {
 
 	public void unregisterService(IServiceInfo serviceInfo) {
 		Assert.isNotNull(serviceInfo);
-		watchManager.unpublish(serviceInfo.getServiceID().getServiceTypeID().getInternal());
+		watchManager.unpublish(serviceInfo.getServiceID().getName());
 
 		Localizer.getSingleton().localize(new Notification(serviceInfo, Notification.UNAVAILABLE));
 	}

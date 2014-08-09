@@ -101,7 +101,7 @@ public class AdvertisedService extends ServiceInfo implements INode, IService {
 		this.nodeProperties.put(LOCATION, getLocation());
 		this.nodeProperties.put(WEIGHT, getWeight());
 		this.nodeProperties.put(PRIORITY, getPriority());
-		publishedServices.put(getServiceID().getServiceTypeID().getInternal(),
+		publishedServices.put(getServiceID().getName(),
 				this);
 	}
 
