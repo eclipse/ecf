@@ -167,13 +167,13 @@ public class EndpointDescriptionLocator {
 
 					try {
 						boolean discovered = event.isDiscovered();
-						trace("endpointListener.dispatch discovered=" + discovered, ",fwk=" + getFrameworkUUID() + ", endpointListener=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						trace("endpointListener.discovered=" + discovered +" ", "fwk=" + getFrameworkUUID() + ", endpointListener=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 										+ endpointListener
 										+ ", endpointDescription=" //$NON-NLS-1$
 										+ endpointDescription
 										+ ", matchingFilter=" //$NON-NLS-1$
 										+ matchingFilter);
-						if (event.isDiscovered())
+						if (discovered)
 							endpointListener.endpointAdded(endpointDescription,
 									matchingFilter);
 						else
@@ -205,7 +205,7 @@ public class EndpointDescriptionLocator {
 					final EndpointEvent endpointEvent = event.getEndpointEvent();
 					final String matchingFilter = event.getMatchingFilter();
 					try {
-						trace("endpointEventListener.dispatch ", ", fwk=" + getFrameworkUUID() + ", endpointEventListener=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						trace("endpointEventListener.discovered=" + getEndpointEventTypeAsString(endpointEvent.getType()) + " ", "fwk=" + getFrameworkUUID() + ", endpointEventListener=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 										+ endpointEventListener
 										+ ", endpointEvent=" //$NON-NLS-1$
 										+ endpointEvent + ", matchingFilter=" //$NON-NLS-1$
@@ -1119,9 +1119,11 @@ public class EndpointDescriptionLocator {
 			return edServiceIDMap.keySet().contains(ed);
 		}
 		
-		private void updateED(EndpointDescription existing, EndpointDescription update) {
+		private void updateEDServiceID(EndpointDescription existing, EndpointDescription update, IServiceID updateServiceID) {
 			Set<IServiceID> serviceIDs = edServiceIDMap.remove(existing);
-			if (serviceIDs != null) edServiceIDMap.put(update, serviceIDs);
+			if (serviceIDs == null) serviceIDs = new HashSet<IServiceID>();
+			serviceIDs.add(updateServiceID);
+			edServiceIDMap.put(update, serviceIDs);
 		}
 		
 		private void addEDServiceID(org.osgi.service.remoteserviceadmin.EndpointDescription ed, IServiceID serviceID) {
@@ -1132,12 +1134,8 @@ public class EndpointDescriptionLocator {
 		}
 		
 		private void removeEDServiceID(org.osgi.service.remoteserviceadmin.EndpointDescription ed, IServiceID serviceID) {
-			Set<IServiceID> serviceIDs = edServiceIDMap.get(ed);
-			if (serviceIDs == null) return;
-			serviceIDs.remove(serviceID);
-			if (serviceIDs.size() == 0) edServiceIDMap.remove(ed);
+			edServiceIDMap.remove(ed);
 		}
-		
 
 		public void serviceDiscovered(IServiceEvent anEvent) {
 			handleService(anEvent.getServiceInfo(), true);
@@ -1148,33 +1146,51 @@ public class EndpointDescriptionLocator {
 		}
 
 		void handleService(IServiceInfo serviceInfo, boolean discovered) {
-			if (locator == null) return;
-			trace("handleService", "fwk="+getFrameworkUUID()+" serviceInfo=" + serviceInfo //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					+ ", discovered=" + discovered); //$NON-NLS-1$
+			if (locator == null)
+				return;
+			trace("handleService", "fwk=" + getFrameworkUUID() + " serviceInfo=" + serviceInfo //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+							+ ", discovered=" + discovered); //$NON-NLS-1$
 			IServiceID serviceID = serviceInfo.getServiceID();
+			// Make sure this is an OSGi Remote Service
 			if (matchServiceID(serviceID)) {
-				org.osgi.service.remoteserviceadmin.EndpointDescription ed = null;
 				synchronized (edServiceIDMap) {
-					ed = findEDFromServiceID(serviceID);
+					// Try to find ED from ServiceID, whether discovered or
+					// undiscovered
+					org.osgi.service.remoteserviceadmin.EndpointDescription ed = findEDFromServiceID(serviceID);
 					if (discovered) {
+						// The IServiceInfo was discovered/added
 						if (ed == null) {
+							// Deserialize EndpointDescription from service properties
 							DiscoveredEndpointDescription discoveredEndpointDescription = getDiscoveredEndpointDescription(
 									serviceID, serviceInfo, true);
-							ed = discoveredEndpointDescription
-									.getEndpointDescription();
-							if (ed != null)
-								ed = handleEndpointDescription(ed, true);
-							else
-								logWarning(
-										"handleOSGiServiceEndpointDiscovered", //$NON-NLS-1$
-										"discoveredEndpointDescription is null for service info=" //$NON-NLS-1$
-												+ serviceInfo
-												+ ", discovered=true"); //$NON-NLS-1$
-							if (ed != null)
-								addEDServiceID(ed, serviceID);
+							// Make sure that the discoveredEndpointDescription
+							// is non-null
+							if (discoveredEndpointDescription != null) {
+								ed = discoveredEndpointDescription
+										.getEndpointDescription();
+								if (ed != null) {
+									EndpointDescription prevEd = isEndpointDescriptionUpdate(
+											ed, serviceID);
+									if (prevEd == null) {
+										if (!contains(ed)) {
+											addEDServiceID(ed, serviceID);
+											handleEndpointDescription(ed, true);
+										} else
+											trace("handleEndpointDescription", "endpointDescription previously discovered...ignoring"); //$NON-NLS-1$ //$NON-NLS-2$
+									} else {
+										// It was a modify/update
+										trace("handleEndpointDescription", "endpointDescription updated. prev=" + prevEd + ", update=" + ed); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+										queueEndpointEvent(ed,
+												EndpointEvent.MODIFIED);
+									}
+								} else
+									trace("handleService", "EndpointDescription is null for serviceID=" + serviceID); //$NON-NLS-1$ //$NON-NLS-2$ 
+							} else
+								trace("handleService", "DiscoveredEndpointDescription is null for serviceID=" + serviceID); //$NON-NLS-1$ //$NON-NLS-2$ 
 						} else
-							trace("handleService", "Found serviceInfo with same serviceID=" + serviceID + ".  Ignoring"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+							trace("handleService", "Found previous EndpointDescription with same serviceID=" + serviceID + ".  Ignoring"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					} else {
+						// It was undiscovered
 						if (ed != null) {
 							removeEDServiceID(ed, serviceID);
 							handleEndpointDescription(ed, false);
@@ -1186,7 +1202,7 @@ public class EndpointDescriptionLocator {
 		}
 
 		EndpointDescription isEndpointDescriptionUpdate(
-				EndpointDescription endpointDescription) {
+				EndpointDescription endpointDescription, IServiceID updateServiceID) {
 			if (endpointDescription instanceof org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription) {
 				org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription ed = (org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription) endpointDescription;
 				Long receivedTS = ed.getTimestamp();
@@ -1211,7 +1227,7 @@ public class EndpointDescriptionLocator {
 						}
 					}
 					if (update) {
-						updateED(ped, ed);
+						updateEDServiceID(ped, ed, updateServiceID);
 						return ed;
 					}
 				}
@@ -1245,7 +1261,7 @@ public class EndpointDescriptionLocator {
 							update = true;
 					}
 					if (update) {
-						updateED(ped, endpointDescription);
+						updateEDServiceID(ped, endpointDescription, updateServiceID);
 						return endpointDescription;
 					}
 				}
@@ -1253,40 +1269,15 @@ public class EndpointDescriptionLocator {
 			return null;
 		}
 		
-		EndpointDescription handleEndpointDescription(
-				EndpointDescription endpointDescription,
+		void handleEndpointDescription(EndpointDescription endpointDescription,
 				boolean discovered) {
-				if (discovered) {
-					EndpointDescription prevEd = isEndpointDescriptionUpdate(endpointDescription);
-					if (prevEd != null) {
-						trace("handleEndpointDescription","endpointDescription updated. prev="+prevEd+", update="+endpointDescription); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-						queueEndpointEvent(endpointDescription, EndpointEvent.MODIFIED);
-						// Return null because it's been updated, and it's not to be added
-						return null;
-					}
-					// If it was previously discovered then ignore
-					if (contains(endpointDescription)) {
-						trace("handleEndpointDescription", "endpointDescription previously discovered...ignoring"); //$NON-NLS-1$ //$NON-NLS-2$
-						// Nothing to do so return null
-						return null;
-					}
-					// endpointDescription to be added
-					queueEndpointEvent(endpointDescription, EndpointEvent.ADDED);
-					queueEndpointDescription(endpointDescription, discovered);
-					return endpointDescription;
-				} else {
-					// Remove
-					queueEndpointEvent(endpointDescription, EndpointEvent.REMOVED);
-					queueEndpointDescription(endpointDescription, discovered);
-					// This was a remove (not an add) so return null;
-					return null;
-				}
+			if (discovered) {
+				queueEndpointEvent(endpointDescription, EndpointEvent.ADDED);
+				queueEndpointDescription(endpointDescription, discovered);
+			} else {
+				queueEndpointEvent(endpointDescription, EndpointEvent.REMOVED);
+				queueEndpointDescription(endpointDescription, discovered);
 			}
-
-		private void logWarning(String methodName, String message) {
-			LogUtility.logWarning(methodName,
-					DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, this.getClass(),
-					message);
 		}
 
 		private DiscoveredEndpointDescription getDiscoveredEndpointDescription(
