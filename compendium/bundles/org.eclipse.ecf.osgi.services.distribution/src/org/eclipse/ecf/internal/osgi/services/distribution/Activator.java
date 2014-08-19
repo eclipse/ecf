@@ -257,6 +257,7 @@ public class Activator implements BundleActivator {
 			endpointListenerReg = getContext().registerService(
 					EndpointListener.class.getName(), osgiTopologyManagerImpl,
 					(Dictionary) props);
+
 			// Also register as EndpointEventListener
 			endpointEventListenerReg = getContext().registerService(
 					EndpointEventListener.class.getName(),
@@ -279,9 +280,10 @@ public class Activator implements BundleActivator {
 					basicTopologyManagerImpl.getScope());
 
 			// Register as deprecated EndpointListener
-			endpointListenerReg = getContext().registerService(
-					EndpointListener.class.getName(), basicTopologyManagerImpl,
-					(Dictionary) props);
+			// endpointListenerReg = getContext().registerService(
+			// EndpointListener.class.getName(), basicTopologyManagerImpl,
+			// (Dictionary) props);
+
 			// As per section 122.6.3/Tracking providers -Tracking providers –
 			// An
 			// Endpoint Event
@@ -387,7 +389,7 @@ public class Activator implements BundleActivator {
 		}
 		if (endpointListenerReg != null) {
 			endpointListenerReg.unregister();
-			endpointEventListenerReg = null;
+			endpointListenerReg = null;
 		}
 		if (eventAdminListenerRegistration != null) {
 			eventAdminListenerRegistration.unregister();
