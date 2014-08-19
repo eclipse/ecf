@@ -11,11 +11,10 @@ import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.remoteserviceadmin.EndpointEvent;
 import org.osgi.service.remoteserviceadmin.EndpointEventListener;
-import org.osgi.service.remoteserviceadmin.EndpointListener;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent;
 
 public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
-		EndpointListener, EndpointEventListener {
+		EndpointEventListener {
 
 	private static final boolean allowLoopbackReference = new Boolean(
 			System.getProperty(
@@ -97,28 +96,6 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 		}
 	}
 
-	// EndpointListener impl
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.osgi.service.remoteserviceadmin.EndpointListener#endpointAdded(org
-	 * .osgi.service.remoteserviceadmin.EndpointDescription, java.lang.String)
-	 * 
-	 * 
-	 * From the R5 spec page 329 section 122.6.2:
-	 * 
-	 * Notify the Endpoint Listener of a new Endpoint Description. The second
-	 * parameter is the filter that matched the Endpoint Description.
-	 * Registering the same Endpoint multiple times counts as a single
-	 * registration.
-	 */
-	public void endpointAdded(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
-			String matchedFilter) {
-		handleEndpointAdded(endpoint, matchedFilter);
-	}
-
 	protected void handleEndpointAdded(
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
 			String matchedFilter) {
@@ -126,20 +103,6 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 				&& (endpoint instanceof EndpointDescription)) {
 			handleECFEndpointAdded((EndpointDescription) endpoint);
 		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.osgi.service.remoteserviceadmin.EndpointListener#endpointRemoved(
-	 * org.osgi.service.remoteserviceadmin.EndpointDescription,
-	 * java.lang.String)
-	 */
-	public void endpointRemoved(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
-			String matchedFilter) {
-		handleEndpointRemoved(endpoint, matchedFilter);
 	}
 
 	protected void handleEndpointRemoved(
