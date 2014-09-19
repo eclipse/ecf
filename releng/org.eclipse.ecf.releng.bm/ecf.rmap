@@ -134,6 +134,14 @@
     </rm:provider>
   </rm:searchPath>
   <rm:searchPath name="default">
+    <!-- Added to allow creation of httpclient 4.3.x based version of ECF filetransfer.  See -->
+    <!-- https://bugs.eclipse.org/bugs/show_bug.cgi?id=426382 -->
+    <rm:provider componentTypes="osgi.bundle" readerType="p2" source="false" mutable="false">
+      <rm:property key="buckminster.source" value="false"/>
+      <rm:property key="buckminster.mutable" value="false"/>
+      <rm:uri format="http://build.eclipse.org/orbit/committers/orbit-I/20140918055458/I20140918055458/repository/"/>
+    </rm:provider>
+
     <rm:provider componentTypes="osgi.bundle" readerType="p2" source="false" mutable="false">
       <rm:property key="buckminster.source" value="false"/>
       <rm:property key="buckminster.mutable" value="false"/>
