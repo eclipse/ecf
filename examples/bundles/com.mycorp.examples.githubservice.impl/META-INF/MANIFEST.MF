@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ECF RS Example GitHub Service API impl
+Bundle-SymbolicName: com.mycorp.examples.githubservice.impl
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Eclipse.org - ECF
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-ActivationPolicy: lazy
+Export-Package: com.mycorp.examples.githubservice.impl;version="1.0.0"
+Import-Package: com.mycorp.examples.githubservice
+Require-Bundle: org.eclipse.egit.github.core;bundle-version="3.6.0"
