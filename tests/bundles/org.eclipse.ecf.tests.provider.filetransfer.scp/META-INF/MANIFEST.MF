@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: SCP Provider Tests
 Bundle-SymbolicName: org.eclipse.ecf.tests.provider.filetransfer.scp
-Bundle-Version: 2.0.0.qualifier
+Bundle-Version: 2.1.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.tests.provider.filetransfer.scp.Activator
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
@@ -10,7 +10,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf,
  org.eclipse.ecf.filetransfer,
  org.eclipse.ecf.tests,
- org.junit
+ org.junit,
+ org.eclipse.ecf.tests.filetransfer
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.internal.tests.provider.filetransfer.scp;x-internal:=true,
  org.eclipse.ecf.tests.provider.filetransfer.scp

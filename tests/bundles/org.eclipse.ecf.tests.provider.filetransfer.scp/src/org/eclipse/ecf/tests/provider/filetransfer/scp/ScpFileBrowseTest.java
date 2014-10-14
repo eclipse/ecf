@@ -9,7 +9,7 @@
  *     CohesionForce Inc - initial API and implementation
  *******************************************************************************/
 
-package org.eclipse.ecf.tests.filetransfer;
+package org.eclipse.ecf.tests.provider.filetransfer.scp;
 
 import java.io.File;
 import java.net.URL;
@@ -17,10 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.filetransfer.events.IRemoteFileSystemBrowseEvent;
+import org.eclipse.ecf.tests.filetransfer.AbstractBrowseTestCase;
 
 public class ScpFileBrowseTest extends AbstractBrowseTestCase {
 
@@ -31,29 +31,27 @@ public class ScpFileBrowseTest extends AbstractBrowseTestCase {
 	// Using a countdown latch to wait until we get the proper number
 	//  of browse results
 	CountDownLatch latch = new CountDownLatch(1);
-	
+
 	String username;
-	
+
 	protected void setUp() throws Exception {
 		super.setUp();
-		IConnectContext cctx;
-		username = System.getProperty("user.name");
-		cctx = ConnectContextFactory.createUsernamePasswordConnectContext(
-				username, null);
+		username = System.getProperty("user.name"); //$NON-NLS-1$
+		IConnectContext cctx = ConnectContextFactory.createUsernamePasswordConnectContext(username, null);
 
 		this.adapter.setConnectContextForAuthentication(cctx);
 
 		roots = File.listRoots();
-		final List files = new ArrayList();
+		List fList = new ArrayList();
 		for (int i = 0; i < roots.length; i++) {
 			final File[] fs = roots[i].listFiles();
 			if (fs != null)
 				for (int j = 0; j < fs.length; j++) {
 					if (fs[j].exists())
-						files.add(fs[j]);
+						fList.add(fs[j]);
 				}
 		}
-		this.files = (File[]) files.toArray(new File[] {});
+		this.files = (File[]) fList.toArray(new File[] {});
 	}
 
 	protected void tearDown() throws Exception {
@@ -66,12 +64,11 @@ public class ScpFileBrowseTest extends AbstractBrowseTestCase {
 		latch = new CountDownLatch(roots.length);
 		for (int i = 0; i < roots.length; i++) {
 			if (roots[i].exists()) {
-				URL url = new URL("scp://"+username+"@localhost:"
-						+ roots[i].getAbsolutePath());
-				System.out.println("Browsing: " + url);
+				URL url = new URL("scp://" + username + "@localhost:" + roots[i].getAbsolutePath()); //$NON-NLS-1$ //$NON-NLS-2$
+				System.out.println("Browsing: " + url); //$NON-NLS-1$
 				testBrowse(url);
 			} else {
-				System.out.println("Skipping: " + roots[i].toString());
+				System.out.println("Skipping: " + roots[i].toString()); //$NON-NLS-1$
 				latch.countDown();
 			}
 			// Need to sleep to give the connection time to close out
@@ -80,9 +77,8 @@ public class ScpFileBrowseTest extends AbstractBrowseTestCase {
 		assertTrue(latch.await(60, TimeUnit.SECONDS));
 	}
 
-	@Override
 	protected void handleFileSystemBrowseEvent(IRemoteFileSystemBrowseEvent event) {
-		trace("handleFileSystemBrowseEvent(" + event + ")");
+		trace("handleFileSystemBrowseEvent(" + event + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		if (event.getException() != null) {
 			trace(event.getException().toString());
 		}
@@ -93,12 +89,11 @@ public class ScpFileBrowseTest extends AbstractBrowseTestCase {
 		latch = new CountDownLatch(files.length);
 		for (int i = 0; i < files.length; i++) {
 			if (files[i].isDirectory() && files[i].exists()) {
-				URL url = new URL("scp://"+username+"@localhost:"
-						+ files[i].getAbsolutePath());
-				System.out.println("Browsing: " + url);
+				URL url = new URL("scp://" + username + "@localhost:" + files[i].getAbsolutePath()); //$NON-NLS-1$ //$NON-NLS-2$
+				System.out.println("Browsing: " + url); //$NON-NLS-1$
 				testBrowse(url);
 			} else {
-				System.out.println("Skipping: " + files[i].toString());
+				System.out.println("Skipping: " + files[i].toString()); //$NON-NLS-1$
 				latch.countDown();
 			}
 			// Need to sleep to give the connection time to close out
