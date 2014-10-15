@@ -14,25 +14,16 @@ package org.eclipse.ecf.tests.provider.filetransfer.scp;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.ecf.core.ContainerFactory;
-import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter;
 import org.eclipse.ecf.filetransfer.events.*;
 import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
-import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 
-public class SCPRetrieveTest extends ContainerAbstractTestCase {
+public class SCPRetrieveTest extends AbstractSCPTest {
 
-	String host = System.getProperty("host", "localhost"); //$NON-NLS-1$ //$NON-NLS-2$
-	String file = System.getProperty("file", "test.txt"); //$NON-NLS-1$ //$NON-NLS-2$
-
-	// URL (example:  scp://slewis@ecf1.osuosl.org/test.txt 
-	String username = System.getProperty("username", "nobody"); //$NON-NLS-1$ //$NON-NLS-2$
-	String password = System.getProperty("password", "password"); //$NON-NLS-1$ //$NON-NLS-2$
-
-	IRetrieveFileTransferContainerAdapter adapter = null;
+	private String retrieveFile = System.getProperty("retrieveFile", "test.txt"); //$NON-NLS-1$ //$NON-NLS-2$
+	private IRetrieveFileTransferContainerAdapter adapter = null;
 
 	/*
 	 * (non-Javadoc)
@@ -41,8 +32,7 @@ public class SCPRetrieveTest extends ContainerAbstractTestCase {
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
-		final IContainer container = ContainerFactory.getDefault().createContainer();
-		adapter = (IRetrieveFileTransferContainerAdapter) container.getAdapter(IRetrieveFileTransferContainerAdapter.class);
+		adapter = (IRetrieveFileTransferContainerAdapter) baseContainer.getAdapter(IRetrieveFileTransferContainerAdapter.class);
 		receiveStartEvents = new ArrayList();
 		receiveDataEvents = new ArrayList();
 		receiveDoneEvents = new ArrayList();
@@ -90,7 +80,7 @@ public class SCPRetrieveTest extends ContainerAbstractTestCase {
 			}
 		};
 
-		String targetURL = "scp://" + host + (file.startsWith("/") ? "" : "/") + file; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		String targetURL = "scp://" + host + (retrieveFile.startsWith("/") ? "" : "/") + retrieveFile; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		System.out.println("Retrieving from " + targetURL + " with username=" + username); //$NON-NLS-1$ //$NON-NLS-2$
 		adapter.setConnectContextForAuthentication(ConnectContextFactory.createUsernamePasswordConnectContext(username, password));
 		adapter.sendRetrieveRequest(FileIDFactory.getDefault().createFileID(adapter.getRetrieveNamespace(), targetURL), listener, null);

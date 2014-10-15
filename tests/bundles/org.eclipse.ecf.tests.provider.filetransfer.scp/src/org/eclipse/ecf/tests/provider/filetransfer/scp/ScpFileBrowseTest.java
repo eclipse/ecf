@@ -11,95 +11,66 @@
 
 package org.eclipse.ecf.tests.provider.filetransfer.scp;
 
-import java.io.File;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
-import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.filetransfer.*;
 import org.eclipse.ecf.filetransfer.events.IRemoteFileSystemBrowseEvent;
-import org.eclipse.ecf.tests.filetransfer.AbstractBrowseTestCase;
+import org.eclipse.ecf.filetransfer.events.IRemoteFileSystemEvent;
+import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
 
-public class ScpFileBrowseTest extends AbstractBrowseTestCase {
+public class ScpFileBrowseTest extends AbstractSCPTest {
 
-	protected File[] roots;
+	private String browseDir = System.getProperty("browseDirectory", "/"); //$NON-NLS-1$ //$NON-NLS-2$
+	private IRemoteFileSystemBrowserContainerAdapter adapter = null;
 
-	protected File[] files;
-
-	// Using a countdown latch to wait until we get the proper number
-	//  of browse results
-	CountDownLatch latch = new CountDownLatch(1);
-
-	String username;
+	Throwable exception;
+	IRemoteFileSystemBrowseEvent browseEvent;
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		username = System.getProperty("user.name"); //$NON-NLS-1$
-		IConnectContext cctx = ConnectContextFactory.createUsernamePasswordConnectContext(username, null);
-
-		this.adapter.setConnectContextForAuthentication(cctx);
-
-		roots = File.listRoots();
-		List fList = new ArrayList();
-		for (int i = 0; i < roots.length; i++) {
-			final File[] fs = roots[i].listFiles();
-			if (fs != null)
-				for (int j = 0; j < fs.length; j++) {
-					if (fs[j].exists())
-						fList.add(fs[j]);
-				}
-		}
-		this.files = (File[]) fList.toArray(new File[] {});
+		this.adapter = (IRemoteFileSystemBrowserContainerAdapter) ContainerFactory.getDefault().createContainer().getAdapter(IRemoteFileSystemBrowserContainerAdapter.class);
 	}
 
 	protected void tearDown() throws Exception {
+		this.adapter = null;
 		super.tearDown();
-		this.roots = null;
-		this.files = null;
-	}
-
-	public void testBrowseRoots() throws Exception {
-		latch = new CountDownLatch(roots.length);
-		for (int i = 0; i < roots.length; i++) {
-			if (roots[i].exists()) {
-				URL url = new URL("scp://" + username + "@localhost:" + roots[i].getAbsolutePath()); //$NON-NLS-1$ //$NON-NLS-2$
-				System.out.println("Browsing: " + url); //$NON-NLS-1$
-				testBrowse(url);
-			} else {
-				System.out.println("Skipping: " + roots[i].toString()); //$NON-NLS-1$
-				latch.countDown();
-			}
-			// Need to sleep to give the connection time to close out
-			Thread.sleep(100);
-		}
-		assertTrue(latch.await(60, TimeUnit.SECONDS));
-	}
-
-	protected void handleFileSystemBrowseEvent(IRemoteFileSystemBrowseEvent event) {
-		trace("handleFileSystemBrowseEvent(" + event + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-		if (event.getException() != null) {
-			trace(event.getException().toString());
-		}
-		latch.countDown();
 	}
 
 	public void testFileBrowse() throws Exception {
-		latch = new CountDownLatch(files.length);
-		for (int i = 0; i < files.length; i++) {
-			if (files[i].isDirectory() && files[i].exists()) {
-				URL url = new URL("scp://" + username + "@localhost:" + files[i].getAbsolutePath()); //$NON-NLS-1$ //$NON-NLS-2$
-				System.out.println("Browsing: " + url); //$NON-NLS-1$
-				testBrowse(url);
-			} else {
-				System.out.println("Skipping: " + files[i].toString()); //$NON-NLS-1$
-				latch.countDown();
+		assertNotNull(adapter);
+		IRemoteFileSystemListener listener = new IRemoteFileSystemListener() {
+			public void handleRemoteFileEvent(IRemoteFileSystemEvent event) {
+				System.out.println("localhost.handleRemoteFileEvent=" + event); //$NON-NLS-1$
+				if (event instanceof IRemoteFileSystemBrowseEvent) {
+					exception = event.getException();
+					if (exception == null) {
+						browseEvent = (IRemoteFileSystemBrowseEvent) event;
+						syncNotify();
+					}
+				}
 			}
-			// Need to sleep to give the connection time to close out
-			Thread.sleep(100);
+		};
+		String targetURL = "scp://" + host + browseDir; //$NON-NLS-1$
+		System.out.println("Browsing targetURL=" + targetURL + " with username=" + username); //$NON-NLS-1$ //$NON-NLS-2$
+		adapter.setConnectContextForAuthentication(ConnectContextFactory.createUsernamePasswordConnectContext(username, password));
+		adapter.sendBrowseRequest(FileIDFactory.getDefault().createFileID(adapter.getBrowseNamespace(), targetURL), listener);
+
+		syncWaitForNotify(60000);
+
+		assertNotNull(browseEvent);
+
+		IRemoteFile[] remoteFiles = browseEvent.getRemoteFiles();
+		assertNotNull(remoteFiles);
+		assertTrue(remoteFiles.length > 1);
+
+		for (int i = 0; i < remoteFiles.length; i++) {
+			IRemoteFileInfo fInfo = remoteFiles[i].getInfo();
+			System.out.println("directory entry=" + i + ";id=" + remoteFiles[i].getID() + ";name=" + fInfo.getName() + ";isDirectory=" + fInfo.isDirectory() + ";size=" + fInfo.getLength() + ";lastModified=" + fInfo.getLastModified()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 		}
-		assertTrue(latch.await(60, TimeUnit.SECONDS));
+	}
+
+	public void syncNotify() {
+		super.syncNotify();
 	}
 
 }

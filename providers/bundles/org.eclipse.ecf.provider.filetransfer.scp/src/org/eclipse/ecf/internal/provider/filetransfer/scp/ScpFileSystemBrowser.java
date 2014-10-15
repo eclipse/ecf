@@ -14,9 +14,8 @@ package org.eclipse.ecf.internal.provider.filetransfer.scp;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.Session;
 import java.io.*;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Map;
+import java.net.*;
+import java.util.*;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.IDFactory;
@@ -81,46 +80,52 @@ public class ScpFileSystemBrowser extends AbstractFileSystemBrowser implements
 	 * Method called from super class to build the list of remote files.
 	 */
 	protected void runRequest() throws Exception {
-		try {
+		scpUtil = new ScpUtil(this);
+		final Session s = scpUtil.getSession();
+		s.connect();
+		if (s.isConnected()) {
+			final String targetFileName = scpUtil
+					.trimTargetFile(directoryOrFile.getPath());
+			final String command = LS_START_COMMAND + targetFileName
+					+ LS_END_COMMAND;
+			channel = (ChannelExec) s.openChannel(SCP_EXEC);
+			channel.setCommand(command);
+			final OutputStream outs = channel.getOutputStream();
+			inputStream = channel.getInputStream();
+			channel.connect();
 
-			scpUtil = new ScpUtil(this);
-			final Session s = scpUtil.getSession();
-			s.connect();
-			if (s.isConnected()) {
-				final String targetFileName = scpUtil
-						.trimTargetFile(directoryOrFile.getPath());
-				final String command = LS_START_COMMAND + targetFileName
-						+ LS_END_COMMAND;
-				channel = (ChannelExec) s.openChannel(SCP_EXEC);
-				channel.setCommand(command);
-				final OutputStream outs = channel.getOutputStream();
-				inputStream = channel.getInputStream();
-				channel.connect();
+			setOutputStream(outs);
 
-				setOutputStream(outs);
-
-				BufferedReader reader = new BufferedReader(
-						new InputStreamReader(inputStream));
-				String line = reader.readLine();
-				ArrayList strings = new ArrayList();
-				while (line != null) {
-					strings.add(line);
-					line = reader.readLine();
-				}
-				remoteFiles = new IRemoteFile[strings.size()];
-				for (int i = 0; i < strings.size(); i++) {
-					remoteFiles[i] = createRemoteFile((String) strings.get(i));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					inputStream));
+			String line = reader.readLine();
+			ArrayList strings = new ArrayList();
+			while (line != null) {
+				strings.add(line);
+				line = reader.readLine();
+			}
+			List remoteFilesList = new ArrayList();
+			for (int i = 0; i < strings.size(); i++) {
+				try {
+					remoteFilesList.add(createRemoteFile((String) strings
+							.get(i)));
+				} catch (Exception e) {
+					Activator
+							.getDefault()
+							.log(new Status(
+									IStatus.ERROR,
+									Activator.PLUGIN_ID,
+									IStatus.ERROR,
+									"SCPFileBrowser could not convert string '" + ((String) strings.get(i)) + "' to FileID", e)); //$NON-NLS-1$
 				}
 			}
-		} catch (final Exception e) {
-			Activator.getDefault().log(
-					new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-							IStatus.ERROR, "runRequest", e)); //$NON-NLS-1$
+			remoteFiles = (IRemoteFile[]) remoteFilesList
+					.toArray(new IRemoteFile[remoteFilesList.size()]);
 		}
 	}
 
 	private IRemoteFile createRemoteFile(String string)
-			throws FileCreateException, SecurityException {
+			throws URISyntaxException, FileCreateException, SecurityException {
 		URLRemoteFile file = null;
 		IFileID id = null;
 		String[] parts = string.split("\\|");
@@ -155,12 +160,13 @@ public class ScpFileSystemBrowser extends AbstractFileSystemBrowser implements
 				builder.deleteCharAt(builder.length() - 1);
 			}
 
+			URI uri = new URI(builder.toString());
+
 			// Create the FileID
-			id = FileIDFactory.getDefault()
-					.createFileID(
-							IDFactory.getDefault().getNamespaceByName(
-									FileTransferNamespace.PROTOCOL),
-							builder.toString());
+			id = FileIDFactory.getDefault().createFileID(
+					IDFactory.getDefault().getNamespaceByName(
+							FileTransferNamespace.PROTOCOL),
+					new Object[] { uri });
 			long size = Long.parseLong(parts[1]);
 			long modification = Long.parseLong(parts[2]);
 			file = new URLRemoteFile(modification, size, id);
@@ -170,12 +176,6 @@ public class ScpFileSystemBrowser extends AbstractFileSystemBrowser implements
 
 	protected void cleanUp() {
 		super.cleanUp();
-		// FIXME - This code is from ScpOutgoingFileTransfer, but it throws
-		// exceptions
-		// if (scpUtil != null) {
-		// scpUtil.sendZeroToStream(outputStream);
-		// scpUtil.checkAck(inputStream);
-		// }
 		if (channel != null) {
 			channel.disconnect();
 			channel = null;
