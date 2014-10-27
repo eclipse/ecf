@@ -49,7 +49,7 @@ public class ScpFileSystemBrowser extends AbstractFileSystemBrowser implements
 			"org.eclipse.ecf.filetransfer.scp.filebrowse.exec", "exec"); //$NON-NLS-1$
 	protected static final String LS_START_COMMAND = System.getProperty(
 			"org.eclipse.ecf.filetransfer.scp.filebrowse.lscommand.start",
-			"for file in "); //$NON-NLS-1$; //$NON-NLS-1$
+			"IFS=\"$(printf '\n\t\')\"; shopt -s dotglob; for file in "); //$NON-NLS-1$; //$NON-NLS-1$
 	protected static final String LS_END_COMMAND = System.getProperty(
 			"org.eclipse.ecf.filetransfer.scp.filebrowse.lscommand.end",
 			"/*; do stat --format='%F|%s|%Y|%n' $file; done "); //$NON-NLS-1$; //$NON-NLS-1$
@@ -160,7 +160,9 @@ public class ScpFileSystemBrowser extends AbstractFileSystemBrowser implements
 				builder.deleteCharAt(builder.length() - 1);
 			}
 
-			URI uri = new URI(builder.toString());
+			String originalName = builder.toString();
+			String formatedName = originalName.replace(" ", "%20");
+			URI uri = new URI(formatedName);
 
 			// Create the FileID
 			id = FileIDFactory.getDefault().createFileID(
