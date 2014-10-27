@@ -18,7 +18,7 @@ import org.eclipse.ecf.filetransfer.events.IRemoteFileSystemBrowseEvent;
 import org.eclipse.ecf.filetransfer.events.IRemoteFileSystemEvent;
 import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
 
-public class ScpFileBrowseTest extends AbstractSCPTest {
+public class SCPFileBrowseTest extends AbstractSCPTest {
 
 	private String browseDir = System.getProperty("browseDirectory", "/"); //$NON-NLS-1$ //$NON-NLS-2$
 	private IRemoteFileSystemBrowserContainerAdapter adapter = null;
