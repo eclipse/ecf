@@ -1,6 +1,6 @@
 
 <toc label="API JavaDoc">
-  <topic label="OSGi Remote Services API">
+  <topic label="Remote Services API">
 <topic label="ECF Core API">
 <topic label="org.eclipse.ecf.core" href="http://download.eclipse.org/rt/ecf/latest/javadoc/org/eclipse/ecf/core/package-summary.html"/>
 <topic label="org.eclipse.ecf.core.events" href="http://download.eclipse.org/rt/ecf/latest/javadoc/org/eclipse/ecf/core/events/package-summary.html"/>

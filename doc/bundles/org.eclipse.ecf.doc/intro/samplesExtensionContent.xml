@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <introContent>
-	<extensionContent id="orgeclipseecfdoc-introExtension" name="ECF OSGi Remote Services"
+	<extensionContent id="orgeclipseecfdoc-introExtension" name="ECF Remote Services"
 		style="css/samples.css" path="samples/@">
-		<group label="ECF OSGi Remote Services" id="orgeclipseecfdoc-introLink-group" style-id="content-group">
+		<group label="ECF Remote Services" id="orgeclipseecfdoc-introLink-group" style-id="content-group">
 			<link 
 				url="http://org.eclipse.ui.intro/showHelpTopic?id=https://wiki.eclipse.org/Tutorial:_Building_your_first_OSGi_Remote_Service" 
-				label="Building Your First OSGi Remote Service" id="orgeclipseecfdoc-tut-buildingyourfirstosgiremoteservice"	style-id="content-link">
-				<text>An introductory tutorial showing how to create and run a simple OSGi Remote Service</text>
+				label="Building Your First Remote Service" id="orgeclipseecfdoc-tut-buildingyourfirstosgiremoteservice"	style-id="content-link">
+				<text>An introductory tutorial showing how to create and run a simple Remote Service</text>
 			</link>
 			<link
 				url="http://org.eclipse.ui.intro/showHelpTopic?id=https://wiki.eclipse.org/Tutorial:_Building_your_first_Asynchronous_OSGi_Remote_Service"
 				label="Building Your First Asynchronous Remote Service" id="orgeclipseecfdoc-tut-buildingyourfirstasyncosgiremoteservice" style-id="content-link">
-				<text>An introductory tutorial showing how to create an run a non-blocking asynchronous OSGi Remote Service</text>
+				<text>An introductory tutorial showing how to create an run a non-blocking asynchronous Remote Service</text>
 			</link>
 			<link
 				url="http://org.eclipse.ui.intro/showHelpTopic?id=https://wiki.eclipse.org/Tutorial:_OSGi_Remote_Services_for_the_Raspberry_Pi"
-				label="OSGi Remote Services for the Raspberry Pi" id="orgeclipseecfdoc-tut-osgiremoteservicesfortheraspberrypi" style-id="content-link">
-				<text>An introductory Internet of Things (IoT) tutorial showing how to create and use OSGi Remote Services on a Raspberry Pi</text>
+				label="Remote Services for the Raspberry Pi" id="orgeclipseecfdoc-tut-osgiremoteservicesfortheraspberrypi" style-id="content-link">
+				<text>An introductory Internet of Things (IoT) tutorial showing how to create and use Remote Services on a Raspberry Pi</text>
 			</link>
 			<link
 				url="http://org.eclipse.ui.intro/showHelpTopic?id=https://wiki.eclipse.org/Tutorial:_Creating_a_RESTful_Remote_Service_Provider"
 				label="Creating a RESTful Remote Service Provider" id="orgeclipseecfdoc-tut-creatingrestfulremoteserviceprovider" style-id="content-link">
-				<text>A more advanced tutorial showing how to create a custom OSGi Remote Services distribution provider</text>
+				<text>A more advanced tutorial showing how to create a custom Remote Services distribution provider</text>
 			</link>
 		</group>
 	</extensionContent>

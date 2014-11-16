@@ -3,5 +3,5 @@
 
 <toc label="Getting Started"> 
     <topic label="Download" href="http://www.eclipse.org/ecf/downloads.php"/>
-    <topic label="OSGi Remote Services Tutorials, Examples, and Documentation" href="http://wiki.eclipse.org/ECF"/>
+    <topic label="Remote Services Tutorials, Examples, and Documentation" href="http://wiki.eclipse.org/ECF"/>
 </toc>

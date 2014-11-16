@@ -9,8 +9,8 @@
     <topic label="Blog" href="http://eclipseecf.blogspot.com/"/>
     <topic label="Recent Presentations">
       <topic label="Democamp presentation by committer Markus Kuppe" href="http://www.lemmster.de/publications/Discover_Remote_Services_-_Democamp_HH_2013_-_Markus_Alexander_Kuppe.pdf"/>
-      <topic label="Discover OSGi Remote Services" href="http://www.eclipsecon.org/europe2013/discover-remote-osgi-services"/>
-      <topic label="Fun with OSGi Remote Services" href="http://vimeo.com/14247502"/>
+      <topic label="Discover Remote Services" href="http://www.eclipsecon.org/europe2013/discover-remote-osgi-services"/>
+      <topic label="Fun with Remote Services" href="http://vimeo.com/14247502"/>
     </topic>
 	<topic label="Reference Documentation" href="http://wiki.eclipse.org/ECF">
 	  <topic label="JavaDoc" href="http://download.eclipse.org/rt/ecf/latest/javadoc">

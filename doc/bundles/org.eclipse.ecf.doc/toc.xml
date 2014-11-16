@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?NLS TYPE="org.eclipse.help.toc"?>
 
-<toc label="ECF OSGi Remote Services Developer Guide" link_to="toc.xml">
+<toc label="ECF Remote Services Developer Guide" link_to="toc.xml">
     <topic label="New and Noteworthy" href="http://www.eclipse.org/ecf/NewAndNoteworthy.html"/>
     <topic label="Download and Install" href="http://www.eclipse.org/ecf/downloads.php"/>
-    <topic label="OSGi Remote Services" href="http://wiki.eclipse.org/ECF">
+    <topic label="Remote Services" href="http://wiki.eclipse.org/ECF">
 		<link toc="topics_Reference_RemoteServices.xml"/>
     </topic>
     <topic label="Resources">
