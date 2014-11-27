@@ -10,6 +10,8 @@
 package org.eclipse.ecf.remoteservice.rest.client;
 
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 import org.apache.http.*;
 import org.apache.http.auth.*;
@@ -17,6 +19,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.params.ClientPNames;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.AbstractHttpMessage;
@@ -259,17 +262,22 @@ public class RestClientService extends AbstractClientService {
 	}
 
 	/**
+	 * @throws NotSerializableException 
 	 * @throws ECFException  
 	 */
-	protected HttpRequestBase prepareGetMethod(String uri, IRemoteCall call, IRemoteCallable callable) {
-		HttpRequestBase result = new HttpGet(uri);
-		/**
-		 * FIXME: is this still supported in httpclient 4.0?
+	protected HttpRequestBase prepareGetMethod(String uri, IRemoteCall call, IRemoteCallable callable) throws NotSerializableException {
 		NameValuePair[] params = toNameValuePairs(uri, call, callable);
-		if (params != null)
-			result.setQueryString(params);
-		**/
-		return result;
+		URI httpURI = null;
+		try {
+			URIBuilder builder = new URIBuilder(uri);
+			if (params != null)
+				for (int i = 0; i < params.length; i++)
+					builder.addParameter(params[i].getName(), params[i].getValue());
+			httpURI = builder.build();
+		} catch (URISyntaxException e1) {
+			throw new NotSerializableException("uri=" + uri + " does not have proper URI syntax"); //$NON-NLS-1$//$NON-NLS-2$
+		}
+		return new HttpGet(httpURI);
 	}
 
 	protected UrlEncodedFormEntity getUrlEncodedFormEntity(List list, AbstractEntityRequestType postRequestType) throws UnsupportedEncodingException {
