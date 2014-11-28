@@ -24,14 +24,12 @@ public class StringParameterSerializer extends AbstractParameterSerializer imple
 	 * @throws NotSerializableException  
 	 */
 	public IRemoteCallParameter serializeParameter(String uri, IRemoteCall call, IRemoteCallable callable, IRemoteCallParameter paramDefault, Object paramToSerialize) throws NotSerializableException {
-		if (paramToSerialize instanceof String)
-			return new RemoteCallParameter(paramDefault.getName(), paramToSerialize);
 		if (paramToSerialize == null) {
 			Object defaultValue = paramDefault.getValue();
 			if (defaultValue instanceof String)
 				return new RemoteCallParameter(paramDefault.getName(), defaultValue);
 		}
-		return null;
+		return new RemoteCallParameter(paramDefault.getName(), paramToSerialize.toString());
 	}
 
 }
