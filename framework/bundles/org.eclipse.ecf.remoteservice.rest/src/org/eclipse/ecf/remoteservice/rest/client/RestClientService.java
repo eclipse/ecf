@@ -30,7 +30,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.security.*;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.remoteservice.rest.Activator;
+import org.eclipse.ecf.internal.remoteservice.rest.DebugOptions;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.client.*;
@@ -63,6 +65,10 @@ public class RestClientService extends AbstractClientService {
 		return (isOkCode >= 0 && isOkCode < 100);
 	}
 
+	protected void trace(String methodName, String message) {
+		Trace.trace(Activator.PLUGIN_ID, DebugOptions.REST_CLIENT_SERVICE, getClass(), methodName, message);
+	}
+
 	/**
 	 * Calls the Rest service with given URL of IRestCall. The returned value is
 	 * the response body as an InputStream.
@@ -75,14 +81,18 @@ public class RestClientService extends AbstractClientService {
 	 *         error occurs.
 	 */
 	protected Object invokeRemoteCall(final IRemoteCall call, final IRemoteCallable callable) throws ECFException {
+		trace("invokeRemoteCall", "call=" + call + ";callable=" + callable); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		String uri = prepareEndpointAddress(call, callable);
+		trace("invokeRemoteCall", "prepared endpoint=" + uri); //$NON-NLS-1$ //$NON-NLS-2$
 		HttpRequestBase httpMethod = createAndPrepareHttpMethod(uri, call, callable);
+		trace("invokeRemoteCall", "executing httpMethod" + httpMethod); //$NON-NLS-1$ //$NON-NLS-2$
 		// execute method
 		byte[] responseBody = null;
 		int responseCode = 500;
 		HttpResponse response = null;
 		try {
 			response = httpClient.execute(httpMethod);
+			trace("invokeRemoteCall", "httpMethod executed. response=" + response); //$NON-NLS-1$ //$NON-NLS-2$
 			responseCode = response.getStatusLine().getStatusCode();
 			if (isResponseOk(response)) {
 				// Get responseBody as String
@@ -100,7 +110,9 @@ public class RestClientService extends AbstractClientService {
 		}
 		Object result = null;
 		try {
-			result = processResponse(uri, call, callable, convertResponseHeaders(response.getAllHeaders()), responseBody);
+			Map responseHeaders = convertResponseHeaders(response.getAllHeaders());
+			trace("processResponse", "uri=" + uri + ";call=" + call + ";callable=" + callable + ";responseHeaders=" + responseHeaders + ";responseBody=" + responseBody); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+			result = processResponse(uri, call, callable, responseHeaders, responseBody);
 		} catch (NotSerializableException e) {
 			handleException("Exception deserializing response.  URL=" + uri + " responseCode=" + new Integer(responseCode), e, responseCode); //$NON-NLS-1$ //$NON-NLS-2$
 		}

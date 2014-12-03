@@ -267,6 +267,13 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 		return registration;
 	}
 
+	/**
+	 * @since 8.5
+	 */
+	public IRemoteServiceRegistration registerCallables(Class<?> serviceType, IRemoteCallable[] callables, Dictionary properties) {
+		return registerCallables(new String[] {serviceType.getName()}, new IRemoteCallable[][] {callables}, properties);
+	}
+
 	public IRemoteServiceRegistration registerCallables(String[] clazzes, IRemoteCallable[][] callables, Dictionary properties) {
 		final RemoteServiceClientRegistration registration = createRestServiceRegistration(clazzes, callables, properties);
 		this.registry.registerRegistration(registration);

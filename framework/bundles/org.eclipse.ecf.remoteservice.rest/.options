@@ -1,0 +1,17 @@
+# Debugging options for the org.eclipse.ecf.remoteservice.rest plug-in
+
+# Turn on general debugging for the org.eclipse.ecf.osgi.services.remoteservicesadmin plug-in
+org.eclipse.ecf.remoteservice.rest/debug=true
+org.eclipse.ecf.remoteservice.rest/debug/filter = *
+org.eclipse.ecf.remoteservice.rest/debug/flag = true
+
+# Trace when exceptions are caught
+org.eclipse.ecf.remoteservice.rest/debug/exceptions/catching=true
+# Trace when exceptions are thrown
+org.eclipse.ecf.remoteservice.rest/debug/exceptions/throwing=true
+
+org.eclipse.ecf.remoteservice.rest/debug/restclientservice=true
+
+
+
+
