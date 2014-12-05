@@ -75,4 +75,41 @@ public class RemoteCallable implements IRemoteCallable {
 		buffer.append("]"); //$NON-NLS-1$
 		return buffer.toString();
 	}
+
+	/**
+	 * @since 8.5
+	 */
+	public static class Builder {
+		private final String methodName;
+		private final String resourcePath;
+		private IRemoteCallParameter[] defaultParameters;
+		private long timeout = IRemoteCall.DEFAULT_TIMEOUT;
+		private IRemoteCallableRequestType requestType;
+
+		public Builder(String methodName, String resourcePath) {
+			Assert.isNotNull(methodName);
+			this.methodName = methodName;
+			this.resourcePath = resourcePath;
+			Assert.isNotNull(resourcePath);
+		}
+
+		public Builder setDefaultParameters(IRemoteCallParameter[] defaultParameters) {
+			this.defaultParameters = defaultParameters;
+			return this;
+		}
+
+		public Builder setRequestTimeout(long timeout) {
+			this.timeout = timeout;
+			return this;
+		}
+
+		public Builder setRequestType(IRemoteCallableRequestType requestType) {
+			this.requestType = requestType;
+			return this;
+		}
+
+		public IRemoteCallable build() {
+			return new RemoteCallable(this.methodName, this.resourcePath, this.defaultParameters, this.requestType, this.timeout);
+		}
+	}
 }

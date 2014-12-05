@@ -9,6 +9,7 @@
 ******************************************************************************/
 package org.eclipse.ecf.remoteservice.client;
 
+import java.util.*;
 import org.eclipse.core.runtime.Assert;
 
 /**
@@ -49,4 +50,33 @@ public class RemoteCallParameter implements IRemoteCallParameter {
 		return buffer.toString();
 	}
 
+	/**
+	 * @since 8.5
+	 */
+	public static class Builder {
+		private final Map<String, Object> nameDefaultValueMap;
+
+		public Builder() {
+			this.nameDefaultValueMap = new HashMap<String, Object>();
+		}
+
+		public Builder addParameter(String name, Object defaultValue) {
+			this.nameDefaultValueMap.put(name, defaultValue);
+			return this;
+		}
+
+		public Builder addParameter(String name) {
+			return addParameter(name, null);
+		}
+
+		public IRemoteCallParameter[] build() {
+			List<IRemoteCallParameter> params = new ArrayList<IRemoteCallParameter>();
+			for (String name : this.nameDefaultValueMap.keySet()) {
+				Object value = this.nameDefaultValueMap.get(name);
+				params.add(((value == null) ? new RemoteCallParameter(name) : new RemoteCallParameter(name, value)));
+			}
+
+			return (params.size() == 0) ? null : params.toArray(new IRemoteCallParameter[params.size()]);
+		}
+	}
 }
