@@ -16,16 +16,14 @@ import java.util.*;
 import org.apache.http.*;
 import org.apache.http.auth.*;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.*;
-import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.AbstractHttpMessage;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.params.CoreProtocolPNames;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.security.*;
@@ -46,11 +44,13 @@ import org.eclipse.ecf.remoteservice.rest.RestException;
  */
 public class RestClientService extends AbstractClientService {
 
+	public static final int socketTimeout = Integer.valueOf(System.getProperty("org.eclipse.ecf.remoteservice.rest.RestClientService.socketTimeout", "-1")).intValue(); //$NON-NLS-1$ //$NON-NLS-2$
+	public static final int connectRequestTimeout = Integer.valueOf(System.getProperty("org.eclipse.ecf.remoteservice.rest.RestClientService.connectRequestTimeout", "-1")).intValue(); //$NON-NLS-1$ //$NON-NLS-2$
+	public static final int connectTimeout = Integer.valueOf(System.getProperty("org.eclipse.ecf.remoteservice.rest.RestClientService.connectTimeout", "-1")).intValue(); //$NON-NLS-1$ //$NON-NLS-2$
+
 	protected final static int DEFAULT_RESPONSE_BUFFER_SIZE = 1024;
 
 	protected final static String DEFAULT_HTTP_CONTENT_CHARSET = "UTF-8"; //$NON-NLS-1$
-
-	private static final String CONNECTION_MANAGER_TIMEOUT = "http.connection-manager.timeout"; //$NON-NLS-1$
 
 	protected HttpClient httpClient;
 	protected int responseBufferSize = DEFAULT_RESPONSE_BUFFER_SIZE;
@@ -139,15 +139,11 @@ public class RestClientService extends AbstractClientService {
 		handleException(message, e, responseCode, null);
 	}
 
+	/*
+	 * @deprecated
+	 */
 	protected void setupTimeouts(HttpClient httpClient, IRemoteCall call, IRemoteCallable callable) {
-		long callTimeout = call.getTimeout();
-		if (callTimeout == IRemoteCall.DEFAULT_TIMEOUT)
-			callTimeout = callable.getDefaultTimeout();
-
-		int timeout = (int) callTimeout;
-		httpClient.getParams().setIntParameter(CoreConnectionPNames.SO_TIMEOUT, timeout);
-		httpClient.getParams().setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, timeout);
-		httpClient.getParams().setIntParameter(CONNECTION_MANAGER_TIMEOUT, timeout);
+		// No longer used
 	}
 
 	private Map convertResponseHeaders(Header[] headers) {
@@ -210,15 +206,44 @@ public class RestClientService extends AbstractClientService {
 			logException(message, e);
 			throw new RestException(message);
 		}
+
+		prepareHttpMethod(httpMethod, call, callable);
+		return httpMethod;
+	}
+
+	protected void prepareHttpMethod(HttpRequestBase httpMethod, IRemoteCall call, IRemoteCallable callable) {
 		// add additional request headers
 		addRequestHeaders(httpMethod, call, callable);
 		// handle authentication
 		setupAuthenticaton(httpClient, httpMethod);
-		// needed because a resource can link to another resource
-		httpClient.getParams().setParameter(ClientPNames.ALLOW_CIRCULAR_REDIRECTS, new Boolean(true));
-		httpClient.getParams().setParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET, DEFAULT_HTTP_CONTENT_CHARSET);
-		setupTimeouts(httpClient, call, callable);
-		return httpMethod;
+		// setup http method config (redirects, timesouts, etc)
+		setupHttpMethod(httpMethod, call, callable);
+	}
+
+	protected void setupHttpMethod(HttpRequestBase httpMethod, IRemoteCall call, IRemoteCallable callable) {
+
+		RequestConfig defaultRequestConfig = httpMethod.getConfig();
+		RequestConfig.Builder updatedRequestConfigBuilder = (defaultRequestConfig == null) ? RequestConfig.custom() : RequestConfig.copy(defaultRequestConfig);
+		// setup to allow regular and circular redirects
+		updatedRequestConfigBuilder.setCircularRedirectsAllowed(true);
+		updatedRequestConfigBuilder.setRedirectsEnabled(true);
+
+		int sTimeout = socketTimeout;
+		int scTimeout = connectTimeout;
+		int scrTimeout = connectRequestTimeout;
+
+		long callTimeout = call.getTimeout();
+		if (callTimeout == IRemoteCall.DEFAULT_TIMEOUT)
+			callTimeout = callable.getDefaultTimeout();
+
+		if (callTimeout != IRemoteCall.DEFAULT_TIMEOUT) {
+			sTimeout = scTimeout = scrTimeout = new Long(callTimeout).intValue();
+		}
+		updatedRequestConfigBuilder.setSocketTimeout(sTimeout);
+		updatedRequestConfigBuilder.setConnectTimeout(scTimeout);
+		updatedRequestConfigBuilder.setConnectionRequestTimeout(scrTimeout);
+
+		httpMethod.setConfig(updatedRequestConfigBuilder.build());
 	}
 
 	/**
