@@ -25,13 +25,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.AbstractHttpMessage;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.security.*;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.internal.remoteservice.rest.Activator;
-import org.eclipse.ecf.internal.remoteservice.rest.DebugOptions;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.client.*;
@@ -43,7 +38,7 @@ import org.eclipse.ecf.remoteservice.rest.RestException;
  * RESTful web service can be accessed via the methods provided by this class.
  * Mostly the methods are inherited from {@link IRemoteService}.
  */
-public class RestClientService extends AbstractClientService {
+public class RestClientService extends AbstractRestClientService {
 
 	public static final int socketTimeout = Integer.valueOf(System.getProperty("org.eclipse.ecf.remoteservice.rest.RestClientService.socketTimeout", "-1")).intValue(); //$NON-NLS-1$ //$NON-NLS-2$
 	public static final int connectRequestTimeout = Integer.valueOf(System.getProperty("org.eclipse.ecf.remoteservice.rest.RestClientService.connectRequestTimeout", "-1")).intValue(); //$NON-NLS-1$ //$NON-NLS-2$
@@ -70,10 +65,6 @@ public class RestClientService extends AbstractClientService {
 		return (isOkCode >= 0 && isOkCode < 100);
 	}
 
-	protected void trace(String methodName, String message) {
-		Trace.trace(Activator.PLUGIN_ID, DebugOptions.REST_CLIENT_SERVICE, getClass(), methodName, message);
-	}
-
 	/**
 	 * Calls the Rest service with given URL of IRestCall. The returned value is
 	 * the response body as an InputStream.
@@ -87,9 +78,9 @@ public class RestClientService extends AbstractClientService {
 	 */
 	protected Object invokeRemoteCall(final IRemoteCall call, final IRemoteCallable callable) throws ECFException {
 		trace("invokeRemoteCall", "call=" + call + ";callable=" + callable); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		String uri = prepareEndpointAddress(call, callable);
-		trace("invokeRemoteCall", "prepared endpoint=" + uri); //$NON-NLS-1$ //$NON-NLS-2$
-		HttpRequestBase httpMethod = createAndPrepareHttpMethod(uri, call, callable);
+		String endpointUri = prepareEndpointAddress(call, callable);
+		trace("invokeRemoteCall", "prepared endpoint=" + endpointUri); //$NON-NLS-1$ //$NON-NLS-2$
+		HttpRequestBase httpMethod = createAndPrepareHttpMethod(endpointUri, call, callable);
 		trace("invokeRemoteCall", "executing httpMethod" + httpMethod); //$NON-NLS-1$ //$NON-NLS-2$
 		// execute method
 		byte[] responseBody = null;
@@ -108,7 +99,7 @@ public class RestClientService extends AbstractClientService {
 					responseBody = getResponseAsBytes(response);
 				}
 				// Now pass to the exception handler
-				handleException("Http response not OK.  URL=" + uri + " responseCode=" + new Integer(responseCode), null, responseCode, responseBody); //$NON-NLS-1$ //$NON-NLS-2$
+				handleException("Http response not OK.  httpMethod=" + httpMethod + " responseCode=" + new Integer(responseCode), null, responseCode, responseBody); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		} catch (IOException e) {
 			handleException("Transport IOException", e, responseCode); //$NON-NLS-1$
@@ -116,10 +107,10 @@ public class RestClientService extends AbstractClientService {
 		Object result = null;
 		try {
 			Map responseHeaders = convertResponseHeaders(response.getAllHeaders());
-			trace("processResponse", "uri=" + uri + ";call=" + call + ";callable=" + callable + ";responseHeaders=" + responseHeaders + ";responseBody=" + responseBody); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
-			result = processResponse(uri, call, callable, responseHeaders, responseBody);
+			trace("processResponse", "httpMethod=" + httpMethod + ";call=" + call + ";callable=" + callable + ";responseHeaders=" + responseHeaders + ";responseBody=" + responseBody); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+			result = processResponse(endpointUri, call, callable, responseHeaders, responseBody);
 		} catch (NotSerializableException e) {
-			handleException("Exception deserializing response.  URL=" + uri + " responseCode=" + new Integer(responseCode), e, responseCode); //$NON-NLS-1$ //$NON-NLS-2$
+			handleException("Exception deserializing response.  httpMethod=" + httpMethod + " responseCode=" + new Integer(responseCode), e, responseCode); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		return result;
 	}
@@ -133,15 +124,6 @@ public class RestClientService extends AbstractClientService {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		response.getEntity().writeTo(os);
 		return os.toByteArray();
-	}
-
-	protected void handleException(String message, Throwable e, int responseCode, byte[] responseBody) throws RestException {
-		logException(message, e);
-		throw new RestException(message, e, responseCode, responseBody);
-	}
-
-	protected void handleException(String message, Throwable e, int responseCode) throws RestException {
-		handleException(message, e, responseCode, null);
 	}
 
 	/*
@@ -373,18 +355,6 @@ public class RestClientService extends AbstractClientService {
 			}
 
 		}
-	}
-
-	protected void logException(String string, Throwable e) {
-		Activator a = Activator.getDefault();
-		if (a != null)
-			a.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, string, e));
-	}
-
-	protected void logWarning(String string, Throwable e) {
-		Activator a = Activator.getDefault();
-		if (a != null)
-			a.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, string));
 	}
 
 }
