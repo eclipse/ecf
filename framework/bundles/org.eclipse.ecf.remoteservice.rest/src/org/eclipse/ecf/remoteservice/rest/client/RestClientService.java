@@ -21,9 +21,10 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.AbstractHttpMessage;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.BasicHttpContext;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.security.*;
@@ -57,7 +58,11 @@ public class RestClientService extends AbstractClientService {
 
 	public RestClientService(RestClientContainer container, RemoteServiceClientRegistration registration) {
 		super(container, registration);
-		this.httpClient = new DefaultHttpClient();
+		this.httpClient = createHttpClient();
+	}
+
+	protected HttpClient createHttpClient() {
+		return HttpClientBuilder.create().build();
 	}
 
 	private boolean isResponseOk(HttpResponse response) {
@@ -358,7 +363,7 @@ public class RestClientService extends AbstractClientService {
 				String username = nameCallback.getName();
 				String password = (String) passwordCallback.getObject();
 				Credentials credentials = new UsernamePasswordCredentials(username, password);
-				method.addHeader(new BasicScheme().authenticate(credentials, method));
+				method.addHeader(new BasicScheme().authenticate(credentials, method, new BasicHttpContext()));
 			} catch (IOException e) {
 				logException("IOException setting credentials for rest httpclient", e); //$NON-NLS-1$
 			} catch (UnsupportedCallbackException e) {

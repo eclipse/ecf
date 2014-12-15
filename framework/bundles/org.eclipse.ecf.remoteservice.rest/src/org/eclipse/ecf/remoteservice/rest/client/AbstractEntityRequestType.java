@@ -10,6 +10,7 @@
 package org.eclipse.ecf.remoteservice.rest.client;
 
 import java.io.*;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.Map;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.*;
@@ -91,8 +92,10 @@ public abstract class AbstractEntityRequestType extends AbstractRequestType {
 			case STRING_REQUEST_ENTITY :
 				if (paramToSerialize instanceof String) {
 					try {
-						return new StringEntity((String) paramToSerialize, getContentType(call, callable, paramDefault), getCharset(call, callable, paramDefault));
-					} catch (UnsupportedEncodingException e) {
+						StringEntity entity = new StringEntity((String) paramToSerialize, getCharset(call, callable, paramDefault));
+						entity.setContentType(getContentType(call, callable, paramDefault));
+						return entity;
+					} catch (UnsupportedCharsetException e) {
 						throw new NotSerializableException("Could not create request entity from call parameters: " + e.getMessage()); //$NON-NLS-1$
 					}
 				}
@@ -104,7 +107,7 @@ public abstract class AbstractEntityRequestType extends AbstractRequestType {
 				throw new NotSerializableException("Cannot generate request entity.  Expecting byte[] and got class=" + paramToSerialize.getClass().getName()); //$NON-NLS-1$
 			case FILE_REQUEST_ENTITY :
 				if (paramToSerialize instanceof File) {
-					return new FileEntity((File) paramToSerialize, getContentType(call, callable, paramDefault));
+					return new FileEntity((File) paramToSerialize, ContentType.create(getContentType(call, callable, paramDefault)));
 				}
 				throw new NotSerializableException("Remote call parameter with name=" + paramDefault.getName() + " is incorrect type for creating request entity."); //$NON-NLS-1$ //$NON-NLS-2$
 			default :
