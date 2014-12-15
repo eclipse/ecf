@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.ecf.remoteservice.sdk.examples.feature"
-      label="OSGi Remote Services Examples"
+      label="ECF Remote Services Examples"
       version="1.0.0.qualifier"
       provider-name="Eclipse.org - ECF">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the ECF Remote Services SDK Examples.  These are examples of OSGi Remote Services that use the ECF implementations of OSGi Remote Services/Remote Service Admin specifications.  For tutorials based upon these examples see
+      This feature provides the ECF Remote Services SDK Examples.  These are examples of Remote Services that use the ECF implementations of OSGi Remote Services/Remote Service Admin specifications.  For tutorials based upon these examples see
 
 https://wiki.eclipse.org/ECF#OSGi_Remote_Services
    </description>

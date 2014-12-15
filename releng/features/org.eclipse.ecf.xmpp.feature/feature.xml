@@ -6,7 +6,7 @@
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature installs the XMPP/XMPPS/Google Talk provider.  The XMPP provider implements the Presence API for presence and instant messaging, the Datashare API for channel-based asynchronous messaging, the Remote Service API for providing OSGi Remote Services via XMPP/XMPPS/Google Talk services, and the Shared Object API.   For tutorials,
+      This feature installs the XMPP/XMPPS/Google Talk provider.  The XMPP provider implements the Presence API for presence and instant messaging, the Datashare API for channel-based asynchronous messaging, the Remote Service API for providing Remote Services via XMPP/XMPPS/Google Talk services, and the Shared Object API.   For tutorials,
 examples, and documentation about OSGi Remote Services see
 https://wiki.eclipse.org/ECF#OSGi_Remote_Services
    </description>

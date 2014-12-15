@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.ecf.osgi.services.feature"
-      label="ECF OSGi Remote Services Admin"
+      label="ECF Remote Services Admin"
       version="2.0.1.qualifier"
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the ECF Implementation of OSGi R6 Remote
-Services and Remote Service Admin.  Remote Services are specified in chapter 100 of the OSGi R6 Enterprise specification while RSA is specified in chapter 122 of the OSGi R6 Enterprise specification.  
+      This feature provides the ECF Implementation of OSGi Remote
+Services and Remote Service Admin (RSA).  Remote Services are specified in chapter 100 of the OSGi R6 Enterprise specification while RSA is specified in chapter 122 of the OSGi R6 Enterprise specification.  
 
 For specifications see 
 

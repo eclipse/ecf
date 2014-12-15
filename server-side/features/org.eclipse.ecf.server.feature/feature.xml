@@ -6,7 +6,7 @@
       provider-name="Eclipse.org">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides ECF server support for OSGi servers.
+      This feature provides support API for OSGi servers.
    </description>
 
    <copyright url="http://www.eclipse.org/ecf">

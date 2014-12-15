@@ -6,7 +6,7 @@
       provider-name="Eclipse.org - ECF">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides the ECF OSGI Console extensions...allowing ECF commands to be givenvia
+      This feature provides the ECF OSGI Console extensions...allowing ECF commands to be given via
       the OSGi console.
    </description>
 

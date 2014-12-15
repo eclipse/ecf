@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.ecf.remoteservice.sdk.feature"
-      label="ECF OSGi Remote Services SDK"
+      label="ECF Remote Services SDK"
       version="3.9.2.qualifier"
       provider-name="%providerName">
 
