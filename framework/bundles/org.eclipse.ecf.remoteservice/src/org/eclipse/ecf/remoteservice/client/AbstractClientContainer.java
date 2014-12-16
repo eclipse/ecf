@@ -382,12 +382,9 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 	}
 
 	protected IRemoteCallParameter[] prepareParameters(String uri, IRemoteCall call, IRemoteCallable callable) throws NotSerializableException {
-		List results = new ArrayList();
 		Object[] callParameters = call.getParameters();
 		IRemoteCallParameter[] defaultCallableParameters = callable.getDefaultParameters();
-		if (callParameters == null)
-			return defaultCallableParameters;
-
+		List results = new ArrayList();
 		/*
 		 * The loop calls for each call model obj the serializer, unless
 		 * - the model obj already happens to be a IRemoteCallParameter
@@ -423,17 +420,16 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 			// Start with the first parameter that wasn't specified
 			for (int i = callParameters.length; i < defaultCallableParameters.length; i++) {
 				IRemoteCallParameter param = defaultCallableParameters[i];
+				Object value = param.getValue();
 				// skip default parameters with null values
-				if (param.getValue() == null) {
+				if (value == null)
 					continue;
-				}
-				// serialize the parameter using the container's parameterSerializer
-				IRemoteCallParameter serialziedParam = serializeParameter(uri, call, callable, param, param.getValue());
-				results.add(serialziedParam);
+				// else serialize the parameter using the container's parameterSerializer
+				results.add(serializeParameter(uri, call, callable, param, value));
 			}
 		}
 
-		// Depending the two previous blocks, this potentially adds IRemoteCallParameters a second time to the list
+		// Depending on the two previous blocks, this potentially adds IRemoteCallParameters a second time to the list
 		// This is something for the user to handle/decide
 		return serializeParameter(uri, call, callable, results, callParameters);
 	}
