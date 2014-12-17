@@ -11,11 +11,9 @@ package org.eclipse.ecf.remoteservice.rest.client;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.remoteservice.rest.Activator;
 import org.eclipse.ecf.internal.remoteservice.rest.DebugOptions;
-import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.client.*;
 import org.eclipse.ecf.remoteservice.rest.RestException;
 
@@ -49,7 +47,5 @@ public abstract class AbstractRestClientService extends AbstractClientService {
 	protected void handleException(String message, Throwable e, int responseCode) throws RestException {
 		handleException(message, e, responseCode, null);
 	}
-
-	protected abstract Object invokeRemoteCall(final IRemoteCall call, final IRemoteCallable callable) throws ECFException;
 
 }

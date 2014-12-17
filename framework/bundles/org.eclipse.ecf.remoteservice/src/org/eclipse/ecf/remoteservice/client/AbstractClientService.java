@@ -222,6 +222,34 @@ public abstract class AbstractClientService extends AbstractRemoteService {
 	}
 
 	/**
+	 * @since 8.5
+	 */
+	public static class UriRequest {
+		private final String uri;
+		private final IRemoteCallableRequestType requestType;
+
+		public UriRequest(String uri, IRemoteCallableRequestType requestType) {
+			this.uri = uri;
+			this.requestType = requestType;
+		}
+
+		public String getUri() {
+			return uri;
+		}
+
+		public IRemoteCallableRequestType getRequestType() {
+			return requestType;
+		}
+	}
+
+	/**
+	 * @since 8.5
+	 */
+	protected UriRequest createUriRequest(String endpoint, IRemoteCall call, IRemoteCallable callable) {
+		return getClientContainer().createUriRequest(endpoint, call, callable);
+	}
+
+	/**
 	 * Invoke remote call.  The implementation of this method should actually 
 	 * make the remote call for the given call and associated callable.
 	 * 

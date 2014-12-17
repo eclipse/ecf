@@ -65,6 +65,41 @@ public class RestClientService extends AbstractRestClientService {
 		return (isOkCode >= 0 && isOkCode < 100);
 	}
 
+	protected HttpGet createGetMethod(String uri) {
+		return new HttpGet(uri);
+	}
+
+	protected HttpPost createPostMethod(String uri) {
+		return new HttpPost(uri);
+	}
+
+	protected HttpPut createPutMethod(String uri) {
+		return new HttpPut(uri);
+	}
+
+	protected HttpDelete createDeleteMethod(String uri) {
+		return new HttpDelete(uri);
+	}
+
+	protected HttpRequestBase prepareHttpMethod(HttpRequestBase httpMethod) {
+		return httpMethod;
+	}
+
+	protected HttpRequestBase createAndPrepareHttpMethod(UriRequest request) {
+		HttpRequestBase httpMethod = null;
+		String uri = request.getUri();
+		IRemoteCallableRequestType requestType = request.getRequestType();
+		if (requestType instanceof HttpGetRequestType)
+			httpMethod = createGetMethod(uri);
+		else if (requestType instanceof HttpPostRequestType)
+			httpMethod = createPostMethod(uri);
+		else if (requestType instanceof HttpPutRequestType)
+			httpMethod = createPutMethod(uri);
+		else if (requestType instanceof HttpDeleteRequestType)
+			httpMethod = createDeleteMethod(uri);
+		return prepareHttpMethod(httpMethod);
+	}
+
 	/**
 	 * Calls the Rest service with given URL of IRestCall. The returned value is
 	 * the response body as an InputStream.
@@ -80,7 +115,8 @@ public class RestClientService extends AbstractRestClientService {
 		trace("invokeRemoteCall", "call=" + call + ";callable=" + callable); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		String endpointUri = prepareEndpointAddress(call, callable);
 		trace("invokeRemoteCall", "prepared endpoint=" + endpointUri); //$NON-NLS-1$ //$NON-NLS-2$
-		HttpRequestBase httpMethod = createAndPrepareHttpMethod(endpointUri, call, callable);
+		UriRequest request = createUriRequest(endpointUri, call, callable);
+		HttpRequestBase httpMethod = (request == null) ? createAndPrepareHttpMethod(endpointUri, call, callable) : createAndPrepareHttpMethod(request);
 		trace("invokeRemoteCall", "executing httpMethod" + httpMethod); //$NON-NLS-1$ //$NON-NLS-2$
 		// execute method
 		byte[] responseBody = null;
@@ -102,7 +138,7 @@ public class RestClientService extends AbstractRestClientService {
 				handleException("Http response not OK.  httpMethod=" + httpMethod + " responseCode=" + new Integer(responseCode), null, responseCode, responseBody); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		} catch (IOException e) {
-			handleException("Transport IOException", e, responseCode); //$NON-NLS-1$
+			handleException("RestClientService transport IOException", e, responseCode); //$NON-NLS-1$
 		}
 		Object result = null;
 		try {

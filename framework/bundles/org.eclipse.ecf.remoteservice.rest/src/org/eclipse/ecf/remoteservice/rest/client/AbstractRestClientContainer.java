@@ -9,6 +9,7 @@
 ******************************************************************************/
 package org.eclipse.ecf.remoteservice.rest.client;
 
+import java.text.MessageFormat;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import org.eclipse.ecf.core.ContainerConnectException;
@@ -21,6 +22,8 @@ import org.eclipse.ecf.remoteservice.util.RemoteFilterImpl;
 import org.osgi.framework.InvalidSyntaxException;
 
 public abstract class AbstractRestClientContainer extends AbstractClientContainer {
+
+	public static final String SLASH = "/"; //$NON-NLS-1$
 
 	public AbstractRestClientContainer(RestID containerID) {
 		super(containerID);
@@ -53,29 +56,41 @@ public abstract class AbstractRestClientContainer extends AbstractClientContaine
 		return originalTarget;
 	}
 
-	public String prepareEndpointAddress(IRemoteCall call, IRemoteCallable callable) {
-		String resourcePath = callable.getResourcePath();
-		if (resourcePath == null || "".equals(resourcePath)) //$NON-NLS-1$
-			return null;
-		// if resourcePath startswith http then we use it unmodified
-		if (resourcePath.startsWith("http://")) //$NON-NLS-1$
-			return resourcePath;
+	protected String prepareBaseUri(IRemoteCall call, IRemoteCallable callable) {
+		String baseUri = ((RestID) getRemoteCallTargetID()).toURI().toString();
+		// strip off any trailing slashes
+		while (baseUri.endsWith(SLASH))
+			baseUri = baseUri.substring(0, baseUri.length() - 1);
+		// then do substitution
+		baseUri = substituteParameters(baseUri, call.getParameters());
+		return baseUri;
+	}
 
-		RestID targetContainerID = (RestID) getRemoteCallTargetID();
-		String baseUriString = targetContainerID.toURI().toString();
-		int length = baseUriString.length();
-		char[] lastChar = new char[1];
-		baseUriString.getChars(length - 1, length, lastChar, 0);
-		char[] firstMethodChar = new char[1];
-		resourcePath.getChars(0, 1, firstMethodChar, 0);
-		if ((lastChar[0] == '/' && firstMethodChar[0] != '/') || (lastChar[0] != '/' && firstMethodChar[0] == '/'))
-			return baseUriString + resourcePath;
-		else if (lastChar[0] == '/' && firstMethodChar[0] == '/') {
-			String tempurl = baseUriString.substring(0, length - 1);
-			return tempurl + resourcePath;
-		} else if (lastChar[0] != '/' && firstMethodChar[0] != '/')
-			return baseUriString + "/" + resourcePath; //$NON-NLS-1$
-		return null;
+	protected String prepareResourcePath(IRemoteCall call, IRemoteCallable callable) {
+		String path = callable.getResourcePath();
+		// check for valid value
+		if (path == null)
+			return null;
+		// strip off any extra leading slashes
+		while (path.startsWith(SLASH))
+			path = path.substring(1);
+		// do substitution
+		path = substituteParameters(path, call.getParameters());
+		return path;
+	}
+
+	protected String substituteParameters(String path, Object[] parameters) {
+		return MessageFormat.format(path, parameters);
+	}
+
+	public String prepareEndpointAddress(IRemoteCall call, IRemoteCallable callable) {
+		String baseUri = prepareBaseUri(call, callable);
+		if (baseUri == null)
+			return baseUri;
+		String resourcePath = prepareResourcePath(call, callable);
+		if (resourcePath == null)
+			return null;
+		return new StringBuffer(baseUri).append(SLASH).append(resourcePath).toString();
 	}
 
 	protected class RestRemoteServiceClientRegistration extends RemoteServiceClientRegistration {

@@ -21,6 +21,7 @@ import org.eclipse.ecf.core.jobs.JobsExecutor;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.internal.remoteservice.Activator;
 import org.eclipse.ecf.remoteservice.*;
+import org.eclipse.ecf.remoteservice.client.AbstractClientService.UriRequest;
 import org.eclipse.ecf.remoteservice.events.*;
 import org.eclipse.ecf.remoteservice.util.RemoteFilterImpl;
 import org.eclipse.equinox.concurrent.future.*;
@@ -381,26 +382,19 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 		}
 	}
 
-	protected IRemoteCallParameter[] prepareParameters(String uri, IRemoteCall call, IRemoteCallable callable) throws NotSerializableException {
+	/**
+	 * @since 8.5
+	 */
+	protected IRemoteCallParameter[] prepareCallParameters(String uri, IRemoteCall call, IRemoteCallable callable) throws NotSerializableException {
+		List<IRemoteCallParameter> results = new ArrayList<IRemoteCallParameter>();
 		Object[] callParameters = call.getParameters();
 		IRemoteCallParameter[] defaultCallableParameters = callable.getDefaultParameters();
-		List results = new ArrayList();
-		/*
-		 * The loop calls for each call model obj the serializer, unless
-		 * - the model obj already happens to be a IRemoteCallParameter
-		 * - There are no default call parameters defined (see org.eclipse.ecf.remoteservice.client.RemoteCallable.defaultParameters)
-		 * otherwise:
-		 * - Iff the model obj is null, the default's call parameter value is used. Otherwise, the serializer is called.
-		 * 
-		 * Invariant: The order of model objs (callParameters) passed into this method and 
-		 * the order of default call parameters (RemoteCallable.defaultParameters) decide what model obj
-		 * gets combined with a default parameter.
-		 */
+
 		for (int i = 0; i < callParameters.length; i++) {
 			Object p = callParameters[i];
 			// If the parameter is already a remote call parameter just add
 			if (p instanceof IRemoteCallParameter) {
-				results.add(p);
+				results.add((IRemoteCallParameter) p);
 				continue;
 			}
 			if (defaultCallableParameters != null && i < defaultCallableParameters.length) {
@@ -414,6 +408,16 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 					results.add(val);
 			}
 		}
+		return results.toArray(new IRemoteCallParameter[results.size()]);
+	}
+
+	/**
+	 * @since 8.5
+	 */
+	protected IRemoteCallParameter[] prepareExtraParameters(String uri, IRemoteCall call, IRemoteCallable callable) throws NotSerializableException {
+		List<IRemoteCallParameter> results = new ArrayList<IRemoteCallParameter>();
+		Object[] callParameters = call.getParameters();
+		IRemoteCallParameter[] defaultCallableParameters = callable.getDefaultParameters();
 		// Check if we should send _additional_ default parameters and whether there are more to send.
 		// This depends on the previous for loop and how many (default) parameters have been used by it.
 		if (alwaysSendDefaultParameters && (defaultCallableParameters.length > callParameters.length)) {
@@ -428,10 +432,20 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 				results.add(serializeParameter(uri, call, callable, param, value));
 			}
 		}
+		return results.toArray(new IRemoteCallParameter[results.size()]);
+	}
 
-		// Depending on the two previous blocks, this potentially adds IRemoteCallParameters a second time to the list
-		// This is something for the user to handle/decide
-		return serializeParameter(uri, call, callable, results, callParameters);
+	protected IRemoteCallParameter[] prepareParameters(String uri, IRemoteCall call, IRemoteCallable callable) throws NotSerializableException {
+		List<IRemoteCallParameter> results = new ArrayList<IRemoteCallParameter>();
+		IRemoteCallParameter[] preparedCallParameters = prepareCallParameters(uri, call, callable);
+		for (int i = 0; i < preparedCallParameters.length; i++)
+			results.add(preparedCallParameters[i]);
+
+		IRemoteCallParameter[] preparedExtraParameters = prepareExtraParameters(uri, call, callable);
+		for (int i = 0; i < preparedExtraParameters.length; i++)
+			results.add(preparedExtraParameters[i]);
+
+		return results.toArray(new IRemoteCallParameter[results.size()]);
 	}
 
 	/**
@@ -484,5 +498,12 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 	 * given call should not be completed (i.e. there is no endpoint associated with the given call).
 	 */
 	protected abstract String prepareEndpointAddress(IRemoteCall call, IRemoteCallable callable);
+
+	/**
+	 * @since 8.5
+	 */
+	public UriRequest createUriRequest(String endpoint, IRemoteCall call, IRemoteCallable callable) {
+		return null;
+	}
 
 }
