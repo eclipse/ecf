@@ -81,11 +81,7 @@ public class RestClientService extends AbstractRestClientService {
 		return new HttpDelete(uri);
 	}
 
-	protected HttpRequestBase prepareHttpMethod(HttpRequestBase httpMethod) {
-		return httpMethod;
-	}
-
-	protected HttpRequestBase createAndPrepareHttpMethod(UriRequest request) {
+	protected HttpRequestBase createAndPrepareHttpMethod(UriRequest request, IRemoteCall call, IRemoteCallable callable) {
 		HttpRequestBase httpMethod = null;
 		String uri = request.getUri();
 		IRemoteCallableRequestType requestType = request.getRequestType();
@@ -97,7 +93,9 @@ public class RestClientService extends AbstractRestClientService {
 			httpMethod = createPutMethod(uri);
 		else if (requestType instanceof HttpDeleteRequestType)
 			httpMethod = createDeleteMethod(uri);
-		return prepareHttpMethod(httpMethod);
+		// all prepare HttpMethod
+		prepareHttpMethod(httpMethod, call, callable);
+		return httpMethod;
 	}
 
 	/**
@@ -116,7 +114,8 @@ public class RestClientService extends AbstractRestClientService {
 		String endpointUri = prepareEndpointAddress(call, callable);
 		trace("invokeRemoteCall", "prepared endpoint=" + endpointUri); //$NON-NLS-1$ //$NON-NLS-2$
 		UriRequest request = createUriRequest(endpointUri, call, callable);
-		HttpRequestBase httpMethod = (request == null) ? createAndPrepareHttpMethod(endpointUri, call, callable) : createAndPrepareHttpMethod(request);
+		// If the request
+		HttpRequestBase httpMethod = (request == null) ? createAndPrepareHttpMethod(endpointUri, call, callable) : createAndPrepareHttpMethod(request, call, callable);
 		trace("invokeRemoteCall", "executing httpMethod" + httpMethod); //$NON-NLS-1$ //$NON-NLS-2$
 		// execute method
 		byte[] responseBody = null;
@@ -239,7 +238,7 @@ public class RestClientService extends AbstractRestClientService {
 		addRequestHeaders(httpMethod, call, callable);
 		// handle authentication
 		setupAuthenticaton(httpClient, httpMethod);
-		// setup http method config (redirects, timesouts, etc)
+		// setup http method config (redirects, timeouts, etc)
 		setupHttpMethod(httpMethod, call, callable);
 	}
 
