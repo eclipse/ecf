@@ -81,10 +81,11 @@ public class RestClientService extends AbstractRestClientService {
 		return new HttpDelete(uri);
 	}
 
-	protected HttpRequestBase createAndPrepareHttpMethod(UriRequest request, IRemoteCall call, IRemoteCallable callable) {
+	protected HttpRequestBase createAndPrepareHttpMethod(UriRequest request) {
 		HttpRequestBase httpMethod = null;
 		String uri = request.getUri();
-		IRemoteCallableRequestType requestType = request.getRequestType();
+		final IRemoteCallable callable = request.getRemoteCallable();
+		IRemoteCallableRequestType requestType = (callable == null) ? new HttpGetRequestType() : callable.getRequestType();
 		if (requestType instanceof HttpGetRequestType)
 			httpMethod = createGetMethod(uri);
 		else if (requestType instanceof HttpPostRequestType)
@@ -94,7 +95,7 @@ public class RestClientService extends AbstractRestClientService {
 		else if (requestType instanceof HttpDeleteRequestType)
 			httpMethod = createDeleteMethod(uri);
 		// all prepare HttpMethod
-		prepareHttpMethod(httpMethod, call, callable);
+		prepareHttpMethod(httpMethod, request.getRemoteCall(), callable);
 		return httpMethod;
 	}
 
@@ -113,9 +114,9 @@ public class RestClientService extends AbstractRestClientService {
 		trace("invokeRemoteCall", "call=" + call + ";callable=" + callable); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		String endpointUri = prepareEndpointAddress(call, callable);
 		trace("invokeRemoteCall", "prepared endpoint=" + endpointUri); //$NON-NLS-1$ //$NON-NLS-2$
-		UriRequest request = createUriRequest(endpointUri, call, callable);
+		UriRequest urirequest = createUriRequest(endpointUri, call, callable);
 		// If the request
-		HttpRequestBase httpMethod = (request == null) ? createAndPrepareHttpMethod(endpointUri, call, callable) : createAndPrepareHttpMethod(request, call, callable);
+		HttpRequestBase httpMethod = (urirequest == null) ? createAndPrepareHttpMethod(endpointUri, call, callable) : createAndPrepareHttpMethod(urirequest);
 		trace("invokeRemoteCall", "executing httpMethod" + httpMethod); //$NON-NLS-1$ //$NON-NLS-2$
 		// execute method
 		byte[] responseBody = null;

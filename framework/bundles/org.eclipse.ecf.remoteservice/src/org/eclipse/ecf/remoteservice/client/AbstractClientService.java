@@ -226,19 +226,25 @@ public abstract class AbstractClientService extends AbstractRemoteService {
 	 */
 	public static class UriRequest {
 		private final String uri;
-		private final IRemoteCallableRequestType requestType;
+		private final IRemoteCall call;
+		private final IRemoteCallable callable;
 
-		public UriRequest(String uri, IRemoteCallableRequestType requestType) {
+		public UriRequest(String uri, IRemoteCall call, IRemoteCallable callable) {
 			this.uri = uri;
-			this.requestType = requestType;
+			this.call = call;
+			this.callable = callable;
 		}
 
 		public String getUri() {
 			return uri;
 		}
 
-		public IRemoteCallableRequestType getRequestType() {
-			return requestType;
+		public IRemoteCall getRemoteCall() {
+			return call;
+		}
+
+		public IRemoteCallable getRemoteCallable() {
+			return callable;
 		}
 	}
 
