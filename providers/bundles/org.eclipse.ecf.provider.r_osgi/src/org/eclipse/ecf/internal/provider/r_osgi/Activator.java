@@ -16,8 +16,7 @@ import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.ExtensionRegistryRunnable;
-import org.eclipse.ecf.provider.r_osgi.identity.R_OSGiNamespace;
-import org.eclipse.ecf.provider.r_osgi.identity.R_OSGiRemoteServiceNamespace;
+import org.eclipse.ecf.provider.r_osgi.identity.*;
 import org.eclipse.equinox.concurrent.future.IExecutor;
 import org.osgi.framework.*;
 import org.osgi.util.tracker.ServiceTracker;
@@ -73,8 +72,12 @@ public final class Activator implements BundleActivator {
 		SafeRunner.run(new ExtensionRegistryRunnable(bc) {
 			protected void runWithoutRegistry() throws Exception {
 				bc.registerService(Namespace.class, new R_OSGiNamespace(), null);
+				bc.registerService(Namespace.class, new R_OSGiWSNamespace(), null);
+				bc.registerService(Namespace.class, new R_OSGiWSSNamespace(), null);
 				bc.registerService(Namespace.class, new R_OSGiRemoteServiceNamespace(), null);
 				bc.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(R_OSGiContainerInstantiator.NAME, new R_OSGiContainerInstantiator(), "R_OSGi Container", true, false), null); //$NON-NLS-1$
+				bc.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(R_OSGiContainerInstantiator.NAME_HTTP, new R_OSGiContainerInstantiator(), "R_OSGi Websockets Container", true, false), null); //$NON-NLS-1$
+				bc.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(R_OSGiContainerInstantiator.NAME_HTTPS, new R_OSGiContainerInstantiator(), "R_OSGi Secure Websockets Container", true, false), null); //$NON-NLS-1$
 			}
 		});
 	}

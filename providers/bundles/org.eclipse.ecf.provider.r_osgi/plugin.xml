@@ -8,6 +8,25 @@
             description="R-OSGi Namespace"
             name="ecf.namespace.r_osgi">
       </namespace>
+   </extension>
+   <extension
+         point="org.eclipse.ecf.identity.namespace">
+      <namespace
+            class="org.eclipse.ecf.provider.r_osgi.identity.R_OSGiWSNamespace"
+            description="R-OSGi Websockets Namespace"
+            name="ecf.namespace.r_osgi.ws">
+      </namespace>
+   </extension>
+   <extension
+         point="org.eclipse.ecf.identity.namespace">
+      <namespace
+            class="org.eclipse.ecf.provider.r_osgi.identity.R_OSGiWSSNamespace"
+            description="R-OSGi Secure Websockets Namespace"
+            name="ecf.namespace.r_osgi.wss">
+      </namespace>
+   </extension>
+   <extension
+         point="org.eclipse.ecf.identity.namespace">
       <namespace
             class="org.eclipse.ecf.provider.r_osgi.identity.R_OSGiRemoteServiceNamespace"
             description="R-OSGi Remote Service Namespace"
@@ -18,8 +37,26 @@
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
             class="org.eclipse.ecf.internal.provider.r_osgi.R_OSGiContainerInstantiator"
-            description="R-OSGi Container Instantiator"
+            description="R-OSGi Container"
             name="ecf.r_osgi.peer"
+            server="true">
+      </containerFactory>
+   </extension>
+   <extension
+         point="org.eclipse.ecf.containerFactory">
+      <containerFactory
+            class="org.eclipse.ecf.internal.provider.r_osgi.R_OSGiContainerInstantiator"
+            description="R-OSGi Websockets Container"
+            name="ecf.r_osgi.peer.ws"
+            server="true">
+      </containerFactory>
+   </extension>
+   <extension
+         point="org.eclipse.ecf.containerFactory">
+      <containerFactory
+            class="org.eclipse.ecf.internal.provider.r_osgi.R_OSGiContainerInstantiator"
+            description="R-OSGi Secure Websockets Container"
+            name="ecf.r_osgi.peer.wss"
             server="true">
       </containerFactory>
    </extension>

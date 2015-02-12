@@ -57,6 +57,13 @@ public class R_OSGiNamespace extends Namespace {
 		instance = this;
 	}
 
+	/**
+	 * @since 3.5
+	 */
+	protected R_OSGiNamespace(String name, String description) {
+		super(name, description);
+	}
+
 	private String getInitFromExternalForm(Object[] args) {
 		if (args == null || args.length < 1 || args[0] == null)
 			return null;

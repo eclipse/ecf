@@ -13,6 +13,7 @@ package org.eclipse.ecf.provider.r_osgi.identity;
 
 import ch.ethz.iks.r_osgi.URI;
 import org.eclipse.ecf.core.identity.BaseID;
+import org.eclipse.ecf.core.identity.Namespace;
 
 /**
  * The ID implementation of R-OSGi URIs. Currently only works with the R-OSGi
@@ -42,6 +43,13 @@ public class R_OSGiID extends BaseID {
 	public R_OSGiID(final String uriString) {
 		super(R_OSGiNamespace.getDefault());
 		this.uri = new URI(uriString);
+	}
+
+	/**
+	 * @since 3.5
+	 */
+	protected R_OSGiID(Namespace ns) {
+		super(ns);
 	}
 
 	/**

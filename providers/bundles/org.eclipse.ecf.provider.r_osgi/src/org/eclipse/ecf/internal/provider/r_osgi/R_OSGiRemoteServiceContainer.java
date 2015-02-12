@@ -36,7 +36,7 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
  * 
  * @author Jan S. Rellermeyer, ETH Zurich
  */
-final class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerAdapter, IRemoteServiceContainerAdapter, IContainer, RemoteServiceListener {
+class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerAdapter, IRemoteServiceContainerAdapter, IContainer, RemoteServiceListener {
 
 	// the bundle context.
 	private BundleContext context;
@@ -73,7 +73,7 @@ final class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerA
 		context = Activator.getDefault().getContext();
 		remoteService = service;
 		if (containerID instanceof StringID) {
-			this.containerID = new R_OSGiID(((StringID) containerID).getName());
+			this.containerID = createR_OSGiID(((StringID) containerID).getName());
 		} else if (containerID instanceof R_OSGiID) {
 			this.containerID = (R_OSGiID) containerID;
 		} else {
@@ -338,7 +338,11 @@ final class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerA
 		if (fragmentLoc != -1) {
 			uriStr = uriStr.substring(0, fragmentLoc);
 		}
-		return createRemoteServiceID(new R_OSGiID(uriStr), (Long) rref.getProperty(Constants.SERVICE_ID));
+		return createRemoteServiceID(createR_OSGiID(uriStr), (Long) rref.getProperty(Constants.SERVICE_ID));
+	}
+
+	private R_OSGiID createR_OSGiID(String uriStr) {
+		return R_OSGiContainerInstantiator.createR_OSGiID(getConnectNamespace(), uriStr);
 	}
 
 	/**
@@ -516,7 +520,7 @@ final class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerA
 		final R_OSGiID target;
 		try {
 			if (targetID instanceof StringID) {
-				target = new R_OSGiID(((StringID) targetID).getName());
+				target = createR_OSGiID(((StringID) targetID).getName());
 			} else if (targetID instanceof R_OSGiID) {
 				target = (R_OSGiID) targetID;
 			} else {
