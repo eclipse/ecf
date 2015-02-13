@@ -37,6 +37,13 @@ public final class R_OSGiContainerInstantiator implements IContainerInstantiator
 		return (R_OSGiID) IDFactory.getDefault().createID(namespace, uriStr);
 	}
 
+	public static final String ID_PROP = "id"; //$NON-NLS-1$
+
+	private static final String WS_PROTOCOL = "http"; //$NON-NLS-1$
+	private static final String WSS_PROTOCOL = "https"; //$NON-NLS-1$
+	private static final int WS_DEFAULT_PORT = 80;
+	private static final int WSS_DEFAULT_PORT = 443;
+
 	/**
 	 * creates a new container instance.
 	 * 
@@ -59,15 +66,28 @@ public final class R_OSGiContainerInstantiator implements IContainerInstantiator
 			if (parameters == null) {
 				//TODO factor localHost and protocol out?
 				final String localHost = InetAddress.getLocalHost().getCanonicalHostName();
-				final String protocol = ns.getScheme();
-
-				final int port = remoteOSGiService.getListeningPort(protocol);
-				containerID = createR_OSGiID(ns, new String(protocol + "://" + localHost + ":" + port)); //$NON-NLS-1$ //$NON-NLS-2$
+				final String nsScheme = ns.getScheme();
+				final String wsProtocol = (wss ? WSS_PROTOCOL : (ws ? WS_PROTOCOL : null));
+				int listeningPort = remoteOSGiService.getListeningPort((wsProtocol != null) ? wsProtocol : nsScheme);
+				int idPort = -1;
+				if (WSS_PROTOCOL.equals(wsProtocol) && listeningPort != WSS_DEFAULT_PORT)
+					idPort = listeningPort;
+				else if (WS_PROTOCOL.equals(wsProtocol) && listeningPort != WS_DEFAULT_PORT)
+					idPort = listeningPort;
+				String portStr = (idPort > 0 ? (":" + idPort) : ""); //$NON-NLS-1$ //$NON-NLS-2$
+				containerID = createR_OSGiID(ns, new String(nsScheme + "://" + localHost + portStr)); //$NON-NLS-1$ 
 			} else if (parameters.length > 0) {
 				if (parameters[0] instanceof ID)
 					containerID = (ID) parameters[0];
 				else if (parameters[0] instanceof String)
 					containerID = createR_OSGiID(ns, (String) parameters[0]);
+				else if (parameters[0] instanceof Map) {
+					Map params = (Map) parameters[0];
+					String idStr = (String) params.get(ID_PROP);
+					if (idStr == null)
+						throw new NullPointerException("No ID prop found in parameters map"); //$NON-NLS-1$
+					containerID = createR_OSGiID(ns, idStr);
+				}
 			}
 			if (containerID == null)
 				throw new ContainerCreateException("Unsupported arguments " //$NON-NLS-1$
@@ -123,10 +143,8 @@ public final class R_OSGiContainerInstantiator implements IContainerInstantiator
 	public static final String NAME_HTTP = ROSGI_WEBSOCKETS_CONFIG;
 	public static final String NAME_HTTPS = ROSGI_WEBSOCKETSS_CONFIG;
 
-	private static final String[] ROSGI_CONFIGS = new String[] {ROSGI_CONFIG, ROSGI_WEBSOCKETS_CONFIG, ROSGI_WEBSOCKETSS_CONFIG};
-
 	public String[] getSupportedConfigs(ContainerTypeDescription description) {
-		return ROSGI_CONFIGS;
+		return new String[] {description.getName()};
 	}
 
 	public String[] getImportedConfigs(ContainerTypeDescription description, String[] exporterSupportedConfigs) {
