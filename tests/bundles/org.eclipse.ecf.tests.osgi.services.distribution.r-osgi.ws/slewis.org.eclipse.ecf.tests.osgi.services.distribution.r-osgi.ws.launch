@@ -30,7 +30,7 @@
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog -console"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.eclipse.ecf.tests.osgi.services.distribution.r-osgi.ws"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xms40m -Xmx256m&#13;&#10;-Dnet.mdns.port=65354&#13;&#10;-Dnet.mdns.interface=127.0.0.1&#13;&#10;-Dorg.eclipse.ecf.osgi.services.discovery.allowLoopbackReference=true"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xms40m -Xmx256m&#13;&#10;-Dnet.mdns.port=65354&#13;&#10;-Dnet.mdns.interface=127.0.0.1&#13;&#10;-Dorg.eclipse.ecf.osgi.services.discovery.allowLoopbackReference=true&#13;&#10;-Dch.ethz.iks.r_osgi.transport.registerHttps=false&#13;&#10;-Dch.ethz.iks.r_osgi.registerDefaultChannel=false"/>
 <stringAttribute key="pde.version" value="3.3"/>
 <stringAttribute key="product" value="org.eclipse.sdk.ide"/>
 <booleanAttribute key="run_in_ui_thread" value="true"/>
