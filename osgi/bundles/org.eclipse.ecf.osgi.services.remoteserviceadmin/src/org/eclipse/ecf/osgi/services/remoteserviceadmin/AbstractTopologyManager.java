@@ -12,10 +12,8 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -334,43 +332,13 @@ public abstract class AbstractTopologyManager {
 		}
 	}
 
-	private String isInterested(Object scopeobj,
-			org.osgi.service.remoteserviceadmin.EndpointDescription description) {
-		if (scopeobj instanceof List<?>) {
-			List<String> scope = (List<String>) scopeobj;
-			for (Iterator<String> it = scope.iterator(); it.hasNext();) {
-				String filter = it.next();
-
-				if (description.matches(filter)) {
-					return filter;
-				}
-			}
-		} else if (scopeobj instanceof String[]) {
-			String[] scope = (String[]) scopeobj;
-			for (String filter : scope) {
-				if (description.matches(filter)) {
-					return filter;
-				}
-			}
-		} else if (scopeobj instanceof String) {
-			StringTokenizer st = new StringTokenizer((String) scopeobj, " "); //$NON-NLS-1$
-			for (; st.hasMoreTokens();) {
-				String filter = st.nextToken();
-				if (description.matches(filter)) {
-					return filter;
-				}
-			}
-		}
-		return null;
-	}
-
 	/**
 	 * @since 3.0
 	 */
 	protected void handleNonECFEndpointAdded(
 			EndpointListener listener,
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
-		trace("handleNonECFEndpointAdded","ed="+endpointDescription); //$NON-NLS-2$
+		trace("handleNonECFEndpointAdded","ed="+endpointDescription);  //$NON-NLS-1$//$NON-NLS-2$
 	}
 
 	/**

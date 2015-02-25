@@ -1,10 +1,490 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.eclipse.ecf.osgi.services.remoteserviceadmin" version="2">
-    <resource path="src/org/eclipse/ecf/osgi/services/remoteserviceadmin/DiscoveredEndpointDescriptionFactory.java" type="org.eclipse.ecf.osgi.services.remoteserviceadmin.DiscoveredEndpointDescriptionFactory">
-        <filter id="338755678">
+    <resource path="src/org/eclipse/ecf/osgi/services/remoteserviceadmin/AbstractMetadataFactory.java" type="org.eclipse.ecf.osgi.services.remoteserviceadmin.AbstractMetadataFactory">
+        <filter id="643842064">
             <message_arguments>
-                <message_argument value="org.eclipse.ecf.osgi.services.remoteserviceadmin.DiscoveredEndpointDescriptionFactory"/>
-                <message_argument value="discoveredEndpointDescriptions"/>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="AbstractMetadataFactory"/>
+                <message_argument value="decodeEndpointDescription(IServiceProperties)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="AbstractMetadataFactory"/>
+                <message_argument value="encodeOSGiServiceProperties(EndpointDescription, IServiceProperties)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="AbstractMetadataFactory"/>
+                <message_argument value="encodeServiceProperties(EndpointDescription, IServiceProperties)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ecf/osgi/services/remoteserviceadmin/AbstractTopologyManager.java" type="org.eclipse.ecf.osgi.services.remoteserviceadmin.AbstractTopologyManager">
+        <filter id="643842064">
+            <message_arguments>
+                <message_argument value="RemoteServiceAdmin"/>
+                <message_argument value="AbstractTopologyManager"/>
+                <message_argument value="getRemoteServiceAdmin()"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="AbstractTopologyManager"/>
+                <message_argument value="advertiseEndpointDescription(EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="AbstractTopologyManager"/>
+                <message_argument value="advertiseModifyEndpointDescription(EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="AbstractTopologyManager"/>
+                <message_argument value="handleAdvertisingResult(IStatus, EndpointDescription, boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="AbstractTopologyManager"/>
+                <message_argument value="handleECFEndpointRemoved(EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="AbstractTopologyManager"/>
+                <message_argument value="handleNonECFEndpointAdded(EndpointListener, EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="AbstractTopologyManager"/>
+                <message_argument value="handleNonECFEndpointModified(EndpointEventListener, EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="AbstractTopologyManager"/>
+                <message_argument value="handleNonECFEndpointRemoved(EndpointDescription, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="AbstractTopologyManager"/>
+                <message_argument value="handleNonECFEndpointRemoved(EndpointListener, EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="AbstractTopologyManager"/>
+                <message_argument value="unadvertiseEndpointDescription(EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointEventListener"/>
+                <message_argument value="AbstractTopologyManager"/>
+                <message_argument value="handleNonECFEndpointModified(EndpointEventListener, EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointListener"/>
+                <message_argument value="AbstractTopologyManager"/>
+                <message_argument value="handleNonECFEndpointAdded(EndpointListener, EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointListener"/>
+                <message_argument value="AbstractTopologyManager"/>
+                <message_argument value="handleNonECFEndpointRemoved(EndpointListener, EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="ImportRegistration"/>
+                <message_argument value="AbstractTopologyManager"/>
+                <message_argument value="handleInvalidImportRegistration(ImportRegistration, Throwable)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ecf/osgi/services/remoteserviceadmin/DiscoveredEndpointDescription.java" type="org.eclipse.ecf.osgi.services.remoteserviceadmin.DiscoveredEndpointDescription">
+        <filter id="643842064">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="DiscoveredEndpointDescription"/>
+                <message_argument value="getEndpointDescription()"/>
+            </message_arguments>
+        </filter>
+        <filter id="643850349">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="DiscoveredEndpointDescription"/>
+                <message_argument value="DiscoveredEndpointDescription(Namespace, IServiceID, EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ecf/osgi/services/remoteserviceadmin/DiscoveredEndpointDescriptionFactory.java" type="org.eclipse.ecf.osgi.services.remoteserviceadmin.DiscoveredEndpointDescriptionFactory">
+        <filter id="643842064">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="DiscoveredEndpointDescriptionFactory"/>
+                <message_argument value="createEndpointDescription(IDiscoveryLocator, IServiceInfo)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="DiscoveredEndpointDescriptionFactory"/>
+                <message_argument value="createDiscoveredEndpointDescription(IDiscoveryLocator, IServiceInfo, EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="DiscoveredEndpointDescriptionFactory"/>
+                <message_argument value="removeDiscoveredEndpointDescription(EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ecf/osgi/services/remoteserviceadmin/EndpointDescription.java" type="org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription">
+        <filter id="576720909">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="EndpointDescription"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="isSameService(EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ecf/osgi/services/remoteserviceadmin/EndpointDescriptionLocator.java" type="org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionLocator">
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="EndpointDescriptionLocator"/>
+                <message_argument value="getMatchingEndpointEventListenerHolders(EndpointDescription, int)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="EndpointDescriptionLocator"/>
+                <message_argument value="getMatchingEndpointEventListenerHolders(ServiceReference[], EndpointDescription, int)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="EndpointDescriptionLocator"/>
+                <message_argument value="getMatchingEndpointListenerHolders(EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="EndpointDescriptionLocator"/>
+                <message_argument value="getMatchingEndpointListenerHolders(ServiceReference[], EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ecf/osgi/services/remoteserviceadmin/EndpointDescriptionLocator.java" type="org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionLocator$EndpointEventListenerHolder">
+        <filter id="643842064">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="EndpointEventListenerHolder"/>
+                <message_argument value="getDescription()"/>
+            </message_arguments>
+        </filter>
+        <filter id="643842064">
+            <message_arguments>
+                <message_argument value="EndpointEventListener"/>
+                <message_argument value="EndpointEventListenerHolder"/>
+                <message_argument value="getListener()"/>
+            </message_arguments>
+        </filter>
+        <filter id="643850349">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="EndpointEventListenerHolder"/>
+                <message_argument value="EndpointEventListenerHolder(EndpointDescriptionLocator, EndpointEventListener, EndpointDescription, String, int)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643850349">
+            <message_arguments>
+                <message_argument value="EndpointEventListener"/>
+                <message_argument value="EndpointEventListenerHolder"/>
+                <message_argument value="EndpointEventListenerHolder(EndpointDescriptionLocator, EndpointEventListener, EndpointDescription, String, int)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ecf/osgi/services/remoteserviceadmin/EndpointDescriptionLocator.java" type="org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionLocator$EndpointListenerHolder">
+        <filter id="643842064">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="EndpointListenerHolder"/>
+                <message_argument value="getDescription()"/>
+            </message_arguments>
+        </filter>
+        <filter id="643842064">
+            <message_arguments>
+                <message_argument value="EndpointListener"/>
+                <message_argument value="EndpointListenerHolder"/>
+                <message_argument value="getListener()"/>
+            </message_arguments>
+        </filter>
+        <filter id="643850349">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="EndpointListenerHolder"/>
+                <message_argument value="EndpointListenerHolder(EndpointDescriptionLocator, EndpointListener, EndpointDescription, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643850349">
+            <message_arguments>
+                <message_argument value="EndpointListener"/>
+                <message_argument value="EndpointListenerHolder"/>
+                <message_argument value="EndpointListenerHolder(EndpointDescriptionLocator, EndpointListener, EndpointDescription, String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ecf/osgi/services/remoteserviceadmin/EndpointDescriptionReader.java" type="org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionReader">
+        <filter id="643842064">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="EndpointDescriptionReader"/>
+                <message_argument value="readEndpointDescriptions(InputStream)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ecf/osgi/services/remoteserviceadmin/EndpointDescriptionWriter.java" type="org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionWriter">
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="EndpointDescriptionWriter"/>
+                <message_argument value="writeEndpointDescription(int, Writer, EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="EndpointDescriptionWriter"/>
+                <message_argument value="writeEndpointDescriptions(Writer, EndpointDescription[])"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="EndpointDescriptionWriter"/>
+                <message_argument value="writeProperties(int, Writer, EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ecf/osgi/services/remoteserviceadmin/IDiscoveredEndpointDescriptionFactory.java" type="org.eclipse.ecf.osgi.services.remoteserviceadmin.IDiscoveredEndpointDescriptionFactory">
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="IDiscoveredEndpointDescriptionFactory"/>
+                <message_argument value="removeDiscoveredEndpointDescription(EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ecf/osgi/services/remoteserviceadmin/IEndpointDescriptionReader.java" type="org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionReader">
+        <filter id="643842064">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="IEndpointDescriptionReader"/>
+                <message_argument value="readEndpointDescriptions(InputStream)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ecf/osgi/services/remoteserviceadmin/IServiceInfoFactory.java" type="org.eclipse.ecf.osgi.services.remoteserviceadmin.IServiceInfoFactory">
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="IServiceInfoFactory"/>
+                <message_argument value="createServiceInfo(IDiscoveryAdvertiser, EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ecf/osgi/services/remoteserviceadmin/RemoteServiceAdmin.java" type="org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin">
+        <filter id="576725006">
+            <message_arguments>
+                <message_argument value="RemoteServiceAdmin"/>
+                <message_argument value="RemoteServiceAdmin"/>
+            </message_arguments>
+        </filter>
+        <filter id="643842064">
+            <message_arguments>
+                <message_argument value="ImportRegistration"/>
+                <message_argument value="RemoteServiceAdmin"/>
+                <message_argument value="importService(EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="RemoteServiceAdmin"/>
+                <message_argument value="importService(EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ecf/osgi/services/remoteserviceadmin/RemoteServiceAdmin.java" type="org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin$ExportReference">
+        <filter id="576725006">
+            <message_arguments>
+                <message_argument value="ExportReference"/>
+                <message_argument value="ExportReference"/>
+            </message_arguments>
+        </filter>
+        <filter id="643842064">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="ExportReference"/>
+                <message_argument value="getExportedEndpoint()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ecf/osgi/services/remoteserviceadmin/RemoteServiceAdmin.java" type="org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin$ExportRegistration">
+        <filter id="576725006">
+            <message_arguments>
+                <message_argument value="ExportRegistration"/>
+                <message_argument value="ExportRegistration"/>
+            </message_arguments>
+        </filter>
+        <filter id="643842064">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="ExportRegistration"/>
+                <message_argument value="update(Map&lt;String,?&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643842064">
+            <message_arguments>
+                <message_argument value="ExportReference"/>
+                <message_argument value="ExportRegistration"/>
+                <message_argument value="getExportReference()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ecf/osgi/services/remoteserviceadmin/RemoteServiceAdmin.java" type="org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin$ImportReference">
+        <filter id="576725006">
+            <message_arguments>
+                <message_argument value="ImportReference"/>
+                <message_argument value="ImportReference"/>
+            </message_arguments>
+        </filter>
+        <filter id="643842064">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="ImportReference"/>
+                <message_argument value="getImportedEndpoint()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ecf/osgi/services/remoteserviceadmin/RemoteServiceAdmin.java" type="org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin$ImportRegistration">
+        <filter id="576725006">
+            <message_arguments>
+                <message_argument value="ImportRegistration"/>
+                <message_argument value="ImportRegistration"/>
+            </message_arguments>
+        </filter>
+        <filter id="643842064">
+            <message_arguments>
+                <message_argument value="ImportReference"/>
+                <message_argument value="ImportRegistration"/>
+                <message_argument value="getImportReference()"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="ImportRegistration"/>
+                <message_argument value="update(EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ecf/osgi/services/remoteserviceadmin/RemoteServiceAdmin.java" type="org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin$RemoteServiceAdminEvent">
+        <filter id="576720909">
+            <message_arguments>
+                <message_argument value="RemoteServiceAdminEvent"/>
+                <message_argument value="RemoteServiceAdminEvent"/>
+            </message_arguments>
+        </filter>
+        <filter id="643850349">
+            <message_arguments>
+                <message_argument value="ExportReference"/>
+                <message_argument value="RemoteServiceAdminEvent"/>
+                <message_argument value="RemoteServiceAdminEvent(RemoteServiceAdmin, ID, int, Bundle, ExportReference, Throwable, EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643850349">
+            <message_arguments>
+                <message_argument value="ImportReference"/>
+                <message_argument value="RemoteServiceAdminEvent"/>
+                <message_argument value="RemoteServiceAdminEvent(RemoteServiceAdmin, ID, int, Bundle, ImportReference, Throwable, EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ecf/osgi/services/remoteserviceadmin/ServiceInfoFactory.java" type="org.eclipse.ecf.osgi.services.remoteserviceadmin.ServiceInfoFactory">
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="ServiceInfoFactory"/>
+                <message_argument value="createDefaultServiceName(EndpointDescription, IDiscoveryAdvertiser, IServiceTypeID)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="ServiceInfoFactory"/>
+                <message_argument value="createServiceInfo(IDiscoveryAdvertiser, EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="ServiceInfoFactory"/>
+                <message_argument value="createServiceName(EndpointDescription, IDiscoveryAdvertiser, IServiceTypeID)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="ServiceInfoFactory"/>
+                <message_argument value="createServiceProperties(EndpointDescription, IDiscoveryAdvertiser, IServiceTypeID, String, URI)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="ServiceInfoFactory"/>
+                <message_argument value="createServiceTypeID(EndpointDescription, IDiscoveryAdvertiser)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="ServiceInfoFactory"/>
+                <message_argument value="createURI(EndpointDescription, IDiscoveryAdvertiser, IServiceTypeID, String)"/>
             </message_arguments>
         </filter>
     </resource>

@@ -125,13 +125,19 @@ public class RemoteServiceAdmin implements
 	
 	private ServiceRegistration eventListenerHookRegistration;
 
-	List<ExportRegistration> getExportedRegistrations() {
+	/**
+	 * @since 4.2
+	 */
+	public List<ExportRegistration> getExportedRegistrations() {
 		synchronized (exportedRegistrations) {
 			return new ArrayList(exportedRegistrations);
 		}
 	}
 
-	List<ImportRegistration> getImportedRegistrations() {
+	/**
+	 * @since 4.2
+	 */
+	public List<ImportRegistration> getImportedRegistrations() {
 		synchronized (importedRegistrations) {
 			return new ArrayList(importedRegistrations);
 		}
@@ -366,21 +372,6 @@ public class RemoteServiceAdmin implements
 		// and return
 		return new ArrayList<org.osgi.service.remoteserviceadmin.ExportRegistration>(
 				resultRegistrations);
-	}
-
-	private ExportRegistration createErrorExportRegistration(
-			ServiceReference serviceReference,
-			Map<String, Object> overridingProperties, String errorMessage,
-			SelectContainerException exception) {
-		ContainerTypeDescription ctd = exception.getContainerTypeDescription();
-		overridingProperties
-				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
-						"noendpoint"); //$NON-NLS-1$
-		overridingProperties
-				.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS,
-						(ctd == null) ? "noconfig" : ctd.getName()); //$NON-NLS-1$
-		return new ExportRegistration(exception, new EndpointDescription(
-				serviceReference, overridingProperties));
 	}
 
 	public org.osgi.service.remoteserviceadmin.ImportRegistration importService(
@@ -651,7 +642,10 @@ public class RemoteServiceAdmin implements
 		}
 	}
 
-	class ExportRegistration implements
+	/**
+	 * @since 4.2
+	 */
+	public class ExportRegistration implements
 			org.osgi.service.remoteserviceadmin.ExportRegistration {
 
 		private ExportReference exportReference;
@@ -671,12 +665,16 @@ public class RemoteServiceAdmin implements
 					errorEndpointDescription);
 		}
 
-		ID getContainerID() {
+		public ID getContainerID() {
 			return (closed)?null:exportReference.getContainerID();
 		}
 
 		ServiceReference getServiceReference() {
 			return (closed)?null:exportReference.getExportedService();
+		}
+
+		public long getRemoteServiceId() {
+			return (closed) ? 0 : exportReference.getRemoteServiceId();
 		}
 
 		public org.osgi.service.remoteserviceadmin.ExportReference getExportReference() {
@@ -791,7 +789,10 @@ public class RemoteServiceAdmin implements
 
 	}
 
-	class ExportReference implements
+	/**
+	 * @since 4.2
+	 */
+	public class ExportReference implements
 			org.osgi.service.remoteserviceadmin.ExportReference {
 
 		private ExportEndpoint exportEndpoint;
@@ -838,11 +839,16 @@ public class RemoteServiceAdmin implements
 					.getRemoteServiceRegistration();
 		}
 
-		synchronized ID getContainerID() {
+		public synchronized ID getContainerID() {
 			return (exportEndpoint == null) ? null : exportEndpoint
 					.getContainerID();
 		}
 
+		public synchronized long getRemoteServiceId() {
+			IRemoteServiceRegistration r = getRemoteServiceRegistration();
+			return (r == null)?0:r.getID().getContainerRelativeID();
+		}
+		
 		public synchronized ServiceReference getExportedService() {
 			return (exportEndpoint == null) ? null : exportEndpoint
 					.getServiceReference();
@@ -968,7 +974,10 @@ public class RemoteServiceAdmin implements
 		}
 	}
 
-	class ImportRegistration implements
+	/**
+	 * @since 4.2
+	 */
+	public class ImportRegistration implements
 			org.osgi.service.remoteserviceadmin.ImportRegistration {
 
 		private ImportReference importReference;
@@ -987,10 +996,14 @@ public class RemoteServiceAdmin implements
 					errorEndpointDescription, exception);
 		}
 
-		ID getContainerID() {
+		public ID getContainerID() {
 			return (closed)?null:importReference.getContainerID();
 		}
 
+		public long getRemoteServiceId() {
+			return (closed)?0:importReference.getRemoteServiceId();
+		}
+		
 		EndpointDescription getEndpointDescription() {
 			return (closed)?null:importReference.getEndpointDescription();
 		}
@@ -1074,7 +1087,10 @@ public class RemoteServiceAdmin implements
 
 	}
 
-	class ImportReference implements
+	/**
+	 * @since 4.2
+	 */
+	public class ImportReference implements
 			org.osgi.service.remoteserviceadmin.ImportReference {
 
 		private ImportEndpoint importEndpoint;
@@ -1120,9 +1136,14 @@ public class RemoteServiceAdmin implements
 					: importEndpoint.getEndpointDescription();
 		}
 
-		synchronized ID getContainerID() {
+		public synchronized ID getContainerID() {
 			return (importEndpoint == null) ? null : importEndpoint
 					.getContainerID();
+		}
+		
+		public synchronized long getRemoteServiceId() {
+			EndpointDescription ed = getEndpointDescription();
+			return (ed == null)?0:ed.getRemoteServiceId();
 		}
 
 		public synchronized ServiceReference getImportedService() {
