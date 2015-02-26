@@ -38,7 +38,7 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             class="org.eclipse.ecf.internal.ui.perspectives.CommunicationPerspective"
-            icon="icons/enabled/communications.gif"
+            icon="icons/enabled/communicationsecf.png"
             id="org.eclipse.ecf.ui.perspective.communications"
             name="%perspective.name">
       </perspective>

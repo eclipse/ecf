@@ -88,5 +88,14 @@
             type="org.eclipse.ecf.discovery.ui.model.IServiceInfo">
       </propertyTester>
    </extension>
+  <extension
+        point="org.eclipse.ui.perspectives">
+     <perspective
+           class="org.eclipse.ecf.internal.remoteservices.ui.RemoteServicePerspective"
+           icon="platform:/plugin/org.eclipse.ecf.ui/icons/enabled/network.png"
+           id="org.eclipse.ecf.internal.remoteservices.ui.remoteServicePerspective"
+           name="%perspective.name">
+     </perspective>
+  </extension>
 
 </plugin>
