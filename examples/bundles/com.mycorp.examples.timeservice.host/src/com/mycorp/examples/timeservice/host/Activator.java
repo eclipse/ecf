@@ -28,14 +28,15 @@ public class Activator implements BundleActivator {
 		if (Boolean.getBoolean("verboseRemoteServiceAdmin"))
 			registerDebugListener(context);
 
-		// Create remote service properties...see createRemoteServiceProperties()
+		// Create remote service properties...see
+		// createRemoteServiceProperties()
 		Dictionary<String, Object> props = createRemoteServiceProperties();
-		
+
 		// Create MyTimeService impl and register/export as a remote service
 		ServiceRegistration<ITimeService> timeServiceRegistration = context
 				.registerService(ITimeService.class, new TimeServiceImpl(),
 						props);
-		
+
 		// Print out that ITimeService remote service registration
 		System.out.println("MyTimeService host registered with registration="
 				+ timeServiceRegistration);
@@ -45,19 +46,21 @@ public class Activator implements BundleActivator {
 		// do nothing
 	}
 
-	private Dictionary<String,Object> createRemoteServiceProperties() {
+	private Dictionary<String, Object> createRemoteServiceProperties() {
 		// This is the only required service property to trigger remote services
-		Dictionary<String,Object> result = new Hashtable<String,Object>();
+		Dictionary<String, Object> result = new Hashtable<String, Object>();
 		result.put("service.exported.interfaces", "*");
 		Properties props = System.getProperties();
 		String config = props.getProperty("service.exported.configs");
 		if (config != null) {
 			result.put("service.exported.configs", config);
 			String configProps = config + ".";
-			for(Object k: props.keySet()) {
+			for (Object k : props.keySet()) {
 				if (k instanceof String) {
 					String key = (String) k;
-					if (key.startsWith(configProps) || key.equals("ecf.exported.async.interfaces")) result.put(key, props.getProperty(key));
+					if (key.startsWith(configProps)
+							|| key.equals("ecf.exported.async.interfaces"))
+						result.put(key, props.getProperty(key));
 				}
 			}
 		}
@@ -73,15 +76,27 @@ public class Activator implements BundleActivator {
 				switch (event.getType()) {
 				case RemoteServiceAdminEvent.EXPORT_REGISTRATION:
 					System.out
-							.println("Service Exported by RemoteServiceAdmin.  EndpointDescription Properties="
+							.println("RSA: Service Exported.  EndpointDescription="
 									+ event.getExportReference()
 											.getExportedEndpoint()
 											.getProperties());
+					break;
+				case RemoteServiceAdminEvent.EXPORT_ERROR:
+					Throwable t = event.getException();
+					System.err.println("RSA: EXPORT ERROR. Error message="
+							+ ((t == null) ? "none" : t.getMessage())
+							+ ". EndpointDescription="
+							+ event.getExportReference().getExportedEndpoint()
+									.getProperties() + "");
+					if (t != null)
+						t.printStackTrace();
+					break;
 				}
 			}
 
 		};
-		// Register our listener as service via whiteboard pattern, and RemoteServiceAdmin will callback
+		// Register our listener as service via whiteboard pattern, and
+		// RemoteServiceAdmin will callback
 		context.registerService(RemoteServiceAdminListener.class.getName(),
 				rsaListener, null);
 	}
