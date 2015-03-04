@@ -18,6 +18,7 @@
 -Djavax.net.ssl.keyStorePassword=server
 -Djavax.net.ssl.trustStore=security/server.ks
 -Djavax.net.debug=all
+-Dch.ethz.iks.r_osgi.topic.filter=*
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
