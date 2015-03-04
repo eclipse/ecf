@@ -281,7 +281,28 @@
             <message_arguments>
                 <message_argument value="EndpointDescription"/>
                 <message_argument value="EndpointDescriptionWriter"/>
+                <message_argument value="writeEndpointDescription(EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="EndpointDescriptionWriter"/>
+                <message_argument value="writeEndpointDescription(Writer, EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="EndpointDescriptionWriter"/>
                 <message_argument value="writeEndpointDescription(int, Writer, EndpointDescription)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="EndpointDescription"/>
+                <message_argument value="EndpointDescriptionWriter"/>
+                <message_argument value="writeEndpointDescriptions(EndpointDescription[])"/>
             </message_arguments>
         </filter>
         <filter id="643846161">
