@@ -3,7 +3,6 @@
 
 <product name="MyCorp Remote TimeService ROSGI Websockets Secure No Extension Registry" uid="com.mycorp.examples.timeservice.host.rosgi.wss.noreg.product" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="false">
 
-
    <configIni use="default">
    </configIni>
 
@@ -21,13 +20,13 @@
 -Djavax.net.ssl.keyStorePassword=server
 -Djavax.net.ssl.trustStore=security/server.ks
 -Djavax.net.debug=all
+-Dch.ethz.iks.r_osgi.topic.filter=*
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
    </launcherArgs>
 
    <windowImages/>
-
 
    <launcher>
       <solaris/>
@@ -36,10 +35,8 @@
       </win>
    </launcher>
 
-
    <vm>
    </vm>
-
 
    <plugins>
       <plugin id="ch.ethz.iks.r_osgi.remote"/>

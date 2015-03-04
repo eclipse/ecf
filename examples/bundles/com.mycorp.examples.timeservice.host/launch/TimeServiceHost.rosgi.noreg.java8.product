@@ -15,6 +15,7 @@
 -Dservice.exported.configs=ecf.r_osgi.peer
 -Dch.ethz.iks.r_osgi.port=9285
 -Decf.exported.async.interfaces=*
+-Dch.ethz.iks.r_osgi.topic.filter=*
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
