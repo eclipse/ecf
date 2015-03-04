@@ -973,7 +973,7 @@ public class EndpointDescriptionLocator {
 				String[] paths = remoteServicesHeaderValue.split(","); //$NON-NLS-1$
 				if (paths != null)
 					for (int i = 0; i < paths.length; i++)
-						handleEndpointDescriptionPath(bundle, paths[i]);
+						handleEndpointDescriptionPath(bundle, paths[i].trim());
 			}
 		}
 
