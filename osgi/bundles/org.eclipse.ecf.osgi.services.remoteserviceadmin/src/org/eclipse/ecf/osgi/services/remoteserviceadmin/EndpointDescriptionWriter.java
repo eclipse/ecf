@@ -10,6 +10,7 @@
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Iterator;
 import java.util.List;
@@ -190,6 +191,40 @@ public class EndpointDescriptionWriter {
 			writer.append("</array>"); //$NON-NLS-1$
 			newLine(writer);
 		}
+	}
+
+	/**
+	 * @since 4.2
+	 */
+	public Writer writeEndpointDescription(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription)
+			throws IOException {
+		return writeEndpointDescriptions(new org.osgi.service.remoteserviceadmin.EndpointDescription[] { endpointDescription });
+	}
+
+	/**
+	 * @since 4.2
+	 */
+	public Writer writeEndpointDescriptions(
+			org.osgi.service.remoteserviceadmin.EndpointDescription[] endpointDescriptions)
+			throws IOException {
+		StringWriter writer = new StringWriter().append(
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>").append( //$NON-NLS-1$
+				"\n"); //$NON-NLS-1$
+		writeEndpointDescriptions(writer, endpointDescriptions);
+		return writer;
+	}
+
+	/**
+	 * @since 4.2
+	 */
+	public void writeEndpointDescription(
+			Writer writer,
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription)
+			throws IOException {
+		writeEndpointDescriptions(
+				writer,
+				new org.osgi.service.remoteserviceadmin.EndpointDescription[] { endpointDescription });
 	}
 
 	public void writeEndpointDescriptions(
