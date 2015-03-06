@@ -38,7 +38,7 @@ public class Activator implements BundleActivator {
 						props);
 
 		// Print out that ITimeService remote service registration
-		System.out.println("MyTimeService host registered with registration="
+		System.out.println("TimeService host registered with registration="
 				+ timeServiceRegistration);
 	}
 
