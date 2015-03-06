@@ -1,5 +1,19 @@
 README for TimeServiceConsumer.rosgi.ds.wss.noreg.product
 
+The successful use of this provider for this example or 
+otherwise depends upon
+
+Having a built, packaged, and installed version of these two 
+additional bundles:
+   a) java_websocket
+   b) ch.ethz.iks.r_osgi.transport.http
+   
+The source for these two bundles is available via the ECF github
+Websockets repository located here:  https://github.com/ECF/Websockets
+Note that there is also a feature for building these two bundles via 
+eclipse via the feature project located in 
+features/org.eclipse.ecf.remoteservices.rosgi.ws.feature
+
 Using EDEF Filediscovery to trigger TimeServiceConsumer discovery
 
 When using the EDEF product configurations to trigger the discovery of the remote service, 

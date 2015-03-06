@@ -1,6 +1,24 @@
 README for TimeServiceConsumer.rosgi.ds.wss.noreg.product
 
-This product config uses websockets with SSL, and so to use requires the configuration of an SSLContext.
+This product config uses the websockets with SSL rosgi provider.
+
+The successful use of this provider for this example or 
+otherwise depends upon two things:
+
+1) Having a built, packaged, and installed version of these two 
+additional bundles:
+   a) java_websocket
+   b) ch.ethz.iks.r_osgi.transport.http
+   
+The source for these two bundles is available via the ECF github
+Websockets repository located here:  https://github.com/ECF/Websockets
+Note that there is also a feature for building these two bundles via 
+eclipse via the feature project located in 
+features/org.eclipse.ecf.remoteservices.rosgi.ws.feature
+
+2) For the wss (Secure Websockets) provider it's also necessary to
+configure an SSLContext prior to running/using the provider.
+
 As part of the VM arguments in the product config are these:
 
 -Djavax.net.ssl.keyStore=security/server.ks
