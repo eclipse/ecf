@@ -143,7 +143,9 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	/**
 	 * Timeout.
 	 */
-	private static final int TIMEOUT = 120000;
+	private static final int TIMEOUT = new Integer(System.getProperty(
+			"ch.ethz.iks.r_osgi.channelEndpointImpl.timeout", "120000"))
+			.intValue();
 
 	/**
 	 * the callback register
