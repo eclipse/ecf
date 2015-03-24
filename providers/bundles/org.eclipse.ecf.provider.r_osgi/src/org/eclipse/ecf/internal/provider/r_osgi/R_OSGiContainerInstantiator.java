@@ -66,12 +66,12 @@ public final class R_OSGiContainerInstantiator implements IContainerInstantiator
 			Namespace ns = (wss ? R_OSGiWSSNamespace.getDefault() : ((ws) ? R_OSGiWSNamespace.getDefault() : R_OSGiNamespace.getDefault()));
 			ID containerID = null;
 			if (parameters == null) {
-				String localHost = null;
+				String localHost = "localhost"; //$NON-NLS-1$
 				if (useHostname) {
 					try {
 						localHost = InetAddress.getLocalHost().getCanonicalHostName();
 					} catch (UnknownHostException e) {
-						localHost = "localhost"; //$NON-NLS-1$
+						// Ignore
 					}
 				}
 				final String nsScheme = ns.getScheme();
