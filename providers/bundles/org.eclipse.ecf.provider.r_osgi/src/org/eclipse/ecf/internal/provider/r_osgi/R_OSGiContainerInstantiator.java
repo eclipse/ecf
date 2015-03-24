@@ -44,6 +44,8 @@ public final class R_OSGiContainerInstantiator implements IContainerInstantiator
 	private static final int WS_DEFAULT_PORT = 80;
 	private static final int WSS_DEFAULT_PORT = 443;
 
+	final boolean useHostname = Boolean.valueOf(System.getProperty("org.eclipse.ecf.provider.r_osgi.useHostName", "true")).booleanValue(); //$NON-NLS-1$ //$NON-NLS-2$
+
 	/**
 	 * creates a new container instance.
 	 * 
@@ -64,8 +66,14 @@ public final class R_OSGiContainerInstantiator implements IContainerInstantiator
 			Namespace ns = (wss ? R_OSGiWSSNamespace.getDefault() : ((ws) ? R_OSGiWSNamespace.getDefault() : R_OSGiNamespace.getDefault()));
 			ID containerID = null;
 			if (parameters == null) {
-				//TODO factor localHost and protocol out?
-				final String localHost = InetAddress.getLocalHost().getCanonicalHostName();
+				String localHost = null;
+				if (useHostname) {
+					try {
+						localHost = InetAddress.getLocalHost().getCanonicalHostName();
+					} catch (UnknownHostException e) {
+						localHost = "localhost"; //$NON-NLS-1$
+					}
+				}
 				final String nsScheme = ns.getScheme();
 				final String wsProtocol = (wss ? WSS_PROTOCOL : (ws ? WS_PROTOCOL : null));
 				int listeningPort = remoteOSGiService.getListeningPort((wsProtocol != null) ? wsProtocol : nsScheme);
@@ -100,8 +108,6 @@ public final class R_OSGiContainerInstantiator implements IContainerInstantiator
 				return new R_OSGiRemoteServiceContainer(remoteOSGiService, containerID);
 		} catch (IDCreateException e) {
 			throw new ContainerCreateException("Could not create R_OSGI ID", e); //$NON-NLS-1$
-		} catch (UnknownHostException e) {
-			throw new ContainerCreateException("Could not get localhost canonical host name", e); //$NON-NLS-1$
 		}
 	}
 
