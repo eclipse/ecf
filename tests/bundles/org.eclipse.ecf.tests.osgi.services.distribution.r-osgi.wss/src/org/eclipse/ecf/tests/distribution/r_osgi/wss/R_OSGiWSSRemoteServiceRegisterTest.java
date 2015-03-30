@@ -12,7 +12,6 @@ package org.eclipse.ecf.tests.distribution.r_osgi.wss;
 
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.tests.osgi.services.distribution.AbstractRemoteServiceRegisterTest;
 
 
@@ -40,16 +39,13 @@ public class R_OSGiWSSRemoteServiceRegisterTest extends AbstractRemoteServiceReg
 		super.tearDown();
 	}
 
-	protected IContainer createClient(int index) throws Exception {
-		return ContainerFactory.getDefault().createContainer(CONTAINER_TYPE_NAME,
-				new Object[] { IDFactory.getDefault().createStringID(
-				"r-osgi.wss://localhost:"+(9279+index)) });
+	protected int getClientCount() {
+		return 0;
 	}
 	
 	protected IContainer createServer() throws Exception {
 		return ContainerFactory.getDefault().createContainer(CONTAINER_TYPE_NAME,SERVER_IDENTITY);
 	}
-
 
 	protected String getClientContainerName() {
 		return CONTAINER_TYPE_NAME;
