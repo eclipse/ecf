@@ -101,9 +101,9 @@ public final class R_OSGiContainerInstantiator implements IContainerInstantiator
 				throw new ContainerCreateException("Unsupported arguments " //$NON-NLS-1$
 						+ Arrays.asList(parameters));
 			if (wss)
-				return new R_OSGiWSRemoteServiceContainer(remoteOSGiService, containerID, true);
+				return new R_OSGiWSSRemoteServiceContainer(remoteOSGiService, containerID);
 			else if (ws)
-				return new R_OSGiWSRemoteServiceContainer(remoteOSGiService, containerID, false);
+				return new R_OSGiWSRemoteServiceContainer(remoteOSGiService, containerID);
 			else
 				return new R_OSGiRemoteServiceContainer(remoteOSGiService, containerID);
 		} catch (IDCreateException e) {

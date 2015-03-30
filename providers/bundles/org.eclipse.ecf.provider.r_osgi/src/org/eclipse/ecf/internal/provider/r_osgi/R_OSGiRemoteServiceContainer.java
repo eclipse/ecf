@@ -248,7 +248,8 @@ class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerAdapter
 		IRemoteFilter remoteFilter = (filter == null) ? null : createRemoteFilter(filter);
 		synchronized (this) {
 			List results = new ArrayList();
-			connect(targetID, connectContext);
+			if (getConnectedID() == null)
+				connect(targetID, connectContext);
 			results = getRemoteServiceReferencesConnected(clazz, remoteFilter);
 			if (results == null || results.size() == 0)
 				return null;
@@ -503,12 +504,15 @@ class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerAdapter
 	 */
 	public synchronized void connect(final ID targetID, final IConnectContext cc) throws ContainerConnectException {
 		if (targetID == null)
-			throw new ContainerConnectException("targetID may not be null"); //$NON-NLS-1$
-
-		if (!((targetID instanceof R_OSGiID) || targetID instanceof StringID)) {
-			throw new ContainerConnectException("targetID is of incorrect type for this container: " + targetID.toString()); //$NON-NLS-1$
+			throw new ContainerConnectException("targetID must not be null"); //$NON-NLS-1$
+		// Get and check namespace
+		String targetNamespace = targetID.getNamespace().getName();
+		if (!(targetNamespace.equals(getConnectNamespace().getName()) || targetNamespace.equals(StringID.class.getName()))) {
+			throw new ContainerConnectException("targetID is of incorrect connect namespace for this container"); //$NON-NLS-1$
 		}
+		// check that we are not connected
 		if (connectedID != null) {
+			// already connected to this target
 			if (connectedID.getName().equals(targetID.getName())) {
 				return;
 			}
@@ -517,24 +521,16 @@ class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerAdapter
 
 		this.connectContext = cc;
 
-		final R_OSGiID target;
 		try {
-			if (targetID instanceof StringID) {
-				target = createR_OSGiID(((StringID) targetID).getName());
-			} else if (targetID instanceof R_OSGiID) {
-				target = (R_OSGiID) targetID;
-			} else {
-				throw new ContainerConnectException("Incompatible target id " + targetID); //$NON-NLS-1$
-			}
+			final R_OSGiID target = (targetNamespace.equals(StringID.class.getName()) ? createR_OSGiID(((StringID) targetID).getName()) : ((R_OSGiID) targetID));
 
 			fireListeners(new ContainerConnectingEvent(containerID, connectedID));
 
 			final RemoteServiceReference[] refs = doConnect(target);
-			if (refs != null) {
-				for (int i = 0; i < refs.length; i++) {
+			if (refs != null)
+				for (int i = 0; i < refs.length; i++)
 					checkImport(refs[i]);
-				}
-			}
+
 			connectedID = target;
 
 			startRegTracker();

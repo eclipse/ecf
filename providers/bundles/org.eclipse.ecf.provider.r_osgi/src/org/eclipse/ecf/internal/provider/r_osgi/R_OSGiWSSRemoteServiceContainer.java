@@ -10,15 +10,15 @@ package org.eclipse.ecf.internal.provider.r_osgi;
 
 import ch.ethz.iks.r_osgi.RemoteOSGiService;
 import org.eclipse.ecf.core.identity.*;
-import org.eclipse.ecf.provider.r_osgi.identity.R_OSGiWSNamespace;
+import org.eclipse.ecf.provider.r_osgi.identity.R_OSGiWSSNamespace;
 
-class R_OSGiWSRemoteServiceContainer extends R_OSGiRemoteServiceContainer {
+class R_OSGiWSSRemoteServiceContainer extends R_OSGiRemoteServiceContainer {
 
-	public R_OSGiWSRemoteServiceContainer(RemoteOSGiService service, ID containerID) throws IDCreateException {
+	public R_OSGiWSSRemoteServiceContainer(RemoteOSGiService service, ID containerID) throws IDCreateException {
 		super(service, containerID);
 	}
 
 	public Namespace getConnectNamespace() {
-		return IDFactory.getDefault().getNamespaceByName(R_OSGiWSNamespace.NAME_WS);
+		return IDFactory.getDefault().getNamespaceByName(R_OSGiWSSNamespace.NAME_WSS);
 	}
 }
