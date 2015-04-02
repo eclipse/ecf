@@ -3,17 +3,17 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-Vendor: %plugin.provider
 Bundle-SymbolicName: org.eclipse.ecf.remoteservice.rest;singleton:=true
-Bundle-Version: 2.5.0.qualifier
+Bundle-Version: 2.6.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.remoteservice.rest.Activator
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global
 DynamicImport-Package: *
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Export-Package: org.eclipse.ecf.internal.remoteservice.rest;x-internal:=true,
- org.eclipse.ecf.remoteservice.rest;version="2.2.200",
- org.eclipse.ecf.remoteservice.rest.client;version="2.2.300",
- org.eclipse.ecf.remoteservice.rest.identity;version="2.2.200",
- org.eclipse.ecf.remoteservice.rest.util;version="2.2.200"
+ org.eclipse.ecf.remoteservice.rest;version="2.5",
+ org.eclipse.ecf.remoteservice.rest.client;version="2.6",
+ org.eclipse.ecf.remoteservice.rest.identity;version="2.5",
+ org.eclipse.ecf.remoteservice.rest.util;version="2.5"
 Import-Package: org.apache.http;version="4.3",
  org.apache.http.auth;version="4.3",
  org.apache.http.client;version="4.3",

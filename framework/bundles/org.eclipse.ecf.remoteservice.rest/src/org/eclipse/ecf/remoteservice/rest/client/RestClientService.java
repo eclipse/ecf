@@ -81,6 +81,13 @@ public class RestClientService extends AbstractRestClientService {
 		return new HttpDelete(uri);
 	}
 
+	/**
+	 * @since 2.6
+	 */
+	protected HttpPatch createPatchMethod(String uri) {
+		return new HttpPatch(uri);
+	}
+
 	protected HttpRequestBase createAndPrepareHttpMethod(UriRequest request) {
 		HttpRequestBase httpMethod = null;
 		String uri = request.getUri();
@@ -88,6 +95,8 @@ public class RestClientService extends AbstractRestClientService {
 		IRemoteCallableRequestType requestType = (callable == null) ? new HttpGetRequestType() : callable.getRequestType();
 		if (requestType instanceof HttpGetRequestType)
 			httpMethod = createGetMethod(uri);
+		else if (requestType instanceof HttpPatchRequestType)
+			httpMethod = createPatchMethod(uri);
 		else if (requestType instanceof HttpPostRequestType)
 			httpMethod = createPostMethod(uri);
 		else if (requestType instanceof HttpPutRequestType)
@@ -211,6 +220,8 @@ public class RestClientService extends AbstractRestClientService {
 		try {
 			if (requestType instanceof HttpGetRequestType) {
 				httpMethod = prepareGetMethod(uri, call, callable);
+			} else if (requestType instanceof HttpPatchRequestType) {
+				httpMethod = preparePatchMethod(uri, call, callable);
 			} else if (requestType instanceof HttpPostRequestType) {
 				httpMethod = preparePostMethod(uri, call, callable);
 			} else if (requestType instanceof HttpPutRequestType) {
@@ -292,6 +303,31 @@ public class RestClientService extends AbstractRestClientService {
 			NameValuePair[] params = toNameValuePairs(uri, call, callable);
 			if (params != null) {
 				result.setEntity(getUrlEncodedFormEntity(Arrays.asList(params), putRequestType));
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * @throws UnsupportedEncodingException 
+	 * @throws ECFException  
+	 * @since 2.6
+	 */
+	protected HttpRequestBase preparePatchMethod(String uri, IRemoteCall call, IRemoteCallable callable) throws NotSerializableException, UnsupportedEncodingException {
+		HttpPatch result = new HttpPatch(uri);
+		HttpPostRequestType postRequestType = (HttpPostRequestType) callable.getRequestType();
+
+		IRemoteCallParameter[] defaultParameters = callable.getDefaultParameters();
+		Object[] parameters = call.getParameters();
+		if (postRequestType.useRequestEntity()) {
+			if (defaultParameters != null && defaultParameters.length > 0 && parameters != null && parameters.length > 0) {
+				HttpEntity requestEntity = postRequestType.generateRequestEntity(uri, call, callable, defaultParameters[0], parameters[0]);
+				result.setEntity(requestEntity);
+			}
+		} else {
+			NameValuePair[] params = toNameValuePairs(uri, call, callable);
+			if (params != null) {
+				result.setEntity(getUrlEncodedFormEntity(Arrays.asList(params), postRequestType));
 			}
 		}
 		return result;
