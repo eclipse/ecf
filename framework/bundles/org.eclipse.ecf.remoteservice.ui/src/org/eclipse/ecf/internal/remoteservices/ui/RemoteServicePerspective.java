@@ -50,8 +50,8 @@ public class RemoteServicePerspective implements IPerspectiveFactory {
 		bottomLeft.addView(IPageLayout.ID_PROP_SHEET);
 
 		// Bottom right.
-		IFolderLayout bottomRight = layout.createFolder("bottomRight", //$NON-NLS-1$
-				IPageLayout.BOTTOM, 0.66f, editorArea);
+//		IFolderLayout bottomRight = layout.createFolder("bottomRight", //$NON-NLS-1$
+//				IPageLayout.BOTTOM, 0.66f, editorArea);
 
 		// Top right.
 		IFolderLayout topRight = layout.createFolder("topRight", IPageLayout.RIGHT, 0.80f, editorArea); //$NON-NLS-1$
