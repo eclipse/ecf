@@ -69,7 +69,7 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
  * discovery providers (implementers if {@link IDiscoveryLocator}.
  * 
  */
-public class EndpointDescriptionLocator {
+public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 
 	private BundleContext context;
 	private IExecutor executor;
@@ -111,6 +111,8 @@ public class EndpointDescriptionLocator {
 
 	private String frameworkUUID;
 
+	private ServiceRegistration<IEndpointDescriptionLocator> endpointLocatorReg;
+	
 	private String getFrameworkUUID() {
 		return frameworkUUID;
 	}
@@ -343,6 +345,8 @@ public class EndpointDescriptionLocator {
 				| Bundle.STARTING, bundleTrackerCustomizer);
 		// This may trigger local endpoint description discovery
 		bundleTracker.open();
+		
+		this.endpointLocatorReg = this.context.registerService(IEndpointDescriptionLocator.class, this, null);
 	}
 
 	private void logError(String methodName, String message, Throwable e) {
@@ -357,6 +361,10 @@ public class EndpointDescriptionLocator {
 	}
 
 	public void close() {
+		if (this.endpointLocatorReg != null) {
+			this.endpointLocatorReg.unregister();
+			this.endpointLocatorReg = null;
+		}
 		if (bundleTracker != null) {
 			bundleTracker.close();
 			bundleTracker = null;
@@ -1353,5 +1361,29 @@ public class EndpointDescriptionLocator {
 		public boolean triggerDiscovery() {
 			return false;
 		}
+	}
+
+	/**
+	 * @since 4.3
+	 */
+	public void discoverEndpoint(
+			org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription endpointDescription) {
+		queueEndpointEvent(endpointDescription, EndpointEvent.ADDED);
+	}
+
+	/**
+	 * @since 4.3
+	 */
+	public void updateEndpoint(
+			org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription endpointDescription) {
+		queueEndpointEvent(endpointDescription, EndpointEvent.MODIFIED);
+	}
+
+	/**
+	 * @since 4.3
+	 */
+	public void undiscoverEndpoint(
+			org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription endpointDescription) {
+		queueEndpointEvent(endpointDescription, EndpointEvent.REMOVED);
 	}
 }
