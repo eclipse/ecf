@@ -30,7 +30,7 @@ public class ConnectRemoteServicehandler extends ConnectionHandler {
 		final IContainer container = RemoteServiceHandlerUtil
 				.getActiveIRemoteServiceContainerChecked(event);
 		// decouple the long running connect call from the ui thread
-		return new Job(NLS.bind("Connecting {0}", createConnectId.getName())) {
+		return new Job(NLS.bind("Connecting {0}", createConnectId.getName())) { //$NON-NLS-1$
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
 					if (container != null)

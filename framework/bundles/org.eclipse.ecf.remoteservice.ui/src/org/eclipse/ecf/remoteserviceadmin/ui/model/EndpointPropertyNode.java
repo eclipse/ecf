@@ -7,12 +7,13 @@ package org.eclipse.ecf.remoteserviceadmin.ui.model;
  * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors: Scott Lewis - initial API and implementation
+ * @since 3.2
  ******************************************************************************/
 public class EndpointPropertyNode extends AbstractEndpointNode {
 
 	private final String propertyName;
 	private String propertyAlias;
-	private String nameValueSeparator = ": ";
+	private String nameValueSeparator = ": "; //$NON-NLS-1$
 
 	public EndpointPropertyNode(String propertyName) {
 		this.propertyName = propertyName;

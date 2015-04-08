@@ -8,11 +8,16 @@
  ******************************************************************************/
 package org.eclipse.ecf.remoteserviceadmin.ui.model;
 
+import org.eclipse.ecf.internal.remoteservices.ui.Messages;
+
+/**
+ * @since 3.2
+ */
 public class EndpointPackageVersionNode extends EndpointPropertyNode {
 
 	public EndpointPackageVersionNode(String packageName) {
 		super(packageName);
-		setPropertyAlias("Version");
+		setPropertyAlias(Messages.EndpointPackageVersionNode_VERSION_PROP_NAME);
 	}
 
 	@Override

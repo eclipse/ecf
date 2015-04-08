@@ -10,6 +10,9 @@ package org.eclipse.ecf.remoteserviceadmin.ui.model;
 
 import org.osgi.framework.Constants;
 
+/**
+ * @since 3.2
+ */
 public class EndpointInterfacesNode extends EndpointPropertyNode {
 
 	public EndpointInterfacesNode() {

@@ -16,6 +16,14 @@ public final class Messages extends NLS {
 
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.remoteservices.ui.messages"; //$NON-NLS-1$
 
+	public static String DiscoveryComponent_ERROR_MSG_CANNOT_FIND_RSA_BUNDLE;
+
+	public static String EndpointConfigTypesNode_0;
+
+	public static String EndpointConnectTargetIDNode_CONNECT_TARGET_ID_PROP_NAME;
+
+	public static String EndpointContainerIDNode_CONTAINER_ID_PROP_NAME;
+
 	public static String EndpointDiscoveryView_CLOSE_IMPORTED_REMOTE_SERVICE;
 
 	public static String EndpointDiscoveryView_CLOSE_IMPORTED_REMOTE_SERVICE_TT;
@@ -71,6 +79,24 @@ public final class Messages extends NLS {
 	public static String EndpointDiscoveryView_START_RSA;
 
 	public static String EndpointDiscoveryView_START_RSA_SERVICE;
+
+	public static String EndpointFrameworkIDNode_FRAMEWORK_ID_PROP_NAME;
+
+	public static String EndpointIDNode_ENDPOINT_ID_PROP_NAME;
+
+	public static String EndpointIntentsNode_INTENTS_PROP_NAME;
+
+	public static String EndpointNamespaceNode_NAMESPACE_PROP_NAME;
+
+	public static String EndpointPackageVersionNode_VERSION_PROP_NAME;
+
+	public static String EndpointRemoteServiceFilterNode_REMOTE_SERVICE_FILTER_PROP_NAME;
+
+	public static String EndpointRemoteServiceIDNode_REMOTE_SERVICE_ID_PROP_NAME;
+
+	public static String EndpointServiceIDNode_SERVICE_ID_PROP_NAME;
+
+	public static String EndpointTimestampNode_TIMESTAMP_PROP_NAME;
 
 	public static String MethodInvocationDialog_ShellTitle;
 	public static String MethodInvocationDialog_AvailableMethodsLabel;

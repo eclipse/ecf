@@ -24,7 +24,7 @@ public class EndpointPackageVersionNodeWorkbenchAdapter extends
 		Version v = (Version) pvn.getPropertyValue();
 		if (v == null)
 			v = Version.emptyVersion;
-		return pvn.getPropertyName() + " " + pvn.getPropertyAlias()
+		return pvn.getPropertyName() + " " + pvn.getPropertyAlias() //$NON-NLS-1$
 				+ pvn.getNameValueSeparator() + v.toString();
 	}
 

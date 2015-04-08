@@ -8,13 +8,17 @@
  ******************************************************************************/
 package org.eclipse.ecf.remoteserviceadmin.ui.model;
 
+import org.eclipse.ecf.internal.remoteservices.ui.Messages;
 import org.osgi.service.remoteserviceadmin.RemoteConstants;
 
+/**
+ * @since 3.2
+ */
 public class EndpointConfigTypesNode extends EndpointPropertyNode {
 
 	public EndpointConfigTypesNode() {
 		super(RemoteConstants.REMOTE_CONFIGS_SUPPORTED);
-		setPropertyAlias("Supported Configs");
+		setPropertyAlias(Messages.EndpointConfigTypesNode_0);
 	}
 
 	@Override

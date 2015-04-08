@@ -8,13 +8,17 @@
  ******************************************************************************/
 package org.eclipse.ecf.remoteserviceadmin.ui.model;
 
+import org.eclipse.ecf.internal.remoteservices.ui.Messages;
 import org.osgi.service.remoteserviceadmin.RemoteConstants;
 
+/**
+ * @since 3.2
+ */
 public class EndpointIDNode extends EndpointPropertyNode {
 
 	public EndpointIDNode() {
 		super(RemoteConstants.ENDPOINT_ID);
-		setPropertyAlias("Endpoint ID");
+		setPropertyAlias(Messages.EndpointIDNode_ENDPOINT_ID_PROP_NAME);
 	}
 
 	@Override

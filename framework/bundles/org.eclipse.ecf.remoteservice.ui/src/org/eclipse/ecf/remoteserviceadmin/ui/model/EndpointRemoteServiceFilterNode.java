@@ -8,13 +8,17 @@
  ******************************************************************************/
 package org.eclipse.ecf.remoteserviceadmin.ui.model;
 
+import org.eclipse.ecf.internal.remoteservices.ui.Messages;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants;
 
+/**
+ * @since 3.2
+ */
 public class EndpointRemoteServiceFilterNode extends EndpointECFNode {
 
 	public EndpointRemoteServiceFilterNode() {
 		super(RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER);
-		setPropertyAlias("Remote Service Filter");
+		setPropertyAlias(Messages.EndpointRemoteServiceFilterNode_REMOTE_SERVICE_FILTER_PROP_NAME);
 	}
 
 	@Override

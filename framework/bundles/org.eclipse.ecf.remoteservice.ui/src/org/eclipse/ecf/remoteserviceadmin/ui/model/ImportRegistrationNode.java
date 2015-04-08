@@ -10,6 +10,9 @@ package org.eclipse.ecf.remoteserviceadmin.ui.model;
 
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin.ImportRegistration;
 
+/**
+ * @since 3.2
+ */
 public class ImportRegistrationNode extends AbstractEndpointNode {
 
 	private final ImportRegistration importRegistration;
@@ -24,8 +27,8 @@ public class ImportRegistrationNode extends AbstractEndpointNode {
 
 	@Override
 	public String toString() {
-		return "ImportRegistrationNode [importRegistration="
-				+ importRegistration + "]";
+		return "ImportRegistrationNode [importRegistration=" //$NON-NLS-1$
+				+ importRegistration + "]"; //$NON-NLS-1$
 	}
 
 }

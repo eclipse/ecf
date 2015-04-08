@@ -33,7 +33,7 @@ public class EndpointNodeWorkbenchAdapter extends
 	public String getLabel(Object object) {
 		EndpointDescription ed = ((EndpointNode) object)
 				.getEndpointDescription();
-		return ed.getContainerID().getName() + ":" + ed.getRemoteServiceId();
+		return ed.getContainerID().getName() + ":" + ed.getRemoteServiceId(); //$NON-NLS-1$
 	}
 
 	@Override

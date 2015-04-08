@@ -46,7 +46,7 @@ public abstract class ConnectionHandler extends AbstractHandler {
 					msg += t.getCause().toString();
 				}
 				MessageDialog.openError(null, t.getLocalizedMessage(),
-						NLS.bind("Exception: {0}", msg));
+						NLS.bind("Exception: {0}", msg)); //$NON-NLS-1$
 			}
 		});
 	}

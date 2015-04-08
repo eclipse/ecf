@@ -8,6 +8,9 @@
  ******************************************************************************/
 package org.eclipse.ecf.remoteserviceadmin.ui.model;
 
+/**
+ * @since 3.2
+ */
 public class EndpointECFNode extends EndpointPropertyNode {
 
 	public EndpointECFNode(String propertyKey) {

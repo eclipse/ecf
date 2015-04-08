@@ -11,6 +11,9 @@ package org.eclipse.ecf.remoteserviceadmin.ui.model;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin.ImportRegistration;
 
+/**
+ * @since 3.2
+ */
 public class EndpointNode extends AbstractEndpointNode {
 
 	private EndpointDescription endpointDescription;

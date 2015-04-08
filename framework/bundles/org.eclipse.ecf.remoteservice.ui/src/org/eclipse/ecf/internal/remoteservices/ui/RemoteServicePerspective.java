@@ -16,7 +16,7 @@ import org.eclipse.ui.IPerspectiveFactory;
 
 public class RemoteServicePerspective implements IPerspectiveFactory {
 
-	public final static String ID = "org.eclipse.ecf.remoteservices.ui.RemoteServicePerspective";
+	public final static String ID = "org.eclipse.ecf.remoteservices.ui.RemoteServicePerspective"; //$NON-NLS-1$
 
 	public void createInitialLayout(IPageLayout layout) {
 		defineActions(layout);
@@ -46,7 +46,7 @@ public class RemoteServicePerspective implements IPerspectiveFactory {
 		left.addView("org.eclipse.ui.navigator.ProjectExplorer"); //$NON-NLS-1$
 
 		// Bottom left - Endpoint Discovery
-		IFolderLayout leftBottom = layout.createFolder("leftBottom", IPageLayout.BOTTOM, 0.60f, "left");
+		IFolderLayout leftBottom = layout.createFolder("leftBottom", IPageLayout.BOTTOM, 0.60f, "left"); //$NON-NLS-1$ //$NON-NLS-2$
 		leftBottom.addView(EndpointDiscoveryView.ID_VIEW);
 		
 		// Bottom middle - Properties
@@ -57,7 +57,7 @@ public class RemoteServicePerspective implements IPerspectiveFactory {
 		// Bottom right - RegistryBrowser
 		IFolderLayout rightBottom = layout.createFolder("rightBottom", //$NON-NLS-1$
 				IPageLayout.RIGHT, 0.50f, "bottom"); //$NON-NLS-1$
-		rightBottom.addView("org.eclipse.pde.runtime.RegistryBrowser");
+		rightBottom.addView("org.eclipse.pde.runtime.RegistryBrowser"); //$NON-NLS-1$
 
 		// Top right.
 		IFolderLayout topRight = layout.createFolder("topRight", IPageLayout.RIGHT, 0.70f, editorArea); //$NON-NLS-1$

@@ -29,9 +29,9 @@ public class RSAImageRegistry {
 	private static final String PATH_OVR = ICONS_PATH + "ovr16/"; //$NON-NLS-1$
 
 	public static final String IMG_INTERFACE_OBJ = "int_obj.gif"; //$NON-NLS-1$
-	public static final String IMG_PROPERTY_OBJ = "property_obj.gif";
-	public static final String IMG_RSPROXY_OBJ = "rsvcproxy_obj.gif";
-	public static final String IMG_ENDPOINTDESCRIPTION_OBJ = "endpoint_obj.gif";
+	public static final String IMG_PROPERTY_OBJ = "property_obj.gif"; //$NON-NLS-1$
+	public static final String IMG_RSPROXY_OBJ = "rsvcproxy_obj.gif"; //$NON-NLS-1$
+	public static final String IMG_ENDPOINTDESCRIPTION_OBJ = "endpoint_obj.gif"; //$NON-NLS-1$
 
 	public static final ImageDescriptor INTERFACE_OBJ = create(PATH_OBJ,
 			IMG_INTERFACE_OBJ);
@@ -62,7 +62,7 @@ public class RSAImageRegistry {
 			"package_obj.gif"); //$NON-NLS-1$
 
 	public static final ImageDescriptor DESC_RSPROXY_CO = create(PATH_OVR,
-			"rsvcproxy_co_alpha.gif");
+			"rsvcproxy_co_alpha.gif"); //$NON-NLS-1$
 
 	private static final void initialize() {
 		PLUGIN_REGISTRY = Activator.getDefault().getImageRegistry();

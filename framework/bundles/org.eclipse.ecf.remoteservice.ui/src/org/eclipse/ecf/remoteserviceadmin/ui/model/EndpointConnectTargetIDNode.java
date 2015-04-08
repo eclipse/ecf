@@ -8,13 +8,17 @@
  ******************************************************************************/
 package org.eclipse.ecf.remoteserviceadmin.ui.model;
 
+import org.eclipse.ecf.internal.remoteservices.ui.Messages;
 import org.eclipse.ecf.remoteservice.Constants;
 
+/**
+ * @since 3.2
+ */
 public class EndpointConnectTargetIDNode extends EndpointECFNode {
 
 	public EndpointConnectTargetIDNode() {
 		super(Constants.SERVICE_ID);
-		setPropertyAlias("Connect Target ID");
+		setPropertyAlias(Messages.EndpointConnectTargetIDNode_CONNECT_TARGET_ID_PROP_NAME);
 	}
 
 	@Override

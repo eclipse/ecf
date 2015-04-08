@@ -11,6 +11,9 @@ package org.eclipse.ecf.remoteserviceadmin.ui.model;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 
+/**
+ * @since 3.2
+ */
 public class EndpointContentProvider extends BaseWorkbenchContentProvider {
 
 	private IViewSite viewSite;
@@ -31,7 +34,7 @@ public class EndpointContentProvider extends BaseWorkbenchContentProvider {
 	public Object[] getElements(Object parent) {
 		if (parent.equals(viewSite)) {
 			if (invisibleRoot == null) {
-				invisibleRoot = new EndpointGroupNode("");
+				invisibleRoot = new EndpointGroupNode(""); //$NON-NLS-1$
 				root = new EndpointGroupNode(topNodeLabel);
 				invisibleRoot.addChild(root);
 			}

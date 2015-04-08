@@ -54,31 +54,31 @@ public class ReflectiveRemoteServiceHandler extends AbstractHandler implements
 		final IRemoteServiceContainerAdapter adapter = RemoteServiceHandlerUtil
 				.getActiveIRemoteServiceContainerAdapterChecked(event);
 		if (adapter == null) {
-			MessageDialog.openError(null, "Handler invocation failed",
-					"No container found");
+			MessageDialog.openError(null, "Handler invocation failed", //$NON-NLS-1$
+					"No container found"); //$NON-NLS-1$
 			return null;
 		}
 
 		final IRemoteServiceReference[] references = RemoteServiceHandlerUtil
 				.getActiveIRemoteServiceReferencesChecked(event);
 		if (references == null || references.length == 0) {
-			MessageDialog.openError(null, "Handler invocation failed",
-					"No remote service reference found");
+			MessageDialog.openError(null, "Handler invocation failed", //$NON-NLS-1$
+					"No remote service reference found"); //$NON-NLS-1$
 			return null;
 		}
 
 		final IRemoteService remoteService = adapter
 				.getRemoteService(references[0]);
 		if (remoteService == null) {
-			MessageDialog.openError(null, "Handler invocation failed",
-					"No remote service found");
+			MessageDialog.openError(null, "Handler invocation failed", //$NON-NLS-1$
+					"No remote service found"); //$NON-NLS-1$
 			return null;
 		}
 
 		try {
 			executeMethodInvocationDialog(Class.forName(clazz), remoteService);
 		} catch (ClassNotFoundException e) {
-			MessageDialog.openError(null, "Handler invocation failed",
+			MessageDialog.openError(null, "Handler invocation failed", //$NON-NLS-1$
 					e.getLocalizedMessage());
 			throw new ExecutionException(e.getMessage(), e);
 		}
@@ -147,8 +147,8 @@ public class ReflectiveRemoteServiceHandler extends AbstractHandler implements
 				if (t.getCause() != null) {
 					msg += t.getCause().toString();
 				}
-				MessageDialog.openInformation(null, "Received Exception",
-						NLS.bind("Exception: {0}", msg));
+				MessageDialog.openInformation(null, "Received Exception", //$NON-NLS-1$
+						NLS.bind("Exception: {0}", msg)); //$NON-NLS-1$
 				container.disconnect();
 			}
 		});
@@ -197,8 +197,8 @@ public class ReflectiveRemoteServiceHandler extends AbstractHandler implements
 				if (t.getCause() != null) {
 					msg += t.getCause().toString();
 				}
-				MessageDialog.openInformation(null, "Received Exception",
-						NLS.bind("Exception: {0}", msg));
+				MessageDialog.openInformation(null, "Received Exception", //$NON-NLS-1$
+						NLS.bind("Exception: {0}", msg)); //$NON-NLS-1$
 			}
 		});
 	}
@@ -214,9 +214,9 @@ public class ReflectiveRemoteServiceHandler extends AbstractHandler implements
 			public void run() {
 				MessageDialog.openInformation(
 						null,
-						"Received Response",
+						"Received Response", //$NON-NLS-1$
 						NLS.bind(
-								"Service Interface:\n{0}\n\nMethod: {1}\nParameters: {2}\n\nResult:  {3}",
+								"Service Interface:\n{0}\n\nMethod: {1}\nParameters: {2}\n\nResult:  {3}", //$NON-NLS-1$
 								bindings));
 			}
 		});

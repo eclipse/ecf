@@ -8,6 +8,9 @@
  ******************************************************************************/
 package org.eclipse.ecf.remoteserviceadmin.ui.model;
 
+/**
+ * @since 3.2
+ */
 public class EndpointGroupNode extends AbstractEndpointNode {
 
 	private final String groupName;

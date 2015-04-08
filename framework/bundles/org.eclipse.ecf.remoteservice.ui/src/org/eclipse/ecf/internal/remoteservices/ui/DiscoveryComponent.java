@@ -21,7 +21,7 @@ import org.osgi.service.remoteserviceadmin.EndpointEventListener;
 
 public class DiscoveryComponent implements EndpointEventListener {
 
-	private static final String RSA_SYMBOLICNAME = "org.eclipse.ecf.osgi.services.remoteserviceadmin";
+	private static final String RSA_SYMBOLICNAME = "org.eclipse.ecf.osgi.services.remoteserviceadmin"; //$NON-NLS-1$
 
 	private static DiscoveryComponent instance;
 
@@ -99,7 +99,7 @@ public class DiscoveryComponent implements EndpointEventListener {
 			if (b.getSymbolicName().equals(RSA_SYMBOLICNAME))
 				rsaBundle = b;
 		if (rsaBundle == null)
-			throw new BundleException("Cannot find ECF RSA bundle to start");
+			throw new BundleException(Messages.DiscoveryComponent_ERROR_MSG_CANNOT_FIND_RSA_BUNDLE);
 		rsaBundle.start();
 	}
 
