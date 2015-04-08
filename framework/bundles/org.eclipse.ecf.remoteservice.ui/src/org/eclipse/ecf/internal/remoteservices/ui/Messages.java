@@ -16,6 +16,62 @@ public final class Messages extends NLS {
 
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.remoteservices.ui.messages"; //$NON-NLS-1$
 
+	public static String EndpointDiscoveryView_CLOSE_IMPORTED_REMOTE_SERVICE;
+
+	public static String EndpointDiscoveryView_CLOSE_IMPORTED_REMOTE_SERVICE_TT;
+
+	public static String EndpointDiscoveryView_COPY_PROPERTY_NAME;
+
+	public static String EndpointDiscoveryView_COPY_PROPERTY_VALUE;
+
+	public static String EndpointDiscoveryView_ENDPOINT_MSGBOX_TITLE;
+
+	public static String EndpointDiscoveryView_ENDPOINT_ROOT_NAME;
+
+	public static String EndpointDiscoveryView_ERROR_MSG_CANNOT_CLOSE_IR;
+
+	public static String EndpointDiscoveryView_ERROR_MSG_CANNOT_CLOSE_IR_PREFIX;
+
+	public static String EndpointDiscoveryView_ERROR_MSG_ENDPOINT_PARSING_FAILED;
+
+	public static String EndpointDiscoveryView_ERROR_MSG_ENDPOINT_PARSING_FAILED_PREFIX;
+
+	public static String EndpointDiscoveryView_ERROR_MSG_RSA_IMPORTSERVICE_FAILED;
+
+	public static String EndpointDiscoveryView_ERROR_MSG_RSA_IMPORTSERVICE_FAILED_PREFIX;
+
+	public static String EndpointDiscoveryView_ERROR_MSG_RSA_IS_NULL;
+
+	public static String EndpointDiscoveryView_ERROR_MSG_RSA_START_PREFIX;
+
+	public static String EndpointDiscoveryView_ERROR_MSG_SUFFIX;
+
+	public static String EndpointDiscoveryView_ERROR_RSA_START_FAILED;
+
+	public static String EndpointDiscoveryView_IMPORT_REMOTE_SERVICE;
+
+	public static String EndpointDiscoveryView_IMPORT_REMOTE_SERVICE_TT;
+
+	public static String EndpointDiscoveryView_OPEN_EDEF_FILE;
+
+	public static String EndpointDiscoveryView_OPEN_EDEF_FILE_DIALOG;
+
+	public static String EndpointDiscoveryView_OPEN_EDEF_FILE_DIALOG_TT;
+
+	public static String EndpointDiscoveryView_REMOTE_HOST_NAME;
+
+	public static String EndpointDiscoveryView_REMOVE_ENDPOINT;
+
+	public static String EndpointDiscoveryView_REMOVE_ENDPOINT_QUESTION;
+
+	public static String EndpointDiscoveryView_REMOVE_ENDPOINT_QUESTION_TITLE;
+
+	public static String EndpointDiscoveryView_REMOVE_ENDPOINT_TT;
+
+	public static String EndpointDiscoveryView_START_RSA;
+
+	public static String EndpointDiscoveryView_START_RSA_SERVICE;
+
 	public static String MethodInvocationDialog_ShellTitle;
 	public static String MethodInvocationDialog_AvailableMethodsLabel;
 	public static String MethodInvocationDialog_ArgumentsLabel;

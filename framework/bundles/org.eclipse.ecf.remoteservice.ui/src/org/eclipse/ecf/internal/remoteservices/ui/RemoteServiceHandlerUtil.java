@@ -22,7 +22,7 @@ import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.ui.DiscoveryHandlerUtil;
-import org.eclipse.ecf.remoteservice.Constants;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.osgi.framework.InvalidSyntaxException;
@@ -126,36 +126,32 @@ public class RemoteServiceHandlerUtil {
 
 	private static String getServiceNamespace(IServiceInfo serviceInfo) {
 		return serviceInfo.getServiceProperties().getPropertyString(
-				Constants.SERVICE_IDFILTER_NAMESPACE);
+				RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
 	}
 
 	private static String getServiceID(IServiceInfo serviceInfo) {
 		return serviceInfo.getServiceProperties().getPropertyString(
-				Constants.SERVICE_IDFILTER_ID);
+				RemoteConstants.ENDPOINT_ID);
 	}
 
 	private static String getRemoteServiceClass(IServiceInfo serviceInfo) {
 		return serviceInfo.getServiceProperties().getPropertyString(
-				Constants.SERVICE_OBJECTCLASS);
-	}
-
-	private static String getFilter(IServiceInfo serviceInfo) {
-		return serviceInfo.getServiceProperties().getPropertyString(
-				Constants.SERVICE_FILTER_PROPERTY);
+				org.osgi.framework.Constants.OBJECTCLASS);
 	}
 
 	private static String getConnectNamespace(IServiceInfo serviceInfo) {
 		return serviceInfo.getServiceProperties().getPropertyString(
-				Constants.SERVICE_CONNECT_ID_NAMESPACE);
+				RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE);
 	}
 
 	private static String getConnectID(IServiceInfo serviceInfo) {
 		return serviceInfo.getServiceProperties().getPropertyString(
-				Constants.SERVICE_CONNECT_ID);
+				RemoteConstants.ENDPOINT_CONNECTTARGET_ID);
 	}
 
+	// XXX FIX...this has to use proper container factory type.
 	private static String getContainerFactory(IServiceInfo serviceInfo) {
 		return serviceInfo.getServiceProperties().getPropertyString(
-				Constants.SERVICE_CONTAINER_FACTORY_NAME);
+				org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS);
 	}
 }

@@ -16,7 +16,7 @@ import org.eclipse.ui.IPerspectiveFactory;
 
 public class RemoteServicePerspective implements IPerspectiveFactory {
 
-	public final static String ID = "org.eclipse.ecf.internal.remoteservices.ui.remoteServicePerspective";
+	public final static String ID = "org.eclipse.ecf.remoteservices.ui.RemoteServicePerspective";
 
 	public void createInitialLayout(IPageLayout layout) {
 		defineActions(layout);
@@ -31,6 +31,7 @@ public class RemoteServicePerspective implements IPerspectiveFactory {
 		// Add "show views".
 		// to be replaced by IPageLayout.ID_PROJECT_EXPLORER
 		layout.addShowViewShortcut("org.eclipse.ui.navigator.ProjectExplorer"); //$NON-NLS-1$
+		layout.addShowViewShortcut(EndpointDiscoveryView.ID_VIEW);
 		layout.addShowViewShortcut(IPageLayout.ID_OUTLINE);
 		layout.addShowViewShortcut(IPageLayout.ID_PROP_SHEET);
 		layout.addShowViewShortcut(IPageLayout.ID_PROGRESS_VIEW);
@@ -40,21 +41,26 @@ public class RemoteServicePerspective implements IPerspectiveFactory {
 		// Editors are placed for free.
 		String editorArea = layout.getEditorArea();
 
-		// Top left.
-		IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT, 0.26f, editorArea); //$NON-NLS-1$
-		topLeft.addView("org.eclipse.ui.navigator.ProjectExplorer"); //$NON-NLS-1$
+		// Top left - Project Explorer
+		IFolderLayout left = layout.createFolder("left", IPageLayout.LEFT, 0.33f, editorArea); //$NON-NLS-1$
+		left.addView("org.eclipse.ui.navigator.ProjectExplorer"); //$NON-NLS-1$
 
-		// Bottom left.
-		IFolderLayout bottomLeft = layout.createFolder("bottomLeft", //$NON-NLS-1$
-				IPageLayout.BOTTOM, 0.66f, "topLeft"); //$NON-NLS-1$
-		bottomLeft.addView(IPageLayout.ID_PROP_SHEET);
-
-		// Bottom right.
-//		IFolderLayout bottomRight = layout.createFolder("bottomRight", //$NON-NLS-1$
-//				IPageLayout.BOTTOM, 0.66f, editorArea);
+		// Bottom left - Endpoint Discovery
+		IFolderLayout leftBottom = layout.createFolder("leftBottom", IPageLayout.BOTTOM, 0.60f, "left");
+		leftBottom.addView(EndpointDiscoveryView.ID_VIEW);
+		
+		// Bottom middle - Properties
+		IFolderLayout bottom = layout.createFolder("bottom", //$NON-NLS-1$
+				IPageLayout.BOTTOM, 0.60f, editorArea);
+		bottom.addView(IPageLayout.ID_PROP_SHEET);
+		
+		// Bottom right - RegistryBrowser
+		IFolderLayout rightBottom = layout.createFolder("rightBottom", //$NON-NLS-1$
+				IPageLayout.RIGHT, 0.50f, "bottom"); //$NON-NLS-1$
+		rightBottom.addView("org.eclipse.pde.runtime.RegistryBrowser");
 
 		// Top right.
-		IFolderLayout topRight = layout.createFolder("topRight", IPageLayout.RIGHT, 0.80f, editorArea); //$NON-NLS-1$
+		IFolderLayout topRight = layout.createFolder("topRight", IPageLayout.RIGHT, 0.70f, editorArea); //$NON-NLS-1$
 		topRight.addView(IPageLayout.ID_OUTLINE);
 	}
 }

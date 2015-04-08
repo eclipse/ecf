@@ -57,6 +57,7 @@ import org.eclipse.swt.widgets.Text;
  * 
  * @since 2.0
  */
+@Deprecated
 public final class MethodInvocationDialog extends Dialog {
 
 	/**

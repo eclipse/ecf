@@ -21,6 +21,7 @@ import org.eclipse.ecf.discovery.ui.DiscoveryPropertyTesterUtil;
 import org.eclipse.ecf.internal.remoteservices.ui.Activator;
 import org.eclipse.ecf.remoteservice.Constants;
 
+@Deprecated
 public class ConnectedTester extends PropertyTester {
 
 	public ConnectedTester() {

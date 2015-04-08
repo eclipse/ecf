@@ -11,11 +11,18 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf.remoteservice;bundle-version="2.0.0",
  org.eclipse.ecf.discovery;bundle-version="2.1.0",
  org.eclipse.ecf.discovery.ui;bundle-version="3.0.0",
- org.eclipse.ecf.discovery.ui.model;bundle-version="3.0.0"
-Export-Package: org.eclipse.ecf.remoteservices.ui;version="3.0.0"
+ org.eclipse.ecf.discovery.ui.model;bundle-version="3.0.0",
+ org.eclipse.pde.runtime;bundle-version="3.4.400"
+Export-Package: org.eclipse.ecf.remoteserviceadmin.ui.model;version="1.0.0",
+ org.eclipse.ecf.remoteservices.ui;version="3.0.0"
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
 Bundle-Activator: org.eclipse.ecf.internal.remoteservices.ui.Activator
-Import-Package: org.eclipse.ecf.remoteservice.asyncproxy;version="1.0.0",
- org.eclipse.equinox.concurrent.future;version="1.0.0"
+Import-Package: org.eclipse.ecf.osgi.services.remoteserviceadmin;version="1.2.0",
+ org.eclipse.ecf.remoteservice.asyncproxy;version="1.0.0",
+ org.eclipse.equinox.concurrent.future;version="1.0.0",
+ org.eclipse.ui.views.properties,
+ org.osgi.service.remoteserviceadmin;version="1.1.0"
+Service-Component: OSGI-INF/discovery.xml
+
