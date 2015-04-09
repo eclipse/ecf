@@ -123,6 +123,21 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/org/eclipse/ecf/osgi/services/remoteserviceadmin/DebugRemoteServiceAdminListener.java" type="org.eclipse.ecf.osgi.services.remoteserviceadmin.DebugRemoteServiceAdminListener">
+        <filter id="576725006">
+            <message_arguments>
+                <message_argument value="RemoteServiceAdminListener"/>
+                <message_argument value="DebugRemoteServiceAdminListener"/>
+            </message_arguments>
+        </filter>
+        <filter id="643846161">
+            <message_arguments>
+                <message_argument value="RemoteServiceAdminEvent"/>
+                <message_argument value="DebugRemoteServiceAdminListener"/>
+                <message_argument value="remoteAdminEvent(RemoteServiceAdminEvent)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/org/eclipse/ecf/osgi/services/remoteserviceadmin/DiscoveredEndpointDescription.java" type="org.eclipse.ecf.osgi.services.remoteserviceadmin.DiscoveredEndpointDescription">
         <filter id="643842064">
             <message_arguments>
