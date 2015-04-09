@@ -2,12 +2,13 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF RS Example Timeservice Consumer
 Bundle-SymbolicName: com.mycorp.examples.timeservice.consumer
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.1.0.qualifier
 Bundle-Vendor: Eclipse.org - ECF
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: com.mycorp.examples.timeservice.consumer.Activator
 Import-Package: com.mycorp.examples.timeservice;version="1.0.0",
+ org.eclipse.ecf.osgi.services.remoteserviceadmin;version="1.2.0",
  org.osgi.framework,
  org.osgi.service.remoteserviceadmin;version="1.0.0",
  org.osgi.util.tracker

@@ -12,10 +12,10 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Properties;
 
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.DebugRemoteServiceAdminListener;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener;
 
 import com.mycorp.examples.timeservice.ITimeService;
@@ -26,7 +26,8 @@ public class Activator implements BundleActivator {
 		// If the verboseRemoteServiceAdmin system property is set
 		// then register debug listener
 		if (Boolean.getBoolean("verboseRemoteServiceAdmin"))
-			registerDebugListener(context);
+			context.registerService(RemoteServiceAdminListener.class,
+					new DebugRemoteServiceAdminListener(), null);
 
 		// Create remote service properties...see
 		// createRemoteServiceProperties()
@@ -65,40 +66,6 @@ public class Activator implements BundleActivator {
 			}
 		}
 		return result;
-	}
-
-	// Register a RemoteServiceAdminListener so we can report to sdtout
-	// when a remote service has actually been successfully exported by
-	// the RSA implementation
-	private void registerDebugListener(BundleContext context) {
-		RemoteServiceAdminListener rsaListener = new RemoteServiceAdminListener() {
-			public void remoteAdminEvent(RemoteServiceAdminEvent event) {
-				switch (event.getType()) {
-				case RemoteServiceAdminEvent.EXPORT_REGISTRATION:
-					System.out
-							.println("RSA: Service Exported.  EndpointDescription="
-									+ event.getExportReference()
-											.getExportedEndpoint()
-											.getProperties());
-					break;
-				case RemoteServiceAdminEvent.EXPORT_ERROR:
-					Throwable t = event.getException();
-					System.err.println("RSA: EXPORT ERROR. Error message="
-							+ ((t == null) ? "none" : t.getMessage())
-							+ ". EndpointDescription="
-							+ event.getExportReference().getExportedEndpoint()
-									.getProperties() + "");
-					if (t != null)
-						t.printStackTrace();
-					break;
-				}
-			}
-
-		};
-		// Register our listener as service via whiteboard pattern, and
-		// RemoteServiceAdmin will callback
-		context.registerService(RemoteServiceAdminListener.class.getName(),
-				rsaListener, null);
 	}
 
 }

@@ -8,10 +8,10 @@
  ******************************************************************************/
 package com.mycorp.examples.timeservice.consumer;
 
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.DebugRemoteServiceAdminListener;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
@@ -28,7 +28,8 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<ITim
 		// If the verboseRemoteServiceAdmin system property is set
 		// then register debug listener
 		if (Boolean.getBoolean("verboseRemoteServiceAdmin"))
-			registerDebugListener(context);
+			context.registerService(RemoteServiceAdminListener.class,
+					new DebugRemoteServiceAdminListener(), null);
 		
 		// Create and open ITimeService tracker
 		this.timeServiceTracker = new ServiceTracker<ITimeService,ITimeService>(this.context,ITimeService.class,this);
@@ -69,26 +70,5 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<ITim
 			ITimeService service) {
 		// do nothing
 	}
-
-	// Register a RemoteServiceAdminListener so we can report to sdtout
-	// when a remote service has actually been successfully exported by
-	// the RSA implementation
-	private void registerDebugListener(BundleContext context) {
-		RemoteServiceAdminListener rsaListener = new RemoteServiceAdminListener() {
-			public void remoteAdminEvent(RemoteServiceAdminEvent event) {
-				switch (event.getType()) {
-				case RemoteServiceAdminEvent.IMPORT_REGISTRATION:
-					System.out
-							.println("Service Imported by RemoteServiceAdmin.  EndpointDescription Properties="
-									+ event.getImportReference().getImportedEndpoint().getProperties());
-				}
-			}
-
-		};
-		// Register as service, and RemoteServiceAdmin will callback
-		context.registerService(RemoteServiceAdminListener.class.getName(),
-				rsaListener, null);
-	}
-
 
 }
