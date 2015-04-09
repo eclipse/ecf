@@ -83,18 +83,21 @@ public abstract class AbstractEndpointDescriptionWriterTest extends
 		public IServiceInfo createServiceInfo(
 				IDiscoveryAdvertiser advertiser,
 				org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
-			try {
-				StringWriter sr = new StringWriter();
-				sr.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>").append("\n");
-				writer.writeEndpointDescriptions(sr, new EndpointDescription[] { (EndpointDescription) endpointDescription });
-				System.out.print(sr.toString());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			writeEndpointDescription(endpointDescription);
 			return super.createServiceInfo(advertiser, endpointDescription);
 		}
 	}
 
+	protected static void writeEndpointDescription(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription) {
+		try {
+			// Print to system out
+			System.out.println(new EndpointDescriptionWriter().writeEndpointDescription(endpointDescription).toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}	
+	
 	public void testRegisterOnCreatedServer() throws Exception {
 		
 		// Make sure we take precedence over default ISIF
