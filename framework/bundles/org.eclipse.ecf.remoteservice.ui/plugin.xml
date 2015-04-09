@@ -116,8 +116,8 @@
    <extension
          point="org.eclipse.core.runtime.adapters">
       <factory
-            adaptableType="org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointNode"
-            class="org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointAdapterFactory">
+            adaptableType="org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointNode"
+            class="org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointAdapterFactory">
          <adapter
                type="org.eclipse.ui.model.IWorkbenchAdapter">
          </adapter>
@@ -129,8 +129,8 @@
          </adapter>
       </factory>
       <factory
-            adaptableType="org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointPropertyNode"
-            class="org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointAdapterFactory">
+            adaptableType="org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointPropertyNode"
+            class="org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointAdapterFactory">
          <adapter
                type="org.eclipse.ui.model.IWorkbenchAdapter">
          </adapter>
@@ -142,8 +142,8 @@
          </adapter>
       </factory>
             <factory
-            adaptableType="org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointPropertyGroupNode"
-            class="org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointAdapterFactory">
+            adaptableType="org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointPropertyGroupNode"
+            class="org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointAdapterFactory">
          <adapter
                type="org.eclipse.ui.model.IWorkbenchAdapter">
          </adapter>
@@ -155,8 +155,8 @@
          </adapter>
       </factory>
       <factory
-            adaptableType="org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointGroupNode"
-            class="org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointAdapterFactory">
+            adaptableType="org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointGroupNode"
+            class="org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointAdapterFactory">
          <adapter
                type="org.eclipse.ui.model.IWorkbenchAdapter">
          </adapter>
@@ -168,8 +168,8 @@
          </adapter>
       </factory>
       <factory
-            adaptableType="org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointInterfacesNode"
-            class="org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointAdapterFactory">
+            adaptableType="org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointInterfacesNode"
+            class="org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointAdapterFactory">
          <adapter
                type="org.eclipse.ui.model.IWorkbenchAdapter">
          </adapter>
@@ -181,8 +181,8 @@
          </adapter>
       </factory>
       <factory
-            adaptableType="org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointAsyncInterfacesNode"
-            class="org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointAdapterFactory">
+            adaptableType="org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointAsyncInterfacesNode"
+            class="org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointAdapterFactory">
          <adapter
                type="org.eclipse.ui.model.IWorkbenchAdapter">
          </adapter>
@@ -194,8 +194,8 @@
          </adapter>
       </factory>
       <factory
-            adaptableType="org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointPackageVersionNode"
-            class="org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointAdapterFactory">
+            adaptableType="org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointPackageVersionNode"
+            class="org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointAdapterFactory">
          <adapter
                type="org.eclipse.ui.model.IWorkbenchAdapter">
          </adapter>

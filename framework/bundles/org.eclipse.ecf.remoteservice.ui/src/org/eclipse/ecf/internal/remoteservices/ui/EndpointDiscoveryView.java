@@ -20,25 +20,25 @@ import org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionLoca
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin.ImportReference;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin.ImportRegistration;
-import org.eclipse.ecf.remoteserviceadmin.ui.model.AbstractEndpointNode;
-import org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointAsyncInterfacesNode;
-import org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointConfigTypesNode;
-import org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointConnectTargetIDNode;
-import org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointContentProvider;
-import org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointFrameworkIDNode;
-import org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointIDNode;
-import org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointIntentsNode;
-import org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointInterfacesNode;
-import org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointNamespaceNode;
-import org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointNode;
-import org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointPackageVersionNode;
-import org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointPropertyGroupNode;
-import org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointPropertyNode;
-import org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointRemoteServiceFilterNode;
-import org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointRemoteServiceIDNode;
-import org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointServiceIDNode;
-import org.eclipse.ecf.remoteserviceadmin.ui.model.EndpointTimestampNode;
-import org.eclipse.ecf.remoteserviceadmin.ui.model.ImportRegistrationNode;
+import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.AbstractEndpointNode;
+import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointAsyncInterfacesNode;
+import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointConfigTypesNode;
+import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointConnectTargetIDNode;
+import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointContentProvider;
+import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointFrameworkIDNode;
+import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointIDNode;
+import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointIntentsNode;
+import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointInterfacesNode;
+import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointNamespaceNode;
+import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointNode;
+import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointPackageVersionNode;
+import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointPropertyGroupNode;
+import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointPropertyNode;
+import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointRemoteServiceFilterNode;
+import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointRemoteServiceIDNode;
+import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointServiceIDNode;
+import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointTimestampNode;
+import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.ImportRegistrationNode;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -435,7 +435,7 @@ public class EndpointDiscoveryView extends ViewPart {
 	EndpointNode createEndpointDescriptionNode(EndpointDescription ed) {
 		EndpointNode edo = new EndpointNode(
 				ed,
-				new org.eclipse.ecf.remoteserviceadmin.ui.model.ImportRegistrationNode(
+				new org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.ImportRegistrationNode(
 						findImportRegistration(ed)));
 
 		// Interfaces

@@ -13,7 +13,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf.discovery.ui;bundle-version="3.0.0",
  org.eclipse.ecf.discovery.ui.model;bundle-version="3.0.0",
  org.eclipse.pde.runtime;bundle-version="3.4.400"
-Export-Package: org.eclipse.ecf.remoteserviceadmin.ui.model;version="1.0.0",
+Export-Package: org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model;version="1.0.0",
  org.eclipse.ecf.remoteservices.ui;version="3.0.0"
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: %plugin.provider
