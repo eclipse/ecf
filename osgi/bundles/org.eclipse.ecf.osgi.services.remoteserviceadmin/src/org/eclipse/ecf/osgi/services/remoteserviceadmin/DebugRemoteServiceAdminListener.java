@@ -8,6 +8,9 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin.ExportReference;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin.ImportReference;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener;
 
@@ -31,12 +34,11 @@ public class DebugRemoteServiceAdminListener implements
 
 	public static final int ALL_MASK = EXPORT_MASK | IMPORT_MASK;
 
-	//
-	private final PrintWriter writer;
+	protected final PrintWriter writer;
 	// default is all events
-	private int eventMask = ALL_MASK;
-	private boolean writeEndpoint;
-	private EndpointDescriptionWriter edWriter;
+	protected int eventMask = ALL_MASK;
+	protected boolean writeEndpoint;
+	protected EndpointDescriptionWriter edWriter;
 
 	public DebugRemoteServiceAdminListener(PrintWriter writer, int eventMask,
 			boolean writeEndpoint) {
@@ -87,7 +89,7 @@ public class DebugRemoteServiceAdminListener implements
 			printEvent((RemoteServiceAdmin.RemoteServiceAdminEvent) event);
 	}
 
-	private String eventTypeToString(int type) {
+	protected String eventTypeToString(int type) {
 		switch (type) {
 		case RemoteServiceAdminEvent.EXPORT_ERROR:
 			return "EXPORT_ERROR"; //$NON-NLS-1$
@@ -114,6 +116,14 @@ public class DebugRemoteServiceAdminListener implements
 		}
 	}
 
+	protected void writeRemoteReference(StringBuffer buf,
+			ServiceReference<?> ref, ID containerID, long remoteServiceID) {
+		this.writer
+				.println(buf
+						.append(ref)
+						.append(";cID=").append(containerID).append(";rsId=").append(remoteServiceID).toString()); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+
 	protected void printEvent(RemoteServiceAdmin.RemoteServiceAdminEvent event) {
 		ID cID = event.getContainerID();
 		StringBuffer buf = new StringBuffer(sdf.format(new Date())).append(";") //$NON-NLS-1$
@@ -123,17 +133,27 @@ public class DebugRemoteServiceAdminListener implements
 		case RemoteServiceAdminEvent.EXPORT_UNREGISTRATION:
 		case RemoteServiceAdminEvent.EXPORT_UPDATE:
 		case RemoteServiceAdminEvent.EXPORT_WARNING:
-			writer.println(buf
-					.append(";exportedSR=").append(event.getExportReference().getExportedService()).append(";cID=").append(cID).toString()); //$NON-NLS-1$ //$NON-NLS-2$
-			writeEndpoint(event.getEndpointDescription());
+			ExportReference exRef = (RemoteServiceAdmin.ExportReference) event
+					.getExportReference();
+			if (exRef != null) {
+				writeRemoteReference(
+						buf.append(";exportedSR"), exRef.getExportedService(), cID, exRef.getRemoteServiceId()); //$NON-NLS-1$
+				if (this.writeEndpoint)
+					writeEndpoint(exRef.getEndpointDescription());
+			}
 			break;
 		case RemoteServiceAdminEvent.IMPORT_REGISTRATION:
 		case RemoteServiceAdminEvent.IMPORT_UNREGISTRATION:
 		case RemoteServiceAdminEvent.IMPORT_UPDATE:
 		case RemoteServiceAdminEvent.IMPORT_WARNING:
-			writer.println(buf
-					.append(";importedSR=").append(event.getImportReference().getImportedService()).append(";cID=").append(cID).toString()); //$NON-NLS-1$ //$NON-NLS-2$
-			writeEndpoint(event.getEndpointDescription());
+			ImportReference imRef = (RemoteServiceAdmin.ImportReference) event
+					.getImportReference();
+			if (imRef != null) {
+				writeRemoteReference(
+						buf.append(";importedSR"), imRef.getImportedService(), cID, imRef.getRemoteServiceId()); //$NON-NLS-1$
+				if (this.writeEndpoint)
+					writeEndpoint(imRef.getEndpointDescription());
+			}
 			break;
 		case RemoteServiceAdminEvent.EXPORT_ERROR:
 		case RemoteServiceAdminEvent.IMPORT_ERROR:
@@ -149,12 +169,10 @@ public class DebugRemoteServiceAdminListener implements
 
 	protected void writeEndpoint(EndpointDescription endpointDescription) {
 		try {
-			if (this.writeEndpoint) {
-				this.writer.println("--Endpoint Description---"); //$NON-NLS-1$
-				this.edWriter.writeEndpointDescription(this.writer,
-						endpointDescription);
-				this.writer.println("---End Endpoint Description"); //$NON-NLS-1$
-			}
+			this.writer.println("--Endpoint Description---"); //$NON-NLS-1$
+			this.edWriter.writeEndpointDescription(this.writer,
+					endpointDescription);
+			this.writer.println("---End Endpoint Description"); //$NON-NLS-1$
 		} catch (Exception e) {
 			LogUtility
 					.logError(
