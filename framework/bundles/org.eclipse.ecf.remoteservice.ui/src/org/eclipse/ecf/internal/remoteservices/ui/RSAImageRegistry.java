@@ -30,7 +30,7 @@ public class RSAImageRegistry {
 
 	public static final String IMG_INTERFACE_OBJ = "int_obj.gif"; //$NON-NLS-1$
 	public static final String IMG_PROPERTY_OBJ = "property_obj.gif"; //$NON-NLS-1$
-	public static final String IMG_RSPROXY_OBJ = "rsvcproxy_obj.gif"; //$NON-NLS-1$
+	public static final String IMG_RSPROXY_OBJ = "rsvcproxy_obj_transparent.gif"; //$NON-NLS-1$
 	public static final String IMG_ENDPOINTDESCRIPTION_OBJ = "endpoint_obj.gif"; //$NON-NLS-1$
 
 	public static final ImageDescriptor INTERFACE_OBJ = create(PATH_OBJ,

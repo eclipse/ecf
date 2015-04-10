@@ -92,7 +92,7 @@
         point="org.eclipse.ui.perspectives">
      <perspective
            class="org.eclipse.ecf.internal.remoteservices.ui.RemoteServicePerspective"
-           icon="icons/obj16/rsvcproxy_obj.gif"
+           icon="icons/obj16/rsvcproxy_obj_tbg.gif"
            id="org.eclipse.ecf.remoteservices.ui.RemoteServicePerspective"
            name="%perspective.name">
      </perspective>
