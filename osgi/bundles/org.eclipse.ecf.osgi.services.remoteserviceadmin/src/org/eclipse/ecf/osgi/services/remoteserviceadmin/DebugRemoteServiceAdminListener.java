@@ -137,7 +137,7 @@ public class DebugRemoteServiceAdminListener implements
 					.getExportReference();
 			if (exRef != null) {
 				writeRemoteReference(
-						buf.append(";exportedSR"), exRef.getExportedService(), cID, exRef.getRemoteServiceId()); //$NON-NLS-1$
+						buf.append(";exportedSR="), exRef.getExportedService(), cID, exRef.getRemoteServiceId()); //$NON-NLS-1$
 				if (this.writeEndpoint)
 					writeEndpoint(exRef.getEndpointDescription());
 			}
@@ -150,7 +150,7 @@ public class DebugRemoteServiceAdminListener implements
 					.getImportReference();
 			if (imRef != null) {
 				writeRemoteReference(
-						buf.append(";importedSR"), imRef.getImportedService(), cID, imRef.getRemoteServiceId()); //$NON-NLS-1$
+						buf.append(";importedSR="), imRef.getImportedService(), cID, imRef.getRemoteServiceId()); //$NON-NLS-1$
 				if (this.writeEndpoint)
 					writeEndpoint(imRef.getEndpointDescription());
 			}
