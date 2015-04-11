@@ -459,6 +459,8 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 				advertiserTracker = null;
 			}
 		}
+		edServiceIDMap.clear();
+		
 		this.executor = null;
 		this.context = null;
 	}
@@ -1104,22 +1106,16 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		}
 	}
 
+	private Map<EndpointDescription, Set<IServiceID>> edServiceIDMap = new HashMap<EndpointDescription, Set<IServiceID>>();
+
 	class LocatorServiceListener implements IServiceListener {
 
 		private IDiscoveryLocator locator;
-		private Map<EndpointDescription, Set<IServiceID>> edServiceIDMap = new HashMap<EndpointDescription, Set<IServiceID>>();
 
 		public LocatorServiceListener(IDiscoveryLocator locator) {
 			this.locator = locator;
 			if (locator != null)
 				this.locator.addServiceListener(this);
-		}
-
-		private boolean matchServiceID(IServiceID serviceId) {
-			if (Arrays.asList(serviceId.getServiceTypeID().getServices())
-					.contains(RemoteConstants.DISCOVERY_SERVICE_TYPE))
-				return true;
-			return false;
 		}
 
 		private Set<EndpointDescription> getEndpointDescriptions() {
@@ -1139,7 +1135,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 			return null;
 		}
 
-		private boolean contains(EndpointDescription ed) {
+		private boolean containsED(EndpointDescription ed) {
 			return edServiceIDMap.keySet().contains(ed);
 		}
 
@@ -1180,10 +1176,11 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 			if (locator == null)
 				return;
 			trace("handleService", "fwk=" + getFrameworkUUID() + " serviceInfo=" + serviceInfo //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-							+ ", discovered=" + discovered); //$NON-NLS-1$
+							+ ", discovered=" + discovered+", locator="+locator); //$NON-NLS-1$ //$NON-NLS-2$
 			IServiceID serviceID = serviceInfo.getServiceID();
 			// Make sure this is an OSGi Remote Service
-			if (matchServiceID(serviceID)) {
+			if (Arrays.asList(serviceID.getServiceTypeID().getServices())
+					.contains(RemoteConstants.DISCOVERY_SERVICE_TYPE)) {
 				synchronized (edServiceIDMap) {
 					// Try to find ED from ServiceID, whether discovered or
 					// undiscovered
@@ -1204,7 +1201,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 									EndpointDescription prevEd = isEndpointDescriptionUpdate(
 											ed, serviceID);
 									if (prevEd == null) {
-										if (!contains(ed)) {
+										if (!containsED(ed)) {
 											addEDServiceID(ed, serviceID);
 											handleEndpointDescription(ed, true);
 										} else
@@ -1355,7 +1352,6 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 				locator.removeServiceListener(this);
 				locator = null;
 			}
-			edServiceIDMap.clear();
 		}
 
 		public boolean triggerDiscovery() {
