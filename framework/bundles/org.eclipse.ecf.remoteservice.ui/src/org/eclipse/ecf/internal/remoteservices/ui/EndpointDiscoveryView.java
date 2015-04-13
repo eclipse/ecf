@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionReader;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionLocator;
@@ -25,14 +26,15 @@ import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointAsyncInterfa
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointConfigTypesNode;
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointConnectTargetIDNode;
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointContentProvider;
+import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointDiscoveryGroupNode;
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointFrameworkIDNode;
+import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointHostGroupNode;
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointIDNode;
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointIntentsNode;
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointInterfacesNode;
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointNamespaceNode;
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointNode;
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointPackageVersionNode;
-import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointPropertyGroupNode;
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointPropertyNode;
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointRemoteServiceFilterNode;
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointRemoteServiceIDNode;
@@ -100,7 +102,7 @@ public class EndpointDiscoveryView extends ViewPart {
 		viewer.setLabelProvider(new WorkbenchLabelProvider());
 		viewer.setAutoExpandLevel(TreeViewer.ALL_LEVELS);
 		viewer.setInput(viewSite);
-		
+
 		makeActions();
 		hookContextMenu();
 		contributeToActionBars();
@@ -118,21 +120,22 @@ public class EndpointDiscoveryView extends ViewPart {
 		// depends upon the RegistryBrowser.showGroupBy method to
 		// be added by PDE committers.
 		// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=270684#c33
-//		try {
-//			IWorkbenchWindow window = PlatformUI.getWorkbench()
-//					.getActiveWorkbenchWindow();
-//			if (window != null) {
-//				IWorkbenchPage page = window.getActivePage();
-//				if (page != null) {
-//					IViewPart view = page
-//							.findView("org.eclipse.pde.runtime.RegistryBrowser");
-//					if (view != null) 
-//						return ((RegistryBrowser) view).showGroupBy(RegistryBrowser.SERVICES);
-//				}
-//			}
-//		} catch (Exception e) {
-//			logError("Could not show services in PDE Plugin view", e);
-//		}
+		// try {
+		// IWorkbenchWindow window = PlatformUI.getWorkbench()
+		// .getActiveWorkbenchWindow();
+		// if (window != null) {
+		// IWorkbenchPage page = window.getActivePage();
+		// if (page != null) {
+		// IViewPart view = page
+		// .findView("org.eclipse.pde.runtime.RegistryBrowser");
+		// if (view != null)
+		// return ((RegistryBrowser)
+		// view).showGroupBy(RegistryBrowser.SERVICES);
+		// }
+		// }
+		// } catch (Exception e) {
+		// logError("Could not show services in PDE Plugin view", e);
+		// }
 		return RegistryBrowser.BUNDLES;
 	}
 
@@ -207,7 +210,9 @@ public class EndpointDiscoveryView extends ViewPart {
 						discovery.startRSA();
 						startRSAAction.setEnabled(false);
 					} catch (BundleException e) {
-						logError(Messages.EndpointDiscoveryView_ERROR_RSA_START_FAILED, e);
+						logError(
+								Messages.EndpointDiscoveryView_ERROR_RSA_START_FAILED,
+								e);
 						showMessage(Messages.EndpointDiscoveryView_ERROR_MSG_RSA_START_PREFIX
 								+ e.getMessage()
 								+ Messages.EndpointDiscoveryView_ERROR_MSG_SUFFIX);
@@ -215,7 +220,8 @@ public class EndpointDiscoveryView extends ViewPart {
 			}
 		};
 		startRSAAction.setText(Messages.EndpointDiscoveryView_START_RSA);
-		startRSAAction.setToolTipText(Messages.EndpointDiscoveryView_START_RSA_SERVICE);
+		startRSAAction
+				.setToolTipText(Messages.EndpointDiscoveryView_START_RSA_SERVICE);
 		startRSAAction.setEnabled(discovery.getRSA() == null);
 
 		copyValueAction = new Action() {
@@ -230,8 +236,10 @@ public class EndpointDiscoveryView extends ViewPart {
 				}
 			}
 		};
-		copyValueAction.setText(Messages.EndpointDiscoveryView_COPY_PROPERTY_VALUE);
-		copyValueAction.setToolTipText(Messages.EndpointDiscoveryView_COPY_PROPERTY_VALUE);
+		copyValueAction
+				.setText(Messages.EndpointDiscoveryView_COPY_PROPERTY_VALUE);
+		copyValueAction
+				.setToolTipText(Messages.EndpointDiscoveryView_COPY_PROPERTY_VALUE);
 		copyValueAction.setImageDescriptor(RSAImageRegistry.DESC_PROPERTY_OBJ);
 
 		copyNameAction = new Action() {
@@ -245,8 +253,10 @@ public class EndpointDiscoveryView extends ViewPart {
 				}
 			}
 		};
-		copyNameAction.setText(Messages.EndpointDiscoveryView_COPY_PROPERTY_NAME);
-		copyNameAction.setToolTipText(Messages.EndpointDiscoveryView_COPY_PROPERTY_NAME);
+		copyNameAction
+				.setText(Messages.EndpointDiscoveryView_COPY_PROPERTY_NAME);
+		copyNameAction
+				.setToolTipText(Messages.EndpointDiscoveryView_COPY_PROPERTY_NAME);
 		copyNameAction.setImageDescriptor(RSAImageRegistry.DESC_PROPERTY_OBJ);
 
 		importAction = new Action() {
@@ -265,7 +275,9 @@ public class EndpointDiscoveryView extends ViewPart {
 						// Check if import exception
 						Throwable exception = reg.getException();
 						if (exception != null) {
-							logError(Messages.EndpointDiscoveryView_ERROR_MSG_RSA_IMPORTSERVICE_FAILED, exception);
+							logError(
+									Messages.EndpointDiscoveryView_ERROR_MSG_RSA_IMPORTSERVICE_FAILED,
+									exception);
 							showMessage(Messages.EndpointDiscoveryView_ERROR_MSG_RSA_IMPORTSERVICE_FAILED_PREFIX
 									+ exception.getMessage()
 									+ Messages.EndpointDiscoveryView_ERROR_MSG_SUFFIX);
@@ -279,7 +291,8 @@ public class EndpointDiscoveryView extends ViewPart {
 				}
 			}
 		};
-		importAction.setText(Messages.EndpointDiscoveryView_IMPORT_REMOTE_SERVICE);
+		importAction
+				.setText(Messages.EndpointDiscoveryView_IMPORT_REMOTE_SERVICE);
 		importAction
 				.setToolTipText(Messages.EndpointDiscoveryView_IMPORT_REMOTE_SERVICE_TT);
 		importAction.setImageDescriptor(RSAImageRegistry.DESC_RSPROXY_CO);
@@ -296,7 +309,9 @@ public class EndpointDiscoveryView extends ViewPart {
 						edNode.setImportReg(null);
 						viewer.refresh();
 					} catch (Exception e) {
-						logError(Messages.EndpointDiscoveryView_ERROR_MSG_CANNOT_CLOSE_IR, e);
+						logError(
+								Messages.EndpointDiscoveryView_ERROR_MSG_CANNOT_CLOSE_IR,
+								e);
 						showMessage(Messages.EndpointDiscoveryView_ERROR_MSG_CANNOT_CLOSE_IR_PREFIX
 								+ e.getMessage()
 								+ Messages.EndpointDiscoveryView_ERROR_MSG_SUFFIX);
@@ -304,7 +319,8 @@ public class EndpointDiscoveryView extends ViewPart {
 				}
 			}
 		};
-		unimportAction.setText(Messages.EndpointDiscoveryView_CLOSE_IMPORTED_REMOTE_SERVICE);
+		unimportAction
+				.setText(Messages.EndpointDiscoveryView_CLOSE_IMPORTED_REMOTE_SERVICE);
 		unimportAction
 				.setToolTipText(Messages.EndpointDiscoveryView_CLOSE_IMPORTED_REMOTE_SERVICE_TT);
 
@@ -329,7 +345,9 @@ public class EndpointDiscoveryView extends ViewPart {
 									locator.discoverEndpoint(eds[i]);
 							}
 						} catch (IOException e) {
-							logError(Messages.EndpointDiscoveryView_ERROR_MSG_ENDPOINT_PARSING_FAILED, e);
+							logError(
+									Messages.EndpointDiscoveryView_ERROR_MSG_ENDPOINT_PARSING_FAILED,
+									e);
 							showMessage(Messages.EndpointDiscoveryView_ERROR_MSG_ENDPOINT_PARSING_FAILED_PREFIX
 									+ e.getMessage()
 									+ Messages.EndpointDiscoveryView_ERROR_MSG_SUFFIX);
@@ -337,7 +355,8 @@ public class EndpointDiscoveryView extends ViewPart {
 				}
 			}
 		};
-		edefDiscoverAction.setText(Messages.EndpointDiscoveryView_OPEN_EDEF_FILE_DIALOG);
+		edefDiscoverAction
+				.setText(Messages.EndpointDiscoveryView_OPEN_EDEF_FILE_DIALOG);
 		edefDiscoverAction
 				.setToolTipText(Messages.EndpointDiscoveryView_OPEN_EDEF_FILE_DIALOG_TT);
 		edefDiscoverAction.setEnabled(discovery.getRSA() != null);
@@ -354,16 +373,19 @@ public class EndpointDiscoveryView extends ViewPart {
 							.getEndpointDescriptionLocator();
 					if (l != null
 							&& MessageDialog
-									.openQuestion(viewer.getControl()
-											.getShell(), Messages.EndpointDiscoveryView_REMOVE_ENDPOINT_QUESTION_TITLE,
+									.openQuestion(
+											viewer.getControl().getShell(),
+											Messages.EndpointDiscoveryView_REMOVE_ENDPOINT_QUESTION_TITLE,
 											Messages.EndpointDiscoveryView_REMOVE_ENDPOINT_QUESTION))
 						l.undiscoverEndpoint(endpoint.getEndpointDescription());
 
 				}
 			}
 		};
-		undiscoverAction.setText(Messages.EndpointDiscoveryView_REMOVE_ENDPOINT);
-		undiscoverAction.setToolTipText(Messages.EndpointDiscoveryView_REMOVE_ENDPOINT_TT);
+		undiscoverAction
+				.setText(Messages.EndpointDiscoveryView_REMOVE_ENDPOINT);
+		undiscoverAction
+				.setToolTipText(Messages.EndpointDiscoveryView_REMOVE_ENDPOINT_TT);
 	}
 
 	EndpointNode getEDNodeSelected() {
@@ -412,7 +434,7 @@ public class EndpointDiscoveryView extends ViewPart {
 					root.removeChild(new EndpointNode(ed));
 					break;
 				}
-				viewer.setExpandedState(root,true);
+				viewer.setExpandedState(root, true);
 				viewer.refresh();
 			}
 		});
@@ -456,7 +478,7 @@ public class EndpointDiscoveryView extends ViewPart {
 		// ID
 		edo.addChild(new EndpointIDNode());
 		// Remote Service Host
-		EndpointPropertyGroupNode idp = new EndpointPropertyGroupNode(
+		EndpointHostGroupNode idp = new EndpointHostGroupNode(
 				Messages.EndpointDiscoveryView_REMOTE_HOST_NAME);
 		// Host children
 		idp.addChild(new EndpointNamespaceNode());
@@ -474,6 +496,16 @@ public class EndpointDiscoveryView extends ViewPart {
 		if (filter != null)
 			idp.addChild(new EndpointRemoteServiceFilterNode());
 		edo.addChild(idp);
+
+		IEndpointDescriptionLocator locator = discovery
+				.getEndpointDescriptionLocator();
+		IServiceID serviceID = (locator == null)?null:locator.getNetworkDiscoveredService(ed);
+
+		if (serviceID != null)
+			edo.addChild(new EndpointDiscoveryGroupNode(
+					Messages.EndpointDiscoveryView_DISCOVERY_GROUP_NAME,
+					serviceID));
+
 		return edo;
 	}
 

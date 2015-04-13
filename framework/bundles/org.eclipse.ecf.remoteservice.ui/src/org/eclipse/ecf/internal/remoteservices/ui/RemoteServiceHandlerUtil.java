@@ -151,7 +151,9 @@ public class RemoteServiceHandlerUtil {
 
 	// XXX FIX...this has to use proper container factory type.
 	private static String getContainerFactory(IServiceInfo serviceInfo) {
-		return serviceInfo.getServiceProperties().getPropertyString(
-				org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS);
+		return serviceInfo
+				.getServiceProperties()
+				.getPropertyString(
+						org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS);
 	}
 }

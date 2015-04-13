@@ -212,8 +212,7 @@ public class ReflectiveRemoteServiceHandler extends AbstractHandler implements
 				Arrays.asList(remoteCall.getParameters()), display };
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				MessageDialog.openInformation(
-						null,
+				MessageDialog.openInformation(null,
 						"Received Response", //$NON-NLS-1$
 						NLS.bind(
 								"Service Interface:\n{0}\n\nMethod: {1}\nParameters: {2}\n\nResult:  {3}", //$NON-NLS-1$

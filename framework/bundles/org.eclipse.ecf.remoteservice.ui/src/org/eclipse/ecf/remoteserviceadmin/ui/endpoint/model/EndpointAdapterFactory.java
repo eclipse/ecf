@@ -25,6 +25,8 @@ public class EndpointAdapterFactory implements IAdapterFactory {
 	private EndpointInterfacesNodeWorkbenchAdapter endpointInterfacesNodeAdapter = new EndpointInterfacesNodeWorkbenchAdapter();
 	private EndpointAsyncInterfacesNodeWorkbenchAdapter endpointAsyncInterfacesNodeAdapter = new EndpointAsyncInterfacesNodeWorkbenchAdapter();
 	private EndpointPackageVersionNodeWorkbenchAdapter endpointPackageVersionNodeAdapter = new EndpointPackageVersionNodeWorkbenchAdapter();
+	private EndpointHostGroupNodeWorkbenchAdapter endpointHostGroupNodeAdapter = new EndpointHostGroupNodeWorkbenchAdapter();
+	private EndpointDiscoveryGroupNodeWorkbenchAdapter endpointDiscoveryGroupNodeAdapter = new EndpointDiscoveryGroupNodeWorkbenchAdapter();
 
 	@Override
 	public Object getAdapter(Object adaptableObject,
@@ -53,6 +55,10 @@ public class EndpointAdapterFactory implements IAdapterFactory {
 			return endpointPropertyGroupNodeAdapter;
 		if (adaptableObject instanceof EndpointPropertyNode)
 			return endpointPropertyNodeAdapter;
+		if (adaptableObject instanceof EndpointHostGroupNode)
+			return endpointHostGroupNodeAdapter;
+		if (adaptableObject instanceof EndpointDiscoveryGroupNode)
+			return endpointDiscoveryGroupNodeAdapter;
 		if (adaptableObject instanceof EndpointGroupNode)
 			return endpointGroupNodeAdapter;
 		return null;

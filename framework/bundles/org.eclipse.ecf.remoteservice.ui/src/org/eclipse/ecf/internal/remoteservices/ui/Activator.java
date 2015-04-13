@@ -20,7 +20,7 @@ import org.osgi.util.tracker.ServiceTracker;
 public class Activator extends AbstractUIPlugin {
 
 	public static final String PLUGIN_ID = "org.eclipse.ecf.remoteservice.ui"; //$NON-NLS-1$
-	
+
 	private volatile ServiceTracker containerManagerTracker;
 	// The shared instance
 	private volatile static Activator plugin;

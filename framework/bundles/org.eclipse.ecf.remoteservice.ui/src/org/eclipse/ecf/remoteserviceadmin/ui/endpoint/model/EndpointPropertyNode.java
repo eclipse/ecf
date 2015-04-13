@@ -7,6 +7,7 @@ package org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model;
  * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors: Scott Lewis - initial API and implementation
+ * 
  * @since 3.2
  ******************************************************************************/
 public class EndpointPropertyNode extends AbstractEndpointNode {

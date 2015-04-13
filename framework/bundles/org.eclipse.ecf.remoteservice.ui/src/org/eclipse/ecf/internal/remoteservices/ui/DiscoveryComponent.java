@@ -99,7 +99,8 @@ public class DiscoveryComponent implements EndpointEventListener {
 			if (b.getSymbolicName().equals(RSA_SYMBOLICNAME))
 				rsaBundle = b;
 		if (rsaBundle == null)
-			throw new BundleException(Messages.DiscoveryComponent_ERROR_MSG_CANNOT_FIND_RSA_BUNDLE);
+			throw new BundleException(
+					Messages.DiscoveryComponent_ERROR_MSG_CANNOT_FIND_RSA_BUNDLE);
 		rsaBundle.start();
 	}
 

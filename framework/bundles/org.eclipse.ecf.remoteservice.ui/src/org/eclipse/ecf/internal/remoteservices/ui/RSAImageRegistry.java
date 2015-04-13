@@ -64,6 +64,12 @@ public class RSAImageRegistry {
 	public static final ImageDescriptor DESC_RSPROXY_CO = create(PATH_OVR,
 			"rsvcproxy_co_alpha.gif"); //$NON-NLS-1$
 
+	public static final ImageDescriptor DESC_HOST_OBJ = create(PATH_OBJ,
+			"IHost.gif");
+
+	public static final ImageDescriptor DESC_SERVICEID_OBJ = create(PATH_OBJ,
+			"IServiceID.gif");
+
 	private static final void initialize() {
 		PLUGIN_REGISTRY = Activator.getDefault().getImageRegistry();
 		manage(IMG_INTERFACE_OBJ, INTERFACE_OBJ);

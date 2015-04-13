@@ -44,23 +44,28 @@ public class RemoteServicePerspective implements IPerspectiveFactory {
 		IFolderLayout bottom = layout.createFolder("bottom", //$NON-NLS-1$
 				IPageLayout.BOTTOM, 0.60f, editorArea);
 		// Folder for views at left bottom
-		IFolderLayout leftBottom = layout.createFolder("leftBottom", IPageLayout.LEFT, 0.30f, "bottom"); //$NON-NLS-1$ //$NON-NLS-2$
+		IFolderLayout leftBottom = layout.createFolder(
+				"leftBottom", IPageLayout.LEFT, 0.30f, "bottom"); //$NON-NLS-1$ //$NON-NLS-2$
 		// The ECF Endpoint Discovery view
 		leftBottom.addView(EndpointDiscoveryView.ID_VIEW);
 		// The ECF Service Discovery view
 		leftBottom.addView("org.eclipse.ecf.discovery.ui.DiscoveryView");
 		// Create folder for right bottom
-		IFolderLayout rightBottom = layout.createFolder("rightBottom", IPageLayout.RIGHT, 0.5f, "bottom");
+		IFolderLayout rightBottom = layout.createFolder("rightBottom",
+				IPageLayout.RIGHT, 0.5f, "bottom");
 		// Add the registry browser on right bottom
 		rightBottom.addView("org.eclipse.pde.runtime.RegistryBrowser");
 		// Add properties view in the middle
 		bottom.addView(IPageLayout.ID_PROP_SHEET);
-		// Create folder for left side above Endpoint Discover/Service Discovery views
-		IFolderLayout left = layout.createFolder("left", IPageLayout.LEFT, 0.30f, editorArea); //$NON-NLS-1$
+		// Create folder for left side above Endpoint Discover/Service Discovery
+		// views
+		IFolderLayout left = layout.createFolder(
+				"left", IPageLayout.LEFT, 0.30f, editorArea); //$NON-NLS-1$
 		// Add Project Explorer view
 		left.addView("org.eclipse.ui.navigator.ProjectExplorer"); //$NON-NLS-1$
 		// Top right.
-		IFolderLayout topRight = layout.createFolder("topRight", IPageLayout.RIGHT, 0.70f, editorArea); //$NON-NLS-1$
+		IFolderLayout topRight = layout.createFolder(
+				"topRight", IPageLayout.RIGHT, 0.70f, editorArea); //$NON-NLS-1$
 		// Add Outline view
 		topRight.addView(IPageLayout.ID_OUTLINE);
 	}

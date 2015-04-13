@@ -24,6 +24,12 @@ public final class Messages extends NLS {
 
 	public static String EndpointContainerIDNode_CONTAINER_ID_PROP_NAME;
 
+	public static String EndpointDiscoveryGroupNode_DISCOVERY_LOCATION;
+
+	public static String EndpointDiscoveryGroupNode_DISCOVERY_NAMESPACE;
+
+	public static String EndpointDiscoveryGroupNode_DISCOVERY_SERVICE_TYPE_ID;
+
 	public static String EndpointDiscoveryView_CLOSE_IMPORTED_REMOTE_SERVICE;
 
 	public static String EndpointDiscoveryView_CLOSE_IMPORTED_REMOTE_SERVICE_TT;
@@ -31,6 +37,8 @@ public final class Messages extends NLS {
 	public static String EndpointDiscoveryView_COPY_PROPERTY_NAME;
 
 	public static String EndpointDiscoveryView_COPY_PROPERTY_VALUE;
+
+	public static String EndpointDiscoveryView_DISCOVERY_GROUP_NAME;
 
 	public static String EndpointDiscoveryView_ENDPOINT_MSGBOX_TITLE;
 
