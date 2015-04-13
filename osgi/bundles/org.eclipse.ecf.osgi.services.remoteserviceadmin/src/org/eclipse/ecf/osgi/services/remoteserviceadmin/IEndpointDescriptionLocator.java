@@ -1,10 +1,19 @@
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
+import org.eclipse.ecf.discovery.identity.IServiceID;
+
 /**
  * @since 4.3
  */
 public interface IEndpointDescriptionLocator {
 
+	/**
+	 * Get the service ID associated with the 
+	 * @param endpointDescription
+	 * @return
+	 */
+	IServiceID getNetworkDiscoveredService(EndpointDescription endpointDescription);
+	
 	/**
 	 * Discover the given endpointDescription.  This method will not block
 	 * and will result in local EndpointEventListeners to be notified that the

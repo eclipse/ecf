@@ -32,12 +32,14 @@ import java.util.TreeMap;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceListener;
 import org.eclipse.ecf.discovery.identity.IServiceID;
+import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
@@ -459,7 +461,9 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 				advertiserTracker = null;
 			}
 		}
-		edServiceIDMap.clear();
+		synchronized (edToServiceIDMap) {
+			edToServiceIDMap.clear();
+		}
 		
 		this.executor = null;
 		this.context = null;
@@ -1106,7 +1110,74 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		}
 	}
 
-	private Map<EndpointDescription, Set<IServiceID>> edServiceIDMap = new HashMap<EndpointDescription, Set<IServiceID>>();
+	private Map<EndpointDescription, IServiceID> edToServiceIDMap = new HashMap<EndpointDescription, IServiceID>();
+
+	Set<EndpointDescription> getEDs() {
+		synchronized (edToServiceIDMap) {
+			return edToServiceIDMap.keySet();
+		}
+	}
+
+	EndpointDescription findED(IServiceID serviceID) {
+		synchronized (edToServiceIDMap) {
+			for (EndpointDescription ed : getEDs()) {
+				IServiceID sid = edToServiceIDMap.get(ed);
+				if (sid != null
+						&& sid.getLocation().equals(serviceID.getLocation()))
+					return ed;
+			}
+		}
+		return null;
+	}
+
+	void updateED(EndpointDescription existing, EndpointDescription update,
+			IServiceID updateServiceID) {
+		synchronized (edToServiceIDMap) {
+			edToServiceIDMap.remove(existing);
+			edToServiceIDMap.put(update, updateServiceID);
+		}
+	}
+
+	void addED(org.osgi.service.remoteserviceadmin.EndpointDescription ed,
+			IServiceID serviceID) {
+		synchronized (edToServiceIDMap) {
+			edToServiceIDMap.put(ed, serviceID);
+		}
+	}
+
+	void removeED(org.osgi.service.remoteserviceadmin.EndpointDescription ed) {
+		synchronized (edToServiceIDMap) {
+			edToServiceIDMap.remove(ed);
+		}
+	}
+
+	boolean containsED(EndpointDescription ed) {
+		synchronized (edToServiceIDMap) {
+			return getEDs().contains(ed);
+		}
+	}
+
+	Set<EndpointDescription> getEDsForNamespace(Namespace namespace) {
+		Set<EndpointDescription> results = new HashSet<EndpointDescription>();
+		synchronized (edToServiceIDMap) {
+			for (EndpointDescription ed : edToServiceIDMap.keySet()) {
+				IServiceID svcID = edToServiceIDMap.get(ed);
+				if (svcID.getNamespace().getName().equals(namespace.getName()))
+					results.add(ed);
+			}
+		}
+		return results;
+	}
+	
+	/**
+	 * @since 4.3
+	 */
+	public IServiceID getNetworkDiscoveredService(
+			org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription endpointDescription) {
+		synchronized (edToServiceIDMap) {
+			return edToServiceIDMap.get(endpointDescription);
+		}
+	}
 
 	class LocatorServiceListener implements IServiceListener {
 
@@ -1118,50 +1189,9 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 				this.locator.addServiceListener(this);
 		}
 
-		private Set<EndpointDescription> getEndpointDescriptions() {
-			return edServiceIDMap.keySet();
-		}
-
-		private EndpointDescription findEDFromServiceID(IServiceID serviceID) {
-			for (EndpointDescription ed : getEndpointDescriptions()) {
-				Set<IServiceID> serviceIDs = edServiceIDMap.get(ed);
-				if (serviceIDs == null)
-					continue;
-				for (IServiceID sid : serviceIDs) {
-					if (sid.getLocation().equals(serviceID.getLocation()))
-						return ed;
-				}
-			}
-			return null;
-		}
-
-		private boolean containsED(EndpointDescription ed) {
-			return edServiceIDMap.keySet().contains(ed);
-		}
-
-		private void updateEDServiceID(EndpointDescription existing,
-				EndpointDescription update, IServiceID updateServiceID) {
-			Set<IServiceID> serviceIDs = edServiceIDMap.remove(existing);
-			if (serviceIDs == null)
-				serviceIDs = new HashSet<IServiceID>();
-			serviceIDs.add(updateServiceID);
-			edServiceIDMap.put(update, serviceIDs);
-		}
-
-		private void addEDServiceID(
-				org.osgi.service.remoteserviceadmin.EndpointDescription ed,
-				IServiceID serviceID) {
-			Set<IServiceID> serviceIDs = edServiceIDMap.get(ed);
-			if (serviceIDs == null)
-				serviceIDs = new HashSet<IServiceID>();
-			serviceIDs.add(serviceID);
-			edServiceIDMap.put(ed, serviceIDs);
-		}
-
-		private void removeEDServiceID(
-				org.osgi.service.remoteserviceadmin.EndpointDescription ed,
-				IServiceID serviceID) {
-			edServiceIDMap.remove(ed);
+		Collection<EndpointDescription> getEndpointDescriptions() {
+			return (this.locator == null) ? Collections.EMPTY_SET
+					: getEDsForNamespace(this.locator.getServicesNamespace());
 		}
 
 		public void serviceDiscovered(IServiceEvent anEvent) {
@@ -1181,10 +1211,10 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 			// Make sure this is an OSGi Remote Service
 			if (Arrays.asList(serviceID.getServiceTypeID().getServices())
 					.contains(RemoteConstants.DISCOVERY_SERVICE_TYPE)) {
-				synchronized (edServiceIDMap) {
+				synchronized (edToServiceIDMap) {
 					// Try to find ED from ServiceID, whether discovered or
 					// undiscovered
-					org.osgi.service.remoteserviceadmin.EndpointDescription ed = findEDFromServiceID(serviceID);
+					org.osgi.service.remoteserviceadmin.EndpointDescription ed = findED(serviceID);
 					if (discovered) {
 						// The IServiceInfo was discovered/added
 						if (ed == null) {
@@ -1202,7 +1232,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 											ed, serviceID);
 									if (prevEd == null) {
 										if (!containsED(ed)) {
-											addEDServiceID(ed, serviceID);
+											addED(ed, serviceID);
 											handleEndpointDescription(ed, true);
 										} else
 											trace("handleEndpointDescription", "endpointDescription previously discovered...ignoring"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1221,7 +1251,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 					} else {
 						// It was undiscovered
 						if (ed != null) {
-							removeEDServiceID(ed, serviceID);
+							removeED(ed);
 							handleEndpointDescription(ed, false);
 						} else
 							trace("handleService", "Did not find serviceInfo with serviceID=" + serviceID + ".  Ignoring"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -1260,7 +1290,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 						}
 					}
 					if (update) {
-						updateEDServiceID(ped, ed, updateServiceID);
+						updateED(ped, ed, updateServiceID);
 						return ed;
 					}
 				}
@@ -1295,7 +1325,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 							update = true;
 					}
 					if (update) {
-						updateEDServiceID(ped, endpointDescription,
+						updateED(ped, endpointDescription,
 								updateServiceID);
 						return endpointDescription;
 					}
@@ -1382,4 +1412,5 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 			org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription endpointDescription) {
 		queueEndpointEvent(endpointDescription, EndpointEvent.REMOVED);
 	}
+
 }
