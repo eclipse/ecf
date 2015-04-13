@@ -40,27 +40,28 @@ public class RemoteServicePerspective implements IPerspectiveFactory {
 	private void defineLayout(IPageLayout layout) {
 		// Editors are placed for free.
 		String editorArea = layout.getEditorArea();
-
-		// Top left - Project Explorer
-		IFolderLayout left = layout.createFolder("left", IPageLayout.LEFT, 0.33f, editorArea); //$NON-NLS-1$
-		left.addView("org.eclipse.ui.navigator.ProjectExplorer"); //$NON-NLS-1$
-
-		// Bottom left - Endpoint Discovery
-		IFolderLayout leftBottom = layout.createFolder("leftBottom", IPageLayout.BOTTOM, 0.60f, "left"); //$NON-NLS-1$ //$NON-NLS-2$
-		leftBottom.addView(EndpointDiscoveryView.ID_VIEW);
-		
-		// Bottom middle - Properties
+		// Folder for views at bottom
 		IFolderLayout bottom = layout.createFolder("bottom", //$NON-NLS-1$
 				IPageLayout.BOTTOM, 0.60f, editorArea);
+		// Folder for views at left bottom
+		IFolderLayout leftBottom = layout.createFolder("leftBottom", IPageLayout.LEFT, 0.30f, "bottom"); //$NON-NLS-1$ //$NON-NLS-2$
+		// The ECF Endpoint Discovery view
+		leftBottom.addView(EndpointDiscoveryView.ID_VIEW);
+		// The ECF Service Discovery view
+		leftBottom.addView("org.eclipse.ecf.discovery.ui.DiscoveryView");
+		// Create folder for right bottom
+		IFolderLayout rightBottom = layout.createFolder("rightBottom", IPageLayout.RIGHT, 0.5f, "bottom");
+		// Add the registry browser on right bottom
+		rightBottom.addView("org.eclipse.pde.runtime.RegistryBrowser");
+		// Add properties view in the middle
 		bottom.addView(IPageLayout.ID_PROP_SHEET);
-		
-		// Bottom right - RegistryBrowser
-		IFolderLayout rightBottom = layout.createFolder("rightBottom", //$NON-NLS-1$
-				IPageLayout.RIGHT, 0.50f, "bottom"); //$NON-NLS-1$
-		rightBottom.addView("org.eclipse.pde.runtime.RegistryBrowser"); //$NON-NLS-1$
-
+		// Create folder for left side above Endpoint Discover/Service Discovery views
+		IFolderLayout left = layout.createFolder("left", IPageLayout.LEFT, 0.30f, editorArea); //$NON-NLS-1$
+		// Add Project Explorer view
+		left.addView("org.eclipse.ui.navigator.ProjectExplorer"); //$NON-NLS-1$
 		// Top right.
 		IFolderLayout topRight = layout.createFolder("topRight", IPageLayout.RIGHT, 0.70f, editorArea); //$NON-NLS-1$
+		// Add Outline view
 		topRight.addView(IPageLayout.ID_OUTLINE);
 	}
 }
