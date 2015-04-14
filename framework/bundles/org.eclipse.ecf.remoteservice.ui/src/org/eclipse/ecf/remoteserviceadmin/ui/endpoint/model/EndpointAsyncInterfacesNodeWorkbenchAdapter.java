@@ -15,12 +15,17 @@ import org.eclipse.jface.resource.ImageDescriptor;
  * @since 3.2
  */
 public class EndpointAsyncInterfacesNodeWorkbenchAdapter extends
-		EndpointInterfacesNodeWorkbenchAdapter {
+		AbstractEndpointNodeWorkbenchAdapter {
 
 	private ImageDescriptor asyncInterfacesDesc;
 
 	public EndpointAsyncInterfacesNodeWorkbenchAdapter() {
 		asyncInterfacesDesc = RSAImageRegistry.DESC_ASYNC_SERVICE_OBJ;
+	}
+
+	@Override
+	public String getLabel(Object object) {
+		return ((EndpointAsyncInterfacesNode) object).getPropertyValue().toString();
 	}
 
 	@Override
