@@ -8,11 +8,18 @@ import org.eclipse.ecf.discovery.identity.IServiceID;
 public interface IEndpointDescriptionLocator {
 
 	/**
+	 * Get endpoints discovered by this endpoint locator
+	 * @return EndpointDescription[] of previously discovered endpoint.  Will not return null,
+	 * but may return empty array.
+	 */
+	EndpointDescription[] getDiscoveredEndpoints();
+	
+	/**
 	 * Get the service ID associated with the 
 	 * @param endpointDescription
 	 * @return
 	 */
-	IServiceID getNetworkDiscoveredService(EndpointDescription endpointDescription);
+	IServiceID getNetworkDiscoveredServiceID(EndpointDescription endpointDescription);
 	
 	/**
 	 * Discover the given endpointDescription.  This method will not block

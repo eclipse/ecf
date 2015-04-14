@@ -95,7 +95,6 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 	// For processing synchronous notifications asynchronously
 	private EventManager eventManager;
 	private ListenerQueue eventQueue;
-	private LocatorServiceListener localLocatorServiceListener;
 
 	// ECF IDiscoveryLocator tracker
 	private ServiceTracker locatorServiceTracker;
@@ -255,7 +254,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 								.getService(reference);
 						if (listener == null)
 							return null;
-						Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> allDiscoveredEndpointDescriptions = getAllDiscoveredEndpointDescriptions();
+						Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> allDiscoveredEndpointDescriptions = getEDs();
 						for (org.osgi.service.remoteserviceadmin.EndpointDescription ed : allDiscoveredEndpointDescriptions) {
 							EndpointDescriptionLocator.EndpointListenerHolder[] endpointListenerHolders = getMatchingEndpointListenerHolders(
 									new ServiceReference[] { reference }, ed);
@@ -299,7 +298,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 								.getService(reference);
 						if (listener == null)
 							return null;
-						Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> allDiscoveredEndpointDescriptions = getAllDiscoveredEndpointDescriptions();
+						Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> allDiscoveredEndpointDescriptions = getEDs();
 						for (org.osgi.service.remoteserviceadmin.EndpointDescription ed : allDiscoveredEndpointDescriptions) {
 							EndpointDescriptionLocator.EndpointEventListenerHolder[] endpointEventListenerHolders = getMatchingEndpointEventListenerHolders(
 									new ServiceReference[] { reference }, ed,
@@ -333,7 +332,6 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		endpointEventListenerTracker.open();
 
 		locatorListeners = new HashMap();
-		localLocatorServiceListener = new LocatorServiceListener(null);
 		// Create locator service tracker, so new IDiscoveryLocators can
 		// be used to discover endpoint descriptions
 		locatorServiceTracker = new ServiceTracker(context,
@@ -347,8 +345,9 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 				| Bundle.STARTING, bundleTrackerCustomizer);
 		// This may trigger local endpoint description discovery
 		bundleTracker.open();
-		
-		this.endpointLocatorReg = this.context.registerService(IEndpointDescriptionLocator.class, this, null);
+
+		this.endpointLocatorReg = this.context.registerService(
+				IEndpointDescriptionLocator.class, this, null);
 	}
 
 	private void logError(String methodName, String message, Throwable e) {
@@ -395,11 +394,6 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 				// Add service listener to locator
 				shutdownLocator((IDiscoveryLocator) locators[i]);
 			}
-		}
-
-		if (localLocatorServiceListener != null) {
-			localLocatorServiceListener.close();
-			localLocatorServiceListener = null;
 		}
 
 		if (endpointListenerTracker != null) {
@@ -543,22 +537,6 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 							listener, endpointDescription, matchingFilters,
 							discovered));
 		}
-	}
-
-	Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> getAllDiscoveredEndpointDescriptions() {
-		Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> result = new ArrayList();
-		if (localLocatorServiceListener == null)
-			return result;
-		// Get local first
-		result.addAll(localLocatorServiceListener.getEndpointDescriptions());
-		synchronized (locatorListeners) {
-			for (IDiscoveryLocator l : locatorListeners.keySet()) {
-				LocatorServiceListener locatorListener = locatorListeners
-						.get(l);
-				result.addAll(locatorListener.getEndpointDescriptions());
-			}
-		}
-		return result;
 	}
 
 	void queueEndpointEvent(
@@ -1040,9 +1018,10 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 			if (endpointDescriptions.size() > 0) {
 				bundleDescriptionMap.put(new Long(bundle.getBundleId()),
 						endpointDescriptions);
-				for (org.osgi.service.remoteserviceadmin.EndpointDescription ed : endpointDescriptions)
-					localLocatorServiceListener.handleEndpointDescription(ed,
-							true);
+				for (org.osgi.service.remoteserviceadmin.EndpointDescription ed : endpointDescriptions) {
+					addED(ed, null);
+					handleEndpointDescription(ed, true);
+				}
 			}
 		}
 
@@ -1094,9 +1073,10 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 			Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> endpointDescriptions = bundleDescriptionMap
 					.remove(new Long(bundle.getBundleId()));
 			if (endpointDescriptions != null)
-				for (org.osgi.service.remoteserviceadmin.EndpointDescription ed : endpointDescriptions)
-					localLocatorServiceListener.handleEndpointDescription(ed,
-							false);
+				for (org.osgi.service.remoteserviceadmin.EndpointDescription ed : endpointDescriptions) {
+					removeED(ed);
+					handleEndpointDescription(ed, false);
+				}
 		}
 
 		public void close() {
@@ -1162,7 +1142,9 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		synchronized (edToServiceIDMap) {
 			for (EndpointDescription ed : edToServiceIDMap.keySet()) {
 				IServiceID svcID = edToServiceIDMap.get(ed);
-				if (svcID.getNamespace().getName().equals(namespace.getName()))
+				if (svcID != null
+						&& svcID.getNamespace().getName()
+								.equals(namespace.getName()))
 					results.add(ed);
 			}
 		}
@@ -1172,10 +1154,21 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 	/**
 	 * @since 4.3
 	 */
-	public IServiceID getNetworkDiscoveredService(
+	public IServiceID getNetworkDiscoveredServiceID(
 			org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription endpointDescription) {
 		synchronized (edToServiceIDMap) {
 			return edToServiceIDMap.get(endpointDescription);
+		}
+	}
+
+	void handleEndpointDescription(EndpointDescription endpointDescription,
+			boolean discovered) {
+		if (discovered) {
+			queueEndpointEvent(endpointDescription, EndpointEvent.ADDED);
+			queueEndpointDescription(endpointDescription, discovered);
+		} else {
+			queueEndpointEvent(endpointDescription, EndpointEvent.REMOVED);
+			queueEndpointDescription(endpointDescription, discovered);
 		}
 	}
 
@@ -1206,7 +1199,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 			if (locator == null)
 				return;
 			trace("handleService", "fwk=" + getFrameworkUUID() + " serviceInfo=" + serviceInfo //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-							+ ", discovered=" + discovered+", locator="+locator); //$NON-NLS-1$ //$NON-NLS-2$
+							+ ", discovered=" + discovered + ", locator=" + locator); //$NON-NLS-1$ //$NON-NLS-2$
 			IServiceID serviceID = serviceInfo.getServiceID();
 			// Make sure this is an OSGi Remote Service
 			if (Arrays.asList(serviceID.getServiceTypeID().getServices())
@@ -1325,24 +1318,12 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 							update = true;
 					}
 					if (update) {
-						updateED(ped, endpointDescription,
-								updateServiceID);
+						updateED(ped, endpointDescription, updateServiceID);
 						return endpointDescription;
 					}
 				}
 			}
 			return null;
-		}
-
-		void handleEndpointDescription(EndpointDescription endpointDescription,
-				boolean discovered) {
-			if (discovered) {
-				queueEndpointEvent(endpointDescription, EndpointEvent.ADDED);
-				queueEndpointDescription(endpointDescription, discovered);
-			} else {
-				queueEndpointEvent(endpointDescription, EndpointEvent.REMOVED);
-				queueEndpointDescription(endpointDescription, discovered);
-			}
 		}
 
 		private DiscoveredEndpointDescription getDiscoveredEndpointDescription(
@@ -1394,6 +1375,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 	 */
 	public void discoverEndpoint(
 			org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription endpointDescription) {
+		addED(endpointDescription, null);
 		queueEndpointEvent(endpointDescription, EndpointEvent.ADDED);
 	}
 
@@ -1402,6 +1384,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 	 */
 	public void updateEndpoint(
 			org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription endpointDescription) {
+		updateED(endpointDescription, endpointDescription, null);
 		queueEndpointEvent(endpointDescription, EndpointEvent.MODIFIED);
 	}
 
@@ -1410,7 +1393,22 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 	 */
 	public void undiscoverEndpoint(
 			org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription endpointDescription) {
+		removeED(endpointDescription);
 		queueEndpointEvent(endpointDescription, EndpointEvent.REMOVED);
+	}
+
+	/**
+	 * @since 4.3
+	 */
+	public org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription[] getDiscoveredEndpoints() {
+		List<org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription> results = new ArrayList<org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription>();
+		for (EndpointDescription ed : getEDs()) {
+			if (ed instanceof org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription)
+				results.add((org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription) ed);
+		}
+		return results
+				.toArray(new org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription[results
+						.size()]);
 	}
 
 }
