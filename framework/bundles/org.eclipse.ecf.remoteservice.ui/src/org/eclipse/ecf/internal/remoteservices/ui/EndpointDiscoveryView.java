@@ -111,6 +111,13 @@ public class EndpointDiscoveryView extends ViewPart {
 		getSite().setSelectionProvider(viewer);
 
 		showServicesInRegistryBrowser();
+		
+		IEndpointDescriptionLocator locator = this.discovery.getEndpointDescriptionLocator();
+		if (locator != null) {
+			EndpointDescription[] eds = locator.getDiscoveredEndpoints();
+			for(EndpointDescription ed: eds)
+				addEndpoint(ed);
+		}
 	}
 
 	private int previousRegistryBrowserGroupBy;
@@ -420,26 +427,33 @@ public class EndpointDiscoveryView extends ViewPart {
 		viewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				AbstractEndpointNode root = contentProvider.getRootNode();
 				EndpointDescription ed = (EndpointDescription) event
 						.getEndpoint();
 				int type = event.getType();
 				switch (type) {
 				case EndpointEvent.ADDED:
-					if (EndpointDiscoveryView.this.previousRegistryBrowserGroupBy != RegistryBrowser.SERVICES)
-						showServicesInRegistryBrowser();
-					root.addChild(createEndpointDescriptionNode(ed));
+					addEndpoint(ed);
 					break;
 				case EndpointEvent.REMOVED:
-					root.removeChild(new EndpointNode(ed));
+					removeEndpoint(ed);
 					break;
 				}
-				viewer.setExpandedState(root, true);
+				viewer.setExpandedState(contentProvider.getRootNode(), true);
 				viewer.refresh();
 			}
 		});
 	}
 
+	void addEndpoint(EndpointDescription ed) {
+		if (EndpointDiscoveryView.this.previousRegistryBrowserGroupBy != RegistryBrowser.SERVICES)
+			showServicesInRegistryBrowser();
+		contentProvider.getRootNode().addChild(createEndpointDescriptionNode(ed));
+	}
+	
+	void removeEndpoint(EndpointDescription ed) {
+		contentProvider.getRootNode().removeChild(new EndpointNode(ed));
+	}
+	
 	ImportRegistration findImportRegistration(EndpointDescription ed) {
 		RemoteServiceAdmin rsa = discovery.getRSA();
 		if (rsa == null)
@@ -499,7 +513,7 @@ public class EndpointDiscoveryView extends ViewPart {
 
 		IEndpointDescriptionLocator locator = discovery
 				.getEndpointDescriptionLocator();
-		IServiceID serviceID = (locator == null)?null:locator.getNetworkDiscoveredService(ed);
+		IServiceID serviceID = (locator == null)?null:locator.getNetworkDiscoveredServiceID(ed);
 
 		if (serviceID != null)
 			edo.addChild(new EndpointDiscoveryGroupNode(
