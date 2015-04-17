@@ -60,8 +60,10 @@ public class ReadRoot implements Watcher, ChildrenCallback {
 
 					switch (event.getState()) {
 					case Disconnected:
-						ReadRoot.this.isConnected = false;
-						connect();
+						if (!ReadRoot.this.readKeeper.getState().isAlive()) {
+							ReadRoot.this.isConnected = false;
+							connect();
+						}
 						break;
 					case Expired:
 						ReadRoot.this.isConnected = false;
