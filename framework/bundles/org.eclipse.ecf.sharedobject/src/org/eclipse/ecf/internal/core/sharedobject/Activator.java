@@ -116,7 +116,7 @@ public class Activator implements BundleActivator {
 			return systemLogService;
 		}
 		if (logServiceTracker == null) {
-			logServiceTracker = new ServiceTracker(this.context, LogService.class.getName(), null);
+			logServiceTracker = new ServiceTracker<LogService, LogService>(this.context, LogService.class.getName(), null);
 			logServiceTracker.open();
 		}
 		return (LogService) logServiceTracker.getService();
