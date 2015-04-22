@@ -10,6 +10,7 @@ package org.eclipse.ecf.internal.remoteservices.ui;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
@@ -126,8 +127,17 @@ public class EndpointDiscoveryView extends ViewPart {
 
 	private int previousRegistryBrowserGroupBy;
 
+	private int invokeShowGroupBy(RegistryBrowser registryBrowser, int groupBy)
+			throws NoSuchMethodException, SecurityException,
+			IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException {
+		return (int) registryBrowser.getClass()
+				.getDeclaredMethod("showGroupBy", int.class)
+				.invoke(registryBrowser, groupBy);
+	}
+
 	private int showInRegistryBrowser(int groupBy) {
-		//see https://bugs.eclipse.org/bugs/show_bug.cgi?id=270684#c33
+		// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=270684#c33
 		try {
 			IWorkbenchWindow window = PlatformUI.getWorkbench()
 					.getActiveWorkbenchWindow();
@@ -137,8 +147,8 @@ public class EndpointDiscoveryView extends ViewPart {
 					IViewPart view = page
 							.findView("org.eclipse.pde.runtime.RegistryBrowser");
 					if (view != null)
-						return ((RegistryBrowser) view)
-								.showGroupBy(RegistryBrowser.SERVICES);
+						return invokeShowGroupBy((RegistryBrowser) view,
+								RegistryBrowser.SERVICES);
 				}
 			}
 		} catch (Exception e) {
