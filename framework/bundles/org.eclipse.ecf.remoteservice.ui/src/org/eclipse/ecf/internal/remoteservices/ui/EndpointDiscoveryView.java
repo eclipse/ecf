@@ -58,7 +58,10 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.part.ViewPart;
@@ -110,39 +113,37 @@ public class EndpointDiscoveryView extends ViewPart {
 		clipboard = new Clipboard(viewer.getControl().getDisplay());
 		getSite().setSelectionProvider(viewer);
 
-		showServicesInRegistryBrowser();
-		
 		IEndpointDescriptionLocator locator = this.discovery.getEndpointDescriptionLocator();
 		if (locator != null) {
 			EndpointDescription[] eds = locator.getDiscoveredEndpoints();
 			for(EndpointDescription ed: eds)
 				addEndpoint(ed);
 		}
+		
+		showServicesInRegistryBrowser();
+		
 	}
 
 	private int previousRegistryBrowserGroupBy;
 
 	private int showInRegistryBrowser(int groupBy) {
-		// XXX this is commented out because it's successful use
-		// depends upon the RegistryBrowser.showGroupBy method to
-		// be added by PDE committers.
-		// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=270684#c33
-		// try {
-		// IWorkbenchWindow window = PlatformUI.getWorkbench()
-		// .getActiveWorkbenchWindow();
-		// if (window != null) {
-		// IWorkbenchPage page = window.getActivePage();
-		// if (page != null) {
-		// IViewPart view = page
-		// .findView("org.eclipse.pde.runtime.RegistryBrowser");
-		// if (view != null)
-		// return ((RegistryBrowser)
-		// view).showGroupBy(RegistryBrowser.SERVICES);
-		// }
-		// }
-		// } catch (Exception e) {
-		// logError("Could not show services in PDE Plugin view", e);
-		// }
+		//see https://bugs.eclipse.org/bugs/show_bug.cgi?id=270684#c33
+		try {
+			IWorkbenchWindow window = PlatformUI.getWorkbench()
+					.getActiveWorkbenchWindow();
+			if (window != null) {
+				IWorkbenchPage page = window.getActivePage();
+				if (page != null) {
+					IViewPart view = page
+							.findView("org.eclipse.pde.runtime.RegistryBrowser");
+					if (view != null)
+						return ((RegistryBrowser) view)
+								.showGroupBy(RegistryBrowser.SERVICES);
+				}
+			}
+		} catch (Exception e) {
+			logWarning("Could not show services in PDE Plugin view", e);
+		}
 		return RegistryBrowser.BUNDLES;
 	}
 
@@ -202,11 +203,19 @@ public class EndpointDiscoveryView extends ViewPart {
 		}
 	}
 
-	private void logError(String message, Throwable e) {
+	private void log(int level, String message, Throwable e) {
 		Activator
 				.getDefault()
 				.getLog()
-				.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, message, e));
+				.log(new Status(level, Activator.PLUGIN_ID, message, e));
+	}
+
+	private void logWarning(String message, Throwable e) {
+		log(IStatus.WARNING, message, e);
+	}
+	
+	private void logError(String message, Throwable e) {
+		log(IStatus.ERROR, message, e);
 	}
 
 	private void makeActions() {
