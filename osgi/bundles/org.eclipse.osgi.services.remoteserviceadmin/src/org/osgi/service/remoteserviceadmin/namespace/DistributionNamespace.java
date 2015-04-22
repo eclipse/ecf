@@ -26,7 +26,7 @@ import org.osgi.resource.Namespace;
  * namespace.
  * 
  * @Immutable
- * @author $Id$
+ * @author $Id: e87df13b4a2cc069621bf286945b66eac1ab072b $
  */
 public final class DistributionNamespace extends Namespace {
 

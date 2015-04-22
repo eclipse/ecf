@@ -1,5 +1,5 @@
 /*
- * Copyright (c) OSGi Alliance (2009, 2013). All Rights Reserved.
+ * Copyright (c) OSGi Alliance (2009, 2014). All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import org.osgi.annotation.versioning.ProviderType;
  * {@code null}.
  * 
  * @ThreadSafe
- * @author $Id$
+ * @author $Id: 4dfea3f10524d18ba3b46176b9df33e7de0e7176 $
  */
 @ProviderType
 public interface ImportRegistration {

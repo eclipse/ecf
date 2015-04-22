@@ -87,7 +87,7 @@ import org.osgi.annotation.versioning.ConsumerType;
  * 
  * @ThreadSafe
  * @deprecated As of 1.1. Replaced by EndpointEventListener.
- * @author $Id$
+ * @author $Id: c3888f065479eba89af59c52eb1c29b319097397 $
  */
 @ConsumerType
 public interface EndpointListener {

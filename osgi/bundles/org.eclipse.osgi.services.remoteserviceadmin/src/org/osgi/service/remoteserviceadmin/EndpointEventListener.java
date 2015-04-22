@@ -1,5 +1,5 @@
 /*
- * Copyright (c) OSGi Alliance (2013). All Rights Reserved.
+ * Copyright (c) OSGi Alliance (2013, 2015). All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.osgi.service.remoteserviceadmin;
+
+import org.osgi.annotation.versioning.ConsumerType;
 
 /**
  * A white board service that represents a listener for endpoints.
@@ -84,6 +86,7 @@ package org.osgi.service.remoteserviceadmin;
  * @ThreadSafe
  * @since 1.1
  */
+@ConsumerType
 public interface EndpointEventListener {
 	/**
 	 * Specifies the interest of this listener with filters. This listener is

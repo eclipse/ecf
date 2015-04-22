@@ -26,7 +26,7 @@ import org.osgi.framework.ServiceReference;
  * service is no longer imported, all methods must return {@code null}.
  * 
  * @ThreadSafe
- * @author $Id$
+ * @author $Id: e94afd28cf670b9558aed85f5345e798746aa902 $
  */
 @ProviderType
 public interface ImportReference {

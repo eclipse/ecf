@@ -23,7 +23,7 @@ import org.osgi.framework.Constants;
  * specification.
  * 
  * @Immutable
- * @author $Id$
+ * @author $Id: deb46d4f5c2844a7bd245db781d9440361eb3955 $
  */
 public class RemoteConstants {
 	private RemoteConstants() {

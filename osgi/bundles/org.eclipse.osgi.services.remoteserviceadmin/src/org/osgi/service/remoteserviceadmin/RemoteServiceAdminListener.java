@@ -32,7 +32,7 @@ import org.osgi.annotation.versioning.ConsumerType;
  * 
  * @see RemoteServiceAdminEvent
  * @ThreadSafe
- * @author $Id$
+ * @author $Id: c5c7ce06a2f2964f5821c764cb99c21607263b6a $
  */
 @ConsumerType
 public interface RemoteServiceAdminListener {

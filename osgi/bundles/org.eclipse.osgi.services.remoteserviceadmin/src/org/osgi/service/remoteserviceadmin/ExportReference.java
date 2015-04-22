@@ -26,7 +26,7 @@ import org.osgi.framework.ServiceReference;
  * service is no longer exported, all methods must return {@code null}.
  * 
  * @ThreadSafe
- * @author $Id$
+ * @author $Id: c6b452b40c0356b3c5a9f4b0a1e0654512733494 $
  */
 @ProviderType
 public interface ExportReference {

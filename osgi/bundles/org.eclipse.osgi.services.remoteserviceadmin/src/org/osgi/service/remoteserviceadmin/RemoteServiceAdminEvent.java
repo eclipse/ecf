@@ -1,5 +1,5 @@
 /*
- * Copyright (c) OSGi Alliance (2009, 2013). All Rights Reserved.
+ * Copyright (c) OSGi Alliance (2009, 2015). All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import org.osgi.framework.Bundle;
  * Provides the event information for a Remote Service Admin event.
  * 
  * @Immutable
- * @author $Id$
+ * @author $Id: a2eb40665605a6955a0109d0eaf48773498eb027 $
  */
 public class RemoteServiceAdminEvent {
 	/**
@@ -80,12 +80,16 @@ public class RemoteServiceAdminEvent {
 	/**
 	 * Update an import registration. The Remote Service Admin will send this
 	 * event when it updates a service.
+	 * 
+	 * @since 1.1
 	 */
 	public static final int			IMPORT_UPDATE			= 9;
 
 	/**
 	 * Update an export registration. The Remote Service Admin will send this
 	 * event when it exports a service.
+	 * 
+	 * @since 1.1
 	 */
 	public static final int			EXPORT_UPDATE			= 10;
 

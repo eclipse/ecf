@@ -33,7 +33,7 @@
  * {@code  Import-Package: org.osgi.service.remoteserviceadmin; version="[1.1,1.2)"}
  * 
  * @version 1.1
- * @author $Id$
+ * @author $Id: 0581bb37a078f9e6e76f04e1db32b1734fd0db7e $
  */
 
 @Version("1.1.0")

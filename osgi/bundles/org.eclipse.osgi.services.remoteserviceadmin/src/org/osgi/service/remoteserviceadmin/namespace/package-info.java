@@ -23,7 +23,7 @@
  * requirement namespaces specified by the OSGi Alliance.
  * 
  * @version 1.0
- * @author $Id$
+ * @author $Id: 5318b11c8b12656e33f6dc42b410c8d7cce69b3b $
  */
 
 @Version("1.0.0")

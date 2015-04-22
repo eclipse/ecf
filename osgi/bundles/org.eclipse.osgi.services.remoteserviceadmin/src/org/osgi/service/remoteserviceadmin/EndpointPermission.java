@@ -54,7 +54,7 @@ import org.osgi.framework.InvalidSyntaxException;
  * {@code EndpointPermission} to read the specific service.
  * 
  * @ThreadSafe
- * @author $Id$
+ * @author $Id: bce27511ebaee16bccf0e7dbb5a12986958e9e88 $
  */
 
 public final class EndpointPermission extends Permission {

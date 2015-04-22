@@ -26,7 +26,7 @@ import org.osgi.resource.Namespace;
  * namespace.
  * 
  * @Immutable
- * @author $Id$
+ * @author $Id: de8a882b8294162d9ab573ee1debe8bb038c0246 $
  */
 public final class TopologyNamespace extends Namespace {
 
