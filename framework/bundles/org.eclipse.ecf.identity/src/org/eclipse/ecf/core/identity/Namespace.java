@@ -282,7 +282,7 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	 *         Class arrays are returned (i.e. Class[0][0]), then Object []
 	 *         parameters to {@link #createInstance(Object[])} will be ignored.
 	 */
-	public Class[][] getSupportedParameterTypes() {
+	public Class<?>[][] getSupportedParameterTypes() {
 		return new Class[][] { {} };
 	}
 
@@ -291,7 +291,7 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	 * 
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
-	public Object getAdapter(Class adapter) {
+	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
 		if (adapter.isInstance(this)) {
 			return this;
 		}

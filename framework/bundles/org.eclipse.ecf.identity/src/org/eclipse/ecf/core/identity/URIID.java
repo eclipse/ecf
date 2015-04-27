@@ -57,7 +57,7 @@ public class URIID extends BaseID implements IResourceID {
 		 * @seeorg.eclipse.ecf.core.identity.Namespace#
 		 * getSupportedParameterTypesForCreateInstance()
 		 */
-		public Class[][] getSupportedParameterTypes() {
+		public Class<?>[][] getSupportedParameterTypes() {
 			return new Class[][] { { String.class }, { URI.class } };
 		}
 	}
@@ -76,7 +76,7 @@ public class URIID extends BaseID implements IResourceID {
 			return 0;
 		if (!this.getClass().equals(o.getClass()))
 			return Integer.MIN_VALUE;
-		return this.uri.compareTo((Object) ((URIID) o).uri);
+		return this.uri.compareTo(((URIID) o).uri);
 	}
 
 	protected boolean namespaceEquals(BaseID o) {

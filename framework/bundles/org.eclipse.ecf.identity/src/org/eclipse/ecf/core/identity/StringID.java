@@ -48,7 +48,7 @@ public class StringID extends BaseID {
 		 * @seeorg.eclipse.ecf.core.identity.Namespace#
 		 * getSupportedParameterTypesForCreateInstance()
 		 */
-		public Class[][] getSupportedParameterTypes() {
+		public Class<?>[][] getSupportedParameterTypes() {
 			return new Class[][] { { String.class } };
 		}
 	}

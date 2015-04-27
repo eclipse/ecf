@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.eclipse.ecf.tests.core
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.tests.core.Activator
 Bundle-Vendor: Eclipse.org - ECF
-Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Import-Package: org.osgi.framework;version="1.3.0",
  org.osgi.util.tracker;version="1.5.1"
 Bundle-ActivationPolicy: lazy

@@ -8,6 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.identity;
 
+import java.net.URI;
 import java.util.*;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -22,7 +23,7 @@ public class IDFactory implements IIDFactory {
 	public static final String SECURITY_PROPERTY = IDFactory.class.getName()
 			+ ".security"; //$NON-NLS-1$
 
-	private static Hashtable namespaces = new Hashtable();
+	private static Hashtable<String, Namespace> namespaces = new Hashtable<String, Namespace>();
 
 	protected static IIDFactory instance = null;
 
@@ -32,6 +33,7 @@ public class IDFactory implements IIDFactory {
 		addNamespace0(new GUID.GUIDNamespace());
 		addNamespace0(new LongID.LongNamespace());
 		addNamespace0(new URIID.URIIDNamespace());
+		addNamespace0(new UuID.UuIDNamespace());
 	}
 
 	private synchronized static void initialize() {
@@ -96,9 +98,9 @@ public class IDFactory implements IIDFactory {
 	 * 
 	 * @see org.eclipse.ecf.core.identity.IIDFactory#getNamespaces()
 	 */
-	public List getNamespaces() {
+	public List<Namespace> getNamespaces() {
 		initialize();
-		return new ArrayList(namespaces.values());
+		return new ArrayList<Namespace>(namespaces.values());
 	}
 
 	public final static boolean containsNamespace0(Namespace n) {
@@ -266,5 +268,47 @@ public class IDFactory implements IIDFactory {
 		if (n == null)
 			return null;
 		return (Namespace) namespaces.remove(n.getName());
+	}
+
+	/**
+	 * @since 3.5
+	 */
+	public ID createUuID(String uuid) throws IDCreateException {
+		return createID(new UuID.UuIDNamespace(), new Object[] { uuid });
+	}
+
+	/**
+	 * @since 3.5
+	 */
+	public ID createUuID(UUID uuid) throws IDCreateException {
+		return createID(new UuID.UuIDNamespace(), new Object[] { uuid });
+	}
+
+	/**
+	 * @since 3.5
+	 */
+	public ID createUuID(URI uuidURI) throws IDCreateException {
+		return createID(new UuID.UuIDNamespace(), new Object[] { uuidURI });
+	}
+
+	/**
+	 * @since 3.5
+	 */
+	public ID createURIID(URI uri) throws IDCreateException {
+		return createID(new URIID.URIIDNamespace(), new Object[] { uri });
+	}
+
+	/**
+	 * @since 3.5
+	 */
+	public ID createURIID(String uri) throws IDCreateException {
+		return createID(new URIID.URIIDNamespace(), new Object[] { uri });
+	}
+
+	/**
+	 * @since 3.5
+	 */
+	public ID createUuID() throws IDCreateException {
+		return createID(new UuID.UuIDNamespace(), (Object[]) null);
 	}
 }

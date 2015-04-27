@@ -8,11 +8,14 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.identity;
 
+import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Contract for {@link IDFactory}
  * 
+ * @noimplement This interface is not intended to be implemented by clients.
  */
 public interface IIDFactory {
 	/**
@@ -48,7 +51,7 @@ public interface IIDFactory {
 	 *                thrown if caller does not have appropriate
 	 *                NamespacePermission for given namespace
 	 */
-	public List getNamespaces() throws SecurityException;
+	public List<Namespace> getNamespaces() throws SecurityException;
 
 	/**
 	 * Get the given Namespace instance from table
@@ -126,7 +129,8 @@ public interface IIDFactory {
 	 *                loaded, if something goes wrong during instance
 	 *                construction
 	 */
-	public ID createID(String namespaceName, Object[] args) throws IDCreateException;
+	public ID createID(String namespaceName, Object[] args)
+			throws IDCreateException;
 
 	/**
 	 * Make a new identity instance from a namespace and String.
@@ -140,7 +144,8 @@ public interface IIDFactory {
 	 *                loaded, if something goes wrong during instance
 	 *                construction
 	 */
-	public ID createID(Namespace namespace, String uri) throws IDCreateException;
+	public ID createID(Namespace namespace, String uri)
+			throws IDCreateException;
 
 	/**
 	 * Make a new identity instance from a namespaceName and idValue. The
@@ -157,7 +162,8 @@ public interface IIDFactory {
 	 *                loaded, if something goes wrong during instance
 	 *                construction
 	 */
-	public ID createID(String namespaceName, String idValue) throws IDCreateException;
+	public ID createID(String namespaceName, String idValue)
+			throws IDCreateException;
 
 	/**
 	 * Make a an ID from a String
@@ -191,6 +197,78 @@ public interface IIDFactory {
 	 *             loaded, if something goes wrong during instance construction
 	 */
 	public ID createLongID(long l) throws IDCreateException;
+
+	/**
+	 * Create a UuID from String
+	 * 
+	 * @param uuid
+	 *            the String to use. Must be in UUID format as returned from
+	 *            UUID.toString(). Must not be null.
+	 * @return valid ID instance
+	 * 
+	 * @since 3.5
+	 */
+	public ID createUuID(String uuid) throws IDCreateException;
+
+	/**
+	 * Create a UuID from UUID
+	 * 
+	 * @param uuid
+	 *            the UUID to use. Must not be null.
+	 * @return valid ID instance
+	 * 
+	 * @since 3.5
+	 */
+	public ID createUuID(UUID uuid) throws IDCreateException;
+
+	/**
+	 * Create a random UuID
+	 * 
+	 * @return valid ID instance from UUID.randomUUID()
+	 * 
+	 * @since 3.5
+	 */
+	public ID createUuID() throws IDCreateException;
+
+	/**
+	 * Create a UuID from URI.
+	 * 
+	 * @param uuidURI
+	 *            the URI. Must not be null and must be in valid uuid syntax
+	 *            form as specified by rfc4122 see
+	 *            http://tools.ietf.org/html/rfc4122. Example:
+	 *            'uuid:f81d4fae-7dec-11d0-a765-00a0c91e6bf6'
+	 * 
+	 * @return valid ID instance
+	 * 
+	 * @since 3.5
+	 */
+	public ID createUuID(URI uuidURI) throws IDCreateException;
+
+	/**
+	 * Create a URIID from URI.
+	 * 
+	 * @param uri
+	 *            the URI to use for the URIID. Must not be null.
+	 * 
+	 * @return valid ID instance
+	 * 
+	 * @since 3.5
+	 */
+	public ID createURIID(URI uri) throws IDCreateException;
+
+	/**
+	 * Create a URIID from String.
+	 * 
+	 * @param uri
+	 *            the String to use for the URIID. Must not be null, and must be
+	 *            valid URI format as per URI.toString().
+	 * 
+	 * @return valid ID instance
+	 * 
+	 * @since 3.5
+	 */
+	public ID createURIID(String uri) throws IDCreateException;
 
 	/**
 	 * Remove the given Namespace from our table of available Namespaces

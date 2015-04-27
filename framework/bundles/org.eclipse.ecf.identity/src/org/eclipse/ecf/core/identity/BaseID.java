@@ -27,7 +27,7 @@ public abstract class BaseID implements ID {
 	protected Namespace namespace;
 
 	protected BaseID() {
-		// 
+		//
 	}
 
 	protected BaseID(Namespace namespace) {
@@ -151,11 +151,11 @@ public abstract class BaseID implements ID {
 	 * 
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
-	public Object getAdapter(Class clazz) {
+	public Object getAdapter(@SuppressWarnings("rawtypes") Class clazz) {
 		IAdapterManager adapterManager = Activator.getDefault()
 				.getAdapterManager();
 		if (adapterManager == null)
 			return null;
-		return adapterManager.loadAdapter(this, clazz.getName());
+		return adapterManager.getAdapter(this, clazz.getName());
 	}
 }

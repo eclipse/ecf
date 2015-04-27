@@ -52,7 +52,7 @@ public class LongID extends BaseID {
 		 * @seeorg.eclipse.ecf.core.identity.Namespace#
 		 * getSupportedParameterTypesForCreateInstance()
 		 */
-		public Class[][] getSupportedParameterTypes() {
+		public Class<?>[][] getSupportedParameterTypes() {
 			return new Class[][] { { Long.class } };
 		}
 	}

@@ -15,7 +15,7 @@
         	author="false" 
         	classpathref="files.classpath" 
         	destdir="${output}" 
-        	doctitle="Eclipse Communication Framework (ECF) 3.9.2" 
+        	doctitle="Eclipse Communication Framework (ECF) 3.10.0" 
         	nodeprecated="false" 
         	nodeprecatedlist="false" 
         	noindex="false" 

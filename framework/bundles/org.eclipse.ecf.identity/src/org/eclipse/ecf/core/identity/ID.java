@@ -29,7 +29,9 @@ import org.eclipse.core.runtime.IAdaptable;
  * @see Namespace
  * 
  */
-public interface ID extends java.io.Serializable, java.lang.Comparable, java.security.Principal, IAdaptable {
+@SuppressWarnings("rawtypes")
+public interface ID extends java.io.Serializable, java.lang.Comparable,
+		java.security.Principal, IAdaptable {
 
 	public boolean equals(Object obj);
 
@@ -53,7 +55,8 @@ public interface ID extends java.io.Serializable, java.lang.Comparable, java.sec
 	public Namespace getNamespace();
 
 	/**
-	 * Get this ID instance in String form.  Will not return null.
+	 * Get this ID instance in String form. Will not return null.
+	 * 
 	 * @return String that is external representation of this ID
 	 */
 	public String toExternalForm();
