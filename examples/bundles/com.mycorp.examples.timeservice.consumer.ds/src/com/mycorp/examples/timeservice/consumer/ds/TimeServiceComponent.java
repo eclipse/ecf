@@ -12,10 +12,15 @@ import com.mycorp.examples.timeservice.ITimeService;
 
 public class TimeServiceComponent {
 
+	// Called by DS upon ITimeService discovery
 	void bindTimeService(ITimeService timeService) {
-		// Invoke synchronously
-		System.out.println("Discovered ITimeService via DS");
+		System.out.println("Discovered ITimeService via DS.  Instance="+timeService);
 		// Call the service and print out result!
 		System.out.println("Current time is: " + timeService.getCurrentTime());
+	}
+	
+	// Called by DS upon ITimeService undiscovery
+	void unbindTimeService(ITimeService timeService) {
+		System.out.println("Undiscovered ITimeService via DS.  Instance="+timeService);
 	}
 }

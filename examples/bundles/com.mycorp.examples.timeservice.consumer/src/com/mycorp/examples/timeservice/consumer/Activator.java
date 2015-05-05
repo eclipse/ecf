@@ -68,7 +68,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<ITim
 
 	public void removedService(ServiceReference<ITimeService> reference,
 			ITimeService service) {
-		// do nothing
+		System.out.println("ITimeService undiscovered!");
 	}
 
 }
