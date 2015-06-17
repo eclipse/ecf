@@ -378,27 +378,64 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 		};
 	}
 
+	/**
+	 * @since 8.6
+	 */
+	protected void handleProxyException(String message, Throwable t) throws ServiceException {
+		if (t instanceof ServiceException)
+			throw (ServiceException) t;
+		throw new ServiceException(message, ServiceException.REMOTE, t);
+	}
+
+	/**
+	 * @since 8.6
+	 */
+	protected void handleInvokeSyncException(String methodName, ECFException e) throws Throwable {
+		Throwable cause = e.getCause();
+		if (cause instanceof InvocationTargetException)
+			cause = ((InvocationTargetException) cause).getTargetException();
+		if (cause instanceof ServiceException)
+			throw (ServiceException) cause;
+		if (cause instanceof RuntimeException)
+			throw new ServiceException("RuntimeException for method=" + methodName + " on remote service proxy=" + getRemoteServiceID(), ServiceException.REMOTE, cause); //$NON-NLS-1$ //$NON-NLS-2$
+		if (cause instanceof NoClassDefFoundError)
+			throw new ServiceException("Remote NoClassDefFoundError for method=" + methodName + " on remote service proxy=" + getRemoteServiceID(), ServiceException.REMOTE, cause); //$NON-NLS-1$ //$NON-NLS-2$
+		if (cause != null)
+			throw cause;
+		throw new ServiceException("Unexpected exception for method=" + methodName + " on remote service proxy=" + getRemoteServiceID(), ServiceException.REMOTE, e); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+
 	public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
-		// methods declared by Object
+		Object resultObject = null;
 		try {
 			// If the method is from Class Object, or from IRemoteServiceProxy
-			// then return result
-			Object resultObject = invokeObject(proxy, method, args);
-			if (resultObject != null)
-				return resultObject;
+			// then return result by directly invoking on the proxy
+			resultObject = invokeObject(proxy, method, args);
+		} catch (Throwable t) {
+			handleProxyException("Exception invoking local Object method on remote service proxy=" + getRemoteServiceID(), t); //$NON-NLS-1$
+		}
+		if (resultObject != null)
+			return resultObject;
+
+		try {
 			if (isAsync(proxy, method, args))
 				return invokeAsync(method, args);
-			// else call synchronously/block and return result
-			final String callMethod = getCallMethodNameForProxyInvoke(method, args);
-			final Object[] callParameters = getCallParametersForProxyInvoke(callMethod, method, args);
-			final long callTimeout = getCallTimeoutForProxyInvoke(callMethod, method, args);
-			final IRemoteCall remoteCall = createRemoteCall(callMethod, callParameters, callTimeout);
-			return invokeSync(remoteCall);
 		} catch (Throwable t) {
-			if (t instanceof ServiceException)
-				throw t;
-			// rethrow as service exception
-			throw new ServiceException("Service exception on remote service proxy rsid=" + getRemoteServiceID(), ServiceException.REMOTE, t); //$NON-NLS-1$
+			handleProxyException("Exception invoking async method on remote service proxy=" + getRemoteServiceID(), t); //$NON-NLS-1$
+		}
+		// Get the callMethod, callParameters, and callTimeout
+		final String callMethod = getCallMethodNameForProxyInvoke(method, args);
+		final Object[] callParameters = getCallParametersForProxyInvoke(callMethod, method, args);
+		final long callTimeout = getCallTimeoutForProxyInvoke(callMethod, method, args);
+		// Create IRemoteCall instance from method, parameters, and timeout
+		final IRemoteCall remoteCall = createRemoteCall(callMethod, callParameters, callTimeout);
+		// Invoke synchronously
+		try {
+			return invokeSync(remoteCall);
+		} catch (ECFException e) {
+			handleInvokeSyncException(method.getName(), e);
+			// If the above method doesn't throw as it should, we return null
+			return null;
 		}
 	}
 

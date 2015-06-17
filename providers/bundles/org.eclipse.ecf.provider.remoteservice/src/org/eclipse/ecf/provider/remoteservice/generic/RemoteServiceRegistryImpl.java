@@ -61,6 +61,7 @@ public class RemoteServiceRegistryImpl implements Serializable {
 		this.containerID = containerID;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void publishService(RemoteServiceRegistrationImpl serviceReg) {
 
 		// Add the ServiceRegistration to the list of Services published by
@@ -111,6 +112,7 @@ public class RemoteServiceRegistryImpl implements Serializable {
 		allPublishedServices.clear();
 	}
 
+	@SuppressWarnings("unchecked")
 	public IRemoteServiceReference[] lookupServiceReferences(String clazz, IRemoteFilter filter) {
 		int size;
 		ArrayList references;
@@ -150,6 +152,7 @@ public class RemoteServiceRegistryImpl implements Serializable {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public IRemoteServiceReference[] lookupServiceReferences() {
 		int size;
 		ArrayList references;
@@ -174,6 +177,7 @@ public class RemoteServiceRegistryImpl implements Serializable {
 		return (IRemoteServiceReference[]) references.toArray(new RemoteServiceReferenceImpl[references.size()]);
 	}
 
+	@SuppressWarnings("unchecked")
 	protected RemoteServiceRegistrationImpl[] getRegistrations() {
 		return (RemoteServiceRegistrationImpl[]) allPublishedServices.toArray(new RemoteServiceRegistrationImpl[allPublishedServices.size()]);
 	}

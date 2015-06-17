@@ -236,6 +236,7 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 		 *            Value of property.
 		 * @return previous property value.
 		 */
+		@SuppressWarnings("unchecked")
 		protected synchronized Object setProperty(String key, Object value) {
 			return (put(key, cloneValue(value)));
 		}
@@ -251,6 +252,7 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 		 *            object to be cloned.
 		 * @return cloned object or original object if we didn't clone it.
 		 */
+		@SuppressWarnings("unchecked")
 		protected static Object cloneValue(Object value) {
 			if (value == null) {
 				return null;
@@ -343,6 +345,7 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 		return rsID.getContainerRelativeID();
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object callService(RemoteCallImpl call) throws Exception {
 		Object[] args = (call.getParameters() == null) ? SharedObjectMsg.nullArgs : call.getParameters();
 		final Method method = ClassUtil.getMethod(service.getClass(), call.getMethod(), SharedObjectMsg.getTypesForParameters(args));

@@ -42,6 +42,7 @@ public class AddRegistrationRequest implements Serializable {
 	/**
 	 * @since 3.3
 	 */
+	@SuppressWarnings("unchecked")
 	public AddRegistrationRequest(String service, String filter, Vector requests) {
 		this.parent = null;
 		this.targetID = null;

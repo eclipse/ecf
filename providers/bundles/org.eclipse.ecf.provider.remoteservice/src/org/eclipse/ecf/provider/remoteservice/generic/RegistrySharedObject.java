@@ -38,6 +38,11 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	 */
 	protected static final int ADD_REGISTRATION_REQUEST_TIMEOUT = new Integer(System.getProperty("org.eclipse.ecf.provider.remoteservice.addRegistrationRequestTimeout", "7000")).intValue(); //$NON-NLS-1$ //$NON-NLS-2$
 
+	/**
+	 * @since 4.2
+	 */
+	protected static final boolean PROPAGATE_RESPONSE_ERROR = new Boolean(System.getProperty("org.eclipse.ecf.provider.remoteservice.propagateResponseError", "true")).booleanValue(); //$NON-NLS-1$ //$NON-NLS-2$
+
 	private static int uniqueRequestId = 0;
 
 	private static Integer createNextRequestId() {
@@ -51,6 +56,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	/**
 	 * map of registry impls for remote registrys  key:  ID (identifier of remote container), value: RemoteServiceRegistryImpl (copy of remote service registry for remote container
 	 */
+	@SuppressWarnings("unchecked")
 	protected final Map remoteRegistrys = Collections.synchronizedMap(new HashMap());
 	/**
 	 * List of remote service listeners (added to/removed from by addRemoteServiceListener/removeRemoteServiceListener
@@ -68,6 +74,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	/**
 	 * List of invocation requests...instances of Request
 	 */
+	@SuppressWarnings("unchecked")
 	protected List requests = Collections.synchronizedList(new ArrayList());
 
 	/**
@@ -146,6 +153,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		// then from the local registry
 		addReferencesFromLocalRegistry(idFilter, clazz, remoteFilter, references);
 		// And we return the result
+		@SuppressWarnings("unchecked")
 		final IRemoteServiceReference[] result = (IRemoteServiceReference[]) references.toArray(new IRemoteServiceReference[references.size()]);
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "getRemoteServiceReferences", result); //$NON-NLS-1$
 		return (result.length == 0) ? null : result;
@@ -184,6 +192,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter#addRemoteServiceListener(org.eclipse.ecf.remoteservice.IRemoteServiceListener)
 	 */
+	@SuppressWarnings("unchecked")
 	public void addRemoteServiceListener(IRemoteServiceListener listener) {
 		synchronized (serviceListeners) {
 			serviceListeners.add(listener);
@@ -209,6 +218,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter#getRemoteService(org.eclipse.ecf.remoteservice.IRemoteServiceReference)
 	 */
+	@SuppressWarnings("unchecked")
 	public IRemoteService getRemoteService(IRemoteServiceReference reference) {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "getRemoteService", reference); //$NON-NLS-1$
 		final RemoteServiceRegistrationImpl registration = getRemoteServiceRegistrationImpl(reference);
@@ -301,6 +311,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	/**
 	 * @since 3.0
 	 */
+	@SuppressWarnings("unchecked")
 	public IFuture asyncGetRemoteServiceReferences(final ID[] idFilter, final String clazz, final String filter) {
 		IExecutor executor = new JobsExecutor("asyncGetRemoteServiceReferences"); //$NON-NLS-1$
 		return executor.execute(new IProgressRunnable() {
@@ -313,6 +324,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	/**
 	 * @since 3.4
 	 */
+	@SuppressWarnings("unchecked")
 	public IFuture asyncGetRemoteServiceReferences(final ID target, final ID[] idFilter, final String clazz, final String filter) {
 		IExecutor executor = new JobsExecutor("asyncGetRemoteServiceReferences"); //$NON-NLS-1$
 		return executor.execute(new IProgressRunnable() {
@@ -325,6 +337,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	/**
 	 * @since 3.0
 	 */
+	@SuppressWarnings("unchecked")
 	public IFuture asyncGetRemoteServiceReferences(final ID target, final String clazz, final String filter) {
 		IExecutor executor = new JobsExecutor("asyncGetRemoteServiceReferences"); //$NON-NLS-1$
 		return executor.execute(new IProgressRunnable() {
@@ -351,6 +364,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	/**
 	 * @since 3.0
 	 */
+	@SuppressWarnings("unchecked")
 	public IRemoteServiceReference getRemoteServiceReference(IRemoteServiceID serviceId) {
 		ID containerID = serviceId.getContainerID();
 		if (containerID == null)
@@ -391,6 +405,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			}
 		} else {
 			synchronized (remoteRegistrys) {
+				@SuppressWarnings("unchecked")
 				final ArrayList registrys = new ArrayList(remoteRegistrys.values());
 				for (final Iterator i = registrys.iterator(); i.hasNext();) {
 					final RemoteServiceRegistryImpl registry = (RemoteServiceRegistryImpl) i.next();
@@ -495,6 +510,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		return registryUpdateRequestTimeout;
 	}
 
+	@SuppressWarnings("unchecked")
 	private void sendRegistryUpdateRequestAndWait(ID targetContainerID) {
 		synchronized (registryUpdateRequests) {
 			// create request id
@@ -524,6 +540,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		// If no idFilter, then we add all known references from all remote registrys
 		if (idFilter == null) {
 			synchronized (remoteRegistrys) {
+				@SuppressWarnings("unchecked")
 				final ArrayList registrys = new ArrayList(remoteRegistrys.values());
 				for (final Iterator i = registrys.iterator(); i.hasNext();) {
 					final RemoteServiceRegistryImpl registry = (RemoteServiceRegistryImpl) i.next();
@@ -599,6 +616,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	protected ID[] getTargetsFromProperties(Dictionary properties) {
 		if (properties == null)
 			return null;
@@ -660,6 +678,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	/**
 	 * @since 3.4
 	 */
+	@SuppressWarnings("unchecked")
 	protected void clearRemoteRegistrys() {
 		List registrations = new ArrayList();
 		synchronized (remoteRegistrys) {
@@ -745,6 +764,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void addPendingContainers(ID[] ids) {
 		if (ids == null)
 			return;
@@ -820,6 +840,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		return new Request(this.getLocalContainerID(), remoteRegistration.getServiceId(), RemoteCallImpl.createRemoteCall(null, call.getMethod(), call.getParameters(), call.getTimeout()), listener);
 	}
 
+	@SuppressWarnings("unchecked")
 	void doFireRemoteServiceListeners(IRemoteServiceEvent event) {
 		List entries;
 		synchronized (serviceListeners) {
@@ -831,6 +852,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void fireRemoteServiceListeners(IRemoteServiceEvent event) {
 		synchronized (rsQueueLock) {
 			if (rsListenerDispatchQueue == null) {
@@ -864,6 +886,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	private void addReferencesFromRegistry(String clazz, IRemoteFilter remoteFilter, RemoteServiceRegistryImpl registry, List references) {
 		final IRemoteServiceReference[] rs = registry.lookupServiceReferences(clazz, remoteFilter);
 		if (rs != null) {
@@ -973,6 +996,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	static String checkServiceClass(final String[] clazzes, final Object serviceObject) {
+		@SuppressWarnings("unchecked")
 		final ClassLoader cl = (ClassLoader) AccessController.doPrivileged(new PrivilegedAction() {
 			public Object run() {
 				return serviceObject.getClass().getClassLoader();
@@ -1142,6 +1166,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		return;
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void handleRequestService(ID remoteContainerID, AddRegistrationRequest request, Integer requestId, Serializable credentials) {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "handleRequestServiceReference", new Object[] {remoteContainerID, request, requestId, credentials}); //$NON-NLS-1$
 		if (remoteContainerID == null || requestId == null)
@@ -1245,6 +1270,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	/**
 	 * @since 3.3
 	 */
+	@SuppressWarnings("unchecked")
 	protected void handleAddRegistrations(ID remoteContainerID, Integer requestId, final RemoteServiceRegistrationImpl[] registrations) {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), ADD_REGISTRATIONS, new Object[] {remoteContainerID, registrations});
 		ID localContainerID = getLocalContainerID();
@@ -1381,6 +1407,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	/**
 	 * @since 3.4
 	 */
+	@SuppressWarnings("unchecked")
 	protected void executeRequest(IExecutor executor, final Request request, final ID responseTarget, final RemoteServiceRegistrationImpl localRegistration, final boolean respond) {
 		IProgressRunnable runnable = new IProgressRunnable() {
 			public Object run(IProgressMonitor monitor) throws Exception {
@@ -1398,9 +1425,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 					response = new Response(request.getRequestId(), result);
 					// Invocation target exception happens if the local method being invoked throws (cause)
 				} catch (InvocationTargetException e) {
-					Throwable cause = e.getCause();
-					response = new Response(request.getRequestId(), getSerializableException(cause));
-					logRemoteCallException("Invocation target exception invoking remote service.  Remote request=" + request, cause); //$NON-NLS-1$
+					response = new Response(request.getRequestId(), getSerializableException(e));
+					logRemoteCallException("Invocation target exception invoking remote service.  Remote request=" + request, e); //$NON-NLS-1$
 					// This is to catch most other problems
 				} catch (Exception e) {
 					response = new Response(request.getRequestId(), getSerializableException(e));
@@ -1499,6 +1525,13 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			log(CALL_RESPONSE_ERROR_CODE, CALL_RESPONSE_ERROR_MESSAGE, e);
 			// Also print to standard error, just in case
 			e.printStackTrace(System.err);
+			if (PROPAGATE_RESPONSE_ERROR)
+				try {
+					sendSharedObjectMsgTo(responseTarget, SharedObjectMsg.createMsg(CALL_RESPONSE, new Response(response.getRequestId(), getSerializableException(e))));
+				} catch (final IOException e1) {
+					log(CALL_RESPONSE_ERROR_CODE, "Exception propagating response error", e1); //$NON-NLS-1$
+					e1.printStackTrace(System.err);
+				}
 		}
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "sendCallResponse"); //$NON-NLS-1$
 	}
@@ -1575,6 +1608,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	// RemoteServiceRegistrationImpl -> List<ID>
 	private Map localRegistryUnregistrationTargets = new HashMap();
 
+	@SuppressWarnings("unchecked")
 	private void addTargetForUnregister(RemoteServiceRegistrationImpl serviceRegistration, ID targetContainerID) {
 		List existingTargets = (List) localRegistryUnregistrationTargets.get(serviceRegistration);
 		if (existingTargets == null) {
@@ -1585,6 +1619,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		localRegistryUnregistrationTargets.put(serviceRegistration, existingTargets);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void sendUnregisterToTargets(RemoteServiceRegistrationImpl serviceRegistration, ID[] otherTargets) {
 		List allTargets = new ArrayList();
 		// First add in otherTargets
@@ -1724,6 +1759,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	 * End message send/handlers
 	 */
 
+	@SuppressWarnings("unchecked")
 	protected RemoteServiceRegistryImpl addRemoteRegistry(RemoteServiceRegistryImpl registry) {
 		return (RemoteServiceRegistryImpl) remoteRegistrys.put(registry.getContainerID(), registry);
 	}
@@ -1749,6 +1785,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	/**
 	 * @since 3.2
 	 */
+	@SuppressWarnings("unchecked")
 	protected boolean addRequest(Request request) {
 		synchronized (requests) {
 			return requests.add(request);
