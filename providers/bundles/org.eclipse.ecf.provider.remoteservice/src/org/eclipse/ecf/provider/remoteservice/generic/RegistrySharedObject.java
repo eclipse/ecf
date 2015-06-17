@@ -1525,6 +1525,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			log(CALL_RESPONSE_ERROR_CODE, CALL_RESPONSE_ERROR_MESSAGE, e);
 			// Also print to standard error, just in case
 			e.printStackTrace(System.err);
+			// added to address bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=470245
 			if (PROPAGATE_RESPONSE_ERROR)
 				try {
 					sendSharedObjectMsgTo(responseTarget, SharedObjectMsg.createMsg(CALL_RESPONSE, new Response(response.getRequestId(), getSerializableException(e))));
