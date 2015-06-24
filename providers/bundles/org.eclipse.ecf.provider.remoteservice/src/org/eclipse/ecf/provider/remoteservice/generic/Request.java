@@ -9,7 +9,6 @@
 package org.eclipse.ecf.provider.remoteservice.generic;
 
 import java.io.Serializable;
-
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 
@@ -33,6 +32,12 @@ public class Request implements Serializable {
 
 	transient IRemoteCallListener listener = null;
 
+	private synchronized static long getNextRequestId() {
+		long result = nextRequestId;
+		nextRequestId = (nextRequestId == Long.MAX_VALUE) ? 0L : nextRequestId + 1;
+		return result;
+	}
+
 	public Request(ID requestContainerID, long serviceId, RemoteCallImpl call) {
 		this(requestContainerID, serviceId, call, null);
 	}
@@ -41,7 +46,7 @@ public class Request implements Serializable {
 		this.requestContainerID = requestContainerID;
 		this.serviceId = serviceId;
 		this.call = call;
-		this.requestId = nextRequestId++;
+		this.requestId = getNextRequestId();
 		this.listener = listener;
 	}
 
