@@ -45,7 +45,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	private static int uniqueRequestId = 0;
 
-	private static Integer createNextRequestId() {
+	private static synchronized Integer createNextRequestId() {
+		uniqueRequestId = (uniqueRequestId == Integer.MAX_VALUE) ? 0 : uniqueRequestId + 1;
 		return new Integer(uniqueRequestId++);
 	}
 
