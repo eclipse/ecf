@@ -11,7 +11,6 @@
 
 package org.eclipse.ecf.internal.provider.datashare;
 
-import java.util.List;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.util.*;
@@ -61,8 +60,6 @@ public class Activator implements BundleActivator {
 		}
 	}
 
-	List rscAdapterFactories;
-
 	/**
 	 * This method is called upon plug-in activation
 	 */
@@ -74,16 +71,12 @@ public class Activator implements BundleActivator {
 				if (am != null) {
 					IAdapterFactory af = new DatashareContainerAdapterFactory();
 					am.registerAdapters(af, org.eclipse.ecf.provider.generic.SSLServerSOContainer.class);
-					rscAdapterFactories.add(af);
 					af = new DatashareContainerAdapterFactory();
 					am.registerAdapters(af, org.eclipse.ecf.provider.generic.TCPServerSOContainer.class);
-					rscAdapterFactories.add(af);
 					af = new DatashareContainerAdapterFactory();
 					am.registerAdapters(af, org.eclipse.ecf.provider.generic.SSLClientSOContainer.class);
-					rscAdapterFactories.add(af);
 					af = new DatashareContainerAdapterFactory();
 					am.registerAdapters(af, org.eclipse.ecf.provider.generic.TCPClientSOContainer.class);
-					rscAdapterFactories.add(af);
 				}
 			}
 		});
