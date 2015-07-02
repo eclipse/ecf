@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Composent, Inc. All rights reserved. This
+ * Copyright (c) 2015 Composent, Inc. All rights reserved. This
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -22,21 +22,24 @@ import com.mycorp.examples.timeservice.ITimeService;
 
 public class Activator implements BundleActivator {
 
+	private static final boolean verbose = Boolean.valueOf(System.getProperty(
+			"verboseRemoteServiceAdmin", "true"));
+
+	private ServiceRegistration<ITimeService> timeServiceRegistration;
+
 	public void start(BundleContext context) throws Exception {
-		// If the verboseRemoteServiceAdmin system property is set
-		// then register debug listener
-		if (Boolean.getBoolean("verboseRemoteServiceAdmin"))
+		// If verbose is not turned off then register debug listener
+		if (verbose)
 			context.registerService(RemoteServiceAdminListener.class,
 					new DebugRemoteServiceAdminListener(), null);
 
-		// Create remote service properties...see
-		// createRemoteServiceProperties()
+		// Create remote service properties
 		Dictionary<String, Object> props = createRemoteServiceProperties();
 
 		// Create MyTimeService impl and register/export as a remote service
-		ServiceRegistration<ITimeService> timeServiceRegistration = context
-				.registerService(ITimeService.class, new TimeServiceImpl(),
-						props);
+		// via the remote service properties
+		timeServiceRegistration = context.registerService(ITimeService.class,
+				new TimeServiceImpl(), props);
 
 		// Print out that ITimeService remote service registration
 		System.out.println("TimeService host registered with registration="
@@ -44,25 +47,45 @@ public class Activator implements BundleActivator {
 	}
 
 	public void stop(BundleContext context) throws Exception {
-		// do nothing
+		if (timeServiceRegistration != null) {
+			timeServiceRegistration.unregister();
+			timeServiceRegistration = null;
+		}
 	}
+
+	private static final String SERVICE_EXPORTED_CONFIGS = "service.exported.configs";
+	private static final String DEFAULT_CONFIG = "ecf.generic.server";
 
 	private Dictionary<String, Object> createRemoteServiceProperties() {
 		// This is the only required service property to trigger remote services
-		Dictionary<String, Object> result = new Hashtable<String, Object>();
+		Hashtable<String, Object> result = new Hashtable<String, Object>();
+		// This property is required by the Remote Services specification
+		// (chapter 100 in enterprise specification), and when set results
+		// in RSA impl exporting as a remote service
 		result.put("service.exported.interfaces", "*");
+		// async interfaces is an ECF Remote Services service property
+		// that allows any declared asynchronous interfaces
+		// to be used by consumers.
+		// See https://wiki.eclipse.org/ECF/Asynchronous_Remote_Services
+		result.put("ecf.exported.async.interfaces", "*");
+		// get system properties
 		Properties props = System.getProperties();
-		String config = props.getProperty("service.exported.configs");
-		if (config != null) {
-			result.put("service.exported.configs", config);
-			String configProps = config + ".";
-			for (Object k : props.keySet()) {
-				if (k instanceof String) {
-					String key = (String) k;
-					if (key.startsWith(configProps)
-							|| key.equals("ecf.exported.async.interfaces"))
-						result.put(key, props.getProperty(key));
-				}
+		// Get OSGi service.exported.configs property
+		String config = props.getProperty(SERVICE_EXPORTED_CONFIGS);
+		if (config == null) {
+			config = DEFAULT_CONFIG;
+			result.put(DEFAULT_CONFIG + ".port", "3288");
+			result.put(DEFAULT_CONFIG + ".hostname", "localhost");
+		}
+		
+		result.put(SERVICE_EXPORTED_CONFIGS, config);
+		// add any config properties. config properties start with
+		// the config name '.' property
+		for (Object k : result.keySet()) {
+			if (k instanceof String) {
+				String key = (String) k;
+				if (key.startsWith(config))
+					result.put(key, result.get(key));
 			}
 		}
 		return result;
