@@ -31,8 +31,8 @@
 </feature>
 
 <feature name="ecf.rs.examples.timeservice.host" version="3.10.0" description="ECF RemoteService TimeService Host Example.  See https://wiki.eclipse.org/ECF#Introductory_Materials">
-<bundle start="false">http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/com.mycorp.examples.timeservice.host_1.1.0.v20150512-1727.jar</bundle>
-<bundle start="false">http://download.eclipse.org/rt/ecf/3.10.0/site.p2/asyncproxy/plugins/com.mycorp.examples.timeservice.async_2.0.0.201507021115.jar</bundle>
+<bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/com.mycorp.examples.timeservice.host_1.1.0.v20150512-1727.jar</bundle>
+<bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/asyncproxy/plugins/com.mycorp.examples.timeservice.async_2.0.0.201507021115.jar</bundle>
 </feature>
 
 </features>
