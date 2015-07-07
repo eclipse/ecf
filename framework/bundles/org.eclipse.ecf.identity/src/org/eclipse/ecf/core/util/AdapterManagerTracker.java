@@ -8,8 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.util;
 
-import org.eclipse.core.runtime.*;
-import org.eclipse.ecf.internal.core.identity.Activator;
+import org.eclipse.core.runtime.IAdapterManager;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
@@ -34,10 +33,6 @@ public class AdapterManagerTracker extends ServiceTracker {
 		// PlatformHelper class
 		if (adapterManager == null)
 			adapterManager = PlatformHelper.getPlatformAdapterManager();
-		if (adapterManager == null)
-			Activator.getDefault().log(
-					new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-							IStatus.ERROR, "Cannot get adapter manager", null)); //$NON-NLS-1$
 		return adapterManager;
 	}
 
