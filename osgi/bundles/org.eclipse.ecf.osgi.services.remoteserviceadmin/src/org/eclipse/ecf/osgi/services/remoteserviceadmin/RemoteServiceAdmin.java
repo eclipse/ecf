@@ -89,6 +89,11 @@ public class RemoteServiceAdmin implements
 
 	public static final String SERVICE_PROP = "org.eclipse.ecf.rsa"; //$NON-NLS-1$
 
+	private static final boolean disableServiceVersionChecking = new Boolean(
+			System.getProperty(
+					"org.eclipse.ecf.osgi.services.remoteserviceadmin.disableServiceVersionChecking", //$NON-NLS-1$
+					"false")).booleanValue(); //$NON-NLS-1$
+	
 	private Bundle clientBundle;
 
 	private boolean hostAutoCreateContainer = new Boolean(
@@ -1992,6 +1997,12 @@ public class RemoteServiceAdmin implements
 			Collection<Class> classes, Map<String, Version> interfaceVersions) {
 		// For all service interface classes
 		boolean result = true;
+		// For enhancement https://bugs.eclipse.org/bugs/show_bug.cgi?id=472106
+		if (disableServiceVersionChecking) {
+			logWarning("verifyServiceInterfaceVersionsForProxy", //$NON-NLS-1$
+					"Service version checking disabled via service property"); //$NON-NLS-1$
+			return result;
+		}
 		for (Class clazz : classes) {
 			String className = clazz.getName();
 			String packageName = getPackageName(className);
