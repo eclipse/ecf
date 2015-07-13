@@ -19,23 +19,23 @@
 	<bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.eclipse.ecf.remoteservice_8.5.0.v20150512-1727.jar</bundle>
 </feature>
 
-<feature name="ecf-remoteservices-rsa-impl" version="3.10.0" description="ECF RemoteServices OSGi R6 Remote Service Admin (RSA) Impl">
+<feature name="ecf-remoteservices-rsa-impl" version="3.10.0" description="ECF RemoteServices OSGi R6 Remote Service Admin (RSA) Impl.  See https://wiki.eclipse.org/Remote_Services_Admin">
     <feature version="3.10.0">ecf-remoteservices-core</feature>
 	<bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.eclipse.osgi.services.remoteserviceadmin_1.6.100.v20150512-1727.jar</bundle>
 	<bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy_1.0.0.v20150512-1727.jar</bundle>
 	<bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.eclipse.ecf.osgi.services.remoteserviceadmin_4.3.0.v20150512-1727.jar</bundle>
 </feature>
 
-<feature name="ecf-remoteservices-rsa-topology-manager" version="3.10.0" description="ECF RemoteServices OSGi R6 Default Topology Manager (promiscuous)">
+<feature name="ecf-remoteservices-rsa-topology-manager" version="3.10.0" description="ECF RemoteServices OSGi R6 Default Topology Manager (promiscuous).  See https://wiki.eclipse.org/Remote_Services_Admin">
 	<bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.eclipse.ecf.osgi.services.distribution_2.1.0.v20150512-1727.jar</bundle>
 </feature>
 
-<feature name="ecf-remoteservices-distprovider-generic" version="3.10.0" description="ECF RemoteServices Generic Distribution Provider">
+<feature name="ecf-remoteservices-distprovider-generic" version="3.10.0" description="ECF RemoteServices Generic Distribution Provider.  https://wiki.eclipse.org/EIG:Configuration_Properties">
 	<bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.eclipse.ecf.provider_4.5.0.v20150512-1727.jar</bundle>
 	<bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.eclipse.ecf.provider.remoteservice_4.1.0.v20150512-1727.jar</bundle>
 </feature>
 
-<feature name="ecf-remoteservices-distprovider-rosgi" version="3.10.0" description="ECF RemoteService ROSGi Distribution Provider">
+<feature name="ecf-remoteservices-distprovider-rosgi" version="3.10.0" description="ECF RemoteService ROSGi Distribution Provider.  https://wiki.eclipse.org/EIG:Configuration_Properties">
     <bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/ch.ethz.iks.r_osgi.remote_1.0.2.RC1_v20150512-1727.jar</bundle>
     <bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.eclipse.ecf.provider.r_osgi_3.5.200.v20150512-1727.jar</bundle>
 </feature>
@@ -44,12 +44,12 @@
 	<bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.eclipse.ecf.provider.jmdns_4.3.0.v20150512-1727.jar</bundle>
 </feature>
 
-<feature name="ecf-remoteservices-discprovider-zookeeper" version="3.10.0" description="ECF RemoteServices Zookeeper Discovery Provider">
+<feature name="ecf-remoteservices-discprovider-zookeeper" version="3.10.0" description="ECF RemoteServices Zookeeper Discovery Provider.  See https://wiki.eclipse.org/Zookeeper_Based_ECF_Discovery">
         <bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.apache.hadoop.zookeeper_3.3.3.v201105210832.jar</bundle>
         <bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.eclipse.ecf.provider.zookeeper_1.2.100.v20150512-1727.jar</bundle>
 </feature>
 
-<feature name="ecf-remoteservices-sdk" version="3.10.0" description="ECF 3.10.0 RemoteServices SDK with Generic Dist Provider and JMDNS/Zeroconf Discovery Provider.  See https://wiki.eclipse.org/ECF#OSGi_Remote_Services">
+<feature name="ecf-remoteservices-sdk" version="3.10.0" description="ECF 3.10.0 RemoteServices SDK with Generic Dist Provider and JMDNS/Zeroconf Discovery Provider">
 	<feature version="3.10.0">ecf-remoteservices-rsa-impl</feature>
 	<feature version="3.10.0">ecf-remoteservices-distprovider-generic</feature>
 	<feature version="3.10.0">ecf-remoteservices-discprovider-jmdns</feature>
