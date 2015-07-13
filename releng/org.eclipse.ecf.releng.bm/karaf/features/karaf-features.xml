@@ -45,8 +45,8 @@
 </feature>
 
 <feature name="ecf-remoteservices-discprovider-zookeeper" version="3.10.0" description="ECF RemoteServices Zookeeper Discovery Provider">
-        <bundle start="false">http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.apache.hadoop.zookeeper_3.3.3.v201105210832.jar</bundle>
-        <bundle start="false">http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.eclipse.ecf.provider.zookeeper_1.2.100.v20150512-1727.jar</bundle>
+        <bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.apache.hadoop.zookeeper_3.3.3.v201105210832.jar</bundle>
+        <bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.eclipse.ecf.provider.zookeeper_1.2.100.v20150512-1727.jar</bundle>
 </feature>
 
 <feature name="ecf-remoteservices-sdk" version="3.10.0" description="ECF 3.10.0 RemoteServices SDK with Generic Dist Provider and JMDNS/Zeroconf Discovery Provider.  See https://wiki.eclipse.org/ECF#OSGi_Remote_Services">

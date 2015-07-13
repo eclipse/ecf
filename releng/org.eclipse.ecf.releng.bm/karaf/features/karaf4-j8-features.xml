@@ -1,21 +1,21 @@
 <features xmlns="http://karaf.apache.org/xmlns/features/v1.2.0" name="ecf-remoteservices-sdk-3.10.0">
 
 <feature name="ecf-remoteservices-dependencies" version="3.10.0" description="ECF 3.10.0 RemoteServices External Dependencies.  https://wiki.eclipse.org/ECF#OSGi_Remote_Services">
-    <bundle>http://download.eclipse.org/equinox/drops/R-Luna-201406061215/org.eclipse.equinox.supplement_1.5.100.v20140428-1446.jar</bundle>
-    <bundle>http://download.eclipse.org/equinox/drops/R-Luna-201406061215/org.eclipse.osgi.services_3.4.0.v20140312-2051.jar</bundle>
-    <bundle>http://download.eclipse.org/equinox/drops/R-Luna-201406061215/org.eclipse.equinox.common_3.6.200.v20130402-1505.jar</bundle>
-    <bundle>http://download.eclipse.org/equinox/drops/R-Luna-201406061215/org.eclipse.equinox.event_1.3.100.v20140115-1647.jar</bundle>
-    <bundle>http://download.eclipse.org/equinox/drops/R-Luna-201406061215/org.eclipse.core.jobs_3.6.0.v20140424-0053.jar</bundle>
-    <bundle>http://download.eclipse.org/equinox/drops/R-Luna-201406061215/org.eclipse.equinox.concurrent_1.1.0.v20130327-1442.jar</bundle>
+	<bundle>http://download.eclipse.org/equinox/drops/R-Mars-201506032000/org.eclipse.equinox.supplement_1.6.0.v20141009-1504.jar</bundle>
+	<bundle>http://download.eclipse.org/equinox/drops/R-Mars-201506032000/org.eclipse.osgi.services_3.5.0.v20150519-2006.jar</bundle>
+	<bundle>http://download.eclipse.org/equinox/drops/R-Mars-201506032000/org.eclipse.equinox.common_3.7.0.v20150402-1709.jar</bundle>
+	<bundle>http://download.eclipse.org/equinox/drops/R-Mars-201506032000/org.eclipse.equinox.event_1.3.100.v20140115-1647.jar</bundle>
+	<bundle>http://download.eclipse.org/equinox/drops/R-Mars-201506032000/org.eclipse.core.jobs_3.7.0.v20150330-2103.jar</bundle>
+	<bundle>http://download.eclipse.org/equinox/drops/R-Mars-201506032000/org.eclipse.equinox.concurrent_1.1.0.v20130327-1442.jar</bundle>
 </feature>
-
+	
 <feature name="ecf-remoteservices-core" version="3.10.0" description="ECF Core">
     <feature version="3.10.0">ecf-remoteservices-dependencies</feature>
 	<bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.eclipse.ecf.identity_3.5.0.v20150512-1727.jar</bundle>
 	<bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.eclipse.ecf_3.4.0.v20150512-1727.jar</bundle>
 	<bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.eclipse.ecf.sharedobject_2.5.100.v20150512-1727.jar</bundle>
 	<bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.eclipse.ecf.discovery_5.0.0.v20150512-1727.jar</bundle>
-	<bundle>http://download.eclipse.org/rt/ecf/asyncproxy/site.p2/plugins/org.eclipse.ecf.remoteservice.asyncproxy_1.0.100.v20150702-1411.jar</bundle>
+    <bundle>http://download.eclipse.org/rt/ecf/asyncproxy/site.p2/plugins/org.eclipse.ecf.remoteservice.asyncproxy_2.0.100.v20150702-1411.jar</bundle>
 	<bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.eclipse.ecf.remoteservice_8.5.0.v20150512-1727.jar</bundle>
 </feature>
 
@@ -45,8 +45,8 @@
 </feature>
 
 <feature name="ecf-remoteservices-discprovider-zookeeper" version="3.10.0" description="ECF RemoteServices Zookeeper Discovery Provider">
-        <bundle start="false">http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.apache.hadoop.zookeeper_3.3.3.v201105210832.jar</bundle>
-        <bundle start="false">http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.eclipse.ecf.provider.zookeeper_1.2.100.v20150512-1727.jar</bundle>
+        <bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.apache.hadoop.zookeeper_3.3.3.v201105210832.jar</bundle>
+        <bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.eclipse.ecf.provider.zookeeper_1.2.100.v20150512-1727.jar</bundle>
 </feature>
 
 <feature name="ecf-remoteservices-sdk" version="3.10.0" description="ECF 3.10.0 RemoteServices SDK with Generic Dist Provider and JMDNS/Zeroconf Discovery Provider.  See https://wiki.eclipse.org/ECF#OSGi_Remote_Services">
@@ -58,12 +58,11 @@
 
 <feature name="ecf-remoteservices-examples-timeservice-host" version="3.10.0" description="ECF RemoteService TimeService Host Example.  See https://wiki.eclipse.org/Tutorial:_Building_your_first_OSGi_Remote_Service">
     <bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/com.mycorp.examples.timeservice.host_1.1.0.v20150512-1727.jar</bundle>
-    <bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/com.mycorp.examples.timeservice_1.1.0.v20150512-1727.jar</bundle>
+    <bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/asyncproxy/plugins/com.mycorp.examples.timeservice.async_2.0.0.201507021115.jar</bundle>
 </feature>
 
 <feature name="ecf-remoteservices-examples-timeservice-consumer" version="3.10.0" description="ECF RemoteService TimeService Consumer Example.  See https://wiki.eclipse.org/Tutorial:_Building_your_first_OSGi_Remote_Service">
-    <bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/com.mycorp.examples.timeservice_1.1.0.v20150512-1727.jar</bundle>
+    <bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/asyncproxy/plugins/com.mycorp.examples.timeservice.async_2.0.0.201507021115.jar</bundle>
 </feature>
 
 </features>
-
