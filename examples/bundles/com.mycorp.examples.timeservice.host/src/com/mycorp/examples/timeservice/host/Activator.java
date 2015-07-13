@@ -41,7 +41,7 @@ public class Activator implements BundleActivator {
 		timeServiceRegistration = context.registerService(ITimeService.class,
 				new TimeServiceImpl(), props);
 
-		// Print out that ITimeService remote service registration
+		// Print out the service registration
 		System.out.println("TimeService host registered with registration="
 				+ timeServiceRegistration);
 	}
@@ -57,7 +57,6 @@ public class Activator implements BundleActivator {
 	private static final String DEFAULT_CONFIG = "ecf.generic.server";
 
 	private Dictionary<String, Object> createRemoteServiceProperties() {
-		// This is the only required service property to trigger remote services
 		Hashtable<String, Object> result = new Hashtable<String, Object>();
 		// This property is required by the Remote Services specification
 		// (chapter 100 in enterprise specification), and when set results
