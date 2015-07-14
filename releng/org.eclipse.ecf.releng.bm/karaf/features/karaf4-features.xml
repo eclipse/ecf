@@ -2,11 +2,10 @@
 
 <feature name="ecf-remoteservices-dependencies" version="3.10.0" description="ECF 3.10.0 RemoteServices External Dependencies.  https://wiki.eclipse.org/ECF#OSGi_Remote_Services">
 	<bundle>http://download.eclipse.org/equinox/drops/R-Mars-201506032000/org.eclipse.equinox.supplement_1.6.0.v20141009-1504.jar</bundle>
-	<bundle>http://download.eclipse.org/equinox/drops/R-Mars-201506032000/org.eclipse.osgi.services_3.5.0.v20150519-2006.jar</bundle>
 	<bundle>http://download.eclipse.org/equinox/drops/R-Mars-201506032000/org.eclipse.equinox.common_3.7.0.v20150402-1709.jar</bundle>
-	<bundle>http://download.eclipse.org/equinox/drops/R-Mars-201506032000/org.eclipse.equinox.event_1.3.100.v20140115-1647.jar</bundle>
 	<bundle>http://download.eclipse.org/equinox/drops/R-Mars-201506032000/org.eclipse.core.jobs_3.7.0.v20150330-2103.jar</bundle>
 	<bundle>http://download.eclipse.org/equinox/drops/R-Mars-201506032000/org.eclipse.equinox.concurrent_1.1.0.v20130327-1442.jar</bundle>
+    <feature>eventadmin</feature>
 </feature>
 	
 <feature name="ecf-remoteservices-core" version="3.10.0" description="ECF Core">
