@@ -26,17 +26,17 @@ public class Trace {
 	public static final boolean TRACEALL = new Boolean(System.getProperty(
 			"org.eclipse.ecf.core.util.traceAll", "false"));
 
-	private static final List<String> TRACE_PLUGINS = new ArrayList<String>();
+	private static final List<String> TRACE_BUNDLES = new ArrayList<String>();
 
 	static {
 		if (!TRACEALL) {
 			String tracePlugins = System
-					.getProperty("org.eclipse.ecf.core.util.tracePlugins");
+					.getProperty("org.eclipse.ecf.core.util.traceBundles");
 			if (tracePlugins != null)
 				try {
 					String[] plugins = tracePlugins.split(",");
 					for (String s : plugins)
-						TRACE_PLUGINS.add(s);
+						TRACE_BUNDLES.add(s);
 				} catch (Exception e) {
 					System.err
 							.println("Unexpected exception in Trace class static initializer");
@@ -148,7 +148,7 @@ public class Trace {
 	private static final Map<String, Boolean> cachedOptions = new HashMap<String, Boolean>();
 
 	private static boolean tracePluginsStartsWith(String option) {
-		for (String s : TRACE_PLUGINS)
+		for (String s : TRACE_BUNDLES)
 			if (option.startsWith(s))
 				return true;
 		return false;
@@ -167,7 +167,7 @@ public class Trace {
 	protected static boolean shouldTrace(String pluginId) {
 		if (TRACEALL)
 			return true;
-		else if (TRACE_PLUGINS.contains(pluginId))
+		else if (TRACE_BUNDLES.contains(pluginId))
 			return true;
 		else
 			return shouldTrace0(pluginId + "/debug"); //$NON-NLS-1$
