@@ -222,24 +222,26 @@ public class EndpointDescriptionWriter {
 			Writer writer,
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription)
 			throws IOException {
-		writeEndpointDescriptions(
-				writer,
-				new org.osgi.service.remoteserviceadmin.EndpointDescription[] { endpointDescription });
+		if (endpointDescription != null)
+			writeEndpointDescriptions(
+					writer,
+					new org.osgi.service.remoteserviceadmin.EndpointDescription[] { endpointDescription });
 	}
 
 	public void writeEndpointDescriptions(
 			Writer writer,
 			org.osgi.service.remoteserviceadmin.EndpointDescription[] endpointDescriptions)
 			throws IOException {
-
-		indent(0, writer);
-		writer.append("<endpoint-descriptions xmlns=\"http://www.osgi.org/xmlns/rsa/v1.0.0\">"); //$NON-NLS-1$
-		newLine(writer);
-		for (int i = 0; i < endpointDescriptions.length; i++)
-			writeEndpointDescription(1, writer, endpointDescriptions[i]);
-		indent(0, writer);
-		writer.append("</endpoint-descriptions>"); //$NON-NLS-1$
-		newLine(writer);
+		if (endpointDescriptions != null) {
+			indent(0, writer);
+			writer.append("<endpoint-descriptions xmlns=\"http://www.osgi.org/xmlns/rsa/v1.0.0\">"); //$NON-NLS-1$
+			newLine(writer);
+			for (int i = 0; i < endpointDescriptions.length; i++)
+				writeEndpointDescription(1, writer, endpointDescriptions[i]);
+			indent(0, writer);
+			writer.append("</endpoint-descriptions>"); //$NON-NLS-1$
+			newLine(writer);
+		}
 	}
 
 	protected void writeEndpointDescription(
@@ -247,13 +249,15 @@ public class EndpointDescriptionWriter {
 			Writer writer,
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription)
 			throws IOException {
-		indent(indentLevel, writer);
-		writer.append("<endpoint-description>"); //$NON-NLS-1$
-		newLine(writer);
-		writeProperties(indentLevel, writer, endpointDescription);
-		indent(indentLevel, writer);
-		writer.append("</endpoint-description>"); //$NON-NLS-1$
-		newLine(writer);
+		if (endpointDescription != null) {
+			indent(indentLevel, writer);
+			writer.append("<endpoint-description>"); //$NON-NLS-1$
+			newLine(writer);
+			writeProperties(indentLevel, writer, endpointDescription);
+			indent(indentLevel, writer);
+			writer.append("</endpoint-description>"); //$NON-NLS-1$
+			newLine(writer);
+		}
 	}
 
 	protected void writeProperties(
