@@ -21,6 +21,31 @@ import org.eclipse.osgi.service.debug.DebugOptions;
 public class Trace {
 
 	/**
+	 * @since 3.6
+	 */
+	public static final boolean TRACEALL = new Boolean(System.getProperty(
+			"org.eclipse.ecf.core.util.traceAll", "false"));
+
+	private static final List<String> TRACE_PLUGINS = new ArrayList<String>();
+
+	static {
+		if (!TRACEALL) {
+			String tracePlugins = System
+					.getProperty("org.eclipse.ecf.core.util.tracePlugins");
+			if (tracePlugins != null)
+				try {
+					String[] plugins = tracePlugins.split(",");
+					for (String s : plugins)
+						TRACE_PLUGINS.add(s);
+				} catch (Exception e) {
+					System.err
+							.println("Unexpected exception in Trace class static initializer");
+					e.printStackTrace(System.err);
+				}
+		}
+	}
+
+	/**
 	 * private constructor for the static class.
 	 */
 	private Trace() {
@@ -120,7 +145,14 @@ public class Trace {
 	/**
 	 * The cached debug options (for optimization).
 	 */
-	private static final Map cachedOptions = new HashMap();
+	private static final Map<String, Boolean> cachedOptions = new HashMap<String, Boolean>();
+
+	private static boolean tracePluginsStartsWith(String option) {
+		for (String s : TRACE_PLUGINS)
+			if (option.startsWith(s))
+				return true;
+		return false;
+	}
 
 	/**
 	 * Retrieves a Boolean value indicating whether tracing is enabled for the
@@ -133,12 +165,19 @@ public class Trace {
 	 * 
 	 */
 	protected static boolean shouldTrace(String pluginId) {
-		return shouldTrace0(pluginId + "/debug"); //$NON-NLS-1$
+		if (TRACEALL)
+			return true;
+		else if (TRACE_PLUGINS.contains(pluginId))
+			return true;
+		else
+			return shouldTrace0(pluginId + "/debug"); //$NON-NLS-1$
 	}
 
 	protected static boolean shouldTrace0(String option) {
 		if (option == null)
 			return false;
+		if (TRACEALL || tracePluginsStartsWith(option))
+			return true;
 		Activator activator = Activator.getDefault();
 		if (activator == null)
 			return false;
@@ -167,9 +206,9 @@ public class Trace {
 			Boolean value = null;
 
 			synchronized (cachedOptions) {
-				value = (Boolean) cachedOptions.get(option);
+				value = cachedOptions.get(option);
 				if (null == value) {
-					value = shouldTrace0(option) ? Boolean.TRUE : Boolean.FALSE;
+					value = shouldTrace0(option);
 					cachedOptions.put(option, value);
 				}
 			}
@@ -305,8 +344,9 @@ public class Trace {
 	 *            The message to be traced.
 	 * 
 	 */
-	public static void trace(String pluginId, String option, Class clazz,
-			String methodName, String message) {
+	public static void trace(String pluginId, String option,
+			@SuppressWarnings("rawtypes") Class clazz, String methodName,
+			String message) {
 		if (shouldTrace(pluginId, option)) {
 			StringBuffer buf = new StringBuffer(PREFIX_TRACING).append(clazz
 					.getName());
@@ -362,9 +402,9 @@ public class Trace {
 	 * @param newValue
 	 *            The new value.
 	 */
-	public static void changing(String pluginId, String option, Class clazz,
-			String methodName, String valueDescription, Object oldValue,
-			Object newValue) {
+	public static void changing(String pluginId, String option,
+			@SuppressWarnings("rawtypes") Class clazz, String methodName,
+			String valueDescription, Object oldValue, Object newValue) {
 		if (shouldTrace(pluginId, option)) {
 			StringBuffer buf = new StringBuffer(PREFIX_CHANGING);
 			buf.append(valueDescription).append(SEPARATOR_SPACE)
@@ -395,8 +435,9 @@ public class Trace {
 	 *            The throwable that is being caught.
 	 * 
 	 */
-	public static void catching(String pluginId, String option, Class clazz,
-			String methodName, Throwable throwable) {
+	public static void catching(String pluginId, String option,
+			@SuppressWarnings("rawtypes") Class clazz, String methodName,
+			Throwable throwable) {
 
 		if (shouldTrace(pluginId, option)) {
 			StringBuffer buf = new StringBuffer(PREFIX_CATCHING);
@@ -409,8 +450,8 @@ public class Trace {
 					.append(SEPARATOR_METHOD);
 			buf.append(methodName).append(PARENTHESIS_CLOSE);
 			trace(buf.toString());
-			if(throwable != null) {
-			    throwable.printStackTrace(System.err);
+			if (throwable != null) {
+				throwable.printStackTrace(System.err);
 			}
 		}
 	}
@@ -432,8 +473,9 @@ public class Trace {
 	 *            The throwable that is being thrown.
 	 * 
 	 */
-	public static void throwing(String pluginId, String option, Class clazz,
-			String methodName, Throwable throwable) {
+	public static void throwing(String pluginId, String option,
+			@SuppressWarnings("rawtypes") Class clazz, String methodName,
+			Throwable throwable) {
 
 		if (shouldTrace(pluginId, option)) {
 			StringBuffer buf = new StringBuffer(PREFIX_THROWING);
@@ -463,8 +505,8 @@ public class Trace {
 	 *            The name of method that is being entered.
 	 * 
 	 */
-	public static void entering(String pluginId, String option, Class clazz,
-			String methodName) {
+	public static void entering(String pluginId, String option,
+			@SuppressWarnings("rawtypes") Class clazz, String methodName) {
 
 		if (shouldTrace(pluginId, option)) {
 			StringBuffer buf = new StringBuffer(PREFIX_ENTERING).append(clazz
@@ -491,8 +533,9 @@ public class Trace {
 	 *            The parameter to the method being entered.
 	 * 
 	 */
-	public static void entering(String pluginId, String option, Class clazz,
-			String methodName, Object parameter) {
+	public static void entering(String pluginId, String option,
+			@SuppressWarnings("rawtypes") Class clazz, String methodName,
+			Object parameter) {
 
 		if (shouldTrace(pluginId, option)) {
 			StringBuffer buf = new StringBuffer(PREFIX_ENTERING).append(clazz
@@ -521,8 +564,9 @@ public class Trace {
 	 *            The parameters to the method being entered.
 	 * 
 	 */
-	public static void entering(String pluginId, String option, Class clazz,
-			String methodName, Object[] parameters) {
+	public static void entering(String pluginId, String option,
+			@SuppressWarnings("rawtypes") Class clazz, String methodName,
+			Object[] parameters) {
 
 		if (shouldTrace(pluginId, option)) {
 			StringBuffer buf = new StringBuffer(PREFIX_ENTERING).append(clazz
@@ -548,8 +592,8 @@ public class Trace {
 	 *            The name of method that is being exited.
 	 * 
 	 */
-	public static void exiting(String pluginId, String option, Class clazz,
-			String methodName) {
+	public static void exiting(String pluginId, String option,
+			@SuppressWarnings("rawtypes") Class clazz, String methodName) {
 
 		if (shouldTrace(pluginId, option)) {
 			StringBuffer buf = new StringBuffer(PREFIX_EXITING).append(clazz
@@ -575,8 +619,9 @@ public class Trace {
 	 *            The return value of the method being exited.
 	 * 
 	 */
-	public static void exiting(String pluginId, String option, Class clazz,
-			String methodName, Object returnValue) {
+	public static void exiting(String pluginId, String option,
+			@SuppressWarnings("rawtypes") Class clazz, String methodName,
+			Object returnValue) {
 
 		if (shouldTrace(pluginId, option)) {
 			StringBuffer buf = new StringBuffer(PREFIX_EXITING).append(clazz

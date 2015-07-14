@@ -157,15 +157,13 @@ public class ContainerTypeDescription {
 	 *         returned if no adapters are supported.
 	 */
 	public String[] getSupportedAdapterTypes() {
-		String method = "getSupportedAdapterTypes"; //$NON-NLS-1$
-		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
 		String[] result = new String[0];
 		try {
 			String[] r = getInstantiator().getSupportedAdapterTypes(this);
 			if (r != null)
 				result = r;
 		} catch (Exception e) {
-			traceAndLogException(IStatus.ERROR, method, e);
+			traceAndLogException(IStatus.ERROR, "getSupportedAdapterTypes", e); //$NON-NLS-1$
 		}
 		List resultList = new ArrayList();
 		for (int i = 0; i < result.length; i++) {
@@ -173,7 +171,6 @@ public class ContainerTypeDescription {
 		}
 		if (!resultList.contains(IContainer.class.getName()))
 			resultList.add(IContainer.class.getName());
-		Trace.exiting(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_EXITING, this.getClass(), method, result);
 		return (String[]) resultList.toArray(new String[] {});
 	}
 
@@ -202,17 +199,14 @@ public class ContainerTypeDescription {
 	 *         array will be returned
 	 */
 	public Class[][] getSupportedParameterTypes() {
-		String method = "getParameterTypes"; //$NON-NLS-1$
-		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
-		Class[][] result = new Class[0][0];
+		Class[][] result = {{}};
 		try {
 			Class[][] r = getInstantiator().getSupportedParameterTypes(this);
 			if (r != null)
 				result = r;
 		} catch (Exception e) {
-			traceAndLogException(IStatus.ERROR, method, e);
+			traceAndLogException(IStatus.ERROR, "getSupportedParameterTypes", e); //$NON-NLS-1$
 		}
-		Trace.exiting(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_EXITING, this.getClass(), method, result);
 		return result;
 	}
 
@@ -222,13 +216,11 @@ public class ContainerTypeDescription {
 	 * @since 3.0
 	 */
 	public String[] getSupportedIntents() {
-		String method = "getSupportedIntents"; //$NON-NLS-1$
-		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
 		try {
 			IContainerInstantiator ci = getInstantiator();
 			return (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).getSupportedIntents(this) : null;
 		} catch (Exception e) {
-			traceAndLogException(IStatus.ERROR, method, e);
+			traceAndLogException(IStatus.ERROR, "getSupportedIntents", e); //$NON-NLS-1$
 			return null;
 		}
 	}
@@ -237,13 +229,11 @@ public class ContainerTypeDescription {
 	 * @since 3.1
 	 */
 	public String[] getSupportedConfigs() {
-		String method = "getSupportedConfigs"; //$NON-NLS-1$
-		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
 		try {
 			IContainerInstantiator ci = getInstantiator();
 			return (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).getSupportedConfigs(this) : null;
 		} catch (Exception e) {
-			traceAndLogException(IStatus.ERROR, method, e);
+			traceAndLogException(IStatus.ERROR, "getSupportedConfigs", e); //$NON-NLS-1$
 			return null;
 		}
 	}
@@ -252,15 +242,13 @@ public class ContainerTypeDescription {
 	 * @since 3.1
 	 */
 	public String[] getImportedConfigs(String[] exporterSupportedConfigs) {
-		String method = "getImportedConfigs"; //$NON-NLS-1$
-		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
 		if (exporterSupportedConfigs == null)
 			return null;
 		try {
 			IContainerInstantiator ci = getInstantiator();
 			return (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).getImportedConfigs(this, exporterSupportedConfigs) : null;
 		} catch (Exception e) {
-			traceAndLogException(IStatus.ERROR, method, e);
+			traceAndLogException(IStatus.ERROR, "getImportedConfigs", e); //$NON-NLS-1$
 			return null;
 		}
 	}
@@ -269,15 +257,13 @@ public class ContainerTypeDescription {
 	 * @since 3.1
 	 */
 	public Dictionary getPropertiesForImportedConfigs(String[] importedConfigs, Dictionary exportedProperties) {
-		String method = "getPropertiesForImportedConfigs"; //$NON-NLS-1$
-		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
 		if (importedConfigs == null)
 			return null;
 		try {
 			IContainerInstantiator ci = getInstantiator();
 			return (ci instanceof IRemoteServiceContainerInstantiator) ? ((IRemoteServiceContainerInstantiator) ci).getPropertiesForImportedConfigs(this, importedConfigs, exportedProperties) : null;
 		} catch (Exception e) {
-			traceAndLogException(IStatus.ERROR, method, e);
+			traceAndLogException(IStatus.ERROR, "getPropertiesForImportedConfigs", e); //$NON-NLS-1$
 			return null;
 		}
 	}

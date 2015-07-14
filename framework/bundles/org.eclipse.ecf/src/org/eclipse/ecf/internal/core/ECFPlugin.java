@@ -114,7 +114,7 @@ public class ECFPlugin implements BundleActivator {
 		} catch (ClassNotFoundException e) {
 			// will occur if fragment is not installed or not on proper execution environment
 		} catch (Throwable t) {
-			log(new Status(IStatus.ERROR, getDefault().getBundle().getSymbolicName(), "Unexpected Error in ECFPlugin.start", t)); //$NON-NLS-1$
+			log(new Status(IStatus.ERROR, PLUGIN_ID, "Unexpected Error in ECFPlugin.start", t)); //$NON-NLS-1$
 		}
 
 		// initialize from ContainerTypeDescription services
@@ -191,9 +191,8 @@ public class ECFPlugin implements BundleActivator {
 			protected void runWithRegistry(IExtensionRegistry registry) throws Exception {
 				if (registry != null) {
 					final IExtensionPoint extensionPoint = registry.getExtensionPoint(START_EPOINT);
-					if (extensionPoint == null) {
+					if (extensionPoint == null)
 						return;
-					}
 					IConfigurationElement[] configurationElements = extensionPoint.getConfigurationElements();
 					final String method = "runStartExtensions"; //$NON-NLS-1$
 					// For each configuration element
@@ -209,8 +208,7 @@ public class ECFPlugin implements BundleActivator {
 								try {
 									result = clazz.run(new NullProgressMonitor());
 								} catch (final Throwable e) {
-									final String message = "startup extension error"; //$NON-NLS-1$
-									logException(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, message, e), message, e);
+									logException(method, "startup extension error", e); //$NON-NLS-1$
 								}
 								if (result != null && !result.isOK())
 									logException(result, result.getMessage(), result.getException());
@@ -221,7 +219,7 @@ public class ECFPlugin implements BundleActivator {
 						} catch (final CoreException e) {
 							logException(e.getStatus(), method, e);
 						} catch (final Exception e) {
-							logException(new Status(IStatus.ERROR, getDefault().getBundle().getSymbolicName(), IStatus.ERROR, "Unknown start exception", e), method, e); //$NON-NLS-1$
+							logException(method, "Unknown start exception", e); //$NON-NLS-1$
 						}
 					}
 				}
@@ -339,9 +337,14 @@ public class ECFPlugin implements BundleActivator {
 			logService.log(LogHelper.getLogCode(status), LogHelper.getLogMessage(status), status.getException());
 	}
 
-	protected void logException(IStatus status, String method, Throwable exception) {
+	protected void logException(String method, String message, Throwable exception) {
+		log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, message, exception));
+		Trace.catching(PLUGIN_ID, ECFDebugOptions.EXCEPTIONS_CATCHING, ECFPlugin.class, method, exception);
+	}
+
+	protected void logException(IStatus status, String methodName, Throwable exception) {
 		log(status);
-		Trace.catching(ECFPlugin.PLUGIN_ID, ECFDebugOptions.EXCEPTIONS_CATCHING, ECFPlugin.class, method, exception);
+		Trace.catching(status.getPlugin(), ECFDebugOptions.EXCEPTIONS_CATCHING, ECFPlugin.class, methodName, exception);
 	}
 
 	/**
@@ -351,37 +354,33 @@ public class ECFPlugin implements BundleActivator {
 	 *            the members to remove
 	 */
 	protected void removeContainerFactoryExtensions(IConfigurationElement[] members) {
-		final String method = "removeContainerFactoryExtensions"; //$NON-NLS-1$
-		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, ECFPlugin.class, method, members);
 		// For each configuration element
 		for (int m = 0; m < members.length; m++) {
 			final IConfigurationElement member = members[m];
-			// Get the label of the extender plugin and the ID of the extension.
-			final IExtension extension = member.getDeclaringExtension();
 			String name = null;
 			try {
 				// Get name and get version, if available
 				name = member.getAttribute(NAME_ATTRIBUTE);
-				if (name == null) {
+				if (name == null)
 					name = member.getAttribute(CLASS_ATTRIBUTE);
-				}
 				final IContainerFactory factory = ContainerFactory.getDefault();
 				final ContainerTypeDescription cd = factory.getDescriptionByName(name);
-				if (cd == null || !factory.containsDescription(cd)) {
+				if (cd == null || !factory.containsDescription(cd))
 					continue;
-				}
 				// remove
 				factory.removeDescription(cd);
-				Trace.trace(ECFPlugin.PLUGIN_ID, ECFDebugOptions.DEBUG, method + ".removed " + cd + " from factory"); //$NON-NLS-1$ //$NON-NLS-2$
+				trace("removeContainerFactoryExtensions", "Removed ContainerTypeDescription=" + cd); //$NON-NLS-1$ //$NON-NLS-2$
 			} catch (final Exception e) {
-				logException(new Status(IStatus.ERROR, getDefault().getBundle().getSymbolicName(), IStatus.ERROR, "ECF container factory with name=" + name + " already found. Ignoring registration for containerFactory extension point=" + extension.getExtensionPointUniqueIdentifier(), null), method, e); //$NON-NLS-1$//$NON-NLS-2$
+				logException("removeContainerFactoryExtensions", "Unexpected exception", e); //$NON-NLS-1$//$NON-NLS-2$
 			}
 		}
 	}
 
+	private void trace(String method, String message) {
+		Trace.trace(PLUGIN_ID, ECFDebugOptions.DEBUG, "TRACING " + ECFPlugin.class.getName() + "#" + method + " " + message); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+	}
+
 	void removeContainerExtensions(IConfigurationElement[] members) {
-		final String method = "removeContainerExtensions"; //$NON-NLS-1$
-		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, ECFPlugin.class, method, members);
 		// For each configuration element
 		for (int m = 0; m < members.length; m++) {
 			final IConfigurationElement member = members[m];
@@ -402,7 +401,7 @@ public class ECFPlugin implements BundleActivator {
 						try {
 							containers[i].dispose();
 						} catch (Exception e) {
-							logException(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, "Unexpected exception disposing container with factoryName=" + factoryName + " and id=" + containers[i].getID(), null), method, e); //$NON-NLS-1$ //$NON-NLS-2$
+							logException("removeContainerException", "Unexpected exception disposing container id=" + containers[i].getID(), e); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 					}
 				}
@@ -417,14 +416,10 @@ public class ECFPlugin implements BundleActivator {
 	 *            to add
 	 */
 	protected void addContainerFactoryExtensions(IConfigurationElement[] members) {
-		final String method = "addContainerFactoryExtensions"; //$NON-NLS-1$
-		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, ECFPlugin.class, method, members);
 		final IContainerFactory factory = ContainerFactory.getDefault();
 		// For each configuration element
 		for (int m = 0; m < members.length; m++) {
 			final IConfigurationElement member = members[m];
-			// Get the label of the extender plugin and the ID of the extension.
-			final IExtension extension = member.getDeclaringExtension();
 			Object exten = null;
 			String name = null;
 			try {
@@ -444,15 +439,13 @@ public class ECFPlugin implements BundleActivator {
 				exten = member.createExecutableExtension(CLASS_ATTRIBUTE);
 				final String clazz = exten.getClass().getName();
 
-				if (name == null) {
+				if (name == null)
 					name = clazz;
-				}
 
 				// Get description, if present
 				String description = member.getAttribute(DESCRIPTION_ATTRIBUTE);
-				if (description == null) {
+				if (description == null)
 					description = ""; //$NON-NLS-1$
-				}
 
 				String s = member.getAttribute(SERVER_ATTRIBUTE);
 				final boolean server = (s == null) ? false : Boolean.valueOf(s).booleanValue();
@@ -468,18 +461,16 @@ public class ECFPlugin implements BundleActivator {
 				}
 				// Now add the description and we're ready to go.
 				factory.addDescription(scd);
-				Trace.trace(ECFPlugin.PLUGIN_ID, ECFDebugOptions.DEBUG, method + ".added " + scd + " to factory " + factory); //$NON-NLS-1$ //$NON-NLS-2$
+				trace("addContainerFactoryDescription", "added ContainerTypeDescription=" + scd); //$NON-NLS-1$ //$NON-NLS-2$
 			} catch (final CoreException e) {
-				logException(e.getStatus(), method, e);
+				logException(e.getStatus(), "addContainerFactoryExtension", e); //$NON-NLS-1$
 			} catch (final Exception e) {
-				logException(new Status(IStatus.ERROR, getDefault().getBundle().getSymbolicName(), IStatus.ERROR, "ECF container factory with name=" + name + " already found. Ignoring registration for containerFactory extension point=" + extension.getExtensionPointUniqueIdentifier(), null), method, e); //$NON-NLS-1$ //$NON-NLS-2$
+				logException("addContainerFactoryExtension", "Unexpected error", e); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 	}
 
 	void addContainerExtensions(IConfigurationElement[] members) {
-		final String method = "addContainerExtensions"; //$NON-NLS-1$
-		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, ECFPlugin.class, method, members);
 		// For each configuration element
 		for (int m = 0; m < members.length; m++) {
 			final IConfigurationElement member = members[m];
@@ -495,11 +486,11 @@ public class ECFPlugin implements BundleActivator {
 				id = (id == null || "".equals(id)) ? null : id; //$NON-NLS-1$
 				Map parameters = getParametersForContainer(member);
 				ContainerFactory.getDefault().createContainer(factory, id, parameters);
-				Trace.trace(ECFPlugin.PLUGIN_ID, ECFDebugOptions.DEBUG, method + ".added container with factoryName=" + factory + " and id=" + id); //$NON-NLS-1$ //$NON-NLS-2$
+				trace("addContainerExtensions", "Created container with id=" + id); //$NON-NLS-1$ //$NON-NLS-2$
 			} catch (final CoreException e) {
-				logException(e.getStatus(), method, e);
+				logException(e.getStatus(), "addContainerExtensions", e); //$NON-NLS-1$
 			} catch (final Exception e) {
-				logException(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, "Unexpected exception creating container with factoryName=" + factory + " and id=" + id, null), method, e); //$NON-NLS-1$ //$NON-NLS-2$
+				logException("addContainerExtensions", "Exception creating container with id=" + id, null); //$NON-NLS-1$//$NON-NLS-2$
 			}
 		}
 	}
