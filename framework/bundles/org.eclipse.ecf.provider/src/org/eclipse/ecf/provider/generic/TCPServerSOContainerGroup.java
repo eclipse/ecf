@@ -60,7 +60,7 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements ISock
 	}
 
 	protected void trace(String msg) {
-		Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG, msg);
+		Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG, "TRACING " + msg); //$NON-NLS-1$
 	}
 
 	protected void traceStack(String msg, Throwable e) {
@@ -102,10 +102,12 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements ISock
 			throw new InvalidObjectException("Container not found for path=" + path); //$NON-NLS-1$
 		// Create our local messaging interface
 		final Client newClient = new Client(aSocket, iStream, oStream, srs.getReceiver());
+		// Get output stream lock so nothing is sent until we've responded
+		Object outputStreamLock = newClient.getOutputStreamLock();
 		// No other threads can access messaging interface until space has
 		// accepted/rejected
 		// connect request
-		synchronized (newClient) {
+		synchronized (outputStreamLock) {
 			// Call checkConnect
 			final Serializable resp = srs.handleConnectRequest(aSocket, path, req.getData(), newClient);
 			// Create connect response wrapper and send it back

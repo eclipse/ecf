@@ -12,6 +12,7 @@ package org.eclipse.ecf.provider.generic;
 
 import java.io.*;
 import java.net.*;
+import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -28,9 +29,10 @@ public class SSLServerSOContainerGroup extends SOContainerGroup implements ISock
 	public static final int DEFAULT_BACKLOG = 50;
 	public static final String INVALID_CONNECT = "Invalid connect request."; //$NON-NLS-1$
 	public static final String DEFAULT_GROUP_NAME = SSLServerSOContainerGroup.class.getName();
+
 	private int port = 0;
 	private int backlog = DEFAULT_BACKLOG;
-	ServerSocket serverSocket;
+	SSLServerSocket serverSocket;
 	private boolean isOnTheAir = false;
 	private ThreadGroup threadGroup;
 	private InetAddress inetAddress;
@@ -68,8 +70,13 @@ public class SSLServerSOContainerGroup extends SOContainerGroup implements ISock
 		this(DEFAULT_GROUP_NAME, null, port);
 	}
 
-	private SSLServerSocketFactory getSSLServerSocketFactory() {
-		return ProviderPlugin.getDefault().getSSLServerSocketFactory();
+	/**
+	 * @since 4.6
+	 */
+	public SSLServerSOContainerGroup(String name, ThreadGroup group, SSLServerSocket sslServerSocket) {
+		super(name);
+		this.threadGroup = group;
+		this.serverSocket = sslServerSocket;
 	}
 
 	protected void trace(String msg) {
@@ -80,16 +87,15 @@ public class SSLServerSOContainerGroup extends SOContainerGroup implements ISock
 		Trace.catching(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.EXCEPTIONS_CATCHING, SSLServerSOContainerGroup.class, msg, e);
 	}
 
-	private ServerSocket createServerSocket() throws IOException {
-		SSLServerSocketFactory socketFactory = getSSLServerSocketFactory();
-		if (socketFactory == null)
-			throw new IOException("Cannot get SSLServerSocketFactory to create SSLServerSocket"); //$NON-NLS-1$
-		return socketFactory.createServerSocket(port, backlog, inetAddress);
-	}
-
 	public synchronized void putOnTheAir() throws IOException {
 		trace("SSLServerSOContainerGroup at port " + port + " on the air"); //$NON-NLS-1$ //$NON-NLS-2$
-		serverSocket = createServerSocket();
+		if (this.serverSocket == null) {
+			SSLServerSocketFactory socketFactory = ProviderPlugin.getDefault().getSSLServerSocketFactory();
+			if (socketFactory == null)
+				throw new IOException("Cannot get SSLServerSocketFactory to create SSLServerSocket"); //$NON-NLS-1$
+
+			serverSocket = (SSLServerSocket) ((this.inetAddress == null) ? socketFactory.createServerSocket(this.port, this.backlog) : socketFactory.createServerSocket(this.port, this.backlog, this.inetAddress));
+		}
 		port = serverSocket.getLocalPort();
 		isOnTheAir = true;
 		listenerThread.start();
@@ -119,10 +125,12 @@ public class SSLServerSOContainerGroup extends SOContainerGroup implements ISock
 			throw new InvalidObjectException("Container not found for path=" + path); //$NON-NLS-1$
 		// Create our local messaging interface
 		final Client newClient = new Client(aSocket, iStream, oStream, srs.getReceiver());
+		// Get output stream lock so nothing is sent until we've responded
+		Object outputStreamLock = newClient.getOutputStreamLock();
 		// No other threads can access messaging interface until space has
 		// accepted/rejected
 		// connect request
-		synchronized (newClient) {
+		synchronized (outputStreamLock) {
 			// Call checkConnect
 			final Serializable resp = srs.handleConnectRequest(aSocket, path, req.getData(), newClient);
 			// Create connect response wrapper and send it back

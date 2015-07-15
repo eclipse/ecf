@@ -173,7 +173,7 @@ public final class Client implements ISynchAsynchConnection {
 		try {
 			return fact.createSocket(remote.getHost(), remote.getPort(), timeout);
 		} catch (IOException e) {
-			throw new ECFException("Could not create socket to connect to id=" + remote); //$NON-NLS-1$
+			throw new ECFException("Could not create socket to connect to id=" + remote, e); //$NON-NLS-1$
 		}
 	}
 
@@ -550,5 +550,12 @@ public final class Client implements ISynchAsynchConnection {
 
 	public void setProperties(Map props) {
 		this.properties = props;
+	}
+
+	/**
+	 * @since 4.6
+	 */
+	public Object getOutputStreamLock() {
+		return outputStreamLock;
 	}
 }
