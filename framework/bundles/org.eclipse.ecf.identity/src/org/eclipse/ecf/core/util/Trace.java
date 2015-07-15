@@ -20,10 +20,7 @@ import org.eclipse.osgi.service.debug.DebugOptions;
  */
 public class Trace {
 
-	/**
-	 * @since 3.6
-	 */
-	public static final boolean TRACEALL = new Boolean(System.getProperty(
+	private static final boolean TRACEALL = new Boolean(System.getProperty(
 			"org.eclipse.ecf.core.util.traceAll", "false"));
 
 	private static final List<String> TRACE_BUNDLES = new ArrayList<String>();
