@@ -2,7 +2,7 @@
 
 <feature name="ecf-remoteservices-dependencies" version="3.10.0" description="ECF 3.10.0 RemoteServices External Dependencies.  https://wiki.eclipse.org/ECF#OSGi_Remote_Services">
 	<bundle>http://download.eclipse.org/equinox/drops/R-Mars-201506032000/org.eclipse.equinox.supplement_1.6.0.v20141009-1504.jar</bundle>
-	<bundle>http://download.eclipse.org/equinox/drops/R-Mars-201506032000/org.eclipse.equinox.common_3.7.0.v20150402-1709.jar</bundle>
+	<bundle start-level="50">http://download.eclipse.org/equinox/drops/R-Mars-201506032000/org.eclipse.equinox.common_3.7.0.v20150402-1709.jar</bundle>
 	<bundle>http://download.eclipse.org/equinox/drops/R-Mars-201506032000/org.eclipse.core.jobs_3.7.0.v20150330-2103.jar</bundle>
 	<bundle>http://download.eclipse.org/equinox/drops/R-Mars-201506032000/org.eclipse.equinox.concurrent_1.1.0.v20130327-1442.jar</bundle>
     <feature>eventadmin</feature>
@@ -10,8 +10,8 @@
 	
 <feature name="ecf-remoteservices-core" version="3.10.0" description="ECF Core">
     <feature version="3.10.0">ecf-remoteservices-dependencies</feature>
-	<bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.eclipse.ecf.identity_3.5.0.v20150512-1727.jar</bundle>
-	<bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.eclipse.ecf_3.4.0.v20150512-1727.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/asyncproxy/plugins/org.eclipse.ecf.identity_3.6.0.v20150714-1511.jar</bundle>
+	<bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/asyncproxy/plugins/org.eclipse.ecf_3.5.0.v20150714-1511.jar</bundle>
 	<bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.eclipse.ecf.sharedobject_2.5.100.v20150512-1727.jar</bundle>
 	<bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.eclipse.ecf.discovery_5.0.0.v20150512-1727.jar</bundle>
     <bundle>http://download.eclipse.org/rt/ecf/asyncproxy/site.p2/plugins/org.eclipse.ecf.remoteservice.asyncproxy_2.0.100.v20150702-1411.jar</bundle>
