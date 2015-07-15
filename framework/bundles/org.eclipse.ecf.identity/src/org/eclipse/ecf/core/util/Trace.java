@@ -147,13 +147,6 @@ public class Trace {
 	 */
 	private static final Map<String, Boolean> cachedOptions = new HashMap<String, Boolean>();
 
-	private static boolean tracePluginsStartsWith(String option) {
-		for (String s : TRACE_BUNDLES)
-			if (option.startsWith(s))
-				return true;
-		return false;
-	}
-
 	/**
 	 * Retrieves a Boolean value indicating whether tracing is enabled for the
 	 * specified plug-in.
@@ -165,19 +158,12 @@ public class Trace {
 	 * 
 	 */
 	protected static boolean shouldTrace(String pluginId) {
-		if (TRACEALL)
-			return true;
-		else if (TRACE_BUNDLES.contains(pluginId))
-			return true;
-		else
-			return shouldTrace0(pluginId + "/debug"); //$NON-NLS-1$
+		return shouldTrace0(pluginId + "/debug"); //$NON-NLS-1$
 	}
 
 	protected static boolean shouldTrace0(String option) {
 		if (option == null)
 			return false;
-		if (TRACEALL || tracePluginsStartsWith(option))
-			return true;
 		Activator activator = Activator.getDefault();
 		if (activator == null)
 			return false;
@@ -202,6 +188,8 @@ public class Trace {
 	public static boolean shouldTrace(String pluginId, String option) {
 		if (pluginId == null)
 			return false;
+		if (TRACEALL || TRACE_BUNDLES.contains(pluginId))
+			return true;
 		if (shouldTrace(pluginId)) {
 			Boolean value = null;
 
