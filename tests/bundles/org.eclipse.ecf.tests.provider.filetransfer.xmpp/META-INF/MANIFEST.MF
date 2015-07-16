@@ -11,7 +11,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf.tests,
  org.eclipse.ecf.tests.filetransfer,
  org.eclipse.ecf,
- org.eclipse.ecf.filetransfer
+ org.eclipse.ecf.filetransfer,
+ org.eclipse.equinox.concurrent
 Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
  J2SE-1.4
 Eclipse-LazyStart: true
