@@ -19,6 +19,7 @@ import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
+import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferSendDoneEvent;
 import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 
@@ -30,13 +31,22 @@ public class SCPOutgoingTest extends AbstractSCPTest {
 	private String localSendFile = System.getProperty("localSendFile", "test.txt"); //$NON-NLS-1$ //$NON-NLS-2$
 	private String targetSendFile = System.getProperty("targetSendFile", "test.txt"); //$NON-NLS-1$ //$NON-NLS-2$
 
-	protected ISendFileTransferContainerAdapter adapter = null;
-	protected IFileTransferListener senderTransferListener = null;
+	ISendFileTransferContainerAdapter adapter = null;
+	IFileTransferListener senderTransferListener = null;
+	IFileID targetID;
 
-	protected IFileTransferListener getFileTransferListener(final String prefix) {
+	protected void syncNotify() {
+		super.syncNotify();
+	}
+
+	private IFileTransferListener getFileTransferListener(final String prefix) {
 		return new IFileTransferListener() {
 			public void handleTransferEvent(IFileTransferEvent event) {
 				System.out.println(prefix + ".handleTransferEvent(" + event + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+				if (event instanceof IOutgoingFileTransferSendDoneEvent) {
+					System.out.println(prefix + " DONE"); //$NON-NLS-1$
+					syncNotify();
+				}
 			}
 		};
 	}
@@ -46,6 +56,9 @@ public class SCPOutgoingTest extends AbstractSCPTest {
 		final IContainer container = ContainerFactory.getDefault().createContainer();
 		adapter = (ISendFileTransferContainerAdapter) container.getAdapter(ISendFileTransferContainerAdapter.class);
 		senderTransferListener = getFileTransferListener("localhost"); //$NON-NLS-1$
+		String targetURL = "scp://" + username + "@" + host + (targetSendFile.startsWith("/") ? "" : "/") + targetSendFile; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+		targetID = FileIDFactory.getDefault().createFileID(adapter.getOutgoingNamespace(), new URL(targetURL));
+		adapter.setConnectContextForAuthentication(ConnectContextFactory.createPasswordConnectContext(password));
 	}
 
 	protected void tearDown() throws Exception {
@@ -55,12 +68,9 @@ public class SCPOutgoingTest extends AbstractSCPTest {
 	}
 
 	public void testSend() throws Exception {
-		String targetURL = "scp://" + username + "@" + host + (targetSendFile.startsWith("/") ? "" : "/") + targetSendFile; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-		System.out.println("Sending to " + targetURL); //$NON-NLS-1$
-		final IFileID targetID = FileIDFactory.getDefault().createFileID(adapter.getOutgoingNamespace(), new URL(targetURL));
-		adapter.setConnectContextForAuthentication(ConnectContextFactory.createPasswordConnectContext(password));
+		System.out.println("sending to targetID=" + targetID); //$NON-NLS-1$
 		adapter.sendOutgoingRequest(targetID, new File(localSendFile), senderTransferListener, null);
 
-		sleep(10000);
+		syncWaitForNotify(20000);
 	}
 }
