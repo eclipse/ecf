@@ -77,6 +77,8 @@ public class SSLServerSOContainerGroup extends SOContainerGroup implements ISock
 		super(name);
 		this.threadGroup = group;
 		this.serverSocket = sslServerSocket;
+		this.port = serverSocket.getLocalPort();
+		this.listenerThread = setupListener();
 	}
 
 	protected void trace(String msg) {

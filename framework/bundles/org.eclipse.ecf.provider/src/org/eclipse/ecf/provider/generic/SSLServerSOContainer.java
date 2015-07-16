@@ -14,6 +14,7 @@ package org.eclipse.ecf.provider.generic;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.*;
+import javax.net.ssl.SSLServerSocket;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
 import org.eclipse.ecf.provider.comm.IConnectRequestHandler;
 import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
@@ -71,9 +72,25 @@ public class SSLServerSOContainer extends ServerSOContainer implements IConnectR
 	public SSLServerSOContainer(ISharedObjectContainerConfig config, int port, InetAddress bindAddress, String path, int keepAlive) throws IOException {
 		super(config);
 		isSingle = true;
+		this.keepAlive = keepAlive;
 		if (path == null)
 			throw new NullPointerException("path cannot be null"); //$NON-NLS-1$
 		this.group = new SSLServerSOContainerGroup(SSLServerSOContainerGroup.DEFAULT_GROUP_NAME, null, Server.DEFAULT_BACKLOG, port, bindAddress);
+		this.group.add(path, this);
+		this.group.putOnTheAir();
+	}
+
+	/**
+	 * @since 4.6
+	 */
+	public SSLServerSOContainer(ISharedObjectContainerConfig config, SSLServerSocket sslServerSocket, int keepAlive) throws IOException, URISyntaxException {
+		super(config);
+		this.keepAlive = keepAlive;
+		URI actualURI = new URI(getID().getName());
+		String path = actualURI.getPath();
+		if (path == null)
+			throw new NullPointerException("path cannot be null"); //$NON-NLS-1$
+		this.group = new SSLServerSOContainerGroup(SSLServerSOContainerGroup.DEFAULT_GROUP_NAME, null, sslServerSocket);
 		this.group.add(path, this);
 		this.group.putOnTheAir();
 	}
@@ -83,6 +100,7 @@ public class SSLServerSOContainer extends ServerSOContainer implements IConnectR
 	 */
 	public SSLServerSOContainer(ISharedObjectContainerConfig config, InetAddress bindAddress, int keepAlive) throws IOException, URISyntaxException {
 		super(config);
+		this.keepAlive = keepAlive;
 		isSingle = true;
 		URI actualURI = new URI(getID().getName());
 		int port = actualURI.getPort();

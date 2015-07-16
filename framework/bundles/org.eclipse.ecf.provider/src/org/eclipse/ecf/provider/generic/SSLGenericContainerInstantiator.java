@@ -13,6 +13,7 @@ package org.eclipse.ecf.provider.generic;
 import java.io.IOException;
 import java.net.*;
 import java.util.*;
+import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.*;
@@ -47,6 +48,10 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 	private static final String PATH_PROP = "path"; //$NON-NLS-1$
 
 	private static final String BINDADDRESS_PROP = "bindAddress"; //$NON-NLS-1$
+
+	private static final String NEEDCLIENTAUTH_PROP = "needClientAuth"; //$NON-NLS-1$
+
+	private static final String WANTCLIENTAUTH_PROP = "wantClientAuth"; //$NON-NLS-1$
 
 	public SSLGenericContainerInstantiator() {
 		super();
@@ -88,16 +93,25 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 		ID id;
 		Integer keepAlive;
 		InetAddress bindAddress;
+		boolean wantClientAuth;
+		boolean needClientAuth;
 
 		public GenericContainerArgs(ID id, Integer keepAlive) {
-			this.id = id;
-			this.keepAlive = keepAlive;
+			this(id, keepAlive, null);
 		}
 
 		public GenericContainerArgs(ID id, Integer keepAlive, InetAddress bindAddress) {
 			this.id = id;
 			this.keepAlive = keepAlive;
 			this.bindAddress = bindAddress;
+		}
+
+		public GenericContainerArgs(ID id, Integer keepAlive, InetAddress bindAddress, boolean wantClientAuth, boolean needClientAuth) {
+			this.id = id;
+			this.keepAlive = keepAlive;
+			this.bindAddress = bindAddress;
+			this.wantClientAuth = wantClientAuth;
+			this.needClientAuth = needClientAuth;
 		}
 
 		public ID getID() {
@@ -113,6 +127,27 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 		 */
 		public InetAddress getBindAddress() {
 			return bindAddress;
+		}
+
+		/**
+		 * @since 4.6
+		 */
+		public boolean getWantClientAuth() {
+			return wantClientAuth;
+		}
+
+		/**
+		 * @since 4.6
+		 */
+		public boolean getNeedClientAuth() {
+			return needClientAuth;
+		}
+
+		/**
+		 * @since 4.6
+		 */
+		public boolean getClientAuth() {
+			return getNeedClientAuth() | getWantClientAuth();
 		}
 	}
 
@@ -158,6 +193,8 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 		ID newID = null;
 		Integer ka = null;
 		InetAddress bindAddress = null;
+		boolean wantClientAuth = false;
+		boolean needClientAuth = false;
 		if (args != null && args.length > 0) {
 			if (args[0] instanceof Map) {
 				Map map = (Map) args[0];
@@ -198,6 +235,12 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 				if (o == null)
 					o = map.get(KEEPALIVE_PROP.toLowerCase());
 				ka = getIntegerFromArg(o);
+				Object needClientAuthVal = map.get(NEEDCLIENTAUTH_PROP);
+				if (needClientAuthVal instanceof Boolean)
+					needClientAuth = ((Boolean) needClientAuthVal).booleanValue();
+				Object wantClientAuthVal = map.get(WANTCLIENTAUTH_PROP);
+				if (wantClientAuthVal instanceof Boolean)
+					wantClientAuth = ((Boolean) wantClientAuthVal).booleanValue();
 			} else if (args.length > 1) {
 				if (args[0] instanceof String || args[0] instanceof ID)
 					newID = getIDFromArg(args[0]);
@@ -219,7 +262,7 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 		}
 		if (ka == null)
 			ka = new Integer(SSLServerSOContainer.DEFAULT_KEEPALIVE);
-		return new GenericContainerArgs(newID, ka, bindAddress);
+		return new GenericContainerArgs(newID, ka, bindAddress, wantClientAuth, needClientAuth);
 	}
 
 	private ID createSSLServerID(String hostname, int port, String path) {
@@ -236,6 +279,9 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 		return input;
 	}
 
+	/**
+	 * @since 4.6
+	 */
 	private SSLServerSocketFactory getServerSocketFactory() {
 		return ProviderPlugin.getDefault().getSSLServerSocketFactory();
 	}
@@ -283,10 +329,30 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 	}
 
 	/**
+	 * @since 4.6
+	 */
+	protected SSLServerSocket createSSLServerSocket(int port, InetAddress inetAddress) throws IOException {
+		SSLServerSocketFactory socketFactory = ProviderPlugin.getDefault().getSSLServerSocketFactory();
+		if (socketFactory == null)
+			throw new IOException("Cannot get SSLServerSocketFactory to create SSLServerSocket"); //$NON-NLS-1$
+		return (SSLServerSocket) ((inetAddress == null) ? socketFactory.createServerSocket(port, SSLServerSOContainerGroup.DEFAULT_BACKLOG) : socketFactory.createServerSocket(port, SSLServerSOContainerGroup.DEFAULT_BACKLOG, inetAddress));
+	}
+
+	/**
 	 * @since 4.5
 	 */
 	protected IContainer createServerContainer(GenericContainerArgs gcargs) throws Exception {
-		return new SSLServerSOContainer(new SOContainerConfig(gcargs.getID()), gcargs.getBindAddress(), gcargs.getKeepAlive().intValue());
+		SOContainerConfig config = new SOContainerConfig(gcargs.getID());
+		ID id = gcargs.getID();
+		URI uri = URI.create(id.getName());
+		SSLServerSocket serverSocket = createSSLServerSocket(uri.getPort(), gcargs.getBindAddress());
+		if (gcargs.getClientAuth()) {
+			if (gcargs.getNeedClientAuth())
+				serverSocket.setNeedClientAuth(true);
+			else if (gcargs.getWantClientAuth())
+				serverSocket.setWantClientAuth(true);
+		}
+		return new SSLServerSOContainer(config, serverSocket, gcargs.getKeepAlive().intValue());
 	}
 
 	public IContainer createInstance(ContainerTypeDescription description, Object[] args) throws ContainerCreateException {
