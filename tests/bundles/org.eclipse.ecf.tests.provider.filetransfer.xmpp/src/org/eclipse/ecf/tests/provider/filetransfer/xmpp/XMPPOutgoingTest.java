@@ -92,7 +92,7 @@ public class XMPPOutgoingTest extends ContainerAbstractTestCase {
 				final IOutgoingFileTransferResponseEvent revent = (IOutgoingFileTransferResponseEvent) event;
 				outgoing = revent.getSource();
 				requestAccepted = revent.requestAccepted();
-				if (requestAccepted)
+				if (!requestAccepted)
 					System.out
 							.println("sender.  File transfer request REJECTED");
 			} else if (event instanceof IOutgoingFileTransferSendDoneEvent) {
