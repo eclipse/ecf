@@ -24,6 +24,7 @@ import org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.filetransfer.events.IFileTransferRequestEvent;
 import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferResponseEvent;
+import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferSendDoneEvent;
 import org.eclipse.ecf.filetransfer.identity.FileCreateException;
 import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
@@ -46,8 +47,16 @@ public class XMPPOutgoingTest extends ContainerAbstractTestCase {
 	File incomingDirectory;
 	File incomingFile;
 	IFileID targetID;
+	boolean requestAccepted;
 
-	protected IIncomingFileTransferRequestListener requestListener = new IIncomingFileTransferRequestListener() {
+	class IncomingFileTransferRequestListener implements
+			IIncomingFileTransferRequestListener {
+
+		private final boolean accept;
+
+		public IncomingFileTransferRequestListener(boolean accept) {
+			this.accept = accept;
+		}
 
 		public void handleFileTransferRequest(IFileTransferRequestEvent event) {
 			System.out.println("receiver.handleFileTransferRequest(" + event
@@ -57,29 +66,37 @@ public class XMPPOutgoingTest extends ContainerAbstractTestCase {
 			incomingFile = new File(incomingDirectory, event
 					.getFileTransferInfo().getFile().getName());
 			try {
-				// accept the request
-				event.accept(new FileOutputStream(incomingFile),
-						receiverTransferListener);
+				if (accept)
+					event.accept(new FileOutputStream(incomingFile),
+							receiverTransferListener);
+				else
+					event.reject();
 			} catch (Exception e) {
 				e.printStackTrace(System.err);
 				fail("exception calling accept for receive file transfer");
 			}
 		}
-
-	};
+	}
 
 	private IFileTransferListener receiverTransferListener = new IFileTransferListener() {
 		public void handleTransferEvent(IFileTransferEvent event) {
-			System.out.println("sender.handleTransferEvent(" + event + ")");
+			// System.out.println("receiver.handleTransferEvent(" + event +
+			// ")");
 		}
 	};
 
 	private IFileTransferListener senderTransferListener = new IFileTransferListener() {
 		public void handleTransferEvent(IFileTransferEvent event) {
-			System.out.println("receiver.handleTransferEvent(" + event + ")");
+			System.out.println("sender.handleTransferEvent=" + event);
 			if (event instanceof IOutgoingFileTransferResponseEvent) {
 				final IOutgoingFileTransferResponseEvent revent = (IOutgoingFileTransferResponseEvent) event;
 				outgoing = revent.getSource();
+				requestAccepted = revent.requestAccepted();
+				if (requestAccepted)
+					System.out
+							.println("sender.  File transfer request REJECTED");
+			} else if (event instanceof IOutgoingFileTransferSendDoneEvent) {
+				syncNotify();
 			}
 		}
 	};
@@ -94,8 +111,6 @@ public class XMPPOutgoingTest extends ContainerAbstractTestCase {
 			connectClient(i);
 		adapter0 = getOutgoingFileTransfer(0);
 		// 0 is the receiver, so has to listen for
-		// file transfer requests
-		adapter0.addListener(requestListener);
 		// 1 is the sender
 		adapter1 = getOutgoingFileTransfer(1);
 		// Target ID is client 0's connectedID (includes resource name now that
@@ -117,17 +132,35 @@ public class XMPPOutgoingTest extends ContainerAbstractTestCase {
 		targetID = null;
 	}
 
-	public void testTwoClientsToSendAndReceive() throws Exception {
+	public void testReceiverAccept() throws Exception {
+		// setup receiver to accept the request
+		// file transfer requests
+		adapter0.addListener(new IncomingFileTransferRequestListener(true));
 		// Initiate send request
 		adapter1.sendOutgoingRequest(targetID, new File(TESTSRCFILE),
 				senderTransferListener, null);
 
-		syncWaitForNotify(40000);
+		syncWaitForNotify(20000);
 
 		assertNotNull(outgoing);
 		assertNull(outgoing.getException());
+		assertTrue(requestAccepted);
 		assertNotNull(incomingFile);
 		assertTrue(incomingFile.exists());
+	}
+
+	public void testReceiverReject() throws Exception {
+		// setup receiver to accept the request
+		// file transfer requests
+		adapter0.addListener(new IncomingFileTransferRequestListener(false));
+		// Initiate send request
+		adapter1.sendOutgoingRequest(targetID, new File(TESTSRCFILE),
+				senderTransferListener, null);
+
+		syncWaitForNotify(3000);
+
+		assertNotNull(outgoing);
+		assertFalse(requestAccepted);
 	}
 
 	protected String getClientContainerName() {
