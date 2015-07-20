@@ -12,12 +12,7 @@
             class="org.eclipse.ecf.internal.provider.xmpp.ui.wizards.XMPPSConnectWizard"
             containerFactoryName="ecf.xmpps.smack"
             id="org.eclipse.ecf.provider.ui.xmpp.xmppsConnect"
-            name="XMPPS"/>
-      <wizard
-            class="org.eclipse.ecf.internal.provider.xmpp.ui.wizards.EclipseXMPPSConnectWizard"
-            containerFactoryName="ecf.xmpps.smack"
-            id="org.eclipse.ecf.provider.ui.xmpp.eclipseXmppsConnect"
-            name="Eclipse IM"/>
+            name="Secure XMPP/Gtalk"/>
    </extension>
 
    <extension
