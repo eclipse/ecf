@@ -374,6 +374,9 @@ public class RemoteServiceAdmin implements
 		// publish all activeExportRegistrations
 		for (ExportRegistration exportReg : resultRegistrations)
 			publishExportEvent(exportReg);
+
+		trace("exportService","exported registrations="+resultRegistrations); //$NON-NLS-1$ //$NON-NLS-2$
+
 		// and return
 		return new ArrayList<org.osgi.service.remoteserviceadmin.ExportRegistration>(
 				resultRegistrations);
@@ -435,6 +438,7 @@ public class RemoteServiceAdmin implements
 		}
 		// publish import event
 		publishImportEvent(importRegistration);
+		trace("importService","importRegistration="+importRegistration); //$NON-NLS-1$ //$NON-NLS-2$
 		// Finally, return the importRegistration. It may be null or not.
 		return importRegistration;
 	}
@@ -571,6 +575,13 @@ public class RemoteServiceAdmin implements
 
 		private Map<String,Object> originalProperties;
 		
+		public String toString() {
+			StringBuffer buf = new StringBuffer("ExportEndpoint["); //$NON-NLS-1$
+			buf.append("serviceReference=").append(serviceReference).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+			buf.append("rsRegistration=").append(rsRegistration).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+			return buf.toString();
+		}
+		
 		ExportEndpoint(ServiceReference serviceReference,
 				EndpointDescription endpointDescription,
 				IRemoteServiceRegistration reg, Map<String,Object> originalProperties) {
@@ -657,6 +668,13 @@ public class RemoteServiceAdmin implements
 
 		private boolean closed = false;
 
+		public String toString() {
+			StringBuffer buf = new StringBuffer("ExportRegistration["); //$NON-NLS-1$
+			buf.append("exportReference=").append(exportReference).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+			buf.append("closed=").append(closed).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+			return buf.toString();
+		}
+		
 		ExportRegistration(ExportEndpoint exportEndpoint) {
 			Assert.isNotNull(exportEndpoint);
 			exportEndpoint.addExportRegistration(this);
@@ -805,6 +823,13 @@ public class RemoteServiceAdmin implements
 		private Throwable exception;
 		private EndpointDescription errorEndpointDescription;
 
+		public String toString() {
+			StringBuffer buf = new StringBuffer("ExportReference["); //$NON-NLS-1$
+			buf.append("exportEndpoint="+exportEndpoint).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+			buf.append("exception=").append(exception).append(";").append("]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			return buf.toString();
+		}
+		
 		ExportReference(ExportEndpoint exportEndpoint) {
 			Assert.isNotNull(exportEndpoint);
 			this.exportEndpoint = exportEndpoint;
@@ -882,6 +907,13 @@ public class RemoteServiceAdmin implements
 		private ServiceRegistration proxyRegistration;
 		private Set<ImportRegistration> activeImportRegistrations = new HashSet<ImportRegistration>();
 
+		public String toString() {
+			StringBuffer buf = new StringBuffer("ImportEndpoint["); //$NON-NLS-1$
+			buf.append("proxyRegistration=").append(proxyRegistration);  //$NON-NLS-1$
+			buf.append("rsReference=").append(rsReference).append(";").append("]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			return buf.toString();
+		}
+		
 		ImportEndpoint(ID importContainerID, IRemoteServiceContainerAdapter rsContainerAdapter,
 				IRemoteServiceReference rsReference,
 				IRemoteService rs,
@@ -989,6 +1021,13 @@ public class RemoteServiceAdmin implements
 
 		private boolean closed = false;
 
+		public String toString() {
+			StringBuffer buf = new StringBuffer("ImportRegistration["); //$NON-NLS-1$
+			buf.append("importReference=").append(importReference).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+			buf.append("closed=").append(closed).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+			return buf.toString();
+		}
+		
 		ImportRegistration(ImportEndpoint importEndpoint) {
 			Assert.isNotNull(importEndpoint);
 			importEndpoint.addImportRegistration(this);
@@ -1103,6 +1142,13 @@ public class RemoteServiceAdmin implements
 		private Throwable exception;
 		private EndpointDescription errorEndpointDescription;
 
+		public String toString() {
+			StringBuffer buf = new StringBuffer("ImportReference["); //$NON-NLS-1$
+			buf.append("importEndpoint=").append(importEndpoint).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+			buf.append("exception=").append(exception).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+			return buf.toString();
+		}
+		
 		ImportReference(ImportEndpoint importEndpoint) {
 			Assert.isNotNull(importEndpoint);
 			this.importEndpoint = importEndpoint;
@@ -1973,21 +2019,12 @@ public class RemoteServiceAdmin implements
 	private boolean comparePackageVersions(String packageName,
 			Version remoteVersion, Version localVersion)
 			throws RuntimeException {
-
-		LogUtility.trace(
-				"comparePackageVersions", //$NON-NLS-1$
-				DebugOptions.PACKAGE_VERSION_COMPARATOR, this.getClass(),
-				"packageName=" + packageName + ",remoteVersion=" //$NON-NLS-1$ //$NON-NLS-2$
-						+ remoteVersion + ",localVersion=" + localVersion); //$NON-NLS-1$
-
 		// If no remote version info, then set it to empty
 		if (remoteVersion == null)
 			remoteVersion = Version.emptyVersion;
 		if (localVersion == null)
 			localVersion = Version.emptyVersion;
-
-		// By default we do strict comparison of remote with local...they must
-		// be exactly the same, or we thrown a runtime exception
+		// We do strict comparison of remote with local
 		int compareResult = localVersion.compareTo(remoteVersion);
 		// Now check compare result, and throw exception to fail compare
 		return (compareResult != 0);
@@ -2011,6 +2048,11 @@ public class RemoteServiceAdmin implements
 			Version remoteVersion = interfaceVersions.get(className);
 			Version localVersion = getPackageVersionViaRequestingBundle(
 					packageName, bundle, remoteVersion);
+			LogUtility.trace("comparePackageVersions", //$NON-NLS-1$
+					DebugOptions.PACKAGE_VERSION_COMPARATOR, this.getClass(),
+					"bundle=" + bundle.getSymbolicName() + ",class=" + clazz + ",packageName=" + packageName  //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$
+							+ ",remoteVersion=" //$NON-NLS-1$
+							+ remoteVersion + ",localVersion=" + localVersion); //$NON-NLS-1$
 			if (comparePackageVersions(packageName, remoteVersion, localVersion)) {
 				logError("verifyServiceInterfaceVersionsForProxy", //$NON-NLS-1$
 						"Failed version check for proxy creation.  clientBundle=" //$NON-NLS-1$
@@ -2256,8 +2298,6 @@ public class RemoteServiceAdmin implements
 	private ImportRegistration importService(
 			EndpointDescription endpointDescription,
 			IRemoteServiceContainer rsContainer) {
-		trace("doImportService", "endpointDescription=" + endpointDescription //$NON-NLS-1$ //$NON-NLS-2$
-				+ ",rsContainerID=" + rsContainer.getContainer().getID()); //$NON-NLS-1$
 		// Get interfaces from endpoint description
 		Collection<String> interfaces = endpointDescription.getInterfaces();
 		Assert.isNotNull(interfaces);

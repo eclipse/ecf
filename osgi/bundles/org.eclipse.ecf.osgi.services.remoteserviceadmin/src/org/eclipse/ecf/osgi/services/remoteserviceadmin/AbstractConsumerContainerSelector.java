@@ -175,13 +175,8 @@ public class AbstractConsumerContainerSelector extends
 							selectedConfig,
 							PropertiesUtil
 									.createMapFromDictionary(importedConfigProperties));
-					if (rsContainer != null) {
-						trace("createAndConfigureProxyContainers", //$NON-NLS-1$
-								"created new proxy container with config type=" //$NON-NLS-1$
-										+ selectedConfig + " and id=" //$NON-NLS-1$
-										+ rsContainer.getContainer().getID());
+					if (rsContainer != null) 
 						return rsContainer;
-					}
 				}
 			}
 		}

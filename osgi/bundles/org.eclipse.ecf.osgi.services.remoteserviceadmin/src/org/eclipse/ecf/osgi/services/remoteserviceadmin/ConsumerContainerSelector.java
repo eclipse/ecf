@@ -36,7 +36,7 @@ public class ConsumerContainerSelector extends
 	public IRemoteServiceContainer selectConsumerContainer(
 			EndpointDescription endpointDescription)
 			throws SelectContainerException {
-		trace("selectConsumerContainers", "endpointDescription=" + endpointDescription); //$NON-NLS-1$ //$NON-NLS-2$
+		trace("selectConsumerContainer", "endpointDescription=" + endpointDescription); //$NON-NLS-1$ //$NON-NLS-2$
 
 		// Get service.imported.configs
 		List<String> sic = PropertiesUtil
@@ -67,6 +67,8 @@ public class ConsumerContainerSelector extends
 		// the connect targetID, and the containers are not already
 		// connected
 		connectContainerToTarget(rsContainer, connectTargetID);
+
+		trace("selectConsumerContainer", "rsContainer selected=" + rsContainer); //$NON-NLS-1$ //$NON-NLS-2$
 
 		return rsContainer;
 	}

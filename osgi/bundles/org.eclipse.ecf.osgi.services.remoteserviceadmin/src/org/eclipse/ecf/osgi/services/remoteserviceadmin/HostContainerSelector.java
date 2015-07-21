@@ -9,6 +9,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -53,6 +54,16 @@ public class HostContainerSelector extends AbstractHostContainerSelector
 			String[] serviceExportedInterfaces,
 			String[] serviceExportedConfigs, String[] serviceIntents)
 			throws SelectContainerException {
+		trace("selectHostContainers", //$NON-NLS-1$
+				"serviceReference=" + serviceReference + ",overridingProperties=" + overridingProperties //$NON-NLS-1$ //$NON-NLS-2$
+						+ ",exportedInterfaces=" //$NON-NLS-1$
+						+ ((serviceExportedInterfaces == null) ? Collections.EMPTY_LIST
+								: Arrays.asList(serviceExportedInterfaces))
+						+ ",serviceExportedConfigs=" //$NON-NLS-1$
+						+ ((serviceExportedConfigs == null) ? Collections.EMPTY_LIST
+								: Arrays.asList(serviceExportedConfigs))
+						+ ",serviceIntents=" //$NON-NLS-1$
+						+ ((serviceIntents == null) ? Collections.EMPTY_LIST : Arrays.asList(serviceIntents)));
 		// Find previously created containers that match the given
 		// serviceExportedConfigs and serviceIntents
 		Collection rsContainers = (reuseExistingContainers) ? selectExistingHostContainers(
@@ -88,9 +99,10 @@ public class HostContainerSelector extends AbstractHostContainerSelector
 			}
 		}
 
+		trace("selectHostContainers","rsContainers selected="+rsContainers); //$NON-NLS-1$ //$NON-NLS-2$
 		// return result
 		return (IRemoteServiceContainer[]) rsContainers
-				.toArray(new IRemoteServiceContainer[] {});
+				.toArray(new IRemoteServiceContainer[rsContainers.size()]);
 	}
 
 	public void close() {

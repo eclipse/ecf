@@ -589,12 +589,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 
 			}
 		} else {
-			LogUtility.logWarning(
-					"queueEndpointDescription", //$NON-NLS-1$
-					DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, this.getClass(),
-					"No matching EndpointListeners found for " //$NON-NLS-1$
-							+ (discovered ? "discovered" : "undiscovered") //$NON-NLS-1$ //$NON-NLS-2$
-							+ " endpointDescription=" + endpointDescription); //$NON-NLS-1$
+			// For old-style notification, we ignore this since it's probably using EndpointEvents
 		}
 
 	}
@@ -1198,12 +1193,12 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		void handleService(IServiceInfo serviceInfo, boolean discovered) {
 			if (locator == null)
 				return;
-			trace("handleService", "fwk=" + getFrameworkUUID() + " serviceInfo=" + serviceInfo //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-							+ ", discovered=" + discovered + ", locator=" + locator); //$NON-NLS-1$ //$NON-NLS-2$
 			IServiceID serviceID = serviceInfo.getServiceID();
 			// Make sure this is an OSGi Remote Service
 			if (Arrays.asList(serviceID.getServiceTypeID().getServices())
 					.contains(RemoteConstants.DISCOVERY_SERVICE_TYPE)) {
+				trace("handleService", "fwk=" + getFrameworkUUID() + " serviceInfo=" + serviceInfo //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						+ ", discovered=" + discovered + ", locator=" + locator); //$NON-NLS-1$ //$NON-NLS-2$
 				synchronized (edToServiceIDMap) {
 					// Try to find ED from ServiceID, whether discovered or
 					// undiscovered
