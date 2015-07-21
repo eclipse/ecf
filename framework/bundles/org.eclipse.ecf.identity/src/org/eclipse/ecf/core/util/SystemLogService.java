@@ -13,7 +13,6 @@ package org.eclipse.ecf.core.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;
 
@@ -32,20 +31,21 @@ public class SystemLogService implements LogService {
 
 	private static final String getLogCode(int level) {
 		switch (level) {
-			case LogService.LOG_INFO :
-				return "INFO"; //$NON-NLS-1$
-			case LogService.LOG_ERROR :
-				return "ERROR"; //$NON-NLS-1$
-			case LogService.LOG_DEBUG :
-				return "DEBUG"; //$NON-NLS-1$
-			case LogService.LOG_WARNING :
-				return "WARNING"; //$NON-NLS-1$
-			default :
-				return "UNKNOWN"; //$NON-NLS-1$
+		case LogService.LOG_INFO:
+			return "INFO"; //$NON-NLS-1$
+		case LogService.LOG_ERROR:
+			return "ERROR"; //$NON-NLS-1$
+		case LogService.LOG_DEBUG:
+			return "DEBUG"; //$NON-NLS-1$
+		case LogService.LOG_WARNING:
+			return "WARNING"; //$NON-NLS-1$
+		default:
+			return "UNKNOWN"; //$NON-NLS-1$
 		}
 	}
 
-	private final void doLog(ServiceReference sr, int level, String message, Throwable t) {
+	private final void doLog(@SuppressWarnings("rawtypes") ServiceReference sr, int level, String message,
+			Throwable t) {
 		final StringBuffer buf = new StringBuffer("[log;"); //$NON-NLS-1$
 		buf.append(dateFormat.format(new Date())).append(";"); //$NON-NLS-1$
 		buf.append(getLogCode(level)).append(";"); //$NON-NLS-1$
@@ -61,31 +61,44 @@ public class SystemLogService implements LogService {
 			System.out.println(buf.toString());
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.osgi.service.log.LogService#log(int, java.lang.String)
 	 */
 	public void log(int level, String message) {
 		log(null, level, message, null);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.osgi.service.log.LogService#log(int, java.lang.String, java.lang.Throwable)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.osgi.service.log.LogService#log(int, java.lang.String,
+	 * java.lang.Throwable)
 	 */
 	public void log(int level, String message, Throwable exception) {
 		doLog(null, level, message, exception);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.osgi.service.log.LogService#log(org.osgi.framework.ServiceReference, int, java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.osgi.service.log.LogService#log(org.osgi.framework.ServiceReference,
+	 * int, java.lang.String)
 	 */
-	public void log(ServiceReference sr, int level, String message) {
+	public void log(@SuppressWarnings("rawtypes") ServiceReference sr, int level, String message) {
 		log(sr, level, message, null);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.osgi.service.log.LogService#log(org.osgi.framework.ServiceReference, int, java.lang.String, java.lang.Throwable)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.osgi.service.log.LogService#log(org.osgi.framework.ServiceReference,
+	 * int, java.lang.String, java.lang.Throwable)
 	 */
-	public void log(ServiceReference sr, int level, String message, Throwable exception) {
+	public void log(@SuppressWarnings("rawtypes") ServiceReference sr, int level, String message, Throwable exception) {
 		doLog(sr, level, message, exception);
 	}
 

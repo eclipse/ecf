@@ -28,16 +28,15 @@ public class ExtensionRegistryRunnable implements ISafeRunnable {
 		// by default do nothing
 	}
 
-	protected void runWithRegistry(IExtensionRegistry registry)
-			throws Exception {
+	protected void runWithRegistry(IExtensionRegistry registry) throws Exception {
 		// by default do nothing
 	}
 
 	protected void logWarning(Throwable exception) {
 		Activator a = Activator.getDefault();
 		if (a != null)
-			a.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID,
-					IStatus.WARNING, "Warning: code cannot be run", exception)); //$NON-NLS-1$
+			a.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, "Warning: code cannot be run", //$NON-NLS-1$
+					exception));
 	}
 
 	public void run() throws Exception {
@@ -51,11 +50,10 @@ public class ExtensionRegistryRunnable implements ISafeRunnable {
 	private IExtensionRegistry getExtensionRegistry() {
 		if (context == null)
 			return null;
-		ServiceTracker extensionRegistryTracker = new ServiceTracker(context,
-				IExtensionRegistry.class.getName(), null);
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		ServiceTracker extensionRegistryTracker = new ServiceTracker(context, IExtensionRegistry.class.getName(), null);
 		extensionRegistryTracker.open();
-		IExtensionRegistry result = (IExtensionRegistry) extensionRegistryTracker
-				.getService();
+		IExtensionRegistry result = (IExtensionRegistry) extensionRegistryTracker.getService();
 		extensionRegistryTracker.close();
 		return result;
 	}

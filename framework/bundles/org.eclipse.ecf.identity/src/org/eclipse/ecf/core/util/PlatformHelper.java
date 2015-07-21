@@ -26,6 +26,7 @@ import org.osgi.framework.BundleContext;
  */
 public class PlatformHelper {
 
+	@SuppressWarnings("rawtypes")
 	private static Class platformClass = null;
 
 	private static IAdapterManager adapterManagerCache = null;
@@ -41,11 +42,9 @@ public class PlatformHelper {
 					Bundle[] bundles = c.getBundles();
 					Bundle coreRuntime = null;
 					for (int i = 0; i < bundles.length; i++)
-						if (bundles[i].getSymbolicName().equals(
-								"org.eclipse.core.runtime")) { //$NON-NLS-1$
+						if (bundles[i].getSymbolicName().equals("org.eclipse.core.runtime")) { //$NON-NLS-1$
 							coreRuntime = bundles[i];
-							platformClass = coreRuntime
-									.loadClass("org.eclipse.core.runtime.Platform"); //$NON-NLS-1$
+							platformClass = coreRuntime.loadClass("org.eclipse.core.runtime.Platform"); //$NON-NLS-1$
 							break;
 						}
 				}
@@ -54,8 +53,8 @@ public class PlatformHelper {
 				// log
 				// as error
 				try {
-					a.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID,
-							IStatus.WARNING, "Cannot load Platform class", //$NON-NLS-1$
+					a.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING,
+							"Cannot load Platform class", //$NON-NLS-1$
 							e));
 				} catch (Throwable t) {
 					// Should never happen, if does irrecoverable
@@ -73,16 +72,13 @@ public class PlatformHelper {
 			return adapterManagerCache;
 		if (isPlatformAvailable()) {
 			try {
-				Method m = platformClass.getMethod(
-						"getAdapterManager", (Class[]) null); //$NON-NLS-1$
-				adapterManagerCache = (IAdapterManager) m.invoke(null,
-						(Object[]) null);
+				@SuppressWarnings("unchecked")
+				Method m = platformClass.getMethod("getAdapterManager", (Class[]) null); //$NON-NLS-1$
+				adapterManagerCache = (IAdapterManager) m.invoke(null, (Object[]) null);
 				return adapterManagerCache;
 			} catch (Exception e) {
-				Activator.getDefault().log(
-						new Status(IStatus.WARNING, Activator.PLUGIN_ID,
-								IStatus.WARNING,
-								"Cannot get PlatformAdapterManager()", e)); //$NON-NLS-1$
+				Activator.getDefault().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING,
+						"Cannot get PlatformAdapterManager()", e)); //$NON-NLS-1$
 				return null;
 			}
 		}
@@ -94,16 +90,13 @@ public class PlatformHelper {
 			return extensionRegistryCache;
 		if (isPlatformAvailable()) {
 			try {
-				Method m = platformClass.getMethod(
-						"getExtensionRegistry", (Class[]) null); //$NON-NLS-1$
-				extensionRegistryCache = (IExtensionRegistry) m.invoke(null,
-						(Object[]) null);
+				@SuppressWarnings("unchecked")
+				Method m = platformClass.getMethod("getExtensionRegistry", (Class[]) null); //$NON-NLS-1$
+				extensionRegistryCache = (IExtensionRegistry) m.invoke(null, (Object[]) null);
 				return extensionRegistryCache;
 			} catch (Exception e) {
-				Activator.getDefault().log(
-						new Status(IStatus.WARNING, Activator.PLUGIN_ID,
-								IStatus.WARNING,
-								"Cannot get PlatformExtensionRegistry()", e)); //$NON-NLS-1$
+				Activator.getDefault().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING,
+						"Cannot get PlatformExtensionRegistry()", e)); //$NON-NLS-1$
 				return null;
 			}
 

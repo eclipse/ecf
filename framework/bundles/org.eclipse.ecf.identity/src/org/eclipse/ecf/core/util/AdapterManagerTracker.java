@@ -16,10 +16,11 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 /**
  * @since 3.4
  */
+@SuppressWarnings("rawtypes")
 public class AdapterManagerTracker extends ServiceTracker {
 
-	public AdapterManagerTracker(BundleContext context,
-			ServiceTrackerCustomizer customizer) {
+	@SuppressWarnings("unchecked")
+	public AdapterManagerTracker(BundleContext context, ServiceTrackerCustomizer customizer) {
 		super(context, IAdapterManager.class.getName(), customizer);
 	}
 

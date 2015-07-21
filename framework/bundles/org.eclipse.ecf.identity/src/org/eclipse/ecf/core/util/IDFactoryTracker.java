@@ -20,8 +20,10 @@ import org.osgi.util.tracker.ServiceTracker;
  * @since 3.1
  * 
  */
+@SuppressWarnings("rawtypes")
 public class IDFactoryTracker extends ServiceTracker {
 
+	@SuppressWarnings("unchecked")
 	public IDFactoryTracker(BundleContext context) {
 		super(context, IIDFactory.class.getName(), null);
 	}

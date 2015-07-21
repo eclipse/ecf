@@ -214,8 +214,7 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	 * @throws IDCreateException
 	 *             if construction fails
 	 */
-	public abstract ID createInstance(Object[] parameters)
-			throws IDCreateException;
+	public abstract ID createInstance(Object[] parameters) throws IDCreateException;
 
 	/**
 	 * Get the primary scheme associated with this namespace. Subclasses must
@@ -291,6 +290,7 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	 * 
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
+	@SuppressWarnings("unchecked")
 	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
 		if (adapter.isInstance(this)) {
 			return this;

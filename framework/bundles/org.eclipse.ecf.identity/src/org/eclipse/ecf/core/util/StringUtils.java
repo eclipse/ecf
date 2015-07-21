@@ -27,10 +27,11 @@ import java.util.ArrayList;
  */
 public final class StringUtils {
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static final String[] splitOnSpace(String string) {
 		int index = string.indexOf(' ');
 		if (index == -1) {
-			return new String[] {string};
+			return new String[] { string };
 		}
 
 		ArrayList split = new ArrayList();
@@ -47,10 +48,11 @@ public final class StringUtils {
 		return (String[]) split.toArray(new String[split.size()]);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static final String[] split(String string, char character) {
 		int index = string.indexOf(character);
 		if (index == -1) {
-			return new String[] {string};
+			return new String[] { string };
 		}
 
 		ArrayList split = new ArrayList();
@@ -67,10 +69,11 @@ public final class StringUtils {
 		return (String[]) split.toArray(new String[split.size()]);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static final String[] split(String string, String delimiter) {
 		int index = string.indexOf(delimiter);
 		if (index == -1) {
-			return new String[] {string};
+			return new String[] { string };
 		}
 
 		int length = delimiter.length();
@@ -88,10 +91,11 @@ public final class StringUtils {
 		return (String[]) split.toArray(new String[split.size()]);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static final String[] split(String string, String delimiter, int limit) {
 		int index = string.indexOf(delimiter);
 		if (index == -1) {
-			return new String[] {string};
+			return new String[] { string };
 		}
 
 		int count = 0;
@@ -209,40 +213,60 @@ public final class StringUtils {
 
 	/**
 	 * Returns whether the first parameter contains the second parameter.
-	 * @param string must not be <code>.
-	 * @param target must not be <code> null.
-	 * @return true if the target is contained within the string. 
+	 * 
+	 * @param string
+	 *            must not be <code>.
+	 * @param target
+	 *            must not be <code> null.
+	 * @return true if the target is contained within the string.
 	 */
 	public static boolean contains(String string, String target) {
 		return (string.indexOf(target) != -1);
 	}
 
 	/**
-	 * Returns the string resulting from replacing all occurrences of the target with the replace
-	 * string.  Note that the target matches literally, and this is not the same behavior as the 
-	 * String.replaceAll, which uses regular expressions for doing the matching.  
-	 * @param string the start string.  Must not be <code>null</code>.
-	 * @param target the target to search for in the start string.  Must not be <code>null</code>.
-	 * @param replace the replacement string to substitute when the target is found.  Must not be <code>null</code>.
-	 * @return String result.  Will not be <code>null</code>.   If target is not found in the given string,
-	 * then the result will be the entire input string.  
+	 * Returns the string resulting from replacing all occurrences of the target
+	 * with the replace string. Note that the target matches literally, and this
+	 * is not the same behavior as the String.replaceAll, which uses regular
+	 * expressions for doing the matching.
+	 * 
+	 * @param string
+	 *            the start string. Must not be <code>null</code>.
+	 * @param target
+	 *            the target to search for in the start string. Must not be
+	 *            <code>null</code>.
+	 * @param replace
+	 *            the replacement string to substitute when the target is found.
+	 *            Must not be <code>null</code>.
+	 * @return String result. Will not be <code>null</code>. If target is not
+	 *         found in the given string, then the result will be the entire
+	 *         input string.
 	 */
 	public static String replaceAll(String string, String target, String replace) {
 		final int index = string.indexOf(target);
 		if (index == -1)
 			return string;
-		return string.substring(0, index) + replace + replaceAll(string.substring(index + target.length()), target, replace);
+		return string.substring(0, index) + replace
+				+ replaceAll(string.substring(index + target.length()), target, replace);
 	}
 
 	/**
-	 * Returns the string resulting from replacing all occurrences of the target with the replace
-	 * string.  Note that the target matches literally but ignoring the case, and this is not the same behavior as the 
-	 * String.replaceAll, which uses regular expressions for doing the matching.  
-	 * @param string the start string.  Must not be <code>null</code>.
-	 * @param target the target to search for in the start string.  Must not be <code>null</code>.
-	 * @param replace the replacement string to substitute when the target is found.  Must not be <code>null</code>.
-	 * @return String result.  Will not be <code>null</code>.   If target is not found in the given string,
-	 * then the result will be the entire input string.  
+	 * Returns the string resulting from replacing all occurrences of the target
+	 * with the replace string. Note that the target matches literally but
+	 * ignoring the case, and this is not the same behavior as the
+	 * String.replaceAll, which uses regular expressions for doing the matching.
+	 * 
+	 * @param string
+	 *            the start string. Must not be <code>null</code>.
+	 * @param target
+	 *            the target to search for in the start string. Must not be
+	 *            <code>null</code>.
+	 * @param replace
+	 *            the replacement string to substitute when the target is found.
+	 *            Must not be <code>null</code>.
+	 * @return String result. Will not be <code>null</code>. If target is not
+	 *         found in the given string, then the result will be the entire
+	 *         input string.
 	 * 
 	 * @see StringUtils#replaceAll(String, String, String) but case insensitive
 	 * @since 2.1
@@ -251,18 +275,27 @@ public final class StringUtils {
 		final int index = string.toLowerCase().indexOf(target.toLowerCase());
 		if (index == -1)
 			return string;
-		return string.substring(0, index) + replace + replaceAllIgnoreCase(string.substring(index + target.length()), target, replace);
+		return string.substring(0, index) + replace
+				+ replaceAllIgnoreCase(string.substring(index + target.length()), target, replace);
 	}
-	
+
 	/**
-	 * Returns the string resulting from replacing the first occurrences of the target with the replace
-	 * string.  Note that the target matches literally, and this is not the same behavior as the 
-	 * String.replaceAll, which uses regular expressions for doing the matching.  
-	 * @param string the start string.  Must not be <code>null</code>.
-	 * @param target the target to search for in the start string.  Must not be <code>null</code>.
-	 * @param replace the replacement string to substitute when the target is found.  Must not be <code>null</code>.
-	 * @return String result.  Will not be <code>null</code>.   If target is not found in the given string,
-	 * then the result will be the entire input string.  
+	 * Returns the string resulting from replacing the first occurrences of the
+	 * target with the replace string. Note that the target matches literally,
+	 * and this is not the same behavior as the String.replaceAll, which uses
+	 * regular expressions for doing the matching.
+	 * 
+	 * @param string
+	 *            the start string. Must not be <code>null</code>.
+	 * @param target
+	 *            the target to search for in the start string. Must not be
+	 *            <code>null</code>.
+	 * @param replace
+	 *            the replacement string to substitute when the target is found.
+	 *            Must not be <code>null</code>.
+	 * @return String result. Will not be <code>null</code>. If target is not
+	 *         found in the given string, then the result will be the entire
+	 *         input string.
 	 * 
 	 * @since 3.0
 	 */
