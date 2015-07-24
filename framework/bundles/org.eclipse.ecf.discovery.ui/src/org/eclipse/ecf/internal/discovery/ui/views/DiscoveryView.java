@@ -80,6 +80,7 @@ public class DiscoveryView extends ViewPart implements IShowInSource, ISelection
 		getSelectionViewer().setLabelProvider(new AdapterFactoryLabelProvider(adapterFactory));
 		getSelectionViewer().setComparator(new ViewerComparator());
 		getSelectionViewer().setFilters(getViewerFilters());
+		getSelectionViewer().setUseHashlookup(true);
 		getSite().setSelectionProvider(getSelectionViewer());
 
 		// populate the viewer with the model if available
