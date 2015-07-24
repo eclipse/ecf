@@ -182,6 +182,7 @@ public class MessagesView extends ViewPart {
 	 *            the ID of the local user
 	 * @param remoteID
 	 *            the ID of the remote user
+	 * @since 2.4
 	 */
 	public synchronized void openTab(IChatMessageSender messageSender, ITypingMessageSender typingSender, ID localID, ID remoteID, String localName) {
 		Assert.isNotNull(messageSender);
@@ -194,10 +195,24 @@ public class MessagesView extends ViewPart {
 		}
 	}
 
+	/**
+	 * @since 2.3
+	 */
+	public synchronized void openTab(IChatMessageSender messageSender, ITypingMessageSender typingSender, ID localID, ID remoteID) {
+		throw new RuntimeException("This method has been deprecated"); //$NON-NLS-1$
+	}
+
+	/**
+	 * @since 2.4
+	 */
 	public synchronized void selectTab(IChatMessageSender messageSender, ITypingMessageSender typingSender, ID localID, ID userID, String localName) {
 		ChatTab tab = getTab(messageSender, typingSender, localID, userID, localName);
 		tabFolder.setSelection(tab.item);
 		tab.inputText.setFocus();
+	}
+
+	public synchronized void selectTab(IChatMessageSender messageSender, ITypingMessageSender typingSender, ID localID, ID userID) {
+		throw new RuntimeException("This method has been deprecated"); //$NON-NLS-1$
 	}
 
 	/**
