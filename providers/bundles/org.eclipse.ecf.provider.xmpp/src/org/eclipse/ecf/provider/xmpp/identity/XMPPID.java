@@ -94,21 +94,18 @@ public class XMPPID extends BaseID implements IChatID, IFQID {
 	protected String resourcename;
 	protected int port = -1;
 
-	public XMPPID(Namespace namespace, String unamehost)
-			throws URISyntaxException {
+	public XMPPID(Namespace namespace, String unamehost) throws URISyntaxException {
 		super(namespace);
 		// System.out.println("XMPPID.init unamehost=" + unamehost);
 		// Exception except = new Exception();
 		// except.printStackTrace();
 		unamehost = fixPercentEscape(unamehost);
 		if (unamehost == null)
-			throw new URISyntaxException(unamehost,
-					Messages.XMPPID_EXCEPTION_XMPPID_USERNAME_NOT_NULL);
+			throw new URISyntaxException(unamehost, Messages.XMPPID_EXCEPTION_XMPPID_USERNAME_NOT_NULL);
 		// Handle parsing of user@host/resource string
 		int atIndex = unamehost.lastIndexOf(USER_HOST_DELIMITER);
 		if (atIndex == -1)
-			throw new URISyntaxException(unamehost,
-					Messages.XMPPID_EXCEPTION_HOST_PORT_NOT_VALID);
+			throw new URISyntaxException(unamehost, Messages.XMPPID_EXCEPTION_HOST_PORT_NOT_VALID);
 		username = fixEscapeInNode(unamehost.substring(0, atIndex));
 		final String remainder = unamehost.substring(atIndex + 1);
 		// Handle parsing of host:port
@@ -117,13 +114,11 @@ public class XMPPID extends BaseID implements IChatID, IFQID {
 			try {
 				final int slashLoc = remainder.indexOf(PATH_DELIMITER);
 				if (slashLoc != -1)
-					port = Integer.parseInt(remainder.substring(atIndex + 1,
-							slashLoc));
+					port = Integer.parseInt(remainder.substring(atIndex + 1, slashLoc));
 				else
 					port = Integer.parseInt(remainder.substring(atIndex + 1));
 			} catch (final NumberFormatException e) {
-				throw new URISyntaxException(unamehost,
-						Messages.XMPPID_EXCEPTION_INVALID_PORT);
+				throw new URISyntaxException(unamehost, Messages.XMPPID_EXCEPTION_INVALID_PORT);
 			}
 			hostname = remainder.substring(0, atIndex);
 		}
@@ -154,10 +149,12 @@ public class XMPPID extends BaseID implements IChatID, IFQID {
 		boolean resourceEquals = false;
 		if (thisResourceName == null)
 			resourceEquals = (otherResourceName == null) ? true : false;
+		else if (otherResourceName == null)
+			resourceEquals = (thisResourceName == null) ? true : false;
 		else
-			resourceEquals = thisResourceName.equals(otherResourceName);
-		return resourceEquals
-				&& getUsernameAtHost().equals(other.getUsernameAtHost());
+			resourceEquals = thisResourceName.equals(otherResourceName) || thisResourceName.endsWith(otherResourceName)
+					|| otherResourceName.endsWith(thisResourceName);
+		return resourceEquals && getUsernameAtHost().equals(other.getUsernameAtHost());
 	}
 
 	protected String namespaceGetName() {
@@ -208,8 +205,7 @@ public class XMPPID extends BaseID implements IChatID, IFQID {
 		if (semiColonIdx != -1) {
 			hostname = hostname.substring(0, semiColonIdx);
 		}
-		return username + USER_HOST_DELIMITER + hostname
-				+ ((getPort() == -1) ? "" : ":" + getPort());
+		return username + USER_HOST_DELIMITER + hostname + ((getPort() == -1) ? "" : ":" + getPort());
 	}
 
 	public String getFQName() {
