@@ -13,7 +13,9 @@ package org.eclipse.ecf.internal.provider.jslp;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.ecf.core.util.*;
+import org.eclipse.ecf.core.util.Base64;
+import org.eclipse.ecf.core.util.StringUtils;
+import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 
