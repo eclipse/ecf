@@ -57,11 +57,6 @@ public class MessagesView extends ViewPart {
 
 	private boolean showTimestamps = true;
 
-	private static final String getUserName(ID id) {
-		IChatID chatID = (IChatID) id.getAdapter(IChatID.class);
-		return chatID == null ? id.getName() : chatID.getUsername();
-	}
-
 	public MessagesView() {
 		tabs = new HashMap();
 	}
@@ -123,7 +118,7 @@ public class MessagesView extends ViewPart {
 					while (iterator.hasNext()) {
 						ChatTab tab = (ChatTab) iterator.next();
 						if (tab.item == item) {
-							if (MessageDialog.openConfirm(tabFolder.getShell(), Messages.MessagesView_ClearChatLogDialogTitle, NLS.bind(Messages.MessagesView_ClearChatLogDialogMessage, getUserName(tab.remoteID)))) {
+							if (MessageDialog.openConfirm(tabFolder.getShell(), Messages.MessagesView_ClearChatLogDialogTitle, Messages.MessagesView_ClearChatLogDialogMessage)) {
 								synchronized (tab) {
 									tab.chatText.setText(""); //$NON-NLS-1$
 								}
@@ -147,10 +142,10 @@ public class MessagesView extends ViewPart {
 		super.dispose();
 	}
 
-	private ChatTab getTab(IChatMessageSender messageSender, ITypingMessageSender typingSender, ID localID, ID userID) {
+	private ChatTab getTab(IChatMessageSender messageSender, ITypingMessageSender typingSender, ID localID, ID userID, String localName) {
 		ChatTab tab = (ChatTab) tabs.get(userID);
 		if (tab == null) {
-			tab = new ChatTab(messageSender, typingSender, localID, userID);
+			tab = new ChatTab(messageSender, typingSender, localID, userID, localName);
 			tabs.put(userID, tab);
 		}
 		return tab;
@@ -188,19 +183,19 @@ public class MessagesView extends ViewPart {
 	 * @param remoteID
 	 *            the ID of the remote user
 	 */
-	public synchronized void openTab(IChatMessageSender messageSender, ITypingMessageSender typingSender, ID localID, ID remoteID) {
+	public synchronized void openTab(IChatMessageSender messageSender, ITypingMessageSender typingSender, ID localID, ID remoteID, String localName) {
 		Assert.isNotNull(messageSender);
 		Assert.isNotNull(localID);
 		Assert.isNotNull(remoteID);
-		ChatTab tab = getTab(messageSender, typingSender, localID, remoteID);
+		ChatTab tab = getTab(messageSender, typingSender, localID, remoteID, localName);
 		// if there is only one tab, select this tab
 		if (tabs.size() == 1) {
 			tabFolder.setSelection(tab.item);
 		}
 	}
 
-	public synchronized void selectTab(IChatMessageSender messageSender, ITypingMessageSender typingSender, ID localID, ID userID) {
-		ChatTab tab = getTab(messageSender, typingSender, localID, userID);
+	public synchronized void selectTab(IChatMessageSender messageSender, ITypingMessageSender typingSender, ID localID, ID userID, String localName) {
+		ChatTab tab = getTab(messageSender, typingSender, localID, userID, localName);
 		tabFolder.setSelection(tab.item);
 		tab.inputText.setFocus();
 	}
@@ -252,11 +247,14 @@ public class MessagesView extends ViewPart {
 
 		private boolean isFirstMessage = true;
 
-		private ChatTab(IChatMessageSender icms, ITypingMessageSender itms, ID localID, ID remoteID) {
+		private String localName;
+
+		private ChatTab(IChatMessageSender icms, ITypingMessageSender itms, ID localID, ID remoteID, String localName) {
 			this.icms = icms;
 			this.itms = itms;
 			this.localID = localID;
 			this.remoteID = remoteID;
+			this.localName = localName;
 			constructWidgets();
 			addListeners();
 		}
@@ -351,7 +349,7 @@ public class MessagesView extends ViewPart {
 				chatText.append(Text.DELIMITER);
 			}
 			int length = chatText.getCharCount();
-			String name = getUserName(fromID);
+			String name = localName;
 			if (fromID.equals(remoteID)) {
 				if (showTimestamps) {
 					chatText.append(FORMATTER.format(new Date(System.currentTimeMillis())) + ' ');
@@ -447,11 +445,11 @@ public class MessagesView extends ViewPart {
 			chatText.setMenu(menu);
 
 			item.setControl(parent);
-			item.setText(getUserName(remoteID));
+			item.setText(localName);
 		}
 
 		private void showIsTyping(boolean isTyping) {
-			setContentDescription(isTyping ? NLS.bind(Messages.MessagesView_TypingNotification, getUserName(remoteID)) : ""); //$NON-NLS-1$
+			setContentDescription(isTyping ? NLS.bind(Messages.MessagesView_TypingNotification, localName) : ""); //$NON-NLS-1$
 		}
 	}
 

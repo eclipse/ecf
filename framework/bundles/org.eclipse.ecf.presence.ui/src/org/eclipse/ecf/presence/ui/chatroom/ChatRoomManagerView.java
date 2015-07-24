@@ -19,8 +19,9 @@ import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
-import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.events.*;
 import org.eclipse.ecf.core.identity.*;
@@ -168,7 +169,7 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 						if (!ChatRoomManagerView.this.localUserName.equals(user)) {
 							try {
 								MessagesView messagesView = getMessagesView();
-								messagesView.selectTab(container.getPrivateMessageSender(), null, createStringID(localUserName), createStringID(user));
+								messagesView.selectTab(container.getPrivateMessageSender(), null, createStringID(localUserName), createStringID(user), user);
 								getSite().getPage().activate(messagesView);
 							} catch (PartInitException e) {
 								Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, NLS.bind(Messages.ChatRoomManagerView_EXCEPTION_MESSAGE_VIEW_INITIALIZATION, user), e));
@@ -1287,7 +1288,7 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 					IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) messageView.getSite().getAdapter(IWorkbenchSiteProgressService.class);
 
 					if (container.getPrivateMessageSender() != null) {
-						messageView.openTab(container.getPrivateMessageSender(), null, targetID, message.getFromID());
+						messageView.openTab(container.getPrivateMessageSender(), null, targetID, message.getFromID(), new ChatRoomParticipant(targetID).getNickname());
 
 						messageView.showMessage(message);
 						service.warnOfContentChange();

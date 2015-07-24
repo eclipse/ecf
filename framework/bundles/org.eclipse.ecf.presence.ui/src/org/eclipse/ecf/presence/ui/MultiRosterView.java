@@ -730,7 +730,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			ITypingMessageSender itms = manager.getTypingMessageSender();
 			try {
 				MessagesView view = (MessagesView) getSite().getWorkbenchWindow().getActivePage().showView(MessagesView.VIEW_ID);
-				view.selectTab(icms, itms, roster.getUser().getID(), entry.getUser().getID());
+				view.selectTab(icms, itms, roster.getUser().getID(), entry.getUser().getID(), entry.getUser().getName());
 			} catch (PartInitException e) {
 				e.printStackTrace();
 			}

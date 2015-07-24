@@ -52,7 +52,7 @@ public class BrowseHandler extends AbstractHandler {
 				ITypingMessageSender itms = manager.getTypingMessageSender();
 				try {
 					MessagesView view = (MessagesView) window.getActivePage().showView(MessagesView.VIEW_ID);
-					view.selectTab(icms, itms, roster.getUser().getID(), entry.getUser().getID());
+					view.selectTab(icms, itms, roster.getUser().getID(), entry.getUser().getID(), entry.getUser().getName());
 				} catch (PartInitException e) {
 					e.printStackTrace();
 				}

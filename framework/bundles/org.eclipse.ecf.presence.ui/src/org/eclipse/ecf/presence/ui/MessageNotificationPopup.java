@@ -73,7 +73,7 @@ class MessageNotificationPopup extends PopupDialog {
 			public void linkActivated(HyperlinkEvent e) {
 				try {
 					MessagesView view = (MessagesView) window.getActivePage().showView(MessagesView.VIEW_ID);
-					view.selectTab(null, null, null, userID);
+					view.selectTab(null, null, null, userID, userName);
 				} catch (CoreException ce) {
 					ce.printStackTrace();
 				}
