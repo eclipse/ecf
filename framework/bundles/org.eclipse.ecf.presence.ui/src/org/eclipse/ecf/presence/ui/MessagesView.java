@@ -195,11 +195,16 @@ public class MessagesView extends ViewPart {
 		}
 	}
 
+	private static String getLocalName(ID id) {
+		IChatID cID = (IChatID) id.getAdapter(IChatID.class);
+		return (cID == null) ? id.getName() : cID.getUsername();
+	}
+
 	/**
 	 * @since 2.3
 	 */
 	public synchronized void openTab(IChatMessageSender messageSender, ITypingMessageSender typingSender, ID localID, ID remoteID) {
-		throw new RuntimeException("This method has been deprecated"); //$NON-NLS-1$
+		openTab(messageSender, typingSender, localID, remoteID, getLocalName(remoteID));
 	}
 
 	/**
@@ -212,7 +217,7 @@ public class MessagesView extends ViewPart {
 	}
 
 	public synchronized void selectTab(IChatMessageSender messageSender, ITypingMessageSender typingSender, ID localID, ID userID) {
-		throw new RuntimeException("This method has been deprecated"); //$NON-NLS-1$
+		selectTab(messageSender, typingSender, localID, userID, getLocalName(userID));
 	}
 
 	/**
