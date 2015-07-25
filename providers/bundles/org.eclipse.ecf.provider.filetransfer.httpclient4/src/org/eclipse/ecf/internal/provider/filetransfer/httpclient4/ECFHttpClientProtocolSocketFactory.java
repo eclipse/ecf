@@ -77,9 +77,11 @@ public class ECFHttpClientProtocolSocketFactory implements SchemeSocketFactory {
 		Trace.entering(Activator.PLUGIN_ID, DebugOptions.METHODS_ENTERING, ECFHttpClientProtocolSocketFactory.class, "connectSocket " + remoteAddress.toString() + " timeout=" + timeout); //$NON-NLS-1$ //$NON-NLS-2$
 
 		try {
-			// Use String.valueOf to protect against null
-			Trace.trace(Activator.PLUGIN_ID, "bind(" + String.valueOf(localAddress) + ")"); //$NON-NLS-1$//$NON-NLS-2$
-			sock.bind(localAddress);
+			if (localAddress != null) {
+				// only explicitly bind if a local address is actually provided (bug 444377)
+				Trace.trace(Activator.PLUGIN_ID, "bind(" + localAddress + ")"); //$NON-NLS-1$//$NON-NLS-2$
+				sock.bind(localAddress);
+			}
 			Trace.trace(Activator.PLUGIN_ID, "connect(" + remoteAddress.toString() + ", " + timeout + ")"); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
 			sock.connect(remoteAddress, timeout);
 			Trace.trace(Activator.PLUGIN_ID, "connected"); //$NON-NLS-1$

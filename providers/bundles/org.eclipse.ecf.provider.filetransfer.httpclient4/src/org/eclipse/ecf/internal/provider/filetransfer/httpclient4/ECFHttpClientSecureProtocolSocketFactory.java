@@ -85,7 +85,10 @@ public final class ECFHttpClientSecureProtocolSocketFactory implements LayeredSc
 	private void performConnection(final Socket socket, final InetSocketAddress remoteAddress, final InetSocketAddress localAddress, final HttpParams params) throws SocketException, IOException {
 		try {
 			socket.setReuseAddress(HttpConnectionParams.getSoReuseaddr(params));
-			socket.bind(localAddress);
+			if (localAddress != null) {
+				// only explicitly bind if a local address is actually provided (bug 444377)
+				socket.bind(localAddress);
+			}
 
 			int connectionTimeout = HttpConnectionParams.getConnectionTimeout(params);
 			int socketTimeout = HttpConnectionParams.getSoTimeout(params);
