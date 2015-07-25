@@ -51,6 +51,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	 */
 	final Map services = Collections.synchronizedMap(new HashMap());
 
+	boolean disposed = false;
 	final Object lock = new Object();
 
 	SimpleFIFOQueue queue = null;
@@ -74,62 +75,64 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	}
 
 	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.AbstractDiscoveryContainerAdapter#dispose()
+	 */
+	public void dispose() {
+		synchronized (lock) {
+			super.dispose();
+			disposed = true;
+		}
+	}
+
+	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.IContainer#connect(org.eclipse.ecf.core.identity.ID, org.eclipse.ecf.core.security.IConnectContext)
 	 */
 	public void connect(final ID targetID1, final IConnectContext joinContext) throws ContainerConnectException {
 		synchronized (lock) {
+			if (disposed)
+				throw new ContainerConnectException("Container has been disposed"); //$NON-NLS-1$
 			if (this.targetID != null)
 				throw new ContainerConnectException("Already connected"); //$NON-NLS-1$
 			this.targetID = (targetID1 == null) ? getConfig().getID() : targetID1;
 			fireContainerEvent(new ContainerConnectingEvent(this.getID(), this.targetID, joinContext));
-			// initialize queue and JMDNS discovery thread
-			queue = new SimpleFIFOQueue();
-			notificationThread = new Thread(new Runnable() {
-				public void run() {
-					while (!queue.isStopped()) {
-						if (Thread.currentThread().isInterrupted())
-							break;
-						final Runnable runnable = (Runnable) queue.dequeue();
-						if (Thread.currentThread().isInterrupted() || runnable == null)
-							break;
-						try {
-							runnable.run();
-						} catch (final Throwable t) {
-							JMDNSPlugin plugin = JMDNSPlugin.getDefault();
-							if (plugin != null)
-								plugin.logException("JMDNS.handleNotificationThreadException", t); //$NON-NLS-1$
-						}
-					}
-				}
-			}, "JMDNS Discovery Thread"); //$NON-NLS-1$
-			notificationThread.start();
-			// Create JmDNS and add type listener
+			initializeQueue();
 			try {
 				this.jmdns = JmDNS.create();
 				jmdns.addServiceTypeListener(this);
 			} catch (final IOException e) {
 				Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "connect", e); //$NON-NLS-1$
-				doCleanup();
+				if (this.jmdns != null) {
+					jmdns.close();
+					jmdns = null;
+				}
 				throw new ContainerConnectException("Cannot create JmDNS instance", e); //$NON-NLS-1$
 			}
 			fireContainerEvent(new ContainerConnectedEvent(this.getID(), this.targetID));
 		}
 	}
 
-	private void doCleanup() {
-		if (queue != null)
-			queue.close();
-		if (notificationThread != null) {
-			notificationThread.interrupt();
-			notificationThread = null;
-		}
-		this.targetID = null;
-		serviceTypes.clear();
-		// @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=385395
-		if (jmdns != null) {
-			jmdns.close();
-			jmdns = null;
-		}
+	private void initializeQueue() {
+		queue = new SimpleFIFOQueue();
+		notificationThread = new Thread(new Runnable() {
+			public void run() {
+				while (!disposed || queue.isStopped()) {
+					if (Thread.currentThread().isInterrupted())
+						break;
+					final Runnable runnable = (Runnable) queue.dequeue();
+					if (Thread.currentThread().isInterrupted() || runnable == null)
+						break;
+					try {
+						runnable.run();
+					} catch (final Throwable t) {
+						JMDNSPlugin plugin = JMDNSPlugin.getDefault();
+						if (plugin != null) {
+							plugin.logException("handleRuntimeException", t); //$NON-NLS-1$
+						}
+					}
+				}
+			}
+		}, "JMDNS Discovery Thread"); //$NON-NLS-1$
+		notificationThread.start();
 	}
 
 	/* (non-Javadoc)
@@ -137,11 +140,21 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	 */
 	public void disconnect() {
 		synchronized (lock) {
-			final ID connectedID = getConnectedID();
-			if (connectedID == null)
+			if (getConnectedID() == null || disposed) {
 				return;
+			}
+			final ID connectedID = getConnectedID();
 			fireContainerEvent(new ContainerDisconnectingEvent(this.getID(), connectedID));
-			doCleanup();
+			queue.close();
+			notificationThread.interrupt();
+			notificationThread = null;
+			this.targetID = null;
+			serviceTypes.clear();
+			// @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=385395
+			if (jmdns != null) {
+				jmdns.close();
+				jmdns = null;
+			}
 			fireContainerEvent(new ContainerDisconnectedEvent(this.getID(), connectedID));
 		}
 	}
@@ -155,8 +168,6 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		Assert.isNotNull(service);
 		synchronized (lock) {
 			try {
-				if (jmdns == null)
-					return null;
 				// ECF discovery API defines identity to be the service type and the URI (location)
 				// see https://bugs.eclipse.org/266723
 				final ServiceInfo[] serviceInfos = jmdns.list(service.getServiceTypeID().getInternal());
@@ -204,7 +215,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 			for (final Iterator itr = serviceTypes.iterator(); itr.hasNext();) {
 				final IServiceTypeID serviceType = (IServiceTypeID) itr.next();
 				if (Arrays.equals(serviceType.getServices(), type.getServices()) && Arrays.equals(serviceType.getProtocols(), type.getProtocols()) && Arrays.equals(serviceType.getScopes(), type.getScopes())) {
-					final ServiceInfo[] infos = (jmdns == null) ? new ServiceInfo[0] : jmdns.list(type.getInternal());
+					final ServiceInfo[] infos = jmdns.list(type.getInternal());
 					for (int i = 0; i < infos.length; i++) {
 						try {
 							if (infos[i] != null) {
@@ -218,7 +229,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 					}
 				}
 			}
-			return (IServiceInfo[]) serviceInfos.toArray(new IServiceInfo[serviceInfos.size()]);
+			return (IServiceInfo[]) serviceInfos.toArray(new IServiceInfo[] {});
 		}
 	}
 
@@ -227,7 +238,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	 */
 	public IServiceTypeID[] getServiceTypes() {
 		synchronized (lock) {
-			return (IServiceTypeID[]) serviceTypes.toArray(new IServiceTypeID[serviceTypes.size()]);
+			return (IServiceTypeID[]) serviceTypes.toArray(new IServiceTypeID[] {});
 		}
 	}
 
@@ -238,13 +249,10 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		Assert.isNotNull(serviceInfo);
 		final ServiceInfo svcInfo = createServiceInfoFromIServiceInfo(serviceInfo);
 		checkServiceInfo(svcInfo);
-		synchronized (lock) {
-			try {
-				if (jmdns != null)
-					jmdns.registerService(svcInfo);
-			} catch (final IOException e) {
-				throw new ECFRuntimeException("Exception registering service", e); //$NON-NLS-1$
-			}
+		try {
+			jmdns.registerService(svcInfo);
+		} catch (final IOException e) {
+			throw new ECFRuntimeException("Exception registering service", e); //$NON-NLS-1$
 		}
 	}
 
@@ -254,20 +262,14 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	public void unregisterService(final IServiceInfo serviceInfo) {
 		Assert.isNotNull(serviceInfo);
 		final ServiceInfo si = createServiceInfoFromIServiceInfo(serviceInfo);
-		synchronized (lock) {
-			if (jmdns != null)
-				jmdns.unregisterService(si);
-		}
+		jmdns.unregisterService(si);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.AbstractDiscoveryContainerAdapter#unregisterAllServices()
 	 */
 	public void unregisterAllServices() {
-		synchronized (lock) {
-			if (jmdns != null)
-				jmdns.unregisterAllServices();
-		}
+		jmdns.unregisterAllServices();
 	}
 
 	/* (non-Javadoc)
@@ -309,8 +311,9 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 				final String serviceName = arg0.getName();
 				IServiceInfo aServiceInfo = null;
 				synchronized (lock) {
-					if (getConnectedID() == null)
+					if (getConnectedID() == null || disposed) {
 						return;
+					}
 
 					// explicitly get the service to determine the naming authority (part of the service properties)
 					try {
@@ -336,8 +339,9 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		Trace.trace(JMDNSPlugin.PLUGIN_ID, "serviceRemoved(" + arg0.getName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		runInThread(new Runnable() {
 			public void run() {
-				if (getConnectedID() == null)
+				if (getConnectedID() == null || disposed) {
 					return;
+				}
 				final String serviceType = arg0.getType();
 				final String serviceName = arg0.getName();
 				IServiceInfo aServiceInfo = (IServiceInfo) services.remove(serviceType + serviceName);
