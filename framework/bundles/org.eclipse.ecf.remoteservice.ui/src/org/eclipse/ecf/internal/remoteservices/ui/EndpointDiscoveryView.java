@@ -114,12 +114,17 @@ public class EndpointDiscoveryView extends ViewPart {
 		clipboard = new Clipboard(viewer.getControl().getDisplay());
 		getSite().setSelectionProvider(viewer);
 
-		IEndpointDescriptionLocator locator = this.discovery.getEndpointDescriptionLocator();
-		if (locator != null) {
-			EndpointDescription[] eds = locator.getDiscoveredEndpoints();
-			for(EndpointDescription ed: eds)
-				addEndpoint(ed);
-		}
+		// Add any previously discovered endpoints
+		viewer.getControl().getDisplay().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				IEndpointDescriptionLocator locator = discovery.getEndpointDescriptionLocator();
+				if (locator != null) {
+					EndpointDescription[] eds = locator.getDiscoveredEndpoints();
+					for(EndpointDescription ed: eds)
+						handleEndpointDescription(EndpointEvent.ADDED, ed);
+				}
+			}});
 		
 		showServicesInRegistryBrowser();
 		
@@ -440,15 +445,11 @@ public class EndpointDiscoveryView extends ViewPart {
 		viewer.getControl().setFocus();
 	}
 
-	void handleEndpointChanged(final EndpointEvent event) {
-		if (viewer == null)
-			return;
+	void handleEndpointDescription(final int type, final EndpointDescription ed) {
+		if (ed == null || viewer == null) return;
 		viewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				EndpointDescription ed = (EndpointDescription) event
-						.getEndpoint();
-				int type = event.getType();
 				switch (type) {
 				case EndpointEvent.ADDED:
 					addEndpoint(ed);
@@ -461,6 +462,10 @@ public class EndpointDiscoveryView extends ViewPart {
 				viewer.refresh();
 			}
 		});
+	}
+	
+	void handleEndpointChanged(final EndpointEvent event) {
+		handleEndpointDescription(event.getType(),(EndpointDescription) event.getEndpoint());
 	}
 
 	void addEndpoint(EndpointDescription ed) {
