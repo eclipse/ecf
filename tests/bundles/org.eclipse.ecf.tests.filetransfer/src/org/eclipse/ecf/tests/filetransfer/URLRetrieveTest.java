@@ -37,7 +37,7 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 	public static final String HTTP_RETRIEVE_PORT = "http://www.eclipse.org:80/ecf/ip_log.html";
 	private static final String HTTP_RETRIEVE_HOST_ONLY = "http://www.google.com";
 
-	public static final String HTTPS_RETRIEVE = "https://www.verisign.com";
+	public static final String HTTPS_RETRIEVE = "https://www.eclipse.org";
 	public static final String HTTP_404_FAIL_RETRIEVE = "http://www.google.com/googleliciousafdasdfasdfasdf";
 	public static final String HTTP_BAD_URL = "http:ddasdf12121212";
 	public static final String HTTP_MALFORMED_URL = "http://malformed:-1";

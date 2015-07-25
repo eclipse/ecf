@@ -40,7 +40,7 @@ public class URLBrowseTest extends AbstractBrowseTestCase {
 		super.setUp();
 		events = new ArrayList();
 		testURLs = new URL[3];
-		testURLs[0] = new URL("https://www.verisign.com/index.html");
+		testURLs[0] = new URL("https://www.eclipse.org/ecf/ip_log.html");
 		testURLs[1] = new URL("http://www.eclipse.org/ecf/ip_log.html");
 		testURLs[2] = new URL("http://google.com:80");
 	}
@@ -75,8 +75,6 @@ public class URLBrowseTest extends AbstractBrowseTestCase {
 			assertNotNull(remoteFiles);
 			assertEquals(1, remoteFiles.length);
 			if (event.getFileID().getName()
-					.equals("https://www.verisign.com/index.html")
-					|| event.getFileID().getName()
 							.equals("http://google.com:80")) {
 				verifyRemoteFilesWithoutLastModifiedAndContentLength(remoteFiles);
 			} else {
