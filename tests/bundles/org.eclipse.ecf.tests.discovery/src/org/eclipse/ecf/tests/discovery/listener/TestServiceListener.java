@@ -11,7 +11,6 @@
 package org.eclipse.ecf.tests.discovery.listener;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceListener;
@@ -63,13 +62,6 @@ public class TestServiceListener extends TestListener implements IServiceListene
 		throw new java.lang.UnsupportedOperationException("TestServiceListener#serviceUndiscovered not yet implemented");
 	}
 
-
-	/**
-	 * @return A DiscoveryLocator (Container)
-	 */
-	public IContainer getLocator() {
-		return (IContainer) locator;
-	}
 
 	public boolean triggerDiscovery() {
 		return false;
