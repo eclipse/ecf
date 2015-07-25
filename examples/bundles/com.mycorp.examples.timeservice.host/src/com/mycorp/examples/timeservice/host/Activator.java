@@ -80,11 +80,11 @@ public class Activator implements BundleActivator {
 		result.put(SERVICE_EXPORTED_CONFIGS, config);
 		// add any config properties. config properties start with
 		// the config name '.' property
-		for (Object k : result.keySet()) {
+		for (Object k : props.keySet()) {
 			if (k instanceof String) {
 				String key = (String) k;
 				if (key.startsWith(config))
-					result.put(key, result.get(key));
+					result.put(key, props.get(key));
 			}
 		}
 		return result;
