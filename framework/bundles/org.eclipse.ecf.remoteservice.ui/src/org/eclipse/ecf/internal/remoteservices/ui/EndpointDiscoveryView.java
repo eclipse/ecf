@@ -11,6 +11,7 @@ package org.eclipse.ecf.internal.remoteservices.ui;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
@@ -176,6 +177,7 @@ public class EndpointDiscoveryView extends ViewPart {
 			discovery.setView(null);
 			discovery = null;
 		}
+		discoveredEndpointIds.clear();
 	}
 
 	private void hookContextMenu() {
@@ -468,14 +470,21 @@ public class EndpointDiscoveryView extends ViewPart {
 		handleEndpointDescription(event.getType(),(EndpointDescription) event.getEndpoint());
 	}
 
+	private List<String> discoveredEndpointIds = new ArrayList<String>();
+	
 	void addEndpoint(EndpointDescription ed) {
 		if (EndpointDiscoveryView.this.previousRegistryBrowserGroupBy != RegistryBrowser.SERVICES)
 			showServicesInRegistryBrowser();
-		contentProvider.getRootNode().addChild(createEndpointDescriptionNode(ed));
+		String edId = ed.getId();
+		if (!discoveredEndpointIds.contains(edId)) {
+			discoveredEndpointIds.add(edId);
+			contentProvider.getRootNode().addChild(createEndpointDescriptionNode(ed));
+		}
 	}
 	
 	void removeEndpoint(EndpointDescription ed) {
-		contentProvider.getRootNode().removeChild(new EndpointNode(ed));
+		if (discoveredEndpointIds.remove(ed.getId()))
+			contentProvider.getRootNode().removeChild(new EndpointNode(ed));
 	}
 	
 	ImportRegistration findImportRegistration(EndpointDescription ed) {
