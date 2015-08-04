@@ -1003,7 +1003,7 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 		if (TRACE_TIME) {
 			StringBuffer buf = new StringBuffer("TIMING.END;");
 			buf.append((message==null?"":message));
-			buf.append(";duration=").append((System.currentTimeMillis()-startTime));
+			buf.append(";duration(ms)=").append((System.currentTimeMillis()-startTime));
 			LogService logService = RemoteOSGiServiceImpl.log;
 			if (logService != null) {
 				if (exception != null)
@@ -1011,12 +1011,9 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 				else
 					logService.log(LogService.LOG_INFO, buf.toString());
 			} else {
+				System.out.println(buf.toString());
 				if (exception != null) 
-					System.out.println(buf.toString());
-				else {
-					System.out.println(buf.toString());
 					exception.printStackTrace();
-				}
 			}
 		}
 	}
