@@ -981,6 +981,24 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 		}
 	}
 
+	private long startTime;
+	
+	public static final boolean TRACE_TIME = new Boolean(System.getProperty("ch.ethz.iks.r_osgi.traceSendMessageTime","false")).booleanValue();
+	
+	void startTiming(String message) {
+		if (TRACE_TIME) {
+			startTime = System.currentTimeMillis();
+			System.out.println("TIMING.START;"+(message==null?"":message)+";startTime="+startTime);
+		}
+	}
+	
+	void stopTiming(String message, Throwable exception) {
+		if (TRACE_TIME) {
+			System.out.println("TIMING.END;"+(message==null?"":message)+";duration="+(System.currentTimeMillis()-startTime));
+			startTime = 0;
+		}
+	}
+	
 	/**
 	 * send a message.
 	 * 
@@ -996,6 +1014,9 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 			msg.setXID(RemoteOSGiServiceImpl.nextXid());
 		}
 
+		Throwable t = null;
+		startTiming("sendMessage");
+		
 		try {
 			try {
 				networkChannel.sendMessage(msg);
@@ -1014,11 +1035,15 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 				}
 			}
 		} catch (final NotSerializableException nse) {
-			throw new RemoteOSGiException("Error sending " + msg, nse); //$NON-NLS-1$
+			t = new RemoteOSGiException("Error sending " + msg, nse); //$NON-NLS-1$
+			throw ((RemoteOSGiException) t);
 		} catch (final IOException ioe) {
 			// failed to reconnect...
 			dispose();
-			throw new RemoteOSGiException("Network error", ioe); //$NON-NLS-1$
+			t = new RemoteOSGiException("Network error", ioe); //$NON-NLS-1$
+			throw ((RemoteOSGiException) t);
+		} finally {
+			stopTiming("sendMessage",t);
 		}
 	}
 
