@@ -988,17 +988,39 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	void startTiming(String message) {
 		if (TRACE_TIME) {
 			startTime = System.currentTimeMillis();
-			System.out.println("TIMING.START;"+(message==null?"":message)+";startTime="+startTime);
+			StringBuffer buf = new StringBuffer("TIMING.START;");
+			buf.append((message==null?"":message));
+			buf.append(";startTime=").append(startTime);
+			LogService logService = RemoteOSGiServiceImpl.log;
+			if (logService != null)
+				logService.log(LogService.LOG_INFO, buf.toString());
+			else 
+				System.out.println(buf.toString());
 		}
 	}
 	
 	void stopTiming(String message, Throwable exception) {
 		if (TRACE_TIME) {
-			System.out.println("TIMING.END;"+(message==null?"":message)+";duration="+(System.currentTimeMillis()-startTime));
-			startTime = 0;
+			StringBuffer buf = new StringBuffer("TIMING.END;");
+			buf.append((message==null?"":message));
+			buf.append(";duration=").append((System.currentTimeMillis()-startTime));
+			LogService logService = RemoteOSGiServiceImpl.log;
+			if (logService != null) {
+				if (exception != null)
+					logService.log(LogService.LOG_ERROR, message, exception);
+				else
+					logService.log(LogService.LOG_INFO, buf.toString());
+			} else {
+				if (exception != null) 
+					System.out.println(buf.toString());
+				else {
+					System.out.println(buf.toString());
+					exception.printStackTrace();
+				}
+			}
 		}
 	}
-	
+
 	/**
 	 * send a message.
 	 * 
