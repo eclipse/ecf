@@ -169,10 +169,12 @@ public class DebugRemoteServiceAdminListener implements
 
 	protected void writeEndpoint(EndpointDescription endpointDescription) {
 		try {
-			this.writer.println("--Endpoint Description---"); //$NON-NLS-1$
-			this.edWriter.writeEndpointDescription(this.writer,
-					endpointDescription);
-			this.writer.println("---End Endpoint Description"); //$NON-NLS-1$
+			if (endpointDescription != null) {
+				this.writer.println("--Endpoint Description---"); //$NON-NLS-1$
+				this.edWriter.writeEndpointDescription(this.writer,
+						endpointDescription);
+				this.writer.println("---End Endpoint Description"); //$NON-NLS-1$
+			}
 		} catch (Exception e) {
 			LogUtility
 					.logError(
