@@ -106,7 +106,7 @@ public final class R_OSGiContainerInstantiator implements IContainerInstantiator
 				return new R_OSGiWSRemoteServiceContainer(remoteOSGiService, containerID);
 			else
 				return new R_OSGiRemoteServiceContainer(remoteOSGiService, containerID);
-		} catch (IDCreateException e) {
+		} catch (Exception e) {
 			throw new ContainerCreateException("Could not create R_OSGI ID", e); //$NON-NLS-1$
 		}
 	}

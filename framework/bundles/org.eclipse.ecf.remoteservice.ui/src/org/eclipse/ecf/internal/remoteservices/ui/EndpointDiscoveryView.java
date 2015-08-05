@@ -305,7 +305,16 @@ public class EndpointDiscoveryView extends ViewPart {
 								.getEndpointDescription();
 						ImportRegistration reg = (ImportRegistration) rsa
 								.importService(ed);
-						// Check if import exception
+						if (reg == null) {
+							logError(
+									Messages.EndpointDiscoveryView_ERROR_MSG_RSA_IMPORTSERVICE_FAILED,
+									new Exception("Import Registration Is Null"));
+							showMessage(Messages.EndpointDiscoveryView_ERROR_MSG_RSA_IMPORTSERVICE_FAILED_PREFIX
+									+ "Import Registration Is Null"
+									+ Messages.EndpointDiscoveryView_ERROR_MSG_SUFFIX);
+							return;
+						}
+						// Check if import exception in returned registration
 						Throwable exception = reg.getException();
 						if (exception != null) {
 							logError(

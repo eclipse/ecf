@@ -403,6 +403,7 @@ public class RemoteServiceAdmin implements
 		}
 		// Select the rsContainer to handle the endpoint description
 		IRemoteServiceContainer rsContainer = null;
+		ImportRegistration importRegistration = null;
 		try {
 			rsContainer = AccessController
 					.doPrivileged(new PrivilegedExceptionAction<IRemoteServiceContainer>() {
@@ -414,11 +415,13 @@ public class RemoteServiceAdmin implements
 					});
 		} catch (PrivilegedActionException e) {
 			logError("importService","Unexpected exception in selectConsumerContainer",e.getException()); //$NON-NLS-1$ //$NON-NLS-2$
-			// As specified in section 122.5.2, return null
-			return null;
+			importRegistration = new ImportRegistration(ed, e.getException());
+		} catch (Exception e) {
+			logError("importService","Unexpected exception in selectConsumerContainer",e); //$NON-NLS-1$ //$NON-NLS-2$
+			importRegistration = new ImportRegistration(ed, e);
 		}
 		// If none found, log an error and return null
-		if (rsContainer == null) {
+		if (rsContainer == null && importRegistration == null) {
 			String errorMessage = "No remote service container selected for endpoint=" //$NON-NLS-1$
 					+ endpointDescription
 					+ ". Remote service NOT IMPORTED"; //$NON-NLS-1$
@@ -429,11 +432,12 @@ public class RemoteServiceAdmin implements
 		
 		// If one selected then import the service to create an import
 		// registration
-		ImportRegistration importRegistration = null;
 		synchronized (importedRegistrations) {
-			ImportEndpoint importEndpoint = findImportEndpoint(ed);
-			importRegistration = ((importEndpoint != null) ? new ImportRegistration(
-					importEndpoint) : importService(ed, rsContainer));
+			if (importRegistration == null) {
+				ImportEndpoint importEndpoint = findImportEndpoint(ed);
+				importRegistration = ((importEndpoint != null) ? new ImportRegistration(importEndpoint)
+						: importService(ed, rsContainer));
+			}
 			addImportRegistration(importRegistration);
 		}
 		// publish import event
