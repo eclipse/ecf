@@ -35,8 +35,10 @@ import java.io.NotSerializableException;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -983,16 +985,32 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 
 	private long startTime;
 	
-	public static final boolean TRACE_TIME = new Boolean(System.getProperty("ch.ethz.iks.r_osgi.traceSendMessageTime","false")).booleanValue();
+	public static final String TRACE_TIME_PROP = System.getProperty("ch.ethz.iks.r_osgi.traceSendMessageTime");
+	
+	private static boolean TRACE_TIME = false;
+	private static boolean USE_LOG_SERVICE = true;
+	
+	static {
+		if (TRACE_TIME_PROP != null) {
+			if (TRACE_TIME_PROP.equalsIgnoreCase("logservice") || TRACE_TIME_PROP.equalsIgnoreCase("true")) {
+				TRACE_TIME = true;
+			} else if (TRACE_TIME_PROP.equalsIgnoreCase("systemout")) {
+				TRACE_TIME = true;
+				USE_LOG_SERVICE = false;
+			}
+		}
+	}
+	
+	private static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSSZ");
 	
 	void startTiming(String message) {
 		if (TRACE_TIME) {
 			startTime = System.currentTimeMillis();
 			StringBuffer buf = new StringBuffer("TIMING.START;");
+			buf.append(sdf.format(new Date(startTime))).append(";");
 			buf.append((message==null?"":message));
-			buf.append(";startTime=").append(startTime);
 			LogService logService = RemoteOSGiServiceImpl.log;
-			if (logService != null)
+			if (logService != null && USE_LOG_SERVICE)
 				logService.log(LogService.LOG_INFO, buf.toString());
 			else 
 				System.out.println(buf.toString());
@@ -1002,10 +1020,11 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	void stopTiming(String message, Throwable exception) {
 		if (TRACE_TIME) {
 			StringBuffer buf = new StringBuffer("TIMING.END;");
+			buf.append(sdf.format(new Date(startTime))).append(";");
 			buf.append((message==null?"":message));
 			buf.append(";duration(ms)=").append((System.currentTimeMillis()-startTime));
 			LogService logService = RemoteOSGiServiceImpl.log;
-			if (logService != null) {
+			if (logService != null && USE_LOG_SERVICE) {
 				if (exception != null)
 					logService.log(LogService.LOG_ERROR, buf.toString(), exception);
 				else
@@ -1015,6 +1034,7 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 				if (exception != null) 
 					exception.printStackTrace();
 			}
+			startTime = 0;
 		}
 	}
 
@@ -1034,7 +1054,8 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 		}
 
 		Throwable t = null;
-		startTiming("sendMessage");
+		String timingMsg = "sendMessage;funcId="+msg.getFuncID()+";xid="+msg.getXID();
+		startTiming(timingMsg);
 		
 		try {
 			try {
@@ -1062,7 +1083,7 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 			t = new RemoteOSGiException("Network error", ioe); //$NON-NLS-1$
 			throw ((RemoteOSGiException) t);
 		} finally {
-			stopTiming("sendMessage",t);
+			stopTiming(timingMsg,t);
 		}
 	}
 
