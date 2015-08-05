@@ -1001,7 +1001,7 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 		}
 	}
 	
-	private static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSSZ");
+	private static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
 	
 	void startTiming(String message) {
 		if (TRACE_TIME) {
