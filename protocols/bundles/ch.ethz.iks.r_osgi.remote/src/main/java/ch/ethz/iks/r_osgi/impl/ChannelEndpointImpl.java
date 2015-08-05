@@ -1007,7 +1007,7 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 			LogService logService = RemoteOSGiServiceImpl.log;
 			if (logService != null) {
 				if (exception != null)
-					logService.log(LogService.LOG_ERROR, message, exception);
+					logService.log(LogService.LOG_ERROR, buf.toString(), exception);
 				else
 					logService.log(LogService.LOG_INFO, buf.toString());
 			} else {
