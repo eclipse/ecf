@@ -16,7 +16,7 @@ public class TimeServiceComponent {
 	void bindTimeService(ITimeService timeService) {
 		System.out.println("Discovered ITimeService via DS.  Instance="+timeService);
 		// Call the service and print out result!
-		System.out.println("Current time is: " + timeService.getCurrentTime());
+		System.out.println("Current time on remote is: " + timeService.getCurrentTime());
 	}
 	
 	// Called by DS upon ITimeService undiscovery
