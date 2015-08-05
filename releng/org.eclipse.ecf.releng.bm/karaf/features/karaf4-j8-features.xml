@@ -53,6 +53,11 @@
         <bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.eclipse.ecf.provider.jslp_3.2.0.v20150512-1727.jar</bundle>
 </feature>
 
+<feature name="ecf-remoteservices-discprovider-dnssd" version="3.10.0" description="ECF Discovery DNSSD Provider">
+    <bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.xbill.dns_2.0.8.v201112050911.jar</bundle>
+    <bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.eclipse.ecf.provider.dnssd_1.2.0.v20150512-1727.jar</bundle>
+</feature>
+
 <feature name="ecf-remoteservices-rest" version="3.10.0" description="ECF Discovery SLP Provider.  See https://wiki.eclipse.org/R-OSGi_Properties">
     <bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.apache.commons.codec_1.6.0.v201305230611.jar</bundle>
     <bundle>http://download.eclipse.org/rt/ecf/3.10.0/site.p2/plugins/org.apache.httpcomponents.httpclient_4.3.6.v201411290715.jar</bundle>
