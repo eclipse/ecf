@@ -12,8 +12,11 @@
 package org.eclipse.ecf.tests.connect;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
@@ -54,6 +57,13 @@ public class SSLClientContainerConnectTest extends SSLContainerAbstractTestCase 
 					serverDisconnectEvents.add(event);
 			}
 		});
+	}
+
+	protected IContainer createServer() throws Exception {
+		Map props = new HashMap();
+		props.put("id",serverID);
+		props.put("needClientAuth", Boolean.TRUE);
+		return ContainerFactory.getDefault().createContainer(getServerContainerName(), props);
 	}
 
 	/*
