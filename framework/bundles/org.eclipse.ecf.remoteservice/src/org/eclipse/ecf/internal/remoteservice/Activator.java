@@ -11,20 +11,23 @@
 
 package org.eclipse.ecf.internal.remoteservice;
 
-import org.eclipse.ecf.remoteservice.RemoteServiceNamespace;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
-import java.util.Dictionary;
-import java.util.Hashtable;
+import java.util.*;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.core.util.SystemLogService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceProxyCreator;
+import org.eclipse.ecf.remoteservice.RemoteServiceNamespace;
+import org.eclipse.ecf.remoteservice.provider.IRemoteServiceDistributionProvider;
 import org.osgi.framework.*;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -46,6 +49,65 @@ public class Activator implements BundleActivator {
 	private ServiceRegistration remoteServiceProxyCreator;
 
 	private RemoteServiceNamespace remoteServiceNamespace;
+
+	private ServiceTracker<IRemoteServiceDistributionProvider, IRemoteServiceDistributionProvider> distributionProviderTracker;
+
+	class RSDPRegistrations {
+		private ServiceRegistration<ContainerTypeDescription> ctdSR;
+		private ServiceRegistration<Namespace> nsSR;
+
+		RSDPRegistrations(ServiceRegistration<ContainerTypeDescription> ctdSR, ServiceRegistration<Namespace> nsSR) {
+			this.ctdSR = ctdSR;
+			this.nsSR = nsSR;
+		}
+
+		void unregister(ServiceRegistration<?> reg) {
+			try {
+				reg.unregister();
+			} catch (Exception e) {
+				log(new Status(IStatus.ERROR, PLUGIN_ID, "Could not unregister serviceReg=" + this.ctdSR, e)); //$NON-NLS-1$
+			}
+		}
+
+		synchronized void unregisterServices() {
+			if (this.ctdSR != null) {
+				unregister(this.ctdSR);
+				this.ctdSR = null;
+			}
+			if (this.nsSR != null) {
+				unregister(this.nsSR);
+				this.nsSR = null;
+			}
+		}
+	}
+
+	Map<ServiceReference<IRemoteServiceDistributionProvider>, RSDPRegistrations> svcRefToDSDPRegMap;
+
+	private ServiceTrackerCustomizer<IRemoteServiceDistributionProvider, IRemoteServiceDistributionProvider> distributionProviderCustomizer = new ServiceTrackerCustomizer<IRemoteServiceDistributionProvider, IRemoteServiceDistributionProvider>() {
+
+		public IRemoteServiceDistributionProvider addingService(ServiceReference<IRemoteServiceDistributionProvider> reference) {
+			BundleContext bundleContext = getContext();
+			IRemoteServiceDistributionProvider dProvider = bundleContext.getService(reference);
+			if (dProvider != null) {
+				ServiceRegistration<ContainerTypeDescription> ctdSR = dProvider.registerContainerTypeDescription(bundleContext);
+				ServiceRegistration<Namespace> nsSR = dProvider.registerNamespace(bundleContext);
+				if (ctdSR != null)
+					svcRefToDSDPRegMap.put(reference, new RSDPRegistrations(ctdSR, nsSR));
+			}
+			return dProvider;
+		}
+
+		public void modifiedService(ServiceReference<IRemoteServiceDistributionProvider> reference, IRemoteServiceDistributionProvider service) {
+			// nothing
+		}
+
+		public void removedService(ServiceReference<IRemoteServiceDistributionProvider> reference, IRemoteServiceDistributionProvider service) {
+			RSDPRegistrations regs = svcRefToDSDPRegMap.remove(reference);
+			if (regs != null)
+				regs.unregisterServices();
+		}
+
+	};
 
 	/**
 	 * The constructor
@@ -77,6 +139,10 @@ public class Activator implements BundleActivator {
 		// Setup namespace
 		this.remoteServiceNamespace = new RemoteServiceNamespace(RemoteServiceNamespace.NAME, "remote service namespace"); //$NON-NLS-1$
 		IDFactory.getDefault().addNamespace(remoteServiceNamespace);
+		svcRefToDSDPRegMap = Collections.synchronizedMap(new HashMap<ServiceReference<IRemoteServiceDistributionProvider>, RSDPRegistrations>());
+
+		distributionProviderTracker = new ServiceTracker<IRemoteServiceDistributionProvider, IRemoteServiceDistributionProvider>(getContext(), IRemoteServiceDistributionProvider.class, distributionProviderCustomizer);
+		distributionProviderTracker.open();
 	}
 
 	/*
@@ -85,6 +151,10 @@ public class Activator implements BundleActivator {
 	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext c) throws Exception {
+		if (distributionProviderTracker != null) {
+			distributionProviderTracker.close();
+			distributionProviderTracker = null;
+		}
 		if (this.remoteServiceProxyCreator != null) {
 			this.remoteServiceProxyCreator.unregister();
 			this.remoteServiceProxyCreator = null;
