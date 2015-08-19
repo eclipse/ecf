@@ -1,9 +1,8 @@
 package org.eclipse.ecf.remoteservice.provider;
 
+import java.util.Dictionary;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
 
 /**
  * @since 8.7
@@ -14,18 +13,12 @@ import org.osgi.framework.ServiceRegistration;
  */
 public interface IRemoteServiceDistributionProvider {
 
-	/**
-	 * Register the appropriate ContainerTypeDescription instance given the bundle context.
-	 * @param context the BundleContext that will register the ContainerTypeDescription.  Will not be <code>null</code>.
-	 * @return ServiceRegistration for the registered ContainerTypeDescription.
-	 */
-	ServiceRegistration<ContainerTypeDescription> registerContainerTypeDescription(BundleContext context);
+	ContainerTypeDescription createContainerTypeDescription();
 
-	/**
-	 * Register the appropriate Namespace instance given the bundle context.
-	 * @param context the BundleContext that will register the Namespace.  Will not be <code>null</code>.
-	 * @return ServiceRegistration for the registered Namespace.
-	 */
-	ServiceRegistration<Namespace> registerNamespace(BundleContext context);
+	Dictionary<String, ?> getContainerTypeDescriptionProperties();
+
+	Namespace createNamespace();
+
+	Dictionary<String, ?> getNamespaceProperties();
 
 }

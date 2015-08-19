@@ -89,8 +89,13 @@ public class Activator implements BundleActivator {
 			BundleContext bundleContext = getContext();
 			IRemoteServiceDistributionProvider dProvider = bundleContext.getService(reference);
 			if (dProvider != null) {
-				ServiceRegistration<ContainerTypeDescription> ctdSR = dProvider.registerContainerTypeDescription(bundleContext);
-				ServiceRegistration<Namespace> nsSR = dProvider.registerNamespace(bundleContext);
+				ContainerTypeDescription ctd = dProvider.createContainerTypeDescription();
+				Dictionary<String, ?> ctdProps = dProvider.getContainerTypeDescriptionProperties();
+				ServiceRegistration<ContainerTypeDescription> ctdSR = bundleContext.registerService(ContainerTypeDescription.class, ctd, ctdProps);
+				Namespace ns = dProvider.createNamespace();
+				ServiceRegistration<Namespace> nsSR = null;
+				if (ns != null)
+					nsSR = bundleContext.registerService(Namespace.class, ns, dProvider.getNamespaceProperties());
 				if (ctdSR != null)
 					svcRefToDSDPRegMap.put(reference, new RSDPRegistrations(ctdSR, nsSR));
 			}
