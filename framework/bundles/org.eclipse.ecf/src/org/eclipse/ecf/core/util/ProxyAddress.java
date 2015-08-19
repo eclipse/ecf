@@ -48,6 +48,8 @@ public class ProxyAddress implements Serializable {
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(Object obj) {
+		if (obj == null || this.hostname == null)
+			return false;
 		if (!(obj instanceof ProxyAddress))
 			return false;
 		ProxyAddress other = (ProxyAddress) obj;
@@ -60,6 +62,8 @@ public class ProxyAddress implements Serializable {
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
+		if (this.hostname == null)
+			return super.hashCode();
 		return this.hostname.hashCode() ^ Math.abs(this.port);
 	}
 }
