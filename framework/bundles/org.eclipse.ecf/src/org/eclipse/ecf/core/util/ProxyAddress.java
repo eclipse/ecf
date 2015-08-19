@@ -26,7 +26,7 @@ public class ProxyAddress implements Serializable {
 	protected String hostname = ""; //$NON-NLS-1$
 
 	public ProxyAddress(String hostname, int port) {
-		this.hostname = hostname;
+		this.hostname = (hostname == null) ? "" : hostname; //$NON-NLS-1$
 		this.port = port;
 	}
 
