@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2004, 2009 Composent, Inc. and others.
+ * Copyright (c) 2004, 2009, 2015 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -54,10 +54,12 @@ public class Activator implements BundleActivator {
 	class RSDPRegistrations {
 		private ServiceRegistration<ContainerTypeDescription> ctdSR;
 		private ServiceRegistration<Namespace> nsSR;
+		private IAdapterFactory af;
 
-		RSDPRegistrations(ServiceRegistration<ContainerTypeDescription> ctdSR, ServiceRegistration<Namespace> nsSR) {
+		RSDPRegistrations(ServiceRegistration<ContainerTypeDescription> ctdSR, ServiceRegistration<Namespace> nsSR, IAdapterFactory af) {
 			this.ctdSR = ctdSR;
 			this.nsSR = nsSR;
+			this.af = af;
 		}
 
 		void unregister(ServiceRegistration<?> reg) {
@@ -77,42 +79,58 @@ public class Activator implements BundleActivator {
 				unregister(this.nsSR);
 				this.nsSR = null;
 			}
+			if (this.af != null) {
+				IAdapterManager am = getAdapterManager();
+				if (am != null) {
+					am.unregisterAdapters(this.af);
+					this.af = null;
+				}
+			}
+
 		}
 	}
 
 	Map<ServiceReference<IRemoteServiceDistributionProvider>, RSDPRegistrations> svcRefToDSDPRegMap;
-	List<IAdapterFactory> rscAdapterFactories;
 
 	private ServiceTrackerCustomizer<IRemoteServiceDistributionProvider, IRemoteServiceDistributionProvider> distributionProviderCustomizer = new ServiceTrackerCustomizer<IRemoteServiceDistributionProvider, IRemoteServiceDistributionProvider>() {
 
 		public IRemoteServiceDistributionProvider addingService(ServiceReference<IRemoteServiceDistributionProvider> reference) {
 			BundleContext bundleContext = getContext();
+			// First get service
 			IRemoteServiceDistributionProvider dProvider = bundleContext.getService(reference);
+			// If not null
 			if (dProvider != null) {
+				// Get ContainerTypeDescription
 				ContainerTypeDescription ctd = dProvider.createContainerTypeDescription();
-				Dictionary<String, ?> ctdProps = dProvider.getContainerTypeDescriptionProperties();
-				ServiceRegistration<ContainerTypeDescription> ctdSR = bundleContext.registerService(ContainerTypeDescription.class, ctd, ctdProps);
-				Namespace ns = dProvider.createNamespace();
-				ServiceRegistration<Namespace> nsSR = null;
-				if (ns != null)
-					nsSR = bundleContext.registerService(Namespace.class, ns, dProvider.getNamespaceProperties());
-				if (ctdSR != null)
-					svcRefToDSDPRegMap.put(reference, new RSDPRegistrations(ctdSR, nsSR));
-				// Setup any adapter factories
-				IAdapterManager am = getAdapterManager(bundleContext);
-				if (am == null)
-					log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "No adapter manager available for remote service containers")); //$NON-NLS-1$
-				// Now get AdapterConfig
-				AdapterConfig adapterConfig = dProvider.createAdapterConfig();
-				if (adapterConfig != null) {
-					IAdapterFactory af = adapterConfig.getAdapterFactory();
-					Class<?> adapterClass = adapterConfig.getAdaptable();
-					if (af == null || adapterClass == null)
-						log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Invalid adapter config for distribution provider=" + ctd.getName())); //$NON-NLS-1$
-					// Now register adapters
-					am.registerAdapters(af, adapterClass);
-					// and add to list
-					rscAdapterFactories.add(af);
+				if (ctd == null)
+					log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Remote Service Provider Container Type Description cannot be null")); //$NON-NLS-1$
+				else {
+					Dictionary<String, ?> ctdProps = dProvider.getContainerTypeDescriptionProperties();
+					// Register the container type description
+					ServiceRegistration<ContainerTypeDescription> ctdSR = bundleContext.registerService(ContainerTypeDescription.class, ctd, ctdProps);
+					// Now process namespace
+					Namespace ns = dProvider.createNamespace();
+					ServiceRegistration<Namespace> nsSR = null;
+					if (ns != null)
+						nsSR = bundleContext.registerService(Namespace.class, ns, dProvider.getNamespaceProperties());
+					// Then store away RSDPRegistrations
+					// Setup any adapter factories
+					IAdapterManager am = getAdapterManager();
+					if (am == null)
+						log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "No adapter manager available for remote service containers")); //$NON-NLS-1$
+					// Now get AdapterConfig
+					AdapterConfig adapterConfig = dProvider.createAdapterConfig();
+					IAdapterFactory adapterFactory = null;
+					if (adapterConfig != null) {
+						adapterFactory = adapterConfig.getAdapterFactory();
+						Class<?> adapterClass = adapterConfig.getAdaptable();
+						if (adapterFactory == null || adapterClass == null)
+							log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Invalid adapter config for distribution provider=" + ctd.getName())); //$NON-NLS-1$
+						// Now register adapters
+						am.registerAdapters(adapterFactory, adapterClass);
+					}
+					if (ctdSR != null)
+						svcRefToDSDPRegMap.put(reference, new RSDPRegistrations(ctdSR, nsSR, adapterFactory));
 				}
 			}
 			return dProvider;
@@ -162,8 +180,6 @@ public class Activator implements BundleActivator {
 		IDFactory.getDefault().addNamespace(remoteServiceNamespace);
 		svcRefToDSDPRegMap = Collections.synchronizedMap(new HashMap<ServiceReference<IRemoteServiceDistributionProvider>, RSDPRegistrations>());
 
-		rscAdapterFactories = Collections.synchronizedList(new ArrayList<IAdapterFactory>());
-
 		distributionProviderTracker = new ServiceTracker<IRemoteServiceDistributionProvider, IRemoteServiceDistributionProvider>(getContext(), IRemoteServiceDistributionProvider.class, distributionProviderCustomizer);
 		distributionProviderTracker.open();
 
@@ -178,13 +194,6 @@ public class Activator implements BundleActivator {
 		if (distributionProviderTracker != null) {
 			distributionProviderTracker.close();
 			distributionProviderTracker = null;
-		}
-		if (rscAdapterFactories != null) {
-			IAdapterManager am = getAdapterManager(this.context);
-			if (am != null)
-				for (Iterator<IAdapterFactory> i = rscAdapterFactories.iterator(); i.hasNext();)
-					am.unregisterAdapters(i.next());
-			rscAdapterFactories = null;
 		}
 		if (this.remoteServiceProxyCreator != null) {
 			this.remoteServiceProxyCreator.unregister();
@@ -234,8 +243,10 @@ public class Activator implements BundleActivator {
 			logService.log(LogHelper.getLogCode(status), LogHelper.getLogMessage(status), status.getException());
 	}
 
-	public static IAdapterManager getAdapterManager(BundleContext ctx) {
-		AdapterManagerTracker t = new AdapterManagerTracker(ctx);
+	public IAdapterManager getAdapterManager() {
+		if (this.context == null)
+			return null;
+		AdapterManagerTracker t = new AdapterManagerTracker(this.context);
 		t.open();
 		IAdapterManager am = t.getAdapterManager();
 		t.close();
