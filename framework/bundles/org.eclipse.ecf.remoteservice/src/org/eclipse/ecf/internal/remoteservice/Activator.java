@@ -14,15 +14,14 @@ package org.eclipse.ecf.internal.remoteservice;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.*;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.core.util.LogHelper;
-import org.eclipse.ecf.core.util.SystemLogService;
+import org.eclipse.ecf.core.util.*;
 import org.eclipse.ecf.remoteservice.IRemoteServiceProxyCreator;
 import org.eclipse.ecf.remoteservice.RemoteServiceNamespace;
+import org.eclipse.ecf.remoteservice.provider.AdapterConfig;
 import org.eclipse.ecf.remoteservice.provider.IRemoteServiceDistributionProvider;
 import org.osgi.framework.*;
 import org.osgi.service.log.LogService;
@@ -82,6 +81,7 @@ public class Activator implements BundleActivator {
 	}
 
 	Map<ServiceReference<IRemoteServiceDistributionProvider>, RSDPRegistrations> svcRefToDSDPRegMap;
+	List<IAdapterFactory> rscAdapterFactories;
 
 	private ServiceTrackerCustomizer<IRemoteServiceDistributionProvider, IRemoteServiceDistributionProvider> distributionProviderCustomizer = new ServiceTrackerCustomizer<IRemoteServiceDistributionProvider, IRemoteServiceDistributionProvider>() {
 
@@ -98,6 +98,22 @@ public class Activator implements BundleActivator {
 					nsSR = bundleContext.registerService(Namespace.class, ns, dProvider.getNamespaceProperties());
 				if (ctdSR != null)
 					svcRefToDSDPRegMap.put(reference, new RSDPRegistrations(ctdSR, nsSR));
+				// Setup any adapter factories
+				IAdapterManager am = getAdapterManager(bundleContext);
+				if (am == null)
+					log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "No adapter manager available for remote service containers")); //$NON-NLS-1$
+				// Now get AdapterConfig
+				AdapterConfig adapterConfig = dProvider.createAdapterConfig();
+				if (adapterConfig != null) {
+					IAdapterFactory af = adapterConfig.getAdapterFactory();
+					Class<?> adapterClass = adapterConfig.getAdaptable();
+					if (af == null || adapterClass == null)
+						log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Invalid adapter config for distribution provider=" + ctd.getName())); //$NON-NLS-1$
+					// Now register adapters
+					am.registerAdapters(af, adapterClass);
+					// and add to list
+					rscAdapterFactories.add(af);
+				}
 			}
 			return dProvider;
 		}
@@ -146,8 +162,11 @@ public class Activator implements BundleActivator {
 		IDFactory.getDefault().addNamespace(remoteServiceNamespace);
 		svcRefToDSDPRegMap = Collections.synchronizedMap(new HashMap<ServiceReference<IRemoteServiceDistributionProvider>, RSDPRegistrations>());
 
+		rscAdapterFactories = Collections.synchronizedList(new ArrayList<IAdapterFactory>());
+
 		distributionProviderTracker = new ServiceTracker<IRemoteServiceDistributionProvider, IRemoteServiceDistributionProvider>(getContext(), IRemoteServiceDistributionProvider.class, distributionProviderCustomizer);
 		distributionProviderTracker.open();
+
 	}
 
 	/*
@@ -159,6 +178,13 @@ public class Activator implements BundleActivator {
 		if (distributionProviderTracker != null) {
 			distributionProviderTracker.close();
 			distributionProviderTracker = null;
+		}
+		if (rscAdapterFactories != null) {
+			IAdapterManager am = getAdapterManager(this.context);
+			if (am != null)
+				for (Iterator<IAdapterFactory> i = rscAdapterFactories.iterator(); i.hasNext();)
+					am.unregisterAdapters(i.next());
+			rscAdapterFactories = null;
 		}
 		if (this.remoteServiceProxyCreator != null) {
 			this.remoteServiceProxyCreator.unregister();
@@ -206,6 +232,14 @@ public class Activator implements BundleActivator {
 			logService = getLogService();
 		if (logService != null)
 			logService.log(LogHelper.getLogCode(status), LogHelper.getLogMessage(status), status.getException());
+	}
+
+	public static IAdapterManager getAdapterManager(BundleContext ctx) {
+		AdapterManagerTracker t = new AdapterManagerTracker(ctx);
+		t.open();
+		IAdapterManager am = t.getAdapterManager();
+		t.close();
+		return am;
 	}
 
 }

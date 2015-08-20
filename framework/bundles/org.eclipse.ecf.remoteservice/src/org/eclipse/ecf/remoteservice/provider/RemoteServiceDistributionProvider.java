@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * Copyright (c) 2015 Composent, Inc. and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: Composent, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.eclipse.ecf.remoteservice.provider;
 
 import java.util.Dictionary;
@@ -20,8 +28,20 @@ public class RemoteServiceDistributionProvider implements IRemoteServiceDistribu
 	private boolean server;
 	private boolean hidden;
 
+	protected RemoteServiceDistributionProvider() {
+
+	}
+
 	protected RemoteServiceDistributionProvider(String name, IContainerInstantiator instantiator) {
 		setName(name).setInstantiator(instantiator);
+	}
+
+	protected RemoteServiceDistributionProvider(String name, IContainerInstantiator instantiator, String description) {
+		setName(name).setInstantiator(instantiator).setDescription(description);
+	}
+
+	protected RemoteServiceDistributionProvider(String name, IContainerInstantiator instantiator, String description, boolean server) {
+		setName(name).setInstantiator(instantiator).setDescription(description).setServer(server);
 	}
 
 	protected String getName() {
@@ -94,6 +114,10 @@ public class RemoteServiceDistributionProvider implements IRemoteServiceDistribu
 	}
 
 	public Dictionary<String, ?> getNamespaceProperties() {
+		return null;
+	}
+
+	public AdapterConfig createAdapterConfig() {
 		return null;
 	}
 }
