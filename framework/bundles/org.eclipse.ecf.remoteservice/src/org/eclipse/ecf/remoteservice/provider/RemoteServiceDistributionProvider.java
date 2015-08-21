@@ -27,9 +27,75 @@ public class RemoteServiceDistributionProvider implements IRemoteServiceDistribu
 	private String description;
 	private boolean server;
 	private boolean hidden;
+	private Dictionary<String, ?> ctdProperties;
+	private Namespace namespace;
+	private Dictionary<String, ?> nsProperties;
+	private AdapterConfig adapterConfig;
 
-	protected RemoteServiceDistributionProvider() {
+	/**
+	 * Builder for RemoteServiceDistributionProvider instances
+	 *
+	 */
+	public static class Builder {
 
+		private final RemoteServiceDistributionProvider instance;
+
+		public Builder() {
+			this.instance = new RemoteServiceDistributionProvider();
+		}
+
+		public Builder setName(String name) {
+			this.instance.setName(name);
+			return this;
+		}
+
+		public Builder setInstantiator(IContainerInstantiator instantiator) {
+			this.instance.setInstantiator(instantiator);
+			return this;
+		}
+
+		public Builder setDescription(String desc) {
+			this.instance.setDescription(desc);
+			return this;
+		}
+
+		public Builder setServer(boolean server) {
+			this.instance.setServer(server);
+			return this;
+		}
+
+		public Builder setHidden(boolean hidden) {
+			this.instance.setHidden(hidden);
+			return this;
+		}
+
+		public Builder setNamespace(Namespace ns) {
+			this.instance.setNamespace(ns);
+			return this;
+		}
+
+		public Builder setContainerTypeDescriptionProperties(Dictionary<String, ?> props) {
+			this.instance.setContainerTypeDescriptionProperties(props);
+			return this;
+		}
+
+		public Builder setNamespaceProperties(Dictionary<String, ?> props) {
+			this.instance.setNamespaceProperties(props);
+			return this;
+		}
+
+		public Builder setAdapterConfig(AdapterConfig adapterConfig) {
+			this.instance.setAdapterConfig(adapterConfig);
+			return this;
+		}
+
+		public RemoteServiceDistributionProvider build() {
+			this.instance.validateComplete();
+			return this.instance;
+		}
+	}
+
+	RemoteServiceDistributionProvider() {
 	}
 
 	protected RemoteServiceDistributionProvider(String name, IContainerInstantiator instantiator) {
@@ -91,7 +157,31 @@ public class RemoteServiceDistributionProvider implements IRemoteServiceDistribu
 		return this;
 	}
 
-	public void validateComplete() throws NullPointerException {
+	protected RemoteServiceDistributionProvider setNamespace(Namespace ns) {
+		this.namespace = ns;
+		Assert.isNotNull(ns);
+		return this;
+	}
+
+	protected RemoteServiceDistributionProvider setContainerTypeDescriptionProperties(Dictionary<String, ?> props) {
+		this.ctdProperties = props;
+		Assert.isNotNull(this.ctdProperties);
+		return this;
+	}
+
+	protected RemoteServiceDistributionProvider setNamespaceProperties(Dictionary<String, ?> props) {
+		this.nsProperties = props;
+		Assert.isNotNull(this.nsProperties);
+		return this;
+	}
+
+	protected RemoteServiceDistributionProvider setAdapterConfig(AdapterConfig adapterConfig) {
+		this.adapterConfig = adapterConfig;
+		Assert.isNotNull(this.adapterConfig);
+		return this;
+	}
+
+	protected void validateComplete() throws NullPointerException {
 		String ctdName = getName();
 		if (ctdName == null)
 			throw new NullPointerException("Container type description name cannot be null"); //$NON-NLS-1$
@@ -106,18 +196,18 @@ public class RemoteServiceDistributionProvider implements IRemoteServiceDistribu
 	}
 
 	public Dictionary<String, ?> getContainerTypeDescriptionProperties() {
-		return null;
+		return ctdProperties;
 	}
 
 	public Namespace createNamespace() {
-		return null;
+		return namespace;
 	}
 
 	public Dictionary<String, ?> getNamespaceProperties() {
-		return null;
+		return nsProperties;
 	}
 
 	public AdapterConfig createAdapterConfig() {
-		return null;
+		return adapterConfig;
 	}
 }
