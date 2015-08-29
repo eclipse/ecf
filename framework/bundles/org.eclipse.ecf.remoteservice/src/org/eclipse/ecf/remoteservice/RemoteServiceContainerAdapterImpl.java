@@ -37,7 +37,7 @@ public class RemoteServiceContainerAdapterImpl implements IRemoteServiceContaine
 		this.container = container;
 		listeners = new ArrayList<IRemoteServiceListener>();
 		refToImplMap = new HashMap<IRemoteServiceReference, List<AbstractRemoteService>>();
-		setRegistry(new RemoteServiceRegistryImpl());
+		setRegistry(new RemoteServiceRegistryImpl(container.getID()));
 		setExecutor(executor);
 	}
 
