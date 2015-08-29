@@ -10,7 +10,6 @@
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +28,7 @@ import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.IDUtil;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.RemoteServiceContainer;
@@ -172,14 +172,7 @@ public abstract class AbstractContainerSelector {
 		String exportedConfig = containerTypeDescription.getName();
 		// If not, then we look through the properties that start with
 		// <containerTypeDescription.name>.
-		Map<String, Object> results = new HashMap<String, Object>();
-		for (String origKey : properties.keySet()) {
-			if (origKey.startsWith(exportedConfig + ".")) { //$NON-NLS-1$
-				String key = origKey.substring(exportedConfig.length() + 1);
-				if (key != null)
-					results.put(key, properties.get(origKey));
-			}
-		}
+		Map<String, Object> results = PropertiesUtil.getConfigProperties(exportedConfig, properties);
 		if (results.size() == 0)
 			return null;
 		return results;

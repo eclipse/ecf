@@ -343,8 +343,7 @@ public class RemoteServiceAdmin implements
 						// otherwise, actually export the service to create
 						// a new ExportEndpoint and use it to create a new
 						// ExportRegistration
-						EndpointDescription endpointDescription = new EndpointDescription(
-								serviceReference, endpointDescriptionProperties);
+						EndpointDescription endpointDescription = new EndpointDescription(endpointDescriptionProperties);
 
 						checkEndpointPermission(endpointDescription,
 								EndpointPermission.EXPORT);
@@ -1622,8 +1621,9 @@ public class RemoteServiceAdmin implements
 
 		// REMOTE_CONFIGS_SUPPORTED
 		String[] remoteConfigsSupported = getSupportedConfigs(container.getID());
-		if (remoteConfigsSupported != null)
-			endpointDescriptionProperties
+		if (remoteConfigsSupported == null)
+			remoteConfigsSupported = new String[0];
+		endpointDescriptionProperties
 					.put(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED,
 							remoteConfigsSupported);
 		// SERVICE_IMPORTED_CONFIGS...set to constant value for all ECF
@@ -1692,9 +1692,11 @@ public class RemoteServiceAdmin implements
 			endpointDescriptionProperties.put(
 					RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER, rsFilter);
 
+		// Remove config properties
+		Map<String, Object> tempProperties = PropertiesUtil.removeConfigProperties(remoteConfigsSupported,
+				overridingProperties);
 		// Finally, copy all non-reserved properties
-		return PropertiesUtil.copyNonReservedProperties(overridingProperties,
-				endpointDescriptionProperties);
+		return PropertiesUtil.copyNonReservedProperties(tempProperties, endpointDescriptionProperties);
 	}
 
 	private Map<String, Object> copyNonReservedProperties(
@@ -2295,8 +2297,7 @@ public class RemoteServiceAdmin implements
 		
 		// Create ExportEndpoint/ExportRegistration
 		return new ExportRegistration(new ExportEndpoint(serviceReference,
-				new EndpointDescription(serviceReference,
-						endpointDescriptionProperties), remoteRegistration,endpointDescriptionProperties));
+				new EndpointDescription(endpointDescriptionProperties), remoteRegistration,endpointDescriptionProperties));
 	}
 
 	private ImportRegistration importService(
