@@ -83,6 +83,27 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 		return def;
 	}
 
+	/**
+	 * @since 3.6
+	 */
+	protected <T> T getMapParameter(Object[] parameters, String key, Class<T> clazz) {
+		return getMapParameter(parameters, key, clazz, null);
+	}
+
+	/**
+	 * @since 3.6
+	 */
+	protected String getMapParameterString(Object[] parameters, String key, String def) {
+		return getMapParameter(parameters, key, String.class, def);
+	}
+
+	/**
+	 * @since 3.6
+	 */
+	protected String getMapParameterString(Object[] parameters, String key) {
+		return getMapParameter(parameters, key, String.class, null);
+	}
+
 	public IContainer createInstance(ContainerTypeDescription description, Object[] parameters) throws ContainerCreateException {
 		throw new ContainerCreateException("createInstance not supported"); //$NON-NLS-1$
 	}
