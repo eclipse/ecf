@@ -10,14 +10,14 @@ package org.eclipse.ecf.provider.generic;
 
 import java.io.*;
 import java.net.ConnectException;
-import org.eclipse.core.runtime.*;
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.*;
 import org.eclipse.ecf.core.sharedobject.*;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.internal.provider.ProviderPlugin;
 import org.eclipse.ecf.provider.comm.*;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 
@@ -447,7 +447,9 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 					try {
 						connection.sendSynch(groupID, serialize(ContainerMessage.createLeaveGroupMessage(getID(), groupID, getNextSequenceNumber(), getLeaveData(groupID))));
 					} catch (final Exception e) {
-						ProviderPlugin.getDefault().log(new Status(IStatus.WARNING, ProviderPlugin.PLUGIN_ID, IStatus.WARNING, "disconnect.sendSynch", e)); //$NON-NLS-1$
+						// This is not necessary to log
+						// see bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=476263
+						// ProviderPlugin.getDefault().log(new Status(IStatus.WARNING, ProviderPlugin.PLUGIN_ID, IStatus.WARNING, "disconnect.sendSynch", e)); //$NON-NLS-1$
 					}
 					synchronized (getGroupMembershipLock()) {
 						handleLeave(groupID, connection);
