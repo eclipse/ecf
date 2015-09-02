@@ -11,7 +11,7 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
  */
 public abstract class RemoteServiceContainerInstantiator extends BaseContainerInstantiator implements IRemoteServiceContainerInstantiator {
 
-	protected static final String[] defaultSupportedAdapterTypes = new String[] {IRemoteServiceContainerAdapter.class.getName()};
+	protected static final String[] defaultSupportedAdapterTypes = new String[] {IContainer.class.getName(), IRemoteServiceContainerAdapter.class.getName()};
 	protected static final Class[][] defaultSupportedParameterTypes = new Class[][] {{Map.class}};
 
 	protected static final String[] defaultSupportedIntents = new String[] {"passByValue", "exactlyOnce", "ordered"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -67,5 +67,9 @@ public abstract class RemoteServiceContainerInstantiator extends BaseContainerIn
 		return null;
 	}
 
-	public abstract IContainer createInstance(ContainerTypeDescription description, Object[] parameters) throws ContainerCreateException;
+	public abstract IContainer createInstance(ContainerTypeDescription description, Map<String, ?> parameters) throws ContainerCreateException;
+
+	public IContainer createInstance(ContainerTypeDescription description, Object[] parameters) throws ContainerCreateException {
+		return createInstance(description, getMap(parameters));
+	}
 }

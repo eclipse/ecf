@@ -16,7 +16,7 @@ import org.eclipse.ecf.core.provider.IContainerInstantiator;
 
 /**
  * Basic implementation of IRemoteServiceDistributionProvider.  Intended to be subclassed by distribution
- * provider implementations.
+ * provider implementations and or use Builder static inner class to create/build instances.
  * 
  * @since 8.7
  */
