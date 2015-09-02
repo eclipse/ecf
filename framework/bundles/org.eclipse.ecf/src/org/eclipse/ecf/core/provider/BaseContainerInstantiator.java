@@ -17,7 +17,7 @@ import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.internal.core.ECFPlugin;
 
 /**
- *  Default implemenation of {@link IContainerInstantiator}.  ECF provider implementers
+ *  Default implementation of {@link IContainerInstantiator}.  ECF provider implementers
  *  may subclass as desired.
  */
 public class BaseContainerInstantiator implements IContainerInstantiator {
@@ -25,6 +25,20 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 	protected static String[] NO_ADAPTERS_ARRAY = new String[] {IContainer.class.getName()};
 	protected static String[] EMPTY_STRING_ARRAY = new String[] {};
 	protected static Class[][] EMPTY_CLASS_ARRAY = new Class[][] {{}};
+
+	/**
+	 * @since 3.6
+	 */
+	protected Integer getIntegerFromArg(Object arg) {
+		if (arg == null)
+			return new Integer(-1);
+		if (arg instanceof Integer)
+			return (Integer) arg;
+		else if (arg instanceof String) {
+			return new Integer((String) arg);
+		} else
+			throw new IllegalArgumentException("arg=" + arg + " is not of integer type"); //$NON-NLS-1$ //$NON-NLS-2$
+	}
 
 	protected Set getAdaptersForClass(Class clazz) {
 		Set result = new HashSet();
