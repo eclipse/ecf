@@ -12,12 +12,19 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdapterFactory;
 
 /**
+ * An adapter config is used to setup an adaptable.   
  * @since 8.7
  */
 public class AdapterConfig {
 	private final IAdapterFactory adapterFactory;
 	private final Class<?> adaptable;
 
+	/**
+	 * 
+	 * @param adapterFactory the adapter factory to use for the given adaptable.  Must not be <code>null</code>
+	 * @param adaptable the Class that the adapterFactory is to use as the adaptable.
+	 * Must not be <code>null</code>.
+	 */
 	public AdapterConfig(IAdapterFactory adapterFactory, Class<?> adaptable) {
 		this.adapterFactory = adapterFactory;
 		Assert.isNotNull(this.adapterFactory);

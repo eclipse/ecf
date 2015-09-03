@@ -8,7 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.remoteservice.provider;
 
-import java.util.Dictionary;
+import java.util.*;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.identity.Namespace;
@@ -30,7 +30,7 @@ public class RemoteServiceDistributionProvider implements IRemoteServiceDistribu
 	private Dictionary<String, ?> ctdProperties;
 	private Namespace namespace;
 	private Dictionary<String, ?> nsProperties;
-	private AdapterConfig adapterConfig;
+	private List<AdapterConfig> adapterConfigs = new ArrayList<AdapterConfig>();
 
 	/**
 	 * Builder for RemoteServiceDistributionProvider instances
@@ -86,6 +86,11 @@ public class RemoteServiceDistributionProvider implements IRemoteServiceDistribu
 
 		public Builder setAdapterConfig(AdapterConfig adapterConfig) {
 			this.instance.setAdapterConfig(adapterConfig);
+			return this;
+		}
+
+		public Builder addAdapterConfig(AdapterConfig adapterConfig) {
+			this.instance.addAdapterConfig(adapterConfig);
 			return this;
 		}
 
@@ -175,9 +180,14 @@ public class RemoteServiceDistributionProvider implements IRemoteServiceDistribu
 		return this;
 	}
 
+	protected RemoteServiceDistributionProvider addAdapterConfig(AdapterConfig adapterConfig) {
+		Assert.isNotNull(adapterConfig);
+		this.adapterConfigs.add(adapterConfig);
+		return this;
+	}
+
 	protected RemoteServiceDistributionProvider setAdapterConfig(AdapterConfig adapterConfig) {
-		this.adapterConfig = adapterConfig;
-		Assert.isNotNull(this.adapterConfig);
+		addAdapterConfig(adapterConfig);
 		return this;
 	}
 
@@ -190,7 +200,7 @@ public class RemoteServiceDistributionProvider implements IRemoteServiceDistribu
 			throw new NullPointerException("Container type description instantiator cannot be null"); //$NON-NLS-1$
 	}
 
-	public ContainerTypeDescription createContainerTypeDescription() {
+	public ContainerTypeDescription getContainerTypeDescription() {
 		validateComplete();
 		return new ContainerTypeDescription(getName(), getInstantiator(), getDescription(), isServer(), isHidden());
 	}
@@ -199,7 +209,7 @@ public class RemoteServiceDistributionProvider implements IRemoteServiceDistribu
 		return ctdProperties;
 	}
 
-	public Namespace createNamespace() {
+	public Namespace getNamespace() {
 		return namespace;
 	}
 
@@ -207,7 +217,7 @@ public class RemoteServiceDistributionProvider implements IRemoteServiceDistribu
 		return nsProperties;
 	}
 
-	public AdapterConfig createAdapterConfig() {
-		return adapterConfig;
+	public AdapterConfig[] getAdapterConfigs() {
+		return adapterConfigs.toArray(new AdapterConfig[adapterConfigs.size()]);
 	}
 }

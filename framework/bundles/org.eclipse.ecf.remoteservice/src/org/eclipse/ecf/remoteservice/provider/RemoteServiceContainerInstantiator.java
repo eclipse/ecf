@@ -72,4 +72,10 @@ public abstract class RemoteServiceContainerInstantiator extends BaseContainerIn
 	public IContainer createInstance(ContainerTypeDescription description, Object[] parameters) throws ContainerCreateException {
 		return createInstance(description, getMap(parameters));
 	}
+
+	protected IContainer throwCreateException(String message, Throwable cause) throws ContainerCreateException {
+		ContainerCreateException cce = new ContainerCreateException(message, cause);
+		cce.setStackTrace(cause.getStackTrace());
+		throw cce;
+	}
 }

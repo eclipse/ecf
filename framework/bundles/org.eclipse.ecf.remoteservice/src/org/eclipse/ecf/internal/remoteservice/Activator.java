@@ -101,7 +101,7 @@ public class Activator implements BundleActivator {
 			// If not null
 			if (dProvider != null) {
 				// Get ContainerTypeDescription
-				ContainerTypeDescription ctd = dProvider.createContainerTypeDescription();
+				ContainerTypeDescription ctd = dProvider.getContainerTypeDescription();
 				if (ctd == null)
 					log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Remote Service Provider Container Type Description cannot be null")); //$NON-NLS-1$
 				else {
@@ -109,7 +109,7 @@ public class Activator implements BundleActivator {
 					// Register the container type description
 					ServiceRegistration<ContainerTypeDescription> ctdSR = bundleContext.registerService(ContainerTypeDescription.class, ctd, ctdProps);
 					// Now process namespace
-					Namespace ns = dProvider.createNamespace();
+					Namespace ns = dProvider.getNamespace();
 					ServiceRegistration<Namespace> nsSR = null;
 					if (ns != null)
 						nsSR = bundleContext.registerService(Namespace.class, ns, dProvider.getNamespaceProperties());
@@ -119,15 +119,18 @@ public class Activator implements BundleActivator {
 					if (am == null)
 						log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "No adapter manager available for remote service containers")); //$NON-NLS-1$
 					// Now get AdapterConfig
-					AdapterConfig adapterConfig = dProvider.createAdapterConfig();
+					AdapterConfig[] adapterConfigs = dProvider.getAdapterConfigs();
 					IAdapterFactory adapterFactory = null;
-					if (adapterConfig != null) {
-						adapterFactory = adapterConfig.getAdapterFactory();
-						Class<?> adapterClass = adapterConfig.getAdaptable();
-						if (adapterFactory == null || adapterClass == null)
-							log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Invalid adapter config for distribution provider=" + ctd.getName())); //$NON-NLS-1$
-						// Now register adapters
-						am.registerAdapters(adapterFactory, adapterClass);
+					if (adapterConfigs != null) {
+						for (AdapterConfig adapterConfig : adapterConfigs) {
+							adapterFactory = adapterConfig.getAdapterFactory();
+							Class<?> adapterClass = adapterConfig.getAdaptable();
+							if (adapterFactory == null || adapterClass == null)
+								log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Invalid adapter config for distribution provider=" + ctd.getName())); //$NON-NLS-1$
+							// Now register adapters
+							else
+								am.registerAdapters(adapterFactory, adapterClass);
+						}
 					}
 					if (ctdSR != null)
 						svcRefToDSDPRegMap.put(reference, new RSDPRegistrations(ctdSR, nsSR, adapterFactory));
