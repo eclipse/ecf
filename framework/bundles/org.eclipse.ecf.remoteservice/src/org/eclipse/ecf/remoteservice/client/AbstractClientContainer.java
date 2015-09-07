@@ -390,22 +390,24 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 		Object[] callParameters = call.getParameters();
 		IRemoteCallParameter[] defaultCallableParameters = callable.getDefaultParameters();
 
-		for (int i = 0; i < callParameters.length; i++) {
-			Object p = callParameters[i];
-			// If the parameter is already a remote call parameter just add
-			if (p instanceof IRemoteCallParameter) {
-				results.add((IRemoteCallParameter) p);
-				continue;
-			}
-			if (defaultCallableParameters != null && i < defaultCallableParameters.length) {
-				// If the call parameter (p) is null, then add the associated
-				// callableParameter
-				if (p == null)
-					results.add(defaultCallableParameters[i]);
-				// If not null, then we need to serialize
-				IRemoteCallParameter val = serializeParameter(uri, call, callable, defaultCallableParameters[i], p);
-				if (val != null)
-					results.add(val);
+		if (callParameters != null) {
+			for (int i = 0; i < callParameters.length; i++) {
+				Object p = callParameters[i];
+				// If the parameter is already a remote call parameter just add
+				if (p instanceof IRemoteCallParameter) {
+					results.add((IRemoteCallParameter) p);
+					continue;
+				}
+				if (defaultCallableParameters != null && i < defaultCallableParameters.length) {
+					// If the call parameter (p) is null, then add the associated
+					// callableParameter
+					if (p == null)
+						results.add(defaultCallableParameters[i]);
+					// If not null, then we need to serialize
+					IRemoteCallParameter val = serializeParameter(uri, call, callable, defaultCallableParameters[i], p);
+					if (val != null)
+						results.add(val);
+				}
 			}
 		}
 		return results.toArray(new IRemoteCallParameter[results.size()]);
