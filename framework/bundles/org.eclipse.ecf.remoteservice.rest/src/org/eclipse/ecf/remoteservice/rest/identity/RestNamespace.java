@@ -22,6 +22,11 @@ public class RestNamespace extends Namespace {
 	private static final long serialVersionUID = -398861350452016954L;
 
 	/**
+	 * @since 2.7
+	 */
+	public static Namespace INSTANCE;
+
+	/**
 	 * The name of this namespace.
 	 */
 	public static final String NAME = "ecf.rest.namespace"; //$NON-NLS-1$
@@ -32,7 +37,8 @@ public class RestNamespace extends Namespace {
 	public static final String SCHEME = "rest"; //$NON-NLS-1$
 
 	public RestNamespace() {
-		super(NAME, "Rest Namespace"); //$NON-NLS-1$
+		super(NAME, "RestID Namespace"); //$NON-NLS-1$
+		INSTANCE = this;
 	}
 
 	public RestNamespace(String name, String desc) {
@@ -92,7 +98,7 @@ public class RestNamespace extends Namespace {
 	}
 
 	public Class[][] getSupportedParameterTypes() {
-		return new Class[][] { {ID.class}, {URI.class}, {String.class}, {URL.class}};
+		return new Class[][] {{ID.class}, {URI.class}, {String.class}, {URL.class}};
 	}
 
 }
