@@ -36,7 +36,6 @@
       <plugin id="com.mycorp.examples.timeservice"/>
       <plugin id="com.mycorp.examples.timeservice.consumer.ds"/>
       <plugin id="com.mycorp.examples.timeservice.consumer.filediscovery.rest"/>
-      <plugin id="com.mycorp.examples.timeservice.provider.rest.common"/>
       <plugin id="com.mycorp.examples.timeservice.provider.rest.consumer"/>
       <plugin id="javax.servlet"/>
       <plugin id="javax.xml"/>
@@ -82,7 +81,6 @@
       <plugin id="com.mycorp.examples.timeservice" autoStart="true" startLevel="0" />
       <plugin id="com.mycorp.examples.timeservice.consumer.ds" autoStart="true" startLevel="0" />
       <plugin id="com.mycorp.examples.timeservice.consumer.filediscovery.rest" autoStart="false" startLevel="0" />
-      <plugin id="com.mycorp.examples.timeservice.provider.rest.common" autoStart="true" startLevel="0" />
       <plugin id="com.mycorp.examples.timeservice.provider.rest.consumer" autoStart="true" startLevel="0" />
       <plugin id="javax.servlet" autoStart="true" startLevel="0" />
       <plugin id="javax.xml" autoStart="true" startLevel="0" />

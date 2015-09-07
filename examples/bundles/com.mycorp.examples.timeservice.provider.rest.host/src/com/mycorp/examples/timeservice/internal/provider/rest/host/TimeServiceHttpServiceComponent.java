@@ -16,5 +16,5 @@ public class TimeServiceHttpServiceComponent extends HttpServiceComponent {
 	public TimeServiceHttpServiceComponent() {
 		// All methods implemented by HttpServiceComponent
 	}
-	
+
 }

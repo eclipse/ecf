@@ -1,20 +1,18 @@
 package com.mycorp.examples.timeservice.internal.provider.rest.host;
 
-import org.eclipse.core.runtime.SafeRunner;
-import org.eclipse.ecf.core.ContainerTypeDescription;
-import org.eclipse.ecf.core.util.ExtensionRegistryRunnable;
+import org.eclipse.ecf.remoteservice.provider.IRemoteServiceDistributionProvider;
+import org.eclipse.ecf.remoteservice.provider.RemoteServiceDistributionProvider;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 public class Activator implements BundleActivator {
 
 	public void start(final BundleContext context) throws Exception {
-		SafeRunner.run(new ExtensionRegistryRunnable(context) {
-			@Override
-			protected void runWithoutRegistry() throws Exception {
-				context.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(TimeServiceServerContainer.TIMESERVICE_HOST_CONFIG_NAME, new TimeServiceServerContainerInstantiator(), "TimeService REST Server", true,false), null);
-			}
-		});
+		context.registerService(IRemoteServiceDistributionProvider.class,
+				new RemoteServiceDistributionProvider.Builder()
+						.setName(TimeServiceServerContainer.TIMESERVICE_HOST_CONFIG_NAME)
+						.setInstantiator(new TimeServiceServerContainer.Instantiator()).build(),
+				null);
 	}
 
 	public void stop(BundleContext context) throws Exception {
