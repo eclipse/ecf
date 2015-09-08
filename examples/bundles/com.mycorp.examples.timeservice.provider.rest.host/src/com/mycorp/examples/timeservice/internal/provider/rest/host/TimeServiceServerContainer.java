@@ -28,6 +28,7 @@ import org.eclipse.ecf.remoteservice.servlet.RemoteServiceHttpServlet;
 import org.eclipse.ecf.remoteservice.servlet.ServletServerContainer;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.osgi.service.http.NamespaceException;
 
 import com.mycorp.examples.timeservice.ITimeService;
 
@@ -36,30 +37,13 @@ public class TimeServiceServerContainer extends ServletServerContainer {
 	public static final String TIMESERVICE_HOST_CONFIG_NAME = "com.mycorp.examples.timeservice.rest.host";
 	public static final String TIMESERVICE_SERVLET_NAME = "/" + ITimeService.class.getName();
 
-	public static class Instantiator extends RemoteServiceContainerInstantiator {
-		@Override
-		public IContainer createInstance(ContainerTypeDescription description, Map<String, ?> parameters)
-				throws ContainerCreateException {
-			return new TimeServiceServerContainer(
-					RestNamespace.INSTANCE.createInstance(new Object[] { (String) parameters.get("id") }));
-		}
-
-		public String[] getSupportedConfigs(ContainerTypeDescription description) {
-			return new String[] { TIMESERVICE_HOST_CONFIG_NAME };
-		}
-	}
-
-	TimeServiceServerContainer(ID id) throws ContainerCreateException {
+	TimeServiceServerContainer(ID id) throws ServletException, NamespaceException {
 		super(id);
 		// Register our servlet with the given httpService with the
 		// TIMESERVICE_SERVLET_NAME
 		// which is "/com.mycorp.examples.timeservice.ITimeService"
-		try {
-			TimeServiceHttpServiceComponent.getDefault().registerServlet(TIMESERVICE_SERVLET_NAME,
+		TimeServiceHttpServiceComponent.getDefault().registerServlet(TIMESERVICE_SERVLET_NAME,
 					new TimeRemoteServiceHttpServlet(), null, null);
-		} catch (Exception e) {
-			throw new ContainerCreateException("Could not create Time Service Server Container", e);
-		}
 	}
 
 	@Override
@@ -76,8 +60,7 @@ public class TimeServiceServerContainer extends ServletServerContainer {
 	class TimeRemoteServiceHttpServlet extends RemoteServiceHttpServlet {
 
 		private static final long serialVersionUID = 3906126401901826462L;
-
-		// Handle get call right here.
+		// Handle remote time service get call here.
 		@Override
 		protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 			// Get local OSGi ITimeService
@@ -92,5 +75,21 @@ public class TimeServiceServerContainer extends ServletServerContainer {
 			}
 		}
 	}
+	
+	public static class Instantiator extends RemoteServiceContainerInstantiator {
+		@Override
+		public IContainer createInstance(ContainerTypeDescription description, Map<String, ?> parameters)
+				throws ContainerCreateException {
+			try {
+				return new TimeServiceServerContainer(
+						RestNamespace.INSTANCE.createInstance(new Object[] { (String) parameters.get("id") }));
+			} catch (Exception e) {
+				throw new ContainerCreateException("Could not create time service server", e);
+			}
+		}
 
+		public String[] getSupportedConfigs(ContainerTypeDescription description) {
+			return new String[] { TIMESERVICE_HOST_CONFIG_NAME };
+		}
+	}
 }

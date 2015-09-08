@@ -39,6 +39,7 @@ import com.mycorp.examples.timeservice.ITimeService;
 public class TimeServiceRestClientContainer extends RestClientContainer {
 
 	public static final String TIMESERVICE_CONSUMER_CONFIG_NAME = "com.mycorp.examples.timeservice.rest.consumer";
+	private static final String TIMESERVICE_HOST_CONFIG_NAME = "com.mycorp.examples.timeservice.rest.host";
 
 	private IRemoteServiceRegistration reg;
 
@@ -46,7 +47,17 @@ public class TimeServiceRestClientContainer extends RestClientContainer {
 		super(id);
 		// This sets up the JSON deserialization of the server's response.
 		// See below for implementation of TimeServiceRestResponseDeserializer
-		setResponseDeserializer(new TimeServiceRestResponseDeserializer());
+		setResponseDeserializer(new IRemoteResponseDeserializer() {
+			public Object deserializeResponse(String endpoint, IRemoteCall call, IRemoteCallable callable,
+					@SuppressWarnings("rawtypes") Map responseHeaders, byte[] responseBody) throws NotSerializableException {
+				try {
+					return new JSONObject(new String(responseBody)).get("time");
+				} catch (JSONException e1) {
+					NotSerializableException t = new NotSerializableException("Exception serializing response from endpoing="+endpoint);
+					t.setStackTrace(e1.getStackTrace());
+					throw t;
+				}
+			}});
 	}
 
 	@Override
@@ -71,21 +82,6 @@ public class TimeServiceRestClientContainer extends RestClientContainer {
 		}
 	}
 
-	class TimeServiceRestResponseDeserializer implements IRemoteResponseDeserializer {
-		public Object deserializeResponse(String endpoint, IRemoteCall call, IRemoteCallable callable,
-				@SuppressWarnings("rawtypes") Map responseHeaders, byte[] responseBody)
-						throws NotSerializableException {
-			// We simply need to read the response body (json String),
-			// And return the value of the "time" field
-			try {
-				return new JSONObject(new String(responseBody)).get("time");
-			} catch (JSONException e1) {
-				throw new NotSerializableException(TimeServiceRestResponseDeserializer.class.getName());
-			}
-		}
-
-	}
-
 	@Override
 	public Namespace getConnectNamespace() {
 		return RestNamespace.INSTANCE;
@@ -93,23 +89,18 @@ public class TimeServiceRestClientContainer extends RestClientContainer {
 
 	public static class Instantiator extends RemoteServiceContainerInstantiator {
 
-		private static final String TIMESERVICE_HOST_CONFIG_NAME = "com.mycorp.examples.timeservice.rest.host";
-
 		@Override
 		public IContainer createInstance(ContainerTypeDescription description, Map<String, ?> parameters)
 				throws ContainerCreateException {
-			// Create new container instance
+			// Create new container instance with random uuid
 			return new TimeServiceRestClientContainer((RestID) RestNamespace.INSTANCE
 					.createInstance(new Object[] { "uuid:" + UUID.randomUUID().toString() }));
 		}
-
 		public String[] getImportedConfigs(ContainerTypeDescription description, String[] exporterSupportedConfigs) {
 			if (Arrays.asList(exporterSupportedConfigs).contains(TIMESERVICE_HOST_CONFIG_NAME))
 				return new String[] { TimeServiceRestClientContainer.TIMESERVICE_CONSUMER_CONFIG_NAME };
 			else
 				return null;
 		}
-
 	}
-
 }
