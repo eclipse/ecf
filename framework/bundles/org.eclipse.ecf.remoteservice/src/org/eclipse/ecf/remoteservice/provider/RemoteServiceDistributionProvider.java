@@ -100,7 +100,11 @@ public class RemoteServiceDistributionProvider implements IRemoteServiceDistribu
 		}
 	}
 
-	RemoteServiceDistributionProvider() {
+	protected RemoteServiceDistributionProvider() {
+	}
+
+	protected RemoteServiceDistributionProvider(String name) {
+		setName(name);
 	}
 
 	protected RemoteServiceDistributionProvider(String name, IContainerInstantiator instantiator) {
