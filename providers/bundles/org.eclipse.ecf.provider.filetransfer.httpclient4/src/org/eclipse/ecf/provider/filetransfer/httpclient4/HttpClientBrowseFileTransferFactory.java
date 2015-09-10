@@ -13,7 +13,14 @@ package org.eclipse.ecf.provider.filetransfer.httpclient4;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLContexts;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.BasicClientConnectionManager;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
@@ -50,7 +57,18 @@ public class HttpClientBrowseFileTransferFactory implements IRemoteFileSystemBro
 					throw new RemoteFileSystemException(NLS.bind("Exception creating URL for {0}", directoryOrFileId)); //$NON-NLS-1$
 				}
 
-				HttpClientFileSystemBrowser browser = new HttpClientFileSystemBrowser(new DefaultHttpClient(), directoryOrFileId, listener, url, connectContext, proxy);
+				HttpClientFileSystemBrowser browser = new HttpClientFileSystemBrowser(new DefaultHttpClient() {
+					@Override
+					protected ClientConnectionManager createClientConnectionManager() {
+						SSLSocketFactory factory = new SSLSocketFactory(SSLContexts.createSystemDefault(), SSLSocketFactory.BROWSER_COMPATIBLE_HOSTNAME_VERIFIER);
+
+						final SchemeRegistry registry = new SchemeRegistry();
+						registry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
+						registry.register(new Scheme("https", 443, factory));
+
+						return new BasicClientConnectionManager(registry);
+					}
+				}, directoryOrFileId, listener, url, connectContext, proxy);
 				return browser.sendBrowseRequest();
 			}
 
