@@ -9,6 +9,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.remoteserviceadmin;
 
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -66,6 +68,10 @@ public class PropertiesUtil {
 			RemoteConstants.SERVICE_EXPORTED_CONTAINER_FACTORY_ARGS, RemoteConstants.SERVICE_EXPORTED_CONTAINER_ID,
 			RemoteConstants.SERVICE_IMPORTED_VALUETYPE, RemoteConstants.DISCOVERY_SERVICE_TYPE });
 
+	public static void testSerializable(Object value) throws Exception {
+		new ObjectOutputStream(new ByteArrayOutputStream()).writeObject(value);
+	}
+	
 	public static String verifyStringProperty(Map properties, String propName) {
 		Object r = properties.get(propName);
 		try {
@@ -269,6 +275,26 @@ public class PropertiesUtil {
 		return result;
 	}
 
+	public static Dictionary createSerializableDictionaryFromMap(Map propMap) {
+		if (propMap == null)
+			return null;
+		Dictionary result = new Properties();
+		for (Iterator i = propMap.keySet().iterator(); i.hasNext();) {
+			Object key = i.next();
+			Object val = propMap.get(key);
+			if (key != null && val != null) {
+				try {
+					testSerializable(val);
+					result.put(key, val);
+				} catch (Exception e) {
+					LogUtility.logWarning("createSerializableDictionaryFromMap", DebugOptions.EXCEPTIONS_CATCHING, //$NON-NLS-1$
+							PropertiesUtil.class, "Cannot serialize value for " + key+ ".  Removing from properties", e); //$NON-NLS-1$ //$NON-NLS-2$
+				}
+			}
+		}
+		return result;
+	}
+
 	public static Long getLongWithDefault(Map props, String key, Long def) {
 		Object o = props.get(key);
 		if (o instanceof Long)
@@ -309,6 +335,21 @@ public class PropertiesUtil {
 	public static Map<String, Object> copyProperties(Map<String, Object> source, Map<String, Object> target) {
 		for (String key : source.keySet())
 			target.put(key, source.get(key));
+		return target;
+	}
+
+	public static Map<String, Object> copySerializableProperties(Map<String, ?> source,
+			Map<String, Object> target) {
+		for (String key : source.keySet()) {
+			Object value = source.get(key);
+			try {
+				testSerializable(value);
+				target.put(key, value);
+			} catch (Exception e) {
+				LogUtility.logWarning("copySerializableProperties", DebugOptions.EXCEPTIONS_CATCHING, //$NON-NLS-1$
+						PropertiesUtil.class, "Cannot serialize value for property=" + key+". Removing from properties", e); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+		}
 		return target;
 	}
 

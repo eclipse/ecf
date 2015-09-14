@@ -790,8 +790,12 @@ public class RemoteServiceAdmin implements
 			// Update exportReference. If exception is thrown, or update
 			// returns null then set updateException and return null;
 			EndpointDescription updatedED = null;
+
+			Map<String, Object> props = PropertiesUtil.copySerializableProperties(properties,
+					new TreeMap<String, Object>());
+
 			try {
-				updatedED = exportReference.update(properties);
+				updatedED = exportReference.update(props);
 			} catch (RuntimeException e) {
 				updateException = e;
 				return null;
@@ -2260,14 +2264,16 @@ public class RemoteServiceAdmin implements
 		IRemoteServiceContainerAdapter containerAdapter = rsContainer
 				.getContainerAdapter();
 
+		// create serializable dictionary from remote service properties
+		Dictionary rsp = PropertiesUtil.createSerializableDictionaryFromMap(remoteServiceProperties);
+		
 		// Register remote service via ECF container adapter to create
 		// remote service registration
 		IRemoteServiceRegistration remoteRegistration = null;
 		if (containerAdapter instanceof IOSGiRemoteServiceContainerAdapter) {
 			IOSGiRemoteServiceContainerAdapter osgiContainerAdapter = (IOSGiRemoteServiceContainerAdapter) containerAdapter;
 			remoteRegistration = osgiContainerAdapter.registerRemoteService(
-					exportedInterfaces, serviceReference, PropertiesUtil
-							.createDictionaryFromMap(remoteServiceProperties));
+					exportedInterfaces, serviceReference, rsp);
 		} else {
 			Object service = AccessController
 					.doPrivileged(new PrivilegedAction<Object>() {
@@ -2277,8 +2283,7 @@ public class RemoteServiceAdmin implements
 						}
 					});
 			remoteRegistration = containerAdapter.registerRemoteService(
-					exportedInterfaces, service, PropertiesUtil
-							.createDictionaryFromMap(remoteServiceProperties));
+					exportedInterfaces, service, rsp);
 		}
 		
 		endpointDescriptionProperties.put(
@@ -2292,6 +2297,10 @@ public class RemoteServiceAdmin implements
 				endpointDescriptionProperties = PropertiesUtil.mergeProperties(endpointDescriptionProperties, extraProperties);
 		}
 		
+		// Copy only serializable properties
+		endpointDescriptionProperties = PropertiesUtil.copySerializableProperties(endpointDescriptionProperties,
+				new TreeMap<String, Object>());
+
 		// Create ExportEndpoint/ExportRegistration
 		return new ExportRegistration(new ExportEndpoint(serviceReference,
 				new EndpointDescription(endpointDescriptionProperties), remoteRegistration,endpointDescriptionProperties));
