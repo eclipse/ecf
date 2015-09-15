@@ -19,11 +19,10 @@ import org.eclipse.ecf.remoteservice.IRemoteService;
 /**
  * ECF Remote Service Admin RemoteConstants. These are constants for ECF's RSA
  * implementation-specific meta-data. For OSGi Remote constant see
- * {@link org.osgi.service.remoteserviceadmin.RemoteConstants} and the <a
- * href="http://www.osgi.org/download/r4v42/r4.enterprise.pdf">OSGI 4.2 Remote
- * Service Admin specification (chap 122)</a>.
+ * {@link org.osgi.service.remoteserviceadmin.RemoteConstants} and the
+ * <a href="http://www.osgi.org/download/r4v42/r4.enterprise.pdf">OSGI 4.2
+ * Remote Service Admin specification (chap 122)</a>.
  * 
- * @noinstantiate This class is not intended to be instantiated by clients.
  * @noextend This class is not intended to be subclassed by clients.
  * @since 4.1
  */
@@ -86,29 +85,32 @@ public final class RemoteConstants {
 	 */
 	public static final String DISCOVERY_DEFAULT_SERVICE_NAME_PREFIX = "osgirsvc_"; //$NON-NLS-1$
 	/**
-	 * ECF {@link EndpointDescription} property (with value of type
-	 * String) that defines the unique
-	 * {@link org.eclipse.ecf.core.identity.Namespace} name. If present in the
-	 * {@link EndpointDescription}, the value will be used to create the
-	 * containerID for accessing a remote service. The Namespace name is
-	 * optional because typically the ID protocol specifier (e.g. 'ecftcp' in ID
-	 * with name: 'ecftcp://localhost:3282/server') can be used to unambiguously
-	 * determine the appropriate {@link org.eclipse.ecf.core.identity.Namespace}
-	 * used to create the container ID for remote service import.
+	 * ECF {@link EndpointDescription} property (with value of type String) that
+	 * defines the unique {@link org.eclipse.ecf.core.identity.Namespace} name.
+	 * If present in the {@link EndpointDescription}, the value will be used to
+	 * create the containerID for accessing a remote service. The Namespace name
+	 * is optional because typically the ID protocol specifier (e.g. 'ecftcp' in
+	 * ID with name: 'ecftcp://localhost:3282/server') can be used to
+	 * unambiguously determine the appropriate
+	 * {@link org.eclipse.ecf.core.identity.Namespace} used to create the
+	 * container ID for remote service import.
 	 */
 	public static final String ENDPOINT_CONTAINER_ID_NAMESPACE = "ecf.endpoint.id.ns"; //$NON-NLS-1$
 	/**
-	 * ECF {@link EndpointDescription} property (with value of type String)
-	 * that defines the ecf endpoint id (typically the container id).
+	 * ECF {@link EndpointDescription} property (with value of type String) that
+	 * defines the ecf endpoint id (typically the container id).
+	 * 
 	 * @since 4.0
 	 */
-	public static final String ENDPOINT_ID = "ecf.endpoint.id";  //$NON-NLS-1$
+	public static final String ENDPOINT_ID = "ecf.endpoint.id"; //$NON-NLS-1$
 	/**
-	 * ECF {@link EndpointDescription} property (with value of type Long)
-	 * that defines a service timestamp set upon initial export of the remote service.
+	 * ECF {@link EndpointDescription} property (with value of type Long) that
+	 * defines a service timestamp set upon initial export of the remote
+	 * service.
+	 * 
 	 * @since 4.0
 	 */
-	public static final String ENDPOINT_TIMESTAMP = "ecf.endpoint.ts";  //$NON-NLS-1$
+	public static final String ENDPOINT_TIMESTAMP = "ecf.endpoint.ts"; //$NON-NLS-1$
 	/**
 	 * Optional ECF {@link EndpointDescription} property (with value of type
 	 * String) that defines a connect target ID. If set/non-<code>null</code>,
@@ -138,7 +140,7 @@ public final class RemoteConstants {
 	 * specified as a service property upon remote service registration, this
 	 * property allows ECF containers to be initialized and configured upon
 	 * creation during the call to
-	 * {@link HostContainerSelector#selectHostContainers(org.osgi.framework.ServiceReference, String[], String[], String[])}
+	 * {@link HostContainerSelector#selectHostContainers(org.osgi.framework.ServiceReference, Map, String[], String[], String[])}
 	 * . The type of the value may be String, ID, or Object[]. The
 	 * IContainerFactory.createContainer method is then selected based upon the
 	 * type of the value...i.e.
@@ -154,7 +156,7 @@ public final class RemoteConstants {
 	 * as a service property for remote service export, this property allows ECF
 	 * containers to have given a connect context for authentication upon
 	 * container connection by
-	 * {@link HostContainerSelector#selectHostContainers(org.osgi.framework.ServiceReference, String[], String[], String[])}
+	 * {@link HostContainerSelector#selectHostContainers(org.osgi.framework.ServiceReference, Map, String[], String[], String[])}
 	 * . The type of the value is {@link IConnectContext}.
 	 */
 	public static final String SERVICE_EXPORTED_CONTAINER_CONNECT_CONTEXT = "ecf.exported.containerconnectcontext"; //$NON-NLS-1$
@@ -162,27 +164,28 @@ public final class RemoteConstants {
 	 * Container ID of the target host container for remote service export. If
 	 * specified as a service property for remote service export, this property
 	 * is used to match against the set of available containers in
-	 * {@link HostContainerSelector#selectHostContainers(org.osgi.framework.ServiceReference, String[], String[], String[])}
-	 * . The type of the value is {@link ID}.
+	 * {@link HostContainerSelector#selectHostContainers(org.osgi.framework.ServiceReference, Map, String[], String[], String[])}
+	 * . The type of the value is ID.
 	 */
 	public static final String SERVICE_EXPORTED_CONTAINER_ID = "ecf.exported.containerid"; //$NON-NLS-1$
 
 	/**
-	 * Service property marking the service for async proxy export. It defines the
-	 * async interfaces under which this service will be exported on the remote
-	 * proxy. This list must be a
-	 * subset of the types service was exported (i.e. subset of interfaces specified 
-	 * by #{@link org.osgi.service.remoteserviceadmin.RemoteConstants#SERVICE_EXPORTED_INTERFACES}. The single
-	 * value of an asterisk (&quot;*&quot;, &#92;u002A) indicates all the
-	 * interface types under which the service was exported. 
+	 * Service property marking the service for async proxy export. It defines
+	 * the async interfaces under which this service will be exported on the
+	 * remote proxy. This list must be a subset of the types service was
+	 * exported (i.e. subset of interfaces specified by #
+	 * {@link org.osgi.service.remoteserviceadmin.RemoteConstants#SERVICE_EXPORTED_INTERFACES}
+	 * . The single value of an asterisk (&quot;*&quot;, &#92;u002A) indicates
+	 * all the interface types under which the service was exported.
 	 * <p>
-	 * The interfaces in the String[] can either be 
+	 * The interfaces in the String[] can either be
 	 * <ol>
-	 * <li>The same fully qualified name as an interface
-	 * in the #{@link org.osgi.service.remoteserviceadmin.RemoteConstants#SERVICE_EXPORTED_INTERFACES} property</li>
-	 * <li>The fully qualified name of an interface that follows the asynchronous proxy conventions to
-	 * match with one of the existing exported types.
-	 * </li>
+	 * <li>The same fully qualified name as an interface in the #
+	 * {@link org.osgi.service.remoteserviceadmin.RemoteConstants#SERVICE_EXPORTED_INTERFACES}
+	 * property</li>
+	 * <li>The fully qualified name of an interface that follows the
+	 * asynchronous proxy conventions to match with one of the existing exported
+	 * types.</li>
 	 * 
 	 * <p>
 	 * This property may be supplied in the {@code properties}
@@ -235,6 +238,5 @@ public final class RemoteConstants {
 	 * @since 4.1
 	 */
 	public static final String OSGI_CONTAINER_ID_NS = "ecf.osgi.ns"; //$NON-NLS-1$
-	
-	
+
 }

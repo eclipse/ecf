@@ -78,7 +78,7 @@ public interface IDiscoveredEndpointDescriptionFactory {
 	 * @param locator
 	 *            the locator responsible for the discoveredServiceInfo. Must
 	 *            not be <code>null</code>.
-	 * @param serviceId
+	 * @param serviceID
 	 *            the discovered service ID. Must not be <code>null</code>.
 	 * @return EndpointDescription that will be used to notify EndpointListeners
 	 *         about an undiscovered EndpointDescription. If <code>null</code>

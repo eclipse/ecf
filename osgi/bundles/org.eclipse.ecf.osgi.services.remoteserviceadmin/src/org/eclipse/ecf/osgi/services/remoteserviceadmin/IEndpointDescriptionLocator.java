@@ -24,9 +24,11 @@ public interface IEndpointDescriptionLocator {
 	EndpointDescription[] getDiscoveredEndpoints();
 	
 	/**
-	 * Get the service ID associated with the 
+	 * Get the service ID associated with the given endpoint description.
+	 * 
 	 * @param endpointDescription
-	 * @return
+	 * @return IServiceID associated discovered endpoint description. Will
+	 *         return <code>null</code> if no associated serviceID
 	 */
 	IServiceID getNetworkDiscoveredServiceID(EndpointDescription endpointDescription);
 	

@@ -13,19 +13,16 @@ import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IServiceInfo;
 
 /**
- * Service info factory service contract. A service info factory is used by the
- * {@link EndpointDescriptionAdvertiser} to convert {@link EndpointDescription}s
- * to {@link IServiceInfo} instances (via
+ * Service info factory service contract. A service info factory is used to
+ * convert {@link EndpointDescription}s to {@link IServiceInfo} instances (via
  * {@link #createServiceInfo(IDiscoveryAdvertiser, EndpointDescription)}. The
- * resulting IServiceInfo instances are then used to by the
- * {@link EndpointDescriptionAdvertiser} to publish the EndpointDescription
- * metadata to a {@link IDiscoveryAdvertiser}.
+ * resulting IServiceInfo instances are then used to publish the
+ * EndpointDescription metadata to a {@link IDiscoveryAdvertiser}.
  * <p>
  * <p>
  * If no other instances of this service have been registered, a default
- * instance of {@link ServiceInfoFactory} will be used by the
- * {@link EndpointDescriptionAdvertiser}. Note that this default instance is
- * registered with the lowest possible priority, so that if other
+ * instance of {@link ServiceInfoFactory} will be used. Note that this default
+ * instance is registered with the lowest possible priority, so that if other
  * {@link IServiceInfoFactory} instances are registered, they will be
  * preferred/used over the default. This means that Those wishing to
  * customize/control this process of converting {@link EndpointDescription}s to
@@ -64,7 +61,6 @@ public interface IServiceInfoFactory {
 	 *         <code>null</code> will be returned.
 	 * @since 3.0
 	 */
-	public IServiceInfo createServiceInfo(
-			IDiscoveryAdvertiser advertiser,
+	public IServiceInfo createServiceInfo(IDiscoveryAdvertiser advertiser,
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription);
 }
