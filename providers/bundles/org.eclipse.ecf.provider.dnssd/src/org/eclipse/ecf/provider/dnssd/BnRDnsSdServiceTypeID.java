@@ -23,7 +23,7 @@ import org.xbill.DNS.Type;
  * This ServiceType represents the special RRs defined in 
  * chapter 12. Discovery of Browsing and Registration Domains
  * 
- * @see http://files.dns-sd.org/draft-cheshire-dnsext-dns-sd.txt
+ * see http://files.dns-sd.org/draft-cheshire-dnsext-dns-sd.txt
  */
 public class BnRDnsSdServiceTypeID extends DnsSdServiceTypeID {
 	private static final long serialVersionUID = -466458565598238072L;
