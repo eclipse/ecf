@@ -12,7 +12,6 @@ package org.eclipse.ecf.provider.filetransfer.httpclient4;
 
 import org.apache.http.auth.AuthScheme;
 import org.apache.http.auth.AuthState;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.protocol.HttpContext;
 
@@ -23,10 +22,10 @@ public class NTLMProxyDetector {
 
 	/**
 	 * This method will detect if the request connected to a NTLM proxy
-	 * given the {@link HttpContext} provided to one of the {@link HttpClient#execute()}
+	 * given the HttpContext provided to one of the HttpClient#execute()
 	 * methods.
 	 * 
-	 * @param context the {@link HttpContext} given to the {@link HttpClient} at execution time
+	 * @param context the HttpContext given to the HttpClient at execution time
 	 * @return true if it connected to an NTLM proxy
 	 * @since 5.0
 	 */
@@ -51,10 +50,10 @@ public class NTLMProxyDetector {
 
 	/**
 	 * This method will detect if the request connected to a SPNEGO proxy
-	 * given the {@link HttpContext} provided to one of the {@link HttpClient#execute()}
+	 * given the HttpContext provided to one of the HttpClient#execute()
 	 * methods.
 	 * 
-	 * @param context the {@link HttpContext} given to the {@link HttpClient} at execution time
+	 * @param context the HttpContext given to the HttpClient at execution time
 	 * @return true if it connected to an SPNEGO proxy
 	 * @since 5.0
 	 */

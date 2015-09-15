@@ -234,7 +234,7 @@ public class EndpointDescription extends
 	 * @return Map<String,Version> of interface versions for all our service
 	 *         interfaces. Every service interface returned by
 	 *         {@link #getInterfaces()} will have an associated Version, but it
-	 *         may have value {@value Version#emptyVersion}
+	 *         may have value Version#emptyVersion
 	 */
 	public Map<String, Version> getInterfaceVersions() {
 		Map<String, Version> result = new HashMap<String, Version>();
