@@ -96,7 +96,7 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	 *            the BundleContext to be used. Must not be <code>null</code>.
 	 * @param log
 	 *            the {@link LogService} to use. May be <code>null</code>. If
-	 *            <code>null</code>, then a {@link LogTracker} is created and
+	 *            <code>null</code>, then a LogTracker is created and
 	 *            used to find and use a {@link LogService}.
 	 * 
 	 * @since 1.1
