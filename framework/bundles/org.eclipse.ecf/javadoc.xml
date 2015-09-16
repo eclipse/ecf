@@ -5,6 +5,9 @@
 		<fileset dir="${target}/">
 			<filename name="**/*.jar" />
 		</fileset>
+		<fileset dir="/opt/hudson/jobs/R-HEAD-sdk.feature/workspace/projects/org.eclipse.osgi.service.remoteserviceadmin/osgi/">
+		    <filename name="**/*.jar" />
+		</fileset>
 	</path>
 	
     <target name="javadoc">
@@ -59,7 +62,6 @@
 	        	<exclude name="**/org/eclipse/ecf/telephony/**"/>
 	        	<exclude name="**/org.eclipse.ecf.remoteservice.asyncproxy.j8/**"/>
 	        	<exclude name="**/org.eclipse.ecf.remoteservices.tooling.pde/templates/**"/>
-	        	<exclude name="**/org.eclipse.osgi.services.remoteserviceadmin/**"/>
         	</fileset>
     	</javadoc>
     </target>
