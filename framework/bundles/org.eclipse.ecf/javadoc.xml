@@ -61,6 +61,7 @@
 	        	<exclude name="**/org/eclipse/ecf/telephony/**"/>
 	        	<exclude name="**/org.eclipse.ecf.remoteservice.asyncproxy.j8/**"/>
 	        	<exclude name="**/org.eclipse.ecf.remoteservices.tooling.pde/templates/**"/>
+	        	<exclude name="**/org.eclipse.osgi.services.remoteserviceadmin/**"/>
         	</fileset>
     	</javadoc>
     </target>
