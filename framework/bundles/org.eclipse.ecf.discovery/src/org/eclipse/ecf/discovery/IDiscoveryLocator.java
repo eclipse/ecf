@@ -41,7 +41,7 @@ public interface IDiscoveryLocator extends IAdaptable {
 	/**
 	 * Synchronously retrieve info about the service
 	 * 
-	 * @param service
+	 * @param aServiceID
 	 *            IServiceID of the service to get info about. Must not be
 	 *            <code>null</code>.
 	 * @return IServiceInfo the service info retrieved. <code>null</code> if no
@@ -61,7 +61,7 @@ public interface IDiscoveryLocator extends IAdaptable {
 	 * Synchronously get service info about all known services of given service
 	 * type
 	 * 
-	 * @param type
+	 * @param aServiceTypeID
 	 *            IServiceTypeID defining the type of service we are interested
 	 *            in getting service info about. Must not be <code>null</code>
 	 * @return IServiceInfo[] the resulting array of service info instances.
@@ -84,8 +84,8 @@ public interface IDiscoveryLocator extends IAdaptable {
 	 * IServiceIDs rather than simple IDs. For example:
 	 * 
 	 * <pre>
-	 * IServiceID serviceID = ServiceIDFactory.getDefault().createServiceID(
-	 * 		container.getServicesNamespace(), serviceType, serviceName);
+	 * IServiceID serviceID = ServiceIDFactory.getDefault().createServiceID(container.getServicesNamespace(),
+	 * 		serviceType, serviceName);
 	 * </pre>
 	 * 
 	 * @return Namespace for creating service IDs. Will not be <code>null</code>
@@ -125,8 +125,7 @@ public interface IDiscoveryLocator extends IAdaptable {
 	 *            IServiceListener to be notified. Must not be <code>null</code>
 	 *            .
 	 */
-	public void addServiceListener(IServiceTypeID type,
-			IServiceListener listener);
+	public void addServiceListener(IServiceTypeID type, IServiceListener listener);
 
 	/**
 	 * Add a service type listener. The given listener will have its method
@@ -158,8 +157,7 @@ public interface IDiscoveryLocator extends IAdaptable {
 	 *            IServiceListener listener to be removed. Must not be
 	 *            <code>null</code>.
 	 */
-	public void removeServiceListener(IServiceTypeID type,
-			IServiceListener listener);
+	public void removeServiceListener(IServiceTypeID type, IServiceListener listener);
 
 	/**
 	 * Remove a service type listener. Remove the type listener.
@@ -175,7 +173,7 @@ public interface IDiscoveryLocator extends IAdaptable {
 	/**
 	 * Asynchronously retrieve info about the service
 	 * 
-	 * @param service
+	 * @param aServiceID
 	 *            IServiceID of the service to get info about. Must not be
 	 *            <code>null</code>.
 	 * @return IFuture a future status wrapping an IServiceInfo or
@@ -196,7 +194,7 @@ public interface IDiscoveryLocator extends IAdaptable {
 	 * Asynchronously get service info about all known services of given service
 	 * type
 	 * 
-	 * @param type
+	 * @param aServiceTypeID
 	 *            IServiceTypeID defining the type of service we are interested
 	 *            in getting service info about. Must not be <code>null</code>
 	 * @return IFuture wrapping an IServiceTypeID[]. The resulting array of
