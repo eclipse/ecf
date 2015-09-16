@@ -5,7 +5,7 @@
 		<fileset dir="${target}/">
 			<filename name="**/*.jar" />
 		</fileset>
-		<fileset dir="/opt/hudson/jobs/R-HEAD-sdk.feature/workspace/projects/org.eclipse.osgi.service.remoteserviceadmin/osgi/">
+		<fileset dir="/opt/hudson/jobs/R-HEAD-sdk.feature/workspace/projects/org.eclipse.osgi.services.remoteserviceadmin/osgi/">
 		    <filename name="**/*.jar" />
 		</fileset>
 	</path>
