@@ -5,9 +5,6 @@
 		<fileset dir="${target}/">
 			<filename name="**/*.jar" />
 		</fileset>
-		<fileset dir="${JAVA_HOME}">
-		    <filename name="**/*.jar" />
-		</fileset>
 	</path>
 	
     <target name="javadoc">
