@@ -11,7 +11,7 @@
     	<echo message="${target}"/>
     	<echo message="${source}"/>
        	<echo message="${output}"/>
-        <javadoc access="protected" additionalparam="-J-Xmx512m  -tag model:a:Model -tag generated:a:Generated -tag noreference:tcmf:DoNotReference -tag ordered:a:Ordered -tag noimplement:a:NoImplement -tag noextend:a:NoExtend -tag ThreadSafe -tag Immutable " 
+        <javadoc access="protected" additionalparam="-J-Xmx512m  -tag model:a:Model -tag generated:a:Generated -tag noreference:tcmf:DoNotReference -tag ordered:a:Ordered -tag noimplement:a:NoImplement -tag noextend:a:NoExtend -tag ThreadSafe -tag Immutable -tag deprecated:a:Deprecated" 
         	author="false" 
         	classpathref="files.classpath" 
         	destdir="${output}" 
