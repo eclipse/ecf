@@ -14,7 +14,6 @@ import java.io.StringReader;
 import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import org.eclipse.ecf.internal.remoteservice.rest.Activator;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.client.IRemoteCallable;
 import org.eclipse.ecf.remoteservice.client.IRemoteResponseDeserializer;
@@ -24,7 +23,7 @@ import org.xml.sax.InputSource;
 /**
  * This class is a sample implementation of {@link IRemoteResponseDeserializer}. This will be
  * used to create XML Resource representations and will be registered when the
- * API is started, {@link Activator#start(org.osgi.framework.BundleContext)}.
+ * API is started.
  */
 public class XMLRemoteResponseDeserializer implements IRemoteResponseDeserializer {
 
