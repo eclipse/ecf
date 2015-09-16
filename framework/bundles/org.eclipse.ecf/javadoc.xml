@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="javadoc">
 	
+	<path id="files.classpath">
+		<fileset dir="${target}/">
+			<filename name="**/*.jar" />
+		</fileset>
+		<fileset dir="${JAVA_HOME}">
+		    <filename name="**/*.jar" />
+		</fileset>
+	</path>
+	
     <target name="javadoc">
     	<echo message="${target}"/>
     	<echo message="${source}"/>
        	<echo message="${output}"/>
         <javadoc access="protected" additionalparam="-J-Xmx512m  -tag model:a:Model -tag generated:a:Generated -tag noreference:tcmf:DoNotReference -tag ordered:a:Ordered -tag noimplement:a:NoImplement -tag noextend:a:NoExtend -tag ThreadSafe -tag Immutable -tag deprecated:a:Deprecated" 
         	author="false" 
+        	classpathref="files.classpath" 
         	destdir="${output}" 
         	doctitle="Eclipse Communication Framework (ECF) 3.11.0" 
         	nodeprecated="false" 
@@ -46,7 +56,6 @@
 	        	<exclude name="**/org/eclipse/ecf/remoteservice/soap/**"/>
 	        	<exclude name="**/org/eclipse/ecf/remoteservice/rest/rss/**"/>
 	        	<exclude name="**/org/eclipse/ecf/telephony/**"/>
-	        	<exclude name="**/org/eclipse/ecf/docshare/**"/>
 	        	<exclude name="**/org.eclipse.ecf.remoteservice.asyncproxy.j8/**"/>
 	        	<exclude name="**/org.eclipse.ecf.remoteservices.tooling.pde/templates/**"/>
         	</fileset>
