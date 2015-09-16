@@ -5,6 +5,9 @@
 		<fileset dir="${target}/">
 			<filename name="**/*.jar" />
 		</fileset>
+		<fileset dir="/opt/hudson/tools/hudson.model.JDK/Java1.7_update_25_x86-64/jre/lib/">
+		    <filename name="**/*.jar" />
+		</fileset>
 	</path>
 	
     <target name="javadoc">
