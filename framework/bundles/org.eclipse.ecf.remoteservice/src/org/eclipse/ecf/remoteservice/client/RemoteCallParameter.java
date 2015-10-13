@@ -9,7 +9,8 @@
 ******************************************************************************/
 package org.eclipse.ecf.remoteservice.client;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import org.eclipse.core.runtime.Assert;
 
 /**
@@ -54,14 +55,17 @@ public class RemoteCallParameter implements IRemoteCallParameter {
 	 * @since 8.5
 	 */
 	public static class Builder {
-		private final Map<String, Object> nameDefaultValueMap;
+
+		private final List<IRemoteCallParameter> parameters;
 
 		public Builder() {
-			this.nameDefaultValueMap = new HashMap<String, Object>();
+			this.parameters = new ArrayList<IRemoteCallParameter>();
 		}
 
 		public Builder addParameter(String name, Object defaultValue) {
-			this.nameDefaultValueMap.put(name, defaultValue);
+			if (name == null)
+				return this;
+			this.parameters.add(new RemoteCallParameter(name, defaultValue));
 			return this;
 		}
 
@@ -69,14 +73,18 @@ public class RemoteCallParameter implements IRemoteCallParameter {
 			return addParameter(name, null);
 		}
 
-		public IRemoteCallParameter[] build() {
-			List<IRemoteCallParameter> params = new ArrayList<IRemoteCallParameter>();
-			for (String name : this.nameDefaultValueMap.keySet()) {
-				Object value = this.nameDefaultValueMap.get(name);
-				params.add(((value == null) ? new RemoteCallParameter(name) : new RemoteCallParameter(name, value)));
-			}
+		/**
+		 * @since 8.8
+		 */
+		public Builder addParameter(IRemoteCallParameter param) {
+			if (param == null)
+				return this;
+			this.parameters.add(param);
+			return this;
+		}
 
-			return (params.size() == 0) ? null : params.toArray(new IRemoteCallParameter[params.size()]);
+		public IRemoteCallParameter[] build() {
+			return this.parameters.toArray(new IRemoteCallParameter[this.parameters.size()]);
 		}
 	}
 }
