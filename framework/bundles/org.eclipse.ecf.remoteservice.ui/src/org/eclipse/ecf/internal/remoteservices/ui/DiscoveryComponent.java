@@ -13,13 +13,17 @@ import java.util.List;
 
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionLocator;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin;
+import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.EndpointDiscoveryView;
+import org.eclipse.ecf.remoteserviceadmin.ui.rsa.RemoteServiceAdminView;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.service.remoteserviceadmin.EndpointEvent;
 import org.osgi.service.remoteserviceadmin.EndpointEventListener;
+import org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent;
+import org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener;
 
-public class DiscoveryComponent implements EndpointEventListener {
+public class DiscoveryComponent implements EndpointEventListener, RemoteServiceAdminListener {
 
 	private static final String RSA_SYMBOLICNAME = "org.eclipse.ecf.osgi.services.remoteserviceadmin"; //$NON-NLS-1$
 
@@ -37,7 +41,8 @@ public class DiscoveryComponent implements EndpointEventListener {
 	}
 
 	private EndpointDiscoveryView discoveryView;
-
+	private RemoteServiceAdminView rsaView;
+	
 	private IEndpointDescriptionLocator edLocator;
 
 	void bindEndpointDescriptionLocator(IEndpointDescriptionLocator locator) {
@@ -56,13 +61,13 @@ public class DiscoveryComponent implements EndpointEventListener {
 		return instance;
 	}
 
-	void setView(EndpointDiscoveryView edv) {
+	public void setView(EndpointDiscoveryView edv) {
 		synchronized (this) {
 			discoveryView = edv;
 		}
 	}
 
-	RemoteServiceAdmin getRSA() {
+	public RemoteServiceAdmin getRSA() {
 		return rsa;
 	}
 
@@ -87,7 +92,7 @@ public class DiscoveryComponent implements EndpointEventListener {
 		}
 	}
 
-	void startRSA() throws BundleException {
+	public void startRSA() throws BundleException {
 		Bundle rsaBundle = null;
 		BundleContext ctxt = null;
 		synchronized (this) {
@@ -124,6 +129,16 @@ public class DiscoveryComponent implements EndpointEventListener {
 			view.handleEndpointChanged(event);
 		else if (h != null)
 			h.add(event);
+	}
+
+	@Override
+	public void remoteAdminEvent(RemoteServiceAdminEvent event) {
+		if (rsaView != null) 
+			rsaView.handleRSAEvent(event);
+	}
+
+	public void setRSAView(RemoteServiceAdminView rsaView) {
+		this.rsaView = rsaView;
 	}
 
 }

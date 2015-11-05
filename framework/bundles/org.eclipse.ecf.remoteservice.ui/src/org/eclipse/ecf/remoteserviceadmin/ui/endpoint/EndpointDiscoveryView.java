@@ -6,7 +6,7 @@
  * 
  * Contributors: Scott Lewis - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.internal.remoteservices.ui;
+package org.eclipse.ecf.remoteserviceadmin.ui.endpoint;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -17,6 +17,10 @@ import java.util.List;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.discovery.identity.IServiceID;
+import org.eclipse.ecf.internal.remoteservices.ui.Activator;
+import org.eclipse.ecf.internal.remoteservices.ui.DiscoveryComponent;
+import org.eclipse.ecf.internal.remoteservices.ui.Messages;
+import org.eclipse.ecf.internal.remoteservices.ui.RSAImageRegistry;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionReader;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionLocator;
@@ -67,7 +71,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.part.ViewPart;
-import org.osgi.framework.BundleException;
 import org.osgi.service.remoteserviceadmin.EndpointEvent;
 
 public class EndpointDiscoveryView extends ViewPart {
@@ -75,7 +78,6 @@ public class EndpointDiscoveryView extends ViewPart {
 	public static final String ID_VIEW = "org.eclipse.ecf.remoteserviceadmin.ui.views.EndpointDiscoveryView"; //$NON-NLS-1$
 
 	private TreeViewer viewer;
-	private Action startRSAAction;
 	private Action copyValueAction;
 	private Action copyNameAction;
 	private Action importAction;
@@ -138,11 +140,11 @@ public class EndpointDiscoveryView extends ViewPart {
 			IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException {
 		return (int) registryBrowser.getClass()
-				.getDeclaredMethod("showGroupBy", int.class)
+				.getDeclaredMethod("showGroupBy", int.class) //$NON-NLS-1$
 				.invoke(registryBrowser, groupBy);
 	}
 
-	private int showInRegistryBrowser(int groupBy) {
+	protected int showInRegistryBrowser(int groupBy) {
 		// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=270684#c33
 		try {
 			IWorkbenchWindow window = PlatformUI.getWorkbench()
@@ -151,19 +153,19 @@ public class EndpointDiscoveryView extends ViewPart {
 				IWorkbenchPage page = window.getActivePage();
 				if (page != null) {
 					IViewPart view = page
-							.findView("org.eclipse.pde.runtime.RegistryBrowser");
+							.findView("org.eclipse.pde.runtime.RegistryBrowser"); //$NON-NLS-1$
 					if (view != null)
 						return invokeShowGroupBy((RegistryBrowser) view,
 								RegistryBrowser.SERVICES);
 				}
 			}
 		} catch (Exception e) {
-			logWarning("Could not show services in PDE Plugin view", e);
+			logWarning("Could not show services in PDE Plugin view", e); //$NON-NLS-1$
 		}
 		return RegistryBrowser.BUNDLES;
 	}
 
-	private void showServicesInRegistryBrowser() {
+	protected void showServicesInRegistryBrowser() {
 		this.previousRegistryBrowserGroupBy = showInRegistryBrowser(RegistryBrowser.SERVICES);
 	}
 
@@ -180,7 +182,7 @@ public class EndpointDiscoveryView extends ViewPart {
 		discoveredEndpointIds.clear();
 	}
 
-	private void hookContextMenu() {
+	protected void hookContextMenu() {
 		MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
 		menuMgr.setRemoveAllWhenShown(true);
 		menuMgr.addMenuListener(new IMenuListener() {
@@ -193,15 +195,13 @@ public class EndpointDiscoveryView extends ViewPart {
 		getSite().registerContextMenu(menuMgr, viewer);
 	}
 
-	private void contributeToActionBars() {
+	protected void contributeToActionBars() {
 		IActionBars bars = getViewSite().getActionBars();
-		bars.getMenuManager().add(startRSAAction);
 		bars.getMenuManager().add(edefDiscoverAction);
-		bars.getToolBarManager().add(startRSAAction);
 		bars.getToolBarManager().add(edefDiscoverAction);
 	}
 
-	private void fillContextMenu(IMenuManager manager) {
+	protected void fillContextMenu(IMenuManager manager) {
 		ITreeSelection selection = (ITreeSelection) viewer.getSelection();
 		if (selection != null) {
 			Object e = selection.getFirstElement();
@@ -220,7 +220,7 @@ public class EndpointDiscoveryView extends ViewPart {
 		}
 	}
 
-	private void log(int level, String message, Throwable e) {
+	protected void log(int level, String message, Throwable e) {
 		Activator
 				.getDefault()
 				.getLog()
@@ -235,28 +235,7 @@ public class EndpointDiscoveryView extends ViewPart {
 		log(IStatus.ERROR, message, e);
 	}
 
-	private void makeActions() {
-		startRSAAction = new Action() {
-			public void run() {
-				if (discovery != null)
-					try {
-						discovery.startRSA();
-						startRSAAction.setEnabled(false);
-					} catch (BundleException e) {
-						logError(
-								Messages.EndpointDiscoveryView_ERROR_RSA_START_FAILED,
-								e);
-						showMessage(Messages.EndpointDiscoveryView_ERROR_MSG_RSA_START_PREFIX
-								+ e.getMessage()
-								+ Messages.EndpointDiscoveryView_ERROR_MSG_SUFFIX);
-					}
-			}
-		};
-		startRSAAction.setText(Messages.EndpointDiscoveryView_START_RSA);
-		startRSAAction
-				.setToolTipText(Messages.EndpointDiscoveryView_START_RSA_SERVICE);
-		startRSAAction.setEnabled(discovery.getRSA() == null);
-
+	protected void makeActions() {
 		copyValueAction = new Action() {
 			public void run() {
 				Object o = ((ITreeSelection) viewer.getSelection())
@@ -308,9 +287,9 @@ public class EndpointDiscoveryView extends ViewPart {
 						if (reg == null) {
 							logError(
 									Messages.EndpointDiscoveryView_ERROR_MSG_RSA_IMPORTSERVICE_FAILED,
-									new Exception("Import Registration Is Null"));
+									new Exception("Import Registration Is Null")); //$NON-NLS-1$
 							showMessage(Messages.EndpointDiscoveryView_ERROR_MSG_RSA_IMPORTSERVICE_FAILED_PREFIX
-									+ "Import Registration Is Null"
+									+ "Import Registration Is Null" //$NON-NLS-1$
 									+ Messages.EndpointDiscoveryView_ERROR_MSG_SUFFIX);
 							return;
 						}
@@ -444,7 +423,7 @@ public class EndpointDiscoveryView extends ViewPart {
 				.getFirstElement());
 	}
 
-	void showMessage(String message) {
+	protected void showMessage(String message) {
 		MessageDialog.openInformation(viewer.getControl().getShell(),
 				Messages.EndpointDiscoveryView_ENDPOINT_MSGBOX_TITLE, message);
 	}
@@ -456,7 +435,7 @@ public class EndpointDiscoveryView extends ViewPart {
 		viewer.getControl().setFocus();
 	}
 
-	void handleEndpointDescription(final int type, final EndpointDescription ed) {
+	protected void handleEndpointDescription(final int type, final EndpointDescription ed) {
 		if (ed == null || viewer == null) return;
 		viewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
@@ -475,13 +454,13 @@ public class EndpointDiscoveryView extends ViewPart {
 		});
 	}
 	
-	void handleEndpointChanged(final EndpointEvent event) {
+	public void handleEndpointChanged(final EndpointEvent event) {
 		handleEndpointDescription(event.getType(),(EndpointDescription) event.getEndpoint());
 	}
 
 	private List<String> discoveredEndpointIds = new ArrayList<String>();
 	
-	void addEndpoint(EndpointDescription ed) {
+	protected void addEndpoint(EndpointDescription ed) {
 		if (EndpointDiscoveryView.this.previousRegistryBrowserGroupBy != RegistryBrowser.SERVICES)
 			showServicesInRegistryBrowser();
 		String edId = ed.getId();
@@ -491,12 +470,12 @@ public class EndpointDiscoveryView extends ViewPart {
 		}
 	}
 	
-	void removeEndpoint(EndpointDescription ed) {
+	protected void removeEndpoint(EndpointDescription ed) {
 		if (discoveredEndpointIds.remove(ed.getId()))
 			contentProvider.getRootNode().removeChild(new EndpointNode(ed));
 	}
 	
-	ImportRegistration findImportRegistration(EndpointDescription ed) {
+	protected ImportRegistration findImportRegistration(EndpointDescription ed) {
 		RemoteServiceAdmin rsa = discovery.getRSA();
 		if (rsa == null)
 			return null;
@@ -510,7 +489,7 @@ public class EndpointDiscoveryView extends ViewPart {
 		return null;
 	}
 
-	EndpointNode createEndpointDescriptionNode(EndpointDescription ed) {
+	protected EndpointNode createEndpointDescriptionNode(EndpointDescription ed) {
 		EndpointNode edo = new EndpointNode(
 				ed,
 				new org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.ImportRegistrationNode(

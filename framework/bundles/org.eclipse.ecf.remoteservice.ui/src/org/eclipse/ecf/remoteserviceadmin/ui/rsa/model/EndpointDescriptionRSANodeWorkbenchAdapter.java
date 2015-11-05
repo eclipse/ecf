@@ -6,45 +6,37 @@
  * 
  * Contributors: Scott Lewis - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model;
+package org.eclipse.ecf.remoteserviceadmin.ui.rsa.model;
 
-import org.eclipse.ecf.internal.remoteservices.ui.OverlayIcon;
-import org.eclipse.ecf.internal.remoteservices.ui.RSAImageRegistry;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
+import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointNodeWorkbenchAdapter;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 /**
- * @since 3.2
+ * @since 3.3
  */
-public class EndpointNodeWorkbenchAdapter extends
-		AbstractEndpointNodeWorkbenchAdapter {
-
-	/**
-	 * @since 3.3
-	 */
-	protected ImageDescriptor edImageDesc;
-	/**
-	 * @since 3.3
-	 */
-	protected ImageDescriptor importedEndpointDesc;
-
-	public EndpointNodeWorkbenchAdapter() {
-		edImageDesc = RSAImageRegistry.ENDPOINTDESCRIPTION_OBJ;
-		importedEndpointDesc = new OverlayIcon(
-				edImageDesc,
-				new ImageDescriptor[][] { { RSAImageRegistry.DESC_RSPROXY_CO } });
-	}
+public class EndpointDescriptionRSANodeWorkbenchAdapter extends EndpointNodeWorkbenchAdapter {
 
 	@Override
 	public String getLabel(Object object) {
-		EndpointDescription ed = ((EndpointNode) object)
-				.getEndpointDescription();
+		EndpointDescription ed = ((EndpointDescriptionRSANode) object).getEndpointNode().getEndpointDescription();
 		return ed.getContainerID().getName() + ":" + ed.getRemoteServiceId(); //$NON-NLS-1$
 	}
 
 	@Override
 	public ImageDescriptor getImageDescriptor(Object object) {
-		return ((EndpointNode) object).isImported() ? importedEndpointDesc
+		return ((EndpointDescriptionRSANode) object).getEndpointNode().isImported() ? importedEndpointDesc
 				: edImageDesc;
 	}
+
+	@Override
+	public Object getParent(Object object) {
+		return ((AbstractRSANode) object).getParent();
+	}
+
+	@Override
+	public Object[] getChildren(Object object) {
+		return ((EndpointDescriptionRSANode) object).getEndpointNode().getChildren();
+	}
+
 }

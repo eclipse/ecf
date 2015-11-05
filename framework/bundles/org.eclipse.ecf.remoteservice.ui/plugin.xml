@@ -108,8 +108,15 @@
             name="%remote.services.discovery.view.name"
             icon="icons/obj16/endpoint_obj.gif"
             category="org.eclipse.ecf.remoteservice.ui.rsgroup"
-            class="org.eclipse.ecf.internal.remoteservices.ui.EndpointDiscoveryView"
+            class="org.eclipse.ecf.remoteserviceadmin.ui.endpoint.EndpointDiscoveryView"
             id="org.eclipse.ecf.remoteserviceadmin.ui.views.EndpointDiscoveryView">
+      </view>
+      <view
+            name="%remote.services.rsa.view.name"
+            icon="icons/obj16/rsa_obj.gif"
+            category="org.eclipse.ecf.remoteservice.ui.rsgroup"
+            class="org.eclipse.ecf.remoteserviceadmin.ui.rsa.RemoteServiceAdminView"
+            id="org.eclipse.ecf.remoteserviceadmin.ui.views.RSAView">
       </view>
    </extension>
 
@@ -205,7 +212,94 @@
          <adapter
                type="org.eclipse.ui.model.IWorkbenchAdapter3">
          </adapter>
+         
       </factory>
+      
+      
+      <factory
+            adaptableType="org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.ExportedServicesRootNode"
+            class="org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.RSAAdapterFactory">
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter">
+         </adapter>
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter2">
+         </adapter>
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter3">
+         </adapter>
+      </factory>
+      
+      <factory
+            adaptableType="org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.ImportedEndpointsRootNode"
+            class="org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.RSAAdapterFactory">
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter">
+         </adapter>
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter2">
+         </adapter>
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter3">
+         </adapter>
+      </factory>
+  
+        <factory
+            adaptableType="org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.ExportRegistrationNode"
+            class="org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.RSAAdapterFactory">
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter">
+         </adapter>
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter2">
+         </adapter>
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter3">
+         </adapter>
+      </factory>
+  
+        <factory
+            adaptableType="org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.ImportRegistrationNode"
+            class="org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.RSAAdapterFactory">
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter">
+         </adapter>
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter2">
+         </adapter>
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter3">
+         </adapter>
+      </factory>
+      
+              <factory
+            adaptableType="org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.NameValuePropertyNode"
+            class="org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.RSAAdapterFactory">
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter">
+         </adapter>
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter2">
+         </adapter>
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter3">
+         </adapter>
+      </factory>
+     
+                   <factory
+            adaptableType="org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.EndpointDescriptionRSANode"
+            class="org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.RSAAdapterFactory">
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter">
+         </adapter>
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter2">
+         </adapter>
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter3">
+         </adapter>
+      </factory>
+      
    </extension>
 
 </plugin>

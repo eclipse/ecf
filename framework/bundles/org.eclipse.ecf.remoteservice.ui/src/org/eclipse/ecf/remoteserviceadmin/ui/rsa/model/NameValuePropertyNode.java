@@ -1,23 +1,26 @@
 /*******************************************************************************
- * Copyright (c) 2015 Composent, Inc. All rights reserved. This program and the
- * accompanying materials are made available under the terms of the Eclipse
- * Public License v1.0 which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2015 Composent, Inc. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors: Scott Lewis - initial API and implementation
- * 
- * @since 3.2
  ******************************************************************************/
-package org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model;
+package org.eclipse.ecf.remoteserviceadmin.ui.rsa.model;
 
-public class EndpointPropertyNode extends AbstractEndpointNode {
+/**
+ * @since 3.3
+ */
+public class NameValuePropertyNode extends AbstractRSANode {
 
 	private final String propertyName;
 	private String propertyAlias;
 	private String nameValueSeparator = ": "; //$NON-NLS-1$
+	private Object propertyValue;
 
-	public EndpointPropertyNode(String propertyName) {
+	public NameValuePropertyNode(String propertyName, Object propertyValue) {
 		this.propertyName = propertyName;
+		this.propertyValue = propertyValue;
 	}
 
 	public String getPropertyAlias() {
@@ -41,7 +44,7 @@ public class EndpointPropertyNode extends AbstractEndpointNode {
 	}
 
 	public Object getPropertyValue() {
-		return getEndpointDescriptionProperties().get(propertyName);
+		return propertyValue;
 	}
 
 }

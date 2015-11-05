@@ -16,6 +16,10 @@ public final class Messages extends NLS {
 
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.remoteservices.ui.messages"; //$NON-NLS-1$
 
+	public static String AbstractRegistrationNode_ErrorName;
+
+	public static String AbstractRSANode_NodeClosed;
+
 	public static String DiscoveryComponent_ERROR_MSG_CANNOT_FIND_RSA_BUNDLE;
 
 	public static String EndpointConfigTypesNode_0;
@@ -121,6 +125,14 @@ public final class Messages extends NLS {
 	public static String MethodInvocationDialog_InvocationTypeOSGiServiceProxy;
 	public static String MethodInvocationDialog_InvocationTypeRemoteServiceProxy;
 	public static String MethodInvocationDialog_InvocationTypeSynchronous;
+
+	public static String RSAContentProvider_ExportedServicesNodeName;
+
+	public static String RSAContentProvider_ImportedEndpointsNodeName;
+
+	public static String RSAView_PROXY_SERVICE_ID_LABEL;
+
+	public static String RSAView_SERVICE_ID_LABEL;
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
