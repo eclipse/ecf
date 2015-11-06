@@ -172,9 +172,9 @@ public class Activator implements BundleActivator {
 				if (!rcs.contains(descSupportedConfigs[j])) rcs.add(descSupportedConfigs[j]);
 			// Get supported intents
 			String[] descSupportedIntents = desc.getSupportedIntents();
-			// Add them all
+			// Add them if not already present
 			for (int j = 0; j < descSupportedIntents.length; j++)
-				ris.add(descSupportedIntents[j]);
+				if (!ris.contains(descSupportedIntents[j])) ris.add(descSupportedIntents[j]);
 		}
 		// set rsaProps to new values
 		rsaProps.put(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED, rcs.toArray(new String[rcs.size()]));
