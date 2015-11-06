@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature"
       label="ECF Httpclient4 Filetransfer SSL Provider"
-      version="1.0.0.qualifier"
+      version="1.1.0.qualifier"
       provider-name="Eclipse.org - ECF">
 
    <description url="http://www.eclipse.org/ecf">
