@@ -41,11 +41,11 @@ public class RemoteServiceAdminView extends ViewPart {
 	public static final String ID_VIEW = "org.eclipse.ecf.remoteserviceadmin.ui.views.RSAView"; //$NON-NLS-1$
 
 	private DiscoveryComponent discovery;
-	private TreeViewer viewer;
+	protected TreeViewer viewer;
 
-	private RSAContentProvider contentProvider;
-	private Action closeExportAction;
-	private Action closeImportAction;
+	protected RSAContentProvider contentProvider;
+	protected Action closeExportAction;
+	protected Action closeImportAction;
 
 	public RemoteServiceAdminView() {
 	}
@@ -69,7 +69,7 @@ public class RemoteServiceAdminView extends ViewPart {
 
 		IViewSite viewSite = getViewSite();
 
-		this.contentProvider = new RSAContentProvider(viewSite);
+		this.contentProvider = createContentProvider(viewSite);
 
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		viewer.setContentProvider(this.contentProvider);
@@ -86,6 +86,10 @@ public class RemoteServiceAdminView extends ViewPart {
 		if (rsa != null) update(rsa, 0);
 	}
 
+	protected RSAContentProvider createContentProvider(IViewSite viewSite) {
+		return new RSAContentProvider(viewSite);
+	}
+	
 	protected void fillContextMenu(IMenuManager manager) {
 		ITreeSelection selection = (ITreeSelection) viewer.getSelection();
 		if (selection != null) {
@@ -124,7 +128,7 @@ public class RemoteServiceAdminView extends ViewPart {
 
 	}
 
-	Action createCloseAction() {
+	protected Action createCloseAction() {
 		return new Action() {
 			public void run() {
 				AbstractRegistrationNode n = getRegistrationNodeSelected();
@@ -134,13 +138,13 @@ public class RemoteServiceAdminView extends ViewPart {
 		};
 	}
 	
-	AbstractRSANode getNodeSelected() {
+	protected AbstractRSANode getNodeSelected() {
 		return ((AbstractRSANode) ((ITreeSelection) viewer.getSelection())
 				.getFirstElement());
 	}
 
 
-	AbstractRegistrationNode getRegistrationNodeSelected() {
+	protected AbstractRegistrationNode getRegistrationNodeSelected() {
 		AbstractRSANode aen = getNodeSelected();
 		return (aen instanceof AbstractRegistrationNode) ? (AbstractRegistrationNode) aen : null;
 	}
@@ -178,11 +182,11 @@ public class RemoteServiceAdminView extends ViewPart {
 		});
 	}
 
-	RemoteServiceAdmin getRSA() {
+	protected RemoteServiceAdmin getRSA() {
 		return (discovery == null) ? null : discovery.getRSA();
 	}
 
-	void updateExports(RemoteServiceAdmin rsa) {
+	protected void updateExports(RemoteServiceAdmin rsa) {
 		ExportedServicesRootNode exportedRoot = contentProvider.getExportedServicesRoot();
 		exportedRoot.clearChildren();
 		if (rsa != null && exportedRoot != null) {
@@ -192,7 +196,7 @@ public class RemoteServiceAdminView extends ViewPart {
 		}
 	}
 
-	void updateImports(RemoteServiceAdmin rsa) {
+	protected void updateImports(RemoteServiceAdmin rsa) {
 		ImportedEndpointsRootNode importedRoot = contentProvider.getImportedEndpointsRoot();
 		importedRoot.clearChildren();
 		if (rsa != null && importedRoot != null) {

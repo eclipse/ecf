@@ -77,21 +77,21 @@ public class EndpointDiscoveryView extends ViewPart {
 
 	public static final String ID_VIEW = "org.eclipse.ecf.remoteserviceadmin.ui.views.EndpointDiscoveryView"; //$NON-NLS-1$
 
-	private TreeViewer viewer;
-	private Action copyValueAction;
-	private Action copyNameAction;
-	private Action importAction;
-	private Action unimportAction;
+	protected TreeViewer viewer;
+	protected Action copyValueAction;
+	protected Action copyNameAction;
+	protected Action importAction;
+	protected Action unimportAction;
 
-	private Action undiscoverAction;
+	protected Action undiscoverAction;
 
-	private Action edefDiscoverAction;
+	protected Action edefDiscoverAction;
 
-	private Clipboard clipboard;
+	protected Clipboard clipboard;
 
 	private DiscoveryComponent discovery;
 
-	private EndpointContentProvider contentProvider;
+	protected EndpointContentProvider contentProvider;
 
 	public EndpointDiscoveryView() {
 	}
@@ -101,8 +101,7 @@ public class EndpointDiscoveryView extends ViewPart {
 		this.discovery.setView(this);
 
 		IViewSite viewSite = getViewSite();
-		this.contentProvider = new EndpointContentProvider(viewSite,
-				Messages.EndpointDiscoveryView_ENDPOINT_ROOT_NAME);
+		this.contentProvider = createContentProvider(viewSite);
 
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		viewer.setContentProvider(this.contentProvider);
@@ -133,6 +132,11 @@ public class EndpointDiscoveryView extends ViewPart {
 		
 	}
 
+	protected EndpointContentProvider createContentProvider(IViewSite viewSite) {
+		return new EndpointContentProvider(viewSite,
+				Messages.EndpointDiscoveryView_ENDPOINT_ROOT_NAME);
+	}
+	
 	private int previousRegistryBrowserGroupBy;
 
 	private int invokeShowGroupBy(RegistryBrowser registryBrowser, int groupBy)
@@ -227,11 +231,11 @@ public class EndpointDiscoveryView extends ViewPart {
 				.log(new Status(level, Activator.PLUGIN_ID, message, e));
 	}
 
-	private void logWarning(String message, Throwable e) {
+	protected void logWarning(String message, Throwable e) {
 		log(IStatus.WARNING, message, e);
 	}
 	
-	private void logError(String message, Throwable e) {
+	protected void logError(String message, Throwable e) {
 		log(IStatus.ERROR, message, e);
 	}
 
@@ -409,7 +413,7 @@ public class EndpointDiscoveryView extends ViewPart {
 				.setToolTipText(Messages.EndpointDiscoveryView_REMOVE_ENDPOINT_TT);
 	}
 
-	EndpointNode getEDNodeSelected() {
+	protected EndpointNode getEDNodeSelected() {
 		AbstractEndpointNode aen = getNodeSelected();
 		return (aen instanceof EndpointNode) ? (EndpointNode) aen : null;
 	}
@@ -418,7 +422,7 @@ public class EndpointDiscoveryView extends ViewPart {
 		return contentProvider.getRootNode().equals(getNodeSelected());
 	}
 
-	AbstractEndpointNode getNodeSelected() {
+	protected AbstractEndpointNode getNodeSelected() {
 		return ((AbstractEndpointNode) ((ITreeSelection) viewer.getSelection())
 				.getFirstElement());
 	}
