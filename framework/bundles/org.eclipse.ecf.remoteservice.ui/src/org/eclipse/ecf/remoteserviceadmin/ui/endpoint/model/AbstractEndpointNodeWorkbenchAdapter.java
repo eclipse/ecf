@@ -11,7 +11,7 @@ package org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model;
 import org.eclipse.ui.model.WorkbenchAdapter;
 
 /**
- * @since 3.2
+ * @since 3.3
  */
 public class AbstractEndpointNodeWorkbenchAdapter extends WorkbenchAdapter {
 

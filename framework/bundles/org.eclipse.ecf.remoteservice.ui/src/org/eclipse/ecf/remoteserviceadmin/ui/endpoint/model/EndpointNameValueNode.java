@@ -1,7 +1,7 @@
 package org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model;
 
 /**
- * @since 3.2
+ * @since 3.3
  */
 public class EndpointNameValueNode extends EndpointPropertyNode {
 

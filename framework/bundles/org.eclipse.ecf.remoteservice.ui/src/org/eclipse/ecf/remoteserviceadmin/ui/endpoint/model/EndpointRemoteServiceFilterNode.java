@@ -12,7 +12,7 @@ import org.eclipse.ecf.internal.remoteservices.ui.Messages;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants;
 
 /**
- * @since 3.2
+ * @since 3.3
  */
 public class EndpointRemoteServiceFilterNode extends EndpointECFNode {
 

@@ -6,7 +6,7 @@
  * 
  * Contributors: Scott Lewis - initial API and implementation
  * 
- * @since 3.2
+ * @since 3.3
  ******************************************************************************/
 package org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model;
 
@@ -19,7 +19,7 @@ import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 
 /**
- * @since 3.2
+ * @since 3.3
  */
 public class EndpointPropertySource implements IPropertySource {
 

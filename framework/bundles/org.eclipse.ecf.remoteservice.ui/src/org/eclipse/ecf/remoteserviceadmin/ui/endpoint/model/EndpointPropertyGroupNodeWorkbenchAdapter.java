@@ -13,7 +13,7 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
 /**
- * @since 3.2
+ * @since 3.3
  */
 public class EndpointPropertyGroupNodeWorkbenchAdapter extends
 		AbstractEndpointNodeWorkbenchAdapter {

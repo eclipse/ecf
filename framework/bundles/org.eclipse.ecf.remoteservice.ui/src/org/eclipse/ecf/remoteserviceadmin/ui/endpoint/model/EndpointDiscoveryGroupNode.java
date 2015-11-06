@@ -12,7 +12,7 @@ import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.internal.remoteservices.ui.Messages;
 
 /**
- * @since 3.2
+ * @since 3.3
  */
 public class EndpointDiscoveryGroupNode extends EndpointGroupNode {
 

@@ -18,7 +18,7 @@ import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
 import org.eclipse.ui.views.properties.IPropertySource;
 
 /**
- * @since 3.2
+ * @since 3.3
  */
 public abstract class AbstractEndpointNode implements IAdaptable {
 

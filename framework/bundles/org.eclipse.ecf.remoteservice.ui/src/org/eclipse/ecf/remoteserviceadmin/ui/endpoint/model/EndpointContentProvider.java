@@ -12,7 +12,7 @@ import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 
 /**
- * @since 3.2
+ * @since 3.3
  */
 public class EndpointContentProvider extends BaseWorkbenchContentProvider {
 

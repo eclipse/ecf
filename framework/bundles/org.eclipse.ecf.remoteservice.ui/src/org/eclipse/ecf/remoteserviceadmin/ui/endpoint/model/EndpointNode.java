@@ -12,7 +12,7 @@ import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin.ImportRegistration;
 
 /**
- * @since 3.2
+ * @since 3.3
  */
 public class EndpointNode extends AbstractEndpointNode {
 

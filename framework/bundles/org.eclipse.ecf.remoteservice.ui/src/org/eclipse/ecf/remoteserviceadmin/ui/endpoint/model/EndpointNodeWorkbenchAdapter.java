@@ -14,7 +14,7 @@ import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 /**
- * @since 3.2
+ * @since 3.3
  */
 public class EndpointNodeWorkbenchAdapter extends
 		AbstractEndpointNodeWorkbenchAdapter {

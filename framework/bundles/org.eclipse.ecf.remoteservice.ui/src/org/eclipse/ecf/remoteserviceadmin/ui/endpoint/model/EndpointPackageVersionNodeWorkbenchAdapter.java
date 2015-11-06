@@ -13,7 +13,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.osgi.framework.Version;
 
 /**
- * @since 3.2
+ * @since 3.3
  */
 public class EndpointPackageVersionNodeWorkbenchAdapter extends
 		AbstractEndpointNodeWorkbenchAdapter {

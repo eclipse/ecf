@@ -14,7 +14,7 @@ import org.eclipse.ui.model.IWorkbenchAdapter2;
 import org.eclipse.ui.model.IWorkbenchAdapter3;
 
 /**
- * @since 3.2
+ * @since 3.3
  */
 public class EndpointAdapterFactory implements IAdapterFactory {
 

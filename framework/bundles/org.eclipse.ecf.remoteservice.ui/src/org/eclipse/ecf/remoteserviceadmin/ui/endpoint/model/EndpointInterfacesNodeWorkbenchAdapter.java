@@ -12,7 +12,7 @@ import org.eclipse.ecf.internal.remoteservices.ui.RSAImageRegistry;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 /**
- * @since 3.2
+ * @since 3.3
  */
 public class EndpointInterfacesNodeWorkbenchAdapter extends
 		AbstractEndpointNodeWorkbenchAdapter {

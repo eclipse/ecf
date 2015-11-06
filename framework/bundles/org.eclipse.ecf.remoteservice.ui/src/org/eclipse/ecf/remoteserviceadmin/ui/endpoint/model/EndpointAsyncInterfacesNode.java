@@ -11,7 +11,7 @@ package org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants;
 
 /**
- * @since 3.2
+ * @since 3.3
  */
 public class EndpointAsyncInterfacesNode extends EndpointECFNode {
 

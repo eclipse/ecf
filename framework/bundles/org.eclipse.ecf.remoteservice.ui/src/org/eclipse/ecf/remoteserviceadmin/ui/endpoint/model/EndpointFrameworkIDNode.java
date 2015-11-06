@@ -12,7 +12,7 @@ import org.eclipse.ecf.internal.remoteservices.ui.Messages;
 import org.osgi.service.remoteserviceadmin.RemoteConstants;
 
 /**
- * @since 3.2
+ * @since 3.3
  */
 public class EndpointFrameworkIDNode extends EndpointPropertyNode {
 
