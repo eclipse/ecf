@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.filetransfer.httpclient4.feature"
       label="ECF Httpclient4 Filetransfer Provider"
-      version="3.11.1.qualifier"
+      version="3.12.0.qualifier"
       provider-name="Eclipse.org - ECF">
 
    <description url="http://www.eclipse.org/ecf">
