@@ -10,6 +10,9 @@
  ******************************************************************************/
 package org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model;
 
+/**
+ * @since 3.3
+ */
 public class EndpointPropertyNode extends AbstractEndpointNode {
 
 	private final String propertyName;
