@@ -139,7 +139,9 @@ public abstract class AbstractRemoteServiceAdminView extends ViewPart {
 		return new RSAContentProvider(viewSite);
 	}
 
-	protected abstract void fillContextMenu(IMenuManager manager);
+	protected void fillContextMenu(IMenuManager manager) {
+		
+	}
 	
 	protected void hookContextMenu() {
 		MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
@@ -154,7 +156,9 @@ public abstract class AbstractRemoteServiceAdminView extends ViewPart {
 		getSite().registerContextMenu(menuMgr, viewer);
 	}
 
-	protected abstract void makeActions();
+	protected void makeActions() {
+		
+	}
 	
 	protected AbstractRSANode getSelectedNode() {
 		return ((AbstractRSANode) ((ITreeSelection) viewer.getSelection())
