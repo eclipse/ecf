@@ -24,12 +24,28 @@ public class ImportRegistrationNode extends AbstractRegistrationNode {
 		this.importRegistration = iReg;
 	}
 
-	ImportReference getImportReference() {
-		return (ImportReference) this.importRegistration.getImportReference();
+	public ImportRegistrationNode(Throwable t) {
+		super(t);
+		this.importRegistration = null;
+	}
+
+	protected ImportRegistration getImportRegistration() {
+		return this.importRegistration;
+	}
+	
+	protected ServiceReference getImportedService() {
+		ImportReference iRef = getImportReference();
+		return (iRef == null)?null:iRef.getImportedService();
+	}
+	
+	protected ImportReference getImportReference() {
+		ImportRegistration iReg = getImportRegistration();
+		return (iReg == null) ? null
+				: (ImportReference) iReg.getImportReference();
 	}
 
 	public String getValidName() {
-		return convertObjectClassToString(getImportReference().getImportedService());
+		return convertObjectClassToString(getImportedService());
 	}
 
 	@Override
@@ -45,7 +61,8 @@ public class ImportRegistrationNode extends AbstractRegistrationNode {
 
 	@Override
 	public void close() {
-		importRegistration.close();
+		if (importRegistration != null)
+			importRegistration.close();
 	}
 
 }

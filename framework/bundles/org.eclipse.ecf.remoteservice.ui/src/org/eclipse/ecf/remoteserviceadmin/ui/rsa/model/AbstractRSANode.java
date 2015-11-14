@@ -10,7 +10,9 @@ package org.eclipse.ecf.remoteserviceadmin.ui.rsa.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.internal.remoteservices.ui.Activator;
@@ -73,7 +75,7 @@ public class AbstractRSANode implements IAdaptable {
 		children.clear();
 	}
 
-	protected String convertStringArrayToString(String[] strings) {
+	public static String convertStringArrayToString(String[] strings) {
 		StringBuffer buf = new StringBuffer("[");
 		for (int i = 0; i < strings.length; i++) {
 			buf.append(strings[i]);
@@ -83,8 +85,19 @@ public class AbstractRSANode implements IAdaptable {
 		return buf.append("]").toString();
 	}
 
+	public static Map<String,Object> convertServicePropsToMap(ServiceReference sr) {
+		Map<String,Object> result = new HashMap<String,Object>();
+		if (sr == null) return result;
+		for(String key: sr.getPropertyKeys()) {
+			Object val = sr.getProperty(key);
+			if (val != null)
+				result.put(key, val);
+		}
+		return result;
+	}
+	
 	protected String convertObjectClassToString(ServiceReference sr) {
-		return convertStringArrayToString((String[]) sr.getProperty(Constants.OBJECTCLASS));
+		return (sr == null)?CLOSED:convertStringArrayToString((String[]) sr.getProperty(Constants.OBJECTCLASS));
 	}
 
 	protected ServiceReference<org.osgi.service.remoteserviceadmin.RemoteServiceAdmin> getRSARef() {

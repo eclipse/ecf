@@ -24,12 +24,27 @@ public class ExportRegistrationNode extends AbstractRegistrationNode {
 		this.exportRegistration = eReg;
 	}
 
-	ExportReference getExportReference() {
-		return (ExportReference) this.exportRegistration.getExportReference();
+	public ExportRegistrationNode(Throwable t) {
+		super(t);
+		this.exportRegistration = null;
+	}
+	
+	protected ExportRegistration getExportRegistration() {
+		return this.exportRegistration;
+	}
+	
+	protected ExportReference getExportReference() {
+		ExportRegistration eReg = getExportRegistration();
+		return eReg == null?null:(ExportReference) eReg.getExportReference();
 	}
 
+	protected ServiceReference getExportedService() {
+		ExportReference eRef = getExportReference();
+		return eRef == null?null:eRef.getExportedService();
+	}
+	
 	public String getValidName() {
-		return convertObjectClassToString(getExportReference().getExportedService());
+		return convertObjectClassToString(getExportedService());
 	}
 
 	@Override
@@ -45,6 +60,7 @@ public class ExportRegistrationNode extends AbstractRegistrationNode {
 
 	@Override
 	public void close() {
-		exportRegistration.close();
+		if (exportRegistration != null) 
+			exportRegistration.close();
 	}
 }
