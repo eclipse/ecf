@@ -181,7 +181,9 @@ public abstract class AbstractRemoteServiceAdminView extends ViewPart {
 		}
 	}
 
-	public abstract void handleRSAEvent(RemoteServiceAdminEvent event);
+	public void handleRSAEvent(RemoteServiceAdminEvent event) {
+		
+	}
 	
 	@Override
 	public void createPartControl(Composite parent) {
