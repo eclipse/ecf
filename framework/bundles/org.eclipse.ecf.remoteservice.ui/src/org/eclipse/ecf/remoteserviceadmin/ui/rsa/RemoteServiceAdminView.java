@@ -83,7 +83,7 @@ public class RemoteServiceAdminView extends ViewPart {
 		viewSite.setSelectionProvider(viewer);
 
 		RemoteServiceAdmin rsa = this.discovery.getRSA();
-		if (rsa != null) update(rsa, 0);
+		if (rsa != null) updateModel();
 	}
 
 	protected RSAContentProvider createContentProvider(IViewSite viewSite) {
@@ -138,14 +138,13 @@ public class RemoteServiceAdminView extends ViewPart {
 		};
 	}
 	
-	protected AbstractRSANode getNodeSelected() {
+	protected AbstractRSANode getSelectedNode() {
 		return ((AbstractRSANode) ((ITreeSelection) viewer.getSelection())
 				.getFirstElement());
 	}
 
-
 	protected AbstractRegistrationNode getRegistrationNodeSelected() {
-		AbstractRSANode aen = getNodeSelected();
+		AbstractRSANode aen = getSelectedNode();
 		return (aen instanceof AbstractRegistrationNode) ? (AbstractRegistrationNode) aen : null;
 	}
 
@@ -167,14 +166,14 @@ public class RemoteServiceAdminView extends ViewPart {
 					case RemoteServiceAdminEvent.EXPORT_ERROR:
 					case RemoteServiceAdminEvent.EXPORT_UPDATE:
 					case RemoteServiceAdminEvent.EXPORT_WARNING:
-						update(rsa, 1);
+						updateModel(1);
 						break;
 					case RemoteServiceAdminEvent.IMPORT_REGISTRATION:
 					case RemoteServiceAdminEvent.IMPORT_UNREGISTRATION:
 					case RemoteServiceAdminEvent.IMPORT_ERROR:
 					case RemoteServiceAdminEvent.IMPORT_UPDATE:
 					case RemoteServiceAdminEvent.IMPORT_WARNING:
-						update(rsa, 2);
+						updateModel(2);
 						break;
 					}
 				}
@@ -186,52 +185,58 @@ public class RemoteServiceAdminView extends ViewPart {
 		return (discovery == null) ? null : discovery.getRSA();
 	}
 
-	protected void updateExports(RemoteServiceAdmin rsa) {
-		ExportedServicesRootNode exportedRoot = contentProvider.getExportedServicesRoot();
-		exportedRoot.clearChildren();
+	protected void updateExports(ExportedServicesRootNode exportedRoot) {
+		RemoteServiceAdmin rsa = getRSA();
 		if (rsa != null && exportedRoot != null) {
+			exportedRoot.clearChildren();
 			List<ExportRegistration> exportRegistrations = rsa.getExportedRegistrations();
-			for (ExportRegistration er : exportRegistrations)
-				exportedRoot.addChild(createExportRegistrationNode(er));
+			for (ExportRegistration er : exportRegistrations) {
+				ExportRegistrationNode exportRegistrationNode = new ExportRegistrationNode(er);
+				ExportReference eRef = (ExportReference) er.getExportReference();
+				if (eRef != null) {
+					exportRegistrationNode.addChild(new ServiceIdNode(eRef.getExportedService(), Messages.RSAView_SERVICE_ID_LABEL));
+					EndpointDescription ed = (EndpointDescription) eRef.getExportedEndpoint();
+					if (ed != null)
+						exportRegistrationNode.addChild(new EndpointDescriptionRSANode(ed));
+				}
+				exportedRoot.addChild(exportRegistrationNode);
+			}
 		}
-	}
-
-	protected void updateImports(RemoteServiceAdmin rsa) {
-		ImportedEndpointsRootNode importedRoot = contentProvider.getImportedEndpointsRoot();
-		importedRoot.clearChildren();
-		if (rsa != null && importedRoot != null) {
-			List<ImportRegistration> importRegistrations = rsa.getImportedRegistrations();
-			for (ImportRegistration ir : importRegistrations)
-				importedRoot.addChild(createImportRegistrationNode(ir));
-		}
-	}
-
-	protected AbstractRSANode createExportRegistrationNode(ExportRegistration er) {
-		ExportRegistrationNode result = new ExportRegistrationNode(er);
-		ExportReference eRef = (ExportReference) er.getExportReference();
-		if (eRef != null) {
-			result.addChild(new ServiceIdNode(eRef.getExportedService(), Messages.RSAView_SERVICE_ID_LABEL));
-			EndpointDescription ed = (EndpointDescription) eRef.getExportedEndpoint();
-			if (ed != null)
-				result.addChild(new EndpointDescriptionRSANode(ed));
-		}
-		return result;
 	}
 	
-	protected AbstractRSANode createImportRegistrationNode(ImportRegistration ir) {
-		ImportRegistrationNode result = new ImportRegistrationNode(ir);
-		ImportReference iRef = (ImportReference) ir.getImportReference();
-		if (iRef != null) {
-			result.addChild(new ServiceIdNode(iRef.getImportedService(), Messages.RSAView_PROXY_SERVICE_ID_LABEL));
-			EndpointDescription ed = (EndpointDescription) iRef.getImportedEndpoint();
-			if (ed != null)
-				result.addChild(new EndpointDescriptionRSANode(ed, ir));
-		}
-		return result;
+	protected void updateExports() {
+		updateExports(contentProvider.getExportedServicesRoot());
+	}
+
+	protected void updateImports(ImportedEndpointsRootNode importedRoot) {
+		RemoteServiceAdmin rsa = getRSA();
+		if (rsa != null && importedRoot != null) {
+			importedRoot.clearChildren();
+			List<ImportRegistration> importRegistrations = rsa.getImportedRegistrations();
+			for (ImportRegistration ir : importRegistrations) {
+				ImportRegistrationNode importRegistrationNode = new ImportRegistrationNode(ir);
+				ImportReference iRef = (ImportReference) ir.getImportReference();
+				if (iRef != null) {
+					importRegistrationNode.addChild(new ServiceIdNode(iRef.getImportedService(), Messages.RSAView_PROXY_SERVICE_ID_LABEL));
+					EndpointDescription ed = (EndpointDescription) iRef.getImportedEndpoint();
+					if (ed != null)
+						importRegistrationNode.addChild(new EndpointDescriptionRSANode(ed, ir));
+				}
+				importedRoot.addChild(importRegistrationNode);
+			}
+		}		
+	}
+	
+	protected void updateImports() {
+		updateImports(contentProvider.getImportedEndpointsRoot());
+	}
+
+	protected void updateModel() {
+		updateModel(0);
 	}
 
 	protected 
-	void update(final RemoteServiceAdmin rsa, final int type) {
+	void updateModel(final int type) {
 		if (viewer == null)
 			return;
 		viewer.getControl().getDisplay().asyncExec(new Runnable() {
@@ -240,16 +245,16 @@ public class RemoteServiceAdminView extends ViewPart {
 				switch (type) {
 				// both
 				case 0:
-					updateExports(rsa);
-					updateImports(rsa);
+					updateExports();
+					updateImports();
 					break;
 				// exports
 				case 1:
-					updateExports(rsa);
+					updateExports();
 					break;
 				// imports
 				case 2:
-					updateImports(rsa);
+					updateImports();
 					break;
 				}
 				viewer.setExpandedState(contentProvider.getExportedServicesRoot(), true);
