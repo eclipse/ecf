@@ -15,8 +15,7 @@ import org.eclipse.ui.PlatformUI;
 /**
  * @since 3.3
  */
-public class EndpointPropertyGroupNodeWorkbenchAdapter extends
-		AbstractEndpointNodeWorkbenchAdapter {
+public class EndpointPropertyGroupNodeWorkbenchAdapter extends AbstractEndpointNodeWorkbenchAdapter {
 
 	@Override
 	public String getLabel(Object object) {
@@ -25,7 +24,6 @@ public class EndpointPropertyGroupNodeWorkbenchAdapter extends
 
 	@Override
 	public ImageDescriptor getImageDescriptor(Object object) {
-		return PlatformUI.getWorkbench().getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_OBJ_FOLDER);
+		return PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FOLDER);
 	}
 }

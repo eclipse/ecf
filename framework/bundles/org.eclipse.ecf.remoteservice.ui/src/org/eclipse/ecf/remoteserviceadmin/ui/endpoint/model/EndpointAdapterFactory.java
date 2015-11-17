@@ -29,13 +29,11 @@ public class EndpointAdapterFactory implements IAdapterFactory {
 	private EndpointDiscoveryGroupNodeWorkbenchAdapter endpointDiscoveryGroupNodeAdapter = new EndpointDiscoveryGroupNodeWorkbenchAdapter();
 
 	@Override
-	public Object getAdapter(Object adaptableObject,
-			@SuppressWarnings("rawtypes") Class adapterType) {
+	public Object getAdapter(Object adaptableObject, @SuppressWarnings("rawtypes") Class adapterType) {
 		if (adapterType.isInstance(adaptableObject)) {
 			return adaptableObject;
 		}
-		if (adapterType == IWorkbenchAdapter.class
-				|| adapterType == IWorkbenchAdapter2.class
+		if (adapterType == IWorkbenchAdapter.class || adapterType == IWorkbenchAdapter2.class
 				|| adapterType == IWorkbenchAdapter3.class) {
 			return getWorkbenchElement(adaptableObject);
 		}
@@ -67,8 +65,7 @@ public class EndpointAdapterFactory implements IAdapterFactory {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Class[] getAdapterList() {
-		return new Class[] { IWorkbenchAdapter.class, IWorkbenchAdapter2.class,
-				IWorkbenchAdapter3.class };
+		return new Class[] { IWorkbenchAdapter.class, IWorkbenchAdapter2.class, IWorkbenchAdapter3.class };
 	}
 
 }

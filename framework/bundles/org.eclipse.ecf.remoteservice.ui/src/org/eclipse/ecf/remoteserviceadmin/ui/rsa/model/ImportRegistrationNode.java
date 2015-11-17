@@ -32,16 +32,15 @@ public class ImportRegistrationNode extends AbstractRegistrationNode {
 	protected ImportRegistration getImportRegistration() {
 		return this.importRegistration;
 	}
-	
+
 	protected ServiceReference getImportedService() {
 		ImportReference iRef = getImportReference();
-		return (iRef == null)?null:iRef.getImportedService();
+		return (iRef == null) ? null : iRef.getImportedService();
 	}
-	
+
 	protected ImportReference getImportReference() {
 		ImportRegistration iReg = getImportRegistration();
-		return (iReg == null) ? null
-				: (ImportReference) iReg.getImportReference();
+		return (iReg == null) ? null : (ImportReference) iReg.getImportReference();
 	}
 
 	public String getValidName() {

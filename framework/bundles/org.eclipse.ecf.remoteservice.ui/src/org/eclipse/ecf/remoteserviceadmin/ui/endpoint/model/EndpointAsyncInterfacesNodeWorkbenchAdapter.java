@@ -8,14 +8,13 @@
  ******************************************************************************/
 package org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model;
 
-import org.eclipse.ecf.internal.remoteservices.ui.RSAImageRegistry;
+import org.eclipse.ecf.remoteservices.ui.RSAImageRegistry;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 /**
  * @since 3.3
  */
-public class EndpointAsyncInterfacesNodeWorkbenchAdapter extends
-		AbstractEndpointNodeWorkbenchAdapter {
+public class EndpointAsyncInterfacesNodeWorkbenchAdapter extends AbstractEndpointNodeWorkbenchAdapter {
 
 	private ImageDescriptor asyncInterfacesDesc;
 

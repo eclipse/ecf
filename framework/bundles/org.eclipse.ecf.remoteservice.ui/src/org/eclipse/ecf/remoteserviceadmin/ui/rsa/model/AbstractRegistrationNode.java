@@ -30,7 +30,7 @@ public abstract class AbstractRegistrationNode extends AbstractRSANode {
 	protected Throwable getError() {
 		return error;
 	}
-	
+
 	protected boolean hasError() {
 		return getError() != null;
 	}

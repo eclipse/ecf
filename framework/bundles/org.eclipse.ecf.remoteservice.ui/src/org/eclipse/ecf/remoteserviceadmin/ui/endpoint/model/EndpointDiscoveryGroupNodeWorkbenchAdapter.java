@@ -8,14 +8,13 @@
  ******************************************************************************/
 package org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model;
 
-import org.eclipse.ecf.internal.remoteservices.ui.RSAImageRegistry;
+import org.eclipse.ecf.remoteservices.ui.RSAImageRegistry;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 /**
  * @since 3.3
  */
-public class EndpointDiscoveryGroupNodeWorkbenchAdapter extends
-		EndpointGroupNodeWorkbenchAdapter {
+public class EndpointDiscoveryGroupNodeWorkbenchAdapter extends EndpointGroupNodeWorkbenchAdapter {
 
 	@Override
 	public ImageDescriptor getImageDescriptor(Object object) {

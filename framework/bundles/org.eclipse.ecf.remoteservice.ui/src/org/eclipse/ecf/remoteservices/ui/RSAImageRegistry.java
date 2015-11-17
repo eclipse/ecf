@@ -9,16 +9,20 @@
  *     IBM Corporation - initial API and implementation
  *     Composent, Inc - Changes for use in RSA discovery view
  *******************************************************************************/
-package org.eclipse.ecf.internal.remoteservices.ui;
+package org.eclipse.ecf.remoteservices.ui;
 
 import java.net.URL;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.ecf.internal.remoteservices.ui.Activator;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 
+/**
+ * @since 3.3
+ */
 public class RSAImageRegistry {
 
 	private static ImageRegistry PLUGIN_REGISTRY;

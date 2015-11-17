@@ -37,15 +37,13 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
-public class ReflectiveRemoteServiceHandler extends AbstractHandler implements
-		IHandler {
+public class ReflectiveRemoteServiceHandler extends AbstractHandler implements IHandler {
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.core.commands.AbstractHandler#execute(org.eclipse.core.commands
-	 * .ExecutionEvent)
+	 * @see org.eclipse.core.commands.AbstractHandler#execute(org.eclipse.core.
+	 * commands .ExecutionEvent)
 	 */
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		final String clazz = event
@@ -67,8 +65,7 @@ public class ReflectiveRemoteServiceHandler extends AbstractHandler implements
 			return null;
 		}
 
-		final IRemoteService remoteService = adapter
-				.getRemoteService(references[0]);
+		final IRemoteService remoteService = adapter.getRemoteService(references[0]);
 		if (remoteService == null) {
 			MessageDialog.openError(null, "Handler invocation failed", //$NON-NLS-1$
 					"No remote service found"); //$NON-NLS-1$
@@ -85,13 +82,10 @@ public class ReflectiveRemoteServiceHandler extends AbstractHandler implements
 		return null;
 	}
 
-	protected void executeMethodInvocationDialog(final Class cls,
-			final IRemoteService remoteService) {
-		final MethodInvocationDialog mid = new MethodInvocationDialog(
-				(Shell) null, cls);
+	protected void executeMethodInvocationDialog(final Class cls, final IRemoteService remoteService) {
+		final MethodInvocationDialog mid = new MethodInvocationDialog((Shell) null, cls);
 		if (mid.open() == Window.OK) {
-			final int timeout = (mid.getTimeout() > 0) ? mid.getTimeout()
-					: 30000;
+			final int timeout = (mid.getTimeout() > 0) ? mid.getTimeout() : 30000;
 			final String methodName = mid.getMethod().getName();
 			final Object[] methodArgs = mid.getMethodArguments();
 			final IRemoteCall remoteCall = new IRemoteCall() {
@@ -139,8 +133,7 @@ public class ReflectiveRemoteServiceHandler extends AbstractHandler implements
 		}
 	}
 
-	protected void showException(final Throwable t, final IContainer container,
-			ID targetID) {
+	protected void showException(final Throwable t, final IContainer container, ID targetID) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				String msg = t.toString();
@@ -154,17 +147,16 @@ public class ReflectiveRemoteServiceHandler extends AbstractHandler implements
 		});
 	}
 
-	protected void invokeFuture(Class cls, IRemoteService remoteService,
-			IRemoteCall remoteCall) throws InterruptedException,
-			InvocationTargetException, OperationCanceledException {
+	protected void invokeFuture(Class cls, IRemoteService remoteService, IRemoteCall remoteCall)
+			throws InterruptedException, InvocationTargetException, OperationCanceledException {
 		// Make async call with future result
 		final IFuture asyncResult = remoteService.callAsync(remoteCall);
 		// Call blocking get and show result
 		showResult(cls.getName(), remoteCall, asyncResult.get());
 	}
 
-	private void invokeAsyncListener(final Class interfaceClass,
-			final IRemoteService remoteService, final IRemoteCall remoteCall) {
+	private void invokeAsyncListener(final Class interfaceClass, final IRemoteService remoteService,
+			final IRemoteCall remoteCall) {
 		// Make async call
 		remoteService.callAsync(remoteCall, new IRemoteCallListener() {
 			public void handleEvent(IRemoteCallEvent event) {
@@ -173,15 +165,14 @@ public class ReflectiveRemoteServiceHandler extends AbstractHandler implements
 					if (complete.hadException()) {
 						showException(complete.getException());
 					} else
-						showResult(interfaceClass.getName(), remoteCall,
-								complete.getResponse());
+						showResult(interfaceClass.getName(), remoteCall, complete.getResponse());
 				}
 			}
 		});
 	}
 
-	private void invokeSync(final Class interfaceClass,
-			final IRemoteService remoteService, final IRemoteCall remoteCall) {
+	private void invokeSync(final Class interfaceClass, final IRemoteService remoteService,
+			final IRemoteCall remoteCall) {
 		try {
 			Object callSync = remoteService.callSync(remoteCall);
 			showResult(interfaceClass.getName(), remoteCall, callSync);
@@ -203,19 +194,15 @@ public class ReflectiveRemoteServiceHandler extends AbstractHandler implements
 		});
 	}
 
-	protected void showResult(final String serviceInterface,
-			final IRemoteCall remoteCall, final Object result) {
-		final Object display = (result != null && result.getClass().isArray()) ? Arrays
-				.asList((Object[]) result) : result;
-		final Object[] bindings = new Object[] { serviceInterface,
-				remoteCall.getMethod(),
+	protected void showResult(final String serviceInterface, final IRemoteCall remoteCall, final Object result) {
+		final Object display = (result != null && result.getClass().isArray()) ? Arrays.asList((Object[]) result)
+				: result;
+		final Object[] bindings = new Object[] { serviceInterface, remoteCall.getMethod(),
 				Arrays.asList(remoteCall.getParameters()), display };
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				MessageDialog.openInformation(null,
-						"Received Response", //$NON-NLS-1$
-						NLS.bind(
-								"Service Interface:\n{0}\n\nMethod: {1}\nParameters: {2}\n\nResult:  {3}", //$NON-NLS-1$
+				MessageDialog.openInformation(null, "Received Response", //$NON-NLS-1$
+						NLS.bind("Service Interface:\n{0}\n\nMethod: {1}\nParameters: {2}\n\nResult:  {3}", //$NON-NLS-1$
 								bindings));
 			}
 		});

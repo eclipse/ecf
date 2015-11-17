@@ -31,8 +31,7 @@ public class EndpointNode extends AbstractEndpointNode {
 	public boolean equals(Object other) {
 		if (other instanceof EndpointNode) {
 			EndpointNode o = (EndpointNode) other;
-			return endpointDescription.getId().equals(
-					o.endpointDescription.getId());
+			return endpointDescription.getId().equals(o.endpointDescription.getId());
 		}
 		return false;
 	}
@@ -50,8 +49,7 @@ public class EndpointNode extends AbstractEndpointNode {
 	}
 
 	public ImportRegistration getImportRegistration() {
-		return (importRegistrationNode == null) ? null : importRegistrationNode
-				.getImportRegistration();
+		return (importRegistrationNode == null) ? null : importRegistrationNode.getImportRegistration();
 	}
 
 	public boolean isImported() {

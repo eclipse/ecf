@@ -21,4 +21,8 @@ public class ServiceIdNode extends NameValuePropertyNode {
 		setPropertyAlias(labelPrefix);
 	}
 
+	public ServiceIdNode(long sid, String labelPrefix) {
+		super(Constants.SERVICE_ID, sid);
+		setPropertyAlias(labelPrefix);
+	}
 }

@@ -20,7 +20,6 @@ import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.internal.remoteservices.ui.Activator;
 import org.eclipse.ecf.internal.remoteservices.ui.DiscoveryComponent;
 import org.eclipse.ecf.internal.remoteservices.ui.Messages;
-import org.eclipse.ecf.internal.remoteservices.ui.RSAImageRegistry;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionReader;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionLocator;
@@ -47,6 +46,7 @@ import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointRemoteServic
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointServiceIDNode;
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointTimestampNode;
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.ImportRegistrationNode;
+import org.eclipse.ecf.remoteservices.ui.RSAImageRegistry;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -123,44 +123,38 @@ public class EndpointDiscoveryView extends ViewPart {
 				IEndpointDescriptionLocator locator = discovery.getEndpointDescriptionLocator();
 				if (locator != null) {
 					EndpointDescription[] eds = locator.getDiscoveredEndpoints();
-					for(EndpointDescription ed: eds)
+					for (EndpointDescription ed : eds)
 						handleEndpointDescription(EndpointEvent.ADDED, ed);
 				}
-			}});
-		
+			}
+		});
+
 		showServicesInRegistryBrowser();
-		
+
 	}
 
 	protected EndpointContentProvider createContentProvider(IViewSite viewSite) {
-		return new EndpointContentProvider(viewSite,
-				Messages.EndpointDiscoveryView_ENDPOINT_ROOT_NAME);
+		return new EndpointContentProvider(viewSite, Messages.EndpointDiscoveryView_ENDPOINT_ROOT_NAME);
 	}
-	
+
 	private int previousRegistryBrowserGroupBy;
 
-	private int invokeShowGroupBy(RegistryBrowser registryBrowser, int groupBy)
-			throws NoSuchMethodException, SecurityException,
-			IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException {
-		return (int) registryBrowser.getClass()
-				.getDeclaredMethod("showGroupBy", int.class) //$NON-NLS-1$
+	private int invokeShowGroupBy(RegistryBrowser registryBrowser, int groupBy) throws NoSuchMethodException,
+			SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		return (int) registryBrowser.getClass().getDeclaredMethod("showGroupBy", int.class) //$NON-NLS-1$
 				.invoke(registryBrowser, groupBy);
 	}
 
 	protected int showInRegistryBrowser(int groupBy) {
 		// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=270684#c33
 		try {
-			IWorkbenchWindow window = PlatformUI.getWorkbench()
-					.getActiveWorkbenchWindow();
+			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 			if (window != null) {
 				IWorkbenchPage page = window.getActivePage();
 				if (page != null) {
-					IViewPart view = page
-							.findView("org.eclipse.pde.runtime.RegistryBrowser"); //$NON-NLS-1$
+					IViewPart view = page.findView("org.eclipse.pde.runtime.RegistryBrowser"); //$NON-NLS-1$
 					if (view != null)
-						return invokeShowGroupBy((RegistryBrowser) view,
-								RegistryBrowser.SERVICES);
+						return invokeShowGroupBy((RegistryBrowser) view, RegistryBrowser.SERVICES);
 				}
 			}
 		} catch (Exception e) {
@@ -225,16 +219,13 @@ public class EndpointDiscoveryView extends ViewPart {
 	}
 
 	protected void log(int level, String message, Throwable e) {
-		Activator
-				.getDefault()
-				.getLog()
-				.log(new Status(level, Activator.PLUGIN_ID, message, e));
+		Activator.getDefault().getLog().log(new Status(level, Activator.PLUGIN_ID, message, e));
 	}
 
 	protected void logWarning(String message, Throwable e) {
 		log(IStatus.WARNING, message, e);
 	}
-	
+
 	protected void logError(String message, Throwable e) {
 		log(IStatus.ERROR, message, e);
 	}
@@ -242,37 +233,28 @@ public class EndpointDiscoveryView extends ViewPart {
 	protected void makeActions() {
 		copyValueAction = new Action() {
 			public void run() {
-				Object o = ((ITreeSelection) viewer.getSelection())
-						.getFirstElement();
-				String data = ((EndpointPropertyNode) o).getPropertyValue()
-						.toString();
+				Object o = ((ITreeSelection) viewer.getSelection()).getFirstElement();
+				String data = ((EndpointPropertyNode) o).getPropertyValue().toString();
 				if (data != null && data.length() > 0) {
-					clipboard.setContents(new Object[] { data },
-							new Transfer[] { TextTransfer.getInstance() });
+					clipboard.setContents(new Object[] { data }, new Transfer[] { TextTransfer.getInstance() });
 				}
 			}
 		};
-		copyValueAction
-				.setText(Messages.EndpointDiscoveryView_COPY_PROPERTY_VALUE);
-		copyValueAction
-				.setToolTipText(Messages.EndpointDiscoveryView_COPY_PROPERTY_VALUE);
+		copyValueAction.setText(Messages.EndpointDiscoveryView_COPY_PROPERTY_VALUE);
+		copyValueAction.setToolTipText(Messages.EndpointDiscoveryView_COPY_PROPERTY_VALUE);
 		copyValueAction.setImageDescriptor(RSAImageRegistry.DESC_PROPERTY_OBJ);
 
 		copyNameAction = new Action() {
 			public void run() {
-				Object o = ((ITreeSelection) viewer.getSelection())
-						.getFirstElement();
+				Object o = ((ITreeSelection) viewer.getSelection()).getFirstElement();
 				String data = ((EndpointPropertyNode) o).getPropertyName();
 				if (data != null && data.length() > 0) {
-					clipboard.setContents(new Object[] { data },
-							new Transfer[] { TextTransfer.getInstance() });
+					clipboard.setContents(new Object[] { data }, new Transfer[] { TextTransfer.getInstance() });
 				}
 			}
 		};
-		copyNameAction
-				.setText(Messages.EndpointDiscoveryView_COPY_PROPERTY_NAME);
-		copyNameAction
-				.setToolTipText(Messages.EndpointDiscoveryView_COPY_PROPERTY_NAME);
+		copyNameAction.setText(Messages.EndpointDiscoveryView_COPY_PROPERTY_NAME);
+		copyNameAction.setToolTipText(Messages.EndpointDiscoveryView_COPY_PROPERTY_NAME);
 		copyNameAction.setImageDescriptor(RSAImageRegistry.DESC_PROPERTY_OBJ);
 
 		importAction = new Action() {
@@ -284,13 +266,10 @@ public class EndpointDiscoveryView extends ViewPart {
 						showMessage(Messages.EndpointDiscoveryView_ERROR_MSG_RSA_IS_NULL);
 					else {
 						// Do import
-						EndpointDescription ed = edNode
-								.getEndpointDescription();
-						ImportRegistration reg = (ImportRegistration) rsa
-								.importService(ed);
+						EndpointDescription ed = edNode.getEndpointDescription();
+						ImportRegistration reg = (ImportRegistration) rsa.importService(ed);
 						if (reg == null) {
-							logError(
-									Messages.EndpointDiscoveryView_ERROR_MSG_RSA_IMPORTSERVICE_FAILED,
+							logError(Messages.EndpointDiscoveryView_ERROR_MSG_RSA_IMPORTSERVICE_FAILED,
 									new Exception("Import Registration Is Null")); //$NON-NLS-1$
 							showMessage(Messages.EndpointDiscoveryView_ERROR_MSG_RSA_IMPORTSERVICE_FAILED_PREFIX
 									+ "Import Registration Is Null" //$NON-NLS-1$
@@ -300,12 +279,9 @@ public class EndpointDiscoveryView extends ViewPart {
 						// Check if import exception in returned registration
 						Throwable exception = reg.getException();
 						if (exception != null) {
-							logError(
-									Messages.EndpointDiscoveryView_ERROR_MSG_RSA_IMPORTSERVICE_FAILED,
-									exception);
+							logError(Messages.EndpointDiscoveryView_ERROR_MSG_RSA_IMPORTSERVICE_FAILED, exception);
 							showMessage(Messages.EndpointDiscoveryView_ERROR_MSG_RSA_IMPORTSERVICE_FAILED_PREFIX
-									+ exception.getMessage()
-									+ Messages.EndpointDiscoveryView_ERROR_MSG_SUFFIX);
+									+ exception.getMessage() + Messages.EndpointDiscoveryView_ERROR_MSG_SUFFIX);
 						} else {
 							// Success! Set registration
 							// and refresh
@@ -316,10 +292,8 @@ public class EndpointDiscoveryView extends ViewPart {
 				}
 			}
 		};
-		importAction
-				.setText(Messages.EndpointDiscoveryView_IMPORT_REMOTE_SERVICE);
-		importAction
-				.setToolTipText(Messages.EndpointDiscoveryView_IMPORT_REMOTE_SERVICE_TT);
+		importAction.setText(Messages.EndpointDiscoveryView_IMPORT_REMOTE_SERVICE);
+		importAction.setToolTipText(Messages.EndpointDiscoveryView_IMPORT_REMOTE_SERVICE_TT);
 		importAction.setImageDescriptor(RSAImageRegistry.DESC_RSPROXY_CO);
 
 		unimportAction = new Action() {
@@ -334,28 +308,21 @@ public class EndpointDiscoveryView extends ViewPart {
 						edNode.setImportReg(null);
 						viewer.refresh();
 					} catch (Exception e) {
-						logError(
-								Messages.EndpointDiscoveryView_ERROR_MSG_CANNOT_CLOSE_IR,
-								e);
-						showMessage(Messages.EndpointDiscoveryView_ERROR_MSG_CANNOT_CLOSE_IR_PREFIX
-								+ e.getMessage()
+						logError(Messages.EndpointDiscoveryView_ERROR_MSG_CANNOT_CLOSE_IR, e);
+						showMessage(Messages.EndpointDiscoveryView_ERROR_MSG_CANNOT_CLOSE_IR_PREFIX + e.getMessage()
 								+ Messages.EndpointDiscoveryView_ERROR_MSG_SUFFIX);
 					}
 				}
 			}
 		};
-		unimportAction
-				.setText(Messages.EndpointDiscoveryView_CLOSE_IMPORTED_REMOTE_SERVICE);
-		unimportAction
-				.setToolTipText(Messages.EndpointDiscoveryView_CLOSE_IMPORTED_REMOTE_SERVICE_TT);
+		unimportAction.setText(Messages.EndpointDiscoveryView_CLOSE_IMPORTED_REMOTE_SERVICE);
+		unimportAction.setToolTipText(Messages.EndpointDiscoveryView_CLOSE_IMPORTED_REMOTE_SERVICE_TT);
 
 		edefDiscoverAction = new Action() {
 			public void run() {
-				IEndpointDescriptionLocator locator = discovery
-						.getEndpointDescriptionLocator();
+				IEndpointDescriptionLocator locator = discovery.getEndpointDescriptionLocator();
 				if (locator != null) {
-					FileDialog dialog = new FileDialog(viewer.getControl()
-							.getShell(), SWT.OPEN);
+					FileDialog dialog = new FileDialog(viewer.getControl().getShell(), SWT.OPEN);
 					dialog.setFilterExtensions(new String[] { "*.xml" }); //$NON-NLS-1$
 					dialog.setText(Messages.EndpointDiscoveryView_OPEN_EDEF_FILE);
 					dialog.setFilterPath(null);
@@ -363,54 +330,40 @@ public class EndpointDiscoveryView extends ViewPart {
 					if (result != null)
 						try {
 							EndpointDescription[] eds = (EndpointDescription[]) new EndpointDescriptionReader()
-									.readEndpointDescriptions(new FileInputStream(
-											result));
+									.readEndpointDescriptions(new FileInputStream(result));
 							if (eds != null) {
 								for (int i = 0; i < eds.length; i++)
 									locator.discoverEndpoint(eds[i]);
 							}
 						} catch (IOException e) {
-							logError(
-									Messages.EndpointDiscoveryView_ERROR_MSG_ENDPOINT_PARSING_FAILED,
-									e);
+							logError(Messages.EndpointDiscoveryView_ERROR_MSG_ENDPOINT_PARSING_FAILED, e);
 							showMessage(Messages.EndpointDiscoveryView_ERROR_MSG_ENDPOINT_PARSING_FAILED_PREFIX
-									+ e.getMessage()
-									+ Messages.EndpointDiscoveryView_ERROR_MSG_SUFFIX);
+									+ e.getMessage() + Messages.EndpointDiscoveryView_ERROR_MSG_SUFFIX);
 						}
 				}
 			}
 		};
-		edefDiscoverAction
-				.setText(Messages.EndpointDiscoveryView_OPEN_EDEF_FILE_DIALOG);
-		edefDiscoverAction
-				.setToolTipText(Messages.EndpointDiscoveryView_OPEN_EDEF_FILE_DIALOG_TT);
+		edefDiscoverAction.setText(Messages.EndpointDiscoveryView_OPEN_EDEF_FILE_DIALOG);
+		edefDiscoverAction.setToolTipText(Messages.EndpointDiscoveryView_OPEN_EDEF_FILE_DIALOG_TT);
 		edefDiscoverAction.setEnabled(discovery.getRSA() != null);
-		edefDiscoverAction.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
+		edefDiscoverAction.setImageDescriptor(
+				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 
 		undiscoverAction = new Action() {
 			public void run() {
 				EndpointNode endpoint = getEDNodeSelected();
-				if (endpoint != null
-						&& endpoint.getImportRegistration() == null) {
-					IEndpointDescriptionLocator l = discovery
-							.getEndpointDescriptionLocator();
-					if (l != null
-							&& MessageDialog
-									.openQuestion(
-											viewer.getControl().getShell(),
-											Messages.EndpointDiscoveryView_REMOVE_ENDPOINT_QUESTION_TITLE,
-											Messages.EndpointDiscoveryView_REMOVE_ENDPOINT_QUESTION))
+				if (endpoint != null && endpoint.getImportRegistration() == null) {
+					IEndpointDescriptionLocator l = discovery.getEndpointDescriptionLocator();
+					if (l != null && MessageDialog.openQuestion(viewer.getControl().getShell(),
+							Messages.EndpointDiscoveryView_REMOVE_ENDPOINT_QUESTION_TITLE,
+							Messages.EndpointDiscoveryView_REMOVE_ENDPOINT_QUESTION))
 						l.undiscoverEndpoint(endpoint.getEndpointDescription());
 
 				}
 			}
 		};
-		undiscoverAction
-				.setText(Messages.EndpointDiscoveryView_REMOVE_ENDPOINT);
-		undiscoverAction
-				.setToolTipText(Messages.EndpointDiscoveryView_REMOVE_ENDPOINT_TT);
+		undiscoverAction.setText(Messages.EndpointDiscoveryView_REMOVE_ENDPOINT);
+		undiscoverAction.setToolTipText(Messages.EndpointDiscoveryView_REMOVE_ENDPOINT_TT);
 	}
 
 	protected EndpointNode getEDNodeSelected() {
@@ -423,8 +376,7 @@ public class EndpointDiscoveryView extends ViewPart {
 	}
 
 	protected AbstractEndpointNode getNodeSelected() {
-		return ((AbstractEndpointNode) ((ITreeSelection) viewer.getSelection())
-				.getFirstElement());
+		return ((AbstractEndpointNode) ((ITreeSelection) viewer.getSelection()).getFirstElement());
 	}
 
 	protected void showMessage(String message) {
@@ -440,7 +392,8 @@ public class EndpointDiscoveryView extends ViewPart {
 	}
 
 	protected void handleEndpointDescription(final int type, final EndpointDescription ed) {
-		if (ed == null || viewer == null) return;
+		if (ed == null || viewer == null)
+			return;
 		viewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {
@@ -457,13 +410,13 @@ public class EndpointDiscoveryView extends ViewPart {
 			}
 		});
 	}
-	
+
 	public void handleEndpointChanged(final EndpointEvent event) {
-		handleEndpointDescription(event.getType(),(EndpointDescription) event.getEndpoint());
+		handleEndpointDescription(event.getType(), (EndpointDescription) event.getEndpoint());
 	}
 
 	private List<String> discoveredEndpointIds = new ArrayList<String>();
-	
+
 	protected void addEndpoint(EndpointDescription ed) {
 		if (EndpointDiscoveryView.this.previousRegistryBrowserGroupBy != RegistryBrowser.SERVICES)
 			showServicesInRegistryBrowser();
@@ -473,20 +426,19 @@ public class EndpointDiscoveryView extends ViewPart {
 			contentProvider.getRootNode().addChild(createEndpointDescriptionNode(ed));
 		}
 	}
-	
+
 	protected void removeEndpoint(EndpointDescription ed) {
 		if (discoveredEndpointIds.remove(ed.getId()))
 			contentProvider.getRootNode().removeChild(new EndpointNode(ed));
 	}
-	
+
 	protected ImportRegistration findImportRegistration(EndpointDescription ed) {
 		RemoteServiceAdmin rsa = discovery.getRSA();
 		if (rsa == null)
 			return null;
 		List<ImportRegistration> iRegs = rsa.getImportedRegistrations();
 		for (ImportRegistration ir : iRegs) {
-			ImportReference importRef = (ImportReference) ir
-					.getImportReference();
+			ImportReference importRef = (ImportReference) ir.getImportReference();
 			if (importRef != null && ed.equals(importRef.getImportedEndpoint()))
 				return ir;
 		}
@@ -494,36 +446,31 @@ public class EndpointDiscoveryView extends ViewPart {
 	}
 
 	protected EndpointNode createEndpointDescriptionNode(EndpointDescription ed) {
-		EndpointNode edo = new EndpointNode(
-				ed,
+		EndpointNode edo = new EndpointNode(ed,
 				new org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.ImportRegistrationNode(
 						findImportRegistration(ed)));
 
 		// Interfaces
 		EndpointInterfacesNode ein = new EndpointInterfacesNode();
 		for (String intf : ed.getInterfaces())
-			ein.addChild(new EndpointPackageVersionNode(EndpointNode
-					.getPackageName(intf)));
+			ein.addChild(new EndpointPackageVersionNode(EndpointNode.getPackageName(intf)));
 		edo.addChild(ein);
 		// Async Interfaces (if present)
 		List<String> aintfs = ed.getAsyncInterfaces();
 		if (aintfs.size() > 0) {
 			EndpointAsyncInterfacesNode ain = new EndpointAsyncInterfacesNode();
 			for (String intf : ed.getAsyncInterfaces())
-				ain.addChild(new EndpointPackageVersionNode(EndpointNode
-						.getPackageName(intf)));
+				ain.addChild(new EndpointPackageVersionNode(EndpointNode.getPackageName(intf)));
 			edo.addChild(ain);
 		}
 		// ID
 		edo.addChild(new EndpointIDNode());
 		// Remote Service Host
-		EndpointHostGroupNode idp = new EndpointHostGroupNode(
-				Messages.EndpointDiscoveryView_REMOTE_HOST_NAME);
+		EndpointHostGroupNode idp = new EndpointHostGroupNode(Messages.EndpointDiscoveryView_REMOTE_HOST_NAME);
 		// Host children
 		idp.addChild(new EndpointNamespaceNode());
 		idp.addChild(new EndpointRemoteServiceIDNode());
-		org.eclipse.ecf.core.identity.ID connectTarget = ed
-				.getConnectTargetID();
+		org.eclipse.ecf.core.identity.ID connectTarget = ed.getConnectTargetID();
 		if (connectTarget != null)
 			idp.addChild(new EndpointConnectTargetIDNode());
 		idp.addChild(new EndpointServiceIDNode());
@@ -536,14 +483,12 @@ public class EndpointDiscoveryView extends ViewPart {
 			idp.addChild(new EndpointRemoteServiceFilterNode());
 		edo.addChild(idp);
 
-		IEndpointDescriptionLocator locator = discovery
-				.getEndpointDescriptionLocator();
-		IServiceID serviceID = (locator == null)?null:locator.getNetworkDiscoveredServiceID(ed);
+		IEndpointDescriptionLocator locator = discovery.getEndpointDescriptionLocator();
+		IServiceID serviceID = (locator == null) ? null : locator.getNetworkDiscoveredServiceID(ed);
 
 		if (serviceID != null)
-			edo.addChild(new EndpointDiscoveryGroupNode(
-					Messages.EndpointDiscoveryView_DISCOVERY_GROUP_NAME,
-					serviceID));
+			edo.addChild(
+					new EndpointDiscoveryGroupNode(Messages.EndpointDiscoveryView_DISCOVERY_GROUP_NAME, serviceID));
 
 		return edo;
 	}

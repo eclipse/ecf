@@ -35,8 +35,7 @@ public abstract class ConnectionHandler extends AbstractHandler {
 		return null;
 	}
 
-	protected abstract Job getJob(ExecutionEvent event)
-			throws ExecutionException;
+	protected abstract Job getJob(ExecutionEvent event) throws ExecutionException;
 
 	protected void showException(final Throwable t) {
 		Display.getDefault().asyncExec(new Runnable() {
@@ -45,8 +44,7 @@ public abstract class ConnectionHandler extends AbstractHandler {
 				if (t.getCause() != null) {
 					msg += t.getCause().toString();
 				}
-				MessageDialog.openError(null, t.getLocalizedMessage(),
-						NLS.bind("Exception: {0}", msg)); //$NON-NLS-1$
+				MessageDialog.openError(null, t.getLocalizedMessage(), NLS.bind("Exception: {0}", msg)); //$NON-NLS-1$
 			}
 		});
 	}

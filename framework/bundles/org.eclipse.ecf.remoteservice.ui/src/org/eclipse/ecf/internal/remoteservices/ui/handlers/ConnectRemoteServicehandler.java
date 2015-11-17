@@ -25,10 +25,8 @@ import org.eclipse.osgi.util.NLS;
 public class ConnectRemoteServicehandler extends ConnectionHandler {
 
 	protected Job getJob(final ExecutionEvent event) throws ExecutionException {
-		final ID createConnectId = RemoteServiceHandlerUtil
-				.getActiveConnectIDChecked(event);
-		final IContainer container = RemoteServiceHandlerUtil
-				.getActiveIRemoteServiceContainerChecked(event);
+		final ID createConnectId = RemoteServiceHandlerUtil.getActiveConnectIDChecked(event);
+		final IContainer container = RemoteServiceHandlerUtil.getActiveIRemoteServiceContainerChecked(event);
 		// decouple the long running connect call from the ui thread
 		return new Job(NLS.bind("Connecting {0}", createConnectId.getName())) { //$NON-NLS-1$
 			protected IStatus run(IProgressMonitor monitor) {

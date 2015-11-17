@@ -9,6 +9,7 @@
 package org.eclipse.ecf.remoteserviceadmin.ui.rsa.model;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.ecf.internal.remoteservices.ui.Messages;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
@@ -36,12 +37,18 @@ public class EndpointDescriptionRSANode extends AbstractRSANode {
 
 	private final EndpointNode endpointNode;
 
+	public EndpointDescriptionRSANode(Map<String, Object> props) {
+		this(new EndpointDescription(props));
+	}
+
 	public EndpointDescriptionRSANode(EndpointDescription ed) {
 		this(ed, null);
 	}
-	
+
 	public EndpointDescriptionRSANode(EndpointDescription ed, ImportRegistration ir) {
-		this.endpointNode = (ir == null)?new EndpointNode(ed):new EndpointNode(ed,new org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.ImportRegistrationNode(ir));
+		this.endpointNode = (ir == null) ? new EndpointNode(ed)
+				: new EndpointNode(ed,
+						new org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.ImportRegistrationNode(ir));
 		// Interfaces
 		EndpointInterfacesNode ein = new EndpointInterfacesNode();
 		for (String intf : ed.getInterfaces())

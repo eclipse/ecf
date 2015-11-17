@@ -42,7 +42,7 @@ public class DiscoveryComponent implements EndpointEventListener, RemoteServiceA
 
 	private EndpointDiscoveryView discoveryView;
 	private AbstractRemoteServiceAdminView rsaView;
-	
+
 	private IEndpointDescriptionLocator edLocator;
 
 	void bindEndpointDescriptionLocator(IEndpointDescriptionLocator locator) {
@@ -104,8 +104,7 @@ public class DiscoveryComponent implements EndpointEventListener, RemoteServiceA
 			if (b.getSymbolicName().equals(RSA_SYMBOLICNAME))
 				rsaBundle = b;
 		if (rsaBundle == null)
-			throw new BundleException(
-					Messages.DiscoveryComponent_ERROR_MSG_CANNOT_FIND_RSA_BUNDLE);
+			throw new BundleException(Messages.DiscoveryComponent_ERROR_MSG_CANNOT_FIND_RSA_BUNDLE);
 		rsaBundle.start();
 	}
 
@@ -133,7 +132,7 @@ public class DiscoveryComponent implements EndpointEventListener, RemoteServiceA
 
 	@Override
 	public void remoteAdminEvent(RemoteServiceAdminEvent event) {
-		if (rsaView != null) 
+		if (rsaView != null)
 			rsaView.handleRSAEvent(event);
 	}
 

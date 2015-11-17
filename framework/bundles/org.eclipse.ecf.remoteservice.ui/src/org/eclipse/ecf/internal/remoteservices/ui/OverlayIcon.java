@@ -34,8 +34,7 @@ public class OverlayIcon extends CompositeImageDescriptor {
 		fSize = new Point(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 	}
 
-	public OverlayIcon(ImageDescriptor base, ImageDescriptor[][] overlays,
-			Point size) {
+	public OverlayIcon(ImageDescriptor base, ImageDescriptor[][] overlays, Point size) {
 		fBase = base;
 		if (fBase == null)
 			fBase = ImageDescriptor.getMissingImageDescriptor();

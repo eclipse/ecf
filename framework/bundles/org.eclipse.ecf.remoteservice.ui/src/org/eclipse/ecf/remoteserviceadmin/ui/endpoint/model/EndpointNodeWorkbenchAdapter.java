@@ -9,15 +9,14 @@
 package org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model;
 
 import org.eclipse.ecf.internal.remoteservices.ui.OverlayIcon;
-import org.eclipse.ecf.internal.remoteservices.ui.RSAImageRegistry;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
+import org.eclipse.ecf.remoteservices.ui.RSAImageRegistry;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 /**
  * @since 3.3
  */
-public class EndpointNodeWorkbenchAdapter extends
-		AbstractEndpointNodeWorkbenchAdapter {
+public class EndpointNodeWorkbenchAdapter extends AbstractEndpointNodeWorkbenchAdapter {
 
 	/**
 	 * @since 3.3
@@ -30,21 +29,18 @@ public class EndpointNodeWorkbenchAdapter extends
 
 	public EndpointNodeWorkbenchAdapter() {
 		edImageDesc = RSAImageRegistry.ENDPOINTDESCRIPTION_OBJ;
-		importedEndpointDesc = new OverlayIcon(
-				edImageDesc,
+		importedEndpointDesc = new OverlayIcon(edImageDesc,
 				new ImageDescriptor[][] { { RSAImageRegistry.DESC_RSPROXY_CO } });
 	}
 
 	@Override
 	public String getLabel(Object object) {
-		EndpointDescription ed = ((EndpointNode) object)
-				.getEndpointDescription();
+		EndpointDescription ed = ((EndpointNode) object).getEndpointDescription();
 		return ed.getContainerID().getName() + ":" + ed.getRemoteServiceId(); //$NON-NLS-1$
 	}
 
 	@Override
 	public ImageDescriptor getImageDescriptor(Object object) {
-		return ((EndpointNode) object).isImported() ? importedEndpointDesc
-				: edImageDesc;
+		return ((EndpointNode) object).isImported() ? importedEndpointDesc : edImageDesc;
 	}
 }

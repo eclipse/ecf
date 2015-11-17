@@ -8,15 +8,14 @@
  ******************************************************************************/
 package org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model;
 
-import org.eclipse.ecf.internal.remoteservices.ui.RSAImageRegistry;
+import org.eclipse.ecf.remoteservices.ui.RSAImageRegistry;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.osgi.framework.Version;
 
 /**
  * @since 3.3
  */
-public class EndpointPackageVersionNodeWorkbenchAdapter extends
-		AbstractEndpointNodeWorkbenchAdapter {
+public class EndpointPackageVersionNodeWorkbenchAdapter extends AbstractEndpointNodeWorkbenchAdapter {
 
 	@Override
 	public String getLabel(Object object) {

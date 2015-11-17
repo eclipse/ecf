@@ -27,12 +27,10 @@ public abstract class AbstractEndpointNode implements IAdaptable {
 
 	public static final String getPackageName(String fqClassName) {
 		int lastDot = fqClassName.lastIndexOf('.');
-		return (lastDot == -1) ? fqClassName : fqClassName
-				.substring(0, lastDot);
+		return (lastDot == -1) ? fqClassName : fqClassName.substring(0, lastDot);
 	}
 
-	public static final List<String> getStringArrayProperty(
-			Map<String, Object> props, String propName) {
+	public static final List<String> getStringArrayProperty(Map<String, Object> props, String propName) {
 		Object r = props.get(propName);
 		List<String> results = new ArrayList<String>();
 		if (r == null)
@@ -65,8 +63,7 @@ public abstract class AbstractEndpointNode implements IAdaptable {
 	}
 
 	protected List<String> getStringArrayProperty(String propName) {
-		return getStringArrayProperty(getEndpointDescriptionProperties(),
-				propName);
+		return getStringArrayProperty(getEndpointDescriptionProperties(), propName);
 	}
 
 	public EndpointDescription getEndpointDescription() {
@@ -94,8 +91,7 @@ public abstract class AbstractEndpointNode implements IAdaptable {
 	}
 
 	public AbstractEndpointNode[] getChildren() {
-		return (AbstractEndpointNode[]) children
-				.toArray(new AbstractEndpointNode[children.size()]);
+		return (AbstractEndpointNode[]) children.toArray(new AbstractEndpointNode[children.size()]);
 	}
 
 	public boolean hasChildren() {

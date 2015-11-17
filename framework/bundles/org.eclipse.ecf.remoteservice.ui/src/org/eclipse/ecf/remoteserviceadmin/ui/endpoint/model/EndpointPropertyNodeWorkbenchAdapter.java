@@ -8,14 +8,13 @@
  ******************************************************************************/
 package org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model;
 
-import org.eclipse.ecf.internal.remoteservices.ui.RSAImageRegistry;
+import org.eclipse.ecf.remoteservices.ui.RSAImageRegistry;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 /**
  * @since 3.3
  */
-public class EndpointPropertyNodeWorkbenchAdapter extends
-		AbstractEndpointNodeWorkbenchAdapter {
+public class EndpointPropertyNodeWorkbenchAdapter extends AbstractEndpointNodeWorkbenchAdapter {
 
 	@Override
 	public String getLabel(Object object) {
@@ -23,8 +22,7 @@ public class EndpointPropertyNodeWorkbenchAdapter extends
 		String propertyName = epn.getPropertyAlias();
 		if (propertyName == null)
 			propertyName = epn.getPropertyName();
-		return propertyName + epn.getNameValueSeparator()
-				+ epn.getPropertyValue();
+		return propertyName + epn.getNameValueSeparator() + epn.getPropertyValue();
 	}
 
 	@Override

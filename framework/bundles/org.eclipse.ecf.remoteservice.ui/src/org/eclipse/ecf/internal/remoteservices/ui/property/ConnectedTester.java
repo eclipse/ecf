@@ -33,8 +33,7 @@ public class ConnectedTester extends PropertyTester {
 	 * @see org.eclipse.core.expressions.IPropertyTester#test(java.lang.Object,
 	 * java.lang.String, java.lang.Object[], java.lang.Object)
 	 */
-	public boolean test(Object receiver, String property, Object[] args,
-			Object expectedValue) {
+	public boolean test(Object receiver, String property, Object[] args, Object expectedValue) {
 		// consumers expect connected or disconnected
 		if (!(expectedValue instanceof Boolean)) {
 			return false;
@@ -56,13 +55,11 @@ public class ConnectedTester extends PropertyTester {
 
 	private boolean hasContainer(Object receiver) {
 		// get the container instance
-		IServiceInfo serviceInfo = DiscoveryPropertyTesterUtil
-				.getIServiceInfoReceiver(receiver);
+		IServiceInfo serviceInfo = DiscoveryPropertyTesterUtil.getIServiceInfoReceiver(receiver);
 		final String connectNamespace = getConnectNamespace(serviceInfo);
 		final String connectId = getConnectID(serviceInfo);
 		try {
-			final ID createConnectId = IDFactory.getDefault().createID(
-					connectNamespace, connectId);
+			final ID createConnectId = IDFactory.getDefault().createID(connectNamespace, connectId);
 			return (getContainerByConnectID(createConnectId) != null);
 		} catch (IDCreateException e) {
 			// Trace.trace(...);
@@ -77,8 +74,7 @@ public class ConnectedTester extends PropertyTester {
 	 */
 	// TODO push this functionality down into the ContainerManager
 	private IContainer getContainerByConnectID(ID connectID) {
-		final IContainerManager containerManager = Activator.getDefault()
-				.getContainerManager();
+		final IContainerManager containerManager = Activator.getDefault().getContainerManager();
 		final IContainer[] containers = containerManager.getAllContainers();
 		if (containers == null) {
 			return null;
@@ -93,12 +89,10 @@ public class ConnectedTester extends PropertyTester {
 	}
 
 	private String getConnectNamespace(IServiceInfo serviceInfo) {
-		return serviceInfo.getServiceProperties().getPropertyString(
-				Constants.SERVICE_CONNECT_ID_NAMESPACE);
+		return serviceInfo.getServiceProperties().getPropertyString(Constants.SERVICE_CONNECT_ID_NAMESPACE);
 	}
 
 	private String getConnectID(IServiceInfo serviceInfo) {
-		return serviceInfo.getServiceProperties().getPropertyString(
-				Constants.SERVICE_CONNECT_ID);
+		return serviceInfo.getServiceProperties().getPropertyString(Constants.SERVICE_CONNECT_ID);
 	}
 }

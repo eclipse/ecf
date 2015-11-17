@@ -8,7 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.remoteserviceadmin.ui.rsa.model;
 
-import org.eclipse.ecf.internal.remoteservices.ui.RSAImageRegistry;
+import org.eclipse.ecf.remoteservices.ui.RSAImageRegistry;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 /**

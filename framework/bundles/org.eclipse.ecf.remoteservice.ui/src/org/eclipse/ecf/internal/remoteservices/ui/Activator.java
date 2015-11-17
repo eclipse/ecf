@@ -35,9 +35,8 @@ public class Activator extends AbstractUIPlugin {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext
-	 * )
+	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.
+	 * BundleContext )
 	 */
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
@@ -60,8 +59,7 @@ public class Activator extends AbstractUIPlugin {
 	public IContainerManager getContainerManager() {
 		BundleContext context = getBundle().getBundleContext();
 		if (containerManagerTracker == null) {
-			containerManagerTracker = new ServiceTracker(context,
-					IContainerManager.class.getName(), null);
+			containerManagerTracker = new ServiceTracker(context, IContainerManager.class.getName(), null);
 			containerManagerTracker.open();
 		}
 		return (IContainerManager) containerManagerTracker.getService();

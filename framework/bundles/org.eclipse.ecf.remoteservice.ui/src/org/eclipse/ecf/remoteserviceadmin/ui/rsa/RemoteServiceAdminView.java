@@ -8,13 +8,29 @@
  ******************************************************************************/
 package org.eclipse.ecf.remoteserviceadmin.ui.rsa;
 
+import java.util.List;
+
+import org.eclipse.ecf.internal.remoteservices.ui.Messages;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin.ExportReference;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin.ExportRegistration;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin.ImportReference;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin.ImportRegistration;
+import org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.AbstractRSAContentProvider;
+import org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.AbstractRSANode;
 import org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.AbstractRegistrationNode;
+import org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.EndpointDescriptionRSANode;
 import org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.ExportRegistrationNode;
+import org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.ExportedServicesRootNode;
 import org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.ImportRegistrationNode;
+import org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.ImportedEndpointsRootNode;
+import org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.RSAContentProvider;
+import org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.ServiceIdNode;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.ITreeSelection;
+import org.eclipse.ui.IViewSite;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent;
 
 /**
@@ -30,6 +46,17 @@ public class RemoteServiceAdminView extends AbstractRemoteServiceAdminView {
 	public RemoteServiceAdminView() {
 	}
 
+	@Override
+	protected void updateModel() {
+		updateModel(0);
+	}
+
+	@Override
+	protected AbstractRSAContentProvider createContentProvider(IViewSite viewSite) {
+		return new RSAContentProvider(viewSite);
+	}
+
+	@Override
 	protected void fillContextMenu(IMenuManager manager) {
 		ITreeSelection selection = (ITreeSelection) viewer.getSelection();
 		if (selection != null) {
@@ -42,29 +69,119 @@ public class RemoteServiceAdminView extends AbstractRemoteServiceAdminView {
 		}
 	}
 
+	@Override
 	protected void makeActions() {
-		RemoteServiceAdmin rsa = getRSA();
-	
+		RemoteServiceAdmin rsa = getLocalRSA();
+
 		closeExportAction = createCloseAction();
 		closeExportAction.setText("Unexport Service");
 		closeExportAction.setEnabled(rsa != null);
-	
+
 		closeImportAction = createCloseAction();
 		closeImportAction.setText("Unimport Service");
 		closeImportAction.setEnabled(rsa != null);
-	
+
 	}
 
-	protected Action createCloseAction() {
+	private void updateExports(ExportedServicesRootNode exportedRoot) {
+		RemoteServiceAdmin rsa = getLocalRSA();
+		if (rsa != null && exportedRoot != null) {
+			exportedRoot.clearChildren();
+			List<ExportRegistration> exportRegistrations = rsa.getExportedRegistrations();
+			for (ExportRegistration er : exportRegistrations) {
+				ExportRegistrationNode exportRegistrationNode = new ExportRegistrationNode(er);
+				ExportReference eRef = (ExportReference) er.getExportReference();
+				if (eRef != null) {
+					exportRegistrationNode
+							.addChild(new ServiceIdNode(eRef.getExportedService(), Messages.RSAView_SERVICE_ID_LABEL));
+					EndpointDescription ed = (EndpointDescription) eRef.getExportedEndpoint();
+					if (ed != null)
+						exportRegistrationNode.addChild(new EndpointDescriptionRSANode(ed));
+				}
+				exportedRoot.addChild(exportRegistrationNode);
+			}
+		}
+	}
+
+	private void updateImports(ImportedEndpointsRootNode importedRoot) {
+		RemoteServiceAdmin rsa = getLocalRSA();
+		if (rsa != null && importedRoot != null) {
+			importedRoot.clearChildren();
+			List<ImportRegistration> importRegistrations = rsa.getImportedRegistrations();
+			for (ImportRegistration ir : importRegistrations) {
+				ImportRegistrationNode importRegistrationNode = new ImportRegistrationNode(ir);
+				ImportReference iRef = (ImportReference) ir.getImportReference();
+				if (iRef != null) {
+					importRegistrationNode.addChild(
+							new ServiceIdNode(iRef.getImportedService(), Messages.RSAView_PROXY_SERVICE_ID_LABEL));
+					EndpointDescription ed = (EndpointDescription) iRef.getImportedEndpoint();
+					if (ed != null)
+						importRegistrationNode.addChild(new EndpointDescriptionRSANode(ed, ir));
+				}
+				importedRoot.addChild(importRegistrationNode);
+			}
+		}
+	}
+
+	private ExportedServicesRootNode getExportedServicesRoot() {
+		return ((RSAContentProvider) contentProvider).getExportedServicesRoot();
+	}
+
+	private ImportedEndpointsRootNode getImportedServicesRoot() {
+		return ((RSAContentProvider) contentProvider).getImportedEndpointsRoot();
+	}
+
+	private void updateExports() {
+		updateExports(getExportedServicesRoot());
+	}
+
+	private void updateImports() {
+		updateImports(getImportedServicesRoot());
+	}
+
+	private void updateModel(final int type) {
+		if (viewer == null)
+			return;
+		viewer.getControl().getDisplay().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				switch (type) {
+				// both
+				case 0:
+					updateExports();
+					updateImports();
+					break;
+				// exports
+				case 1:
+					updateExports();
+					break;
+				// imports
+				case 2:
+					updateImports();
+					break;
+				}
+				viewer.setExpandedState(getExportedServicesRoot(), true);
+				viewer.setExpandedState(getImportedServicesRoot(), true);
+				viewer.refresh();
+			}
+		});
+
+	}
+
+	private Action createCloseAction() {
 		return new Action() {
 			public void run() {
 				AbstractRegistrationNode n = getSelectedRegistrationNode();
-				if (n != null) 
+				if (n != null)
 					n.close();
 			}
 		};
 	}
 
+	private AbstractRegistrationNode getSelectedRegistrationNode() {
+		AbstractRSANode aen = getSelectedNode();
+		return (aen instanceof AbstractRegistrationNode) ? (AbstractRegistrationNode) aen : null;
+	}
 
 	public void handleRSAEvent(final RemoteServiceAdminEvent event) {
 		if (viewer == null)
@@ -72,7 +189,7 @@ public class RemoteServiceAdminView extends AbstractRemoteServiceAdminView {
 		viewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				RemoteServiceAdmin rsa = getRSA();
+				RemoteServiceAdmin rsa = getLocalRSA();
 				if (rsa != null) {
 					switch (event.getType()) {
 					case RemoteServiceAdminEvent.EXPORT_REGISTRATION:

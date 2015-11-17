@@ -18,14 +18,11 @@ public class EndpointDiscoveryGroupNode extends EndpointGroupNode {
 
 	public EndpointDiscoveryGroupNode(String groupName, IServiceID serviceID) {
 		super(groupName);
-		addChild(new EndpointNameValueNode(
-				Messages.EndpointDiscoveryGroupNode_DISCOVERY_LOCATION,
+		addChild(new EndpointNameValueNode(Messages.EndpointDiscoveryGroupNode_DISCOVERY_LOCATION,
 				serviceID.getLocation().toString()));
-		addChild(new EndpointNameValueNode(
-				Messages.EndpointDiscoveryGroupNode_DISCOVERY_SERVICE_TYPE_ID,
+		addChild(new EndpointNameValueNode(Messages.EndpointDiscoveryGroupNode_DISCOVERY_SERVICE_TYPE_ID,
 				serviceID.getServiceTypeID().getName()));
-		addChild(new EndpointNameValueNode(
-				Messages.EndpointDiscoveryGroupNode_DISCOVERY_NAMESPACE,
+		addChild(new EndpointNameValueNode(Messages.EndpointDiscoveryGroupNode_DISCOVERY_NAMESPACE,
 				serviceID.getNamespace().getName()));
 	}
 

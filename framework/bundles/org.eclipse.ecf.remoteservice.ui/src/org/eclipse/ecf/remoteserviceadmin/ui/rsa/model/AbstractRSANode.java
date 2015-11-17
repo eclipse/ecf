@@ -85,19 +85,20 @@ public class AbstractRSANode implements IAdaptable {
 		return buf.append("]").toString();
 	}
 
-	public static Map<String,Object> convertServicePropsToMap(ServiceReference sr) {
-		Map<String,Object> result = new HashMap<String,Object>();
-		if (sr == null) return result;
-		for(String key: sr.getPropertyKeys()) {
+	public static Map<String, Object> convertServicePropsToMap(ServiceReference sr) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		if (sr == null)
+			return result;
+		for (String key : sr.getPropertyKeys()) {
 			Object val = sr.getProperty(key);
 			if (val != null)
 				result.put(key, val);
 		}
 		return result;
 	}
-	
+
 	protected String convertObjectClassToString(ServiceReference sr) {
-		return (sr == null)?CLOSED:convertStringArrayToString((String[]) sr.getProperty(Constants.OBJECTCLASS));
+		return (sr == null) ? CLOSED : convertStringArrayToString((String[]) sr.getProperty(Constants.OBJECTCLASS));
 	}
 
 	protected ServiceReference<org.osgi.service.remoteserviceadmin.RemoteServiceAdmin> getRSARef() {
