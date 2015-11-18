@@ -10,6 +10,7 @@ package org.eclipse.ecf.remoteserviceadmin.ui.rsa;
 
 import java.util.List;
 
+import org.eclipse.ecf.internal.remoteservices.ui.DiscoveryComponent;
 import org.eclipse.ecf.internal.remoteservices.ui.Messages;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin;
@@ -47,6 +48,16 @@ public class RemoteServiceAdminView extends AbstractRemoteServiceAdminView {
 	}
 
 	@Override
+	public void dispose() {
+		super.dispose();
+		DiscoveryComponent discovery = DiscoveryComponent.getDefault();
+		if (discovery != null) {
+			discovery.setRSAView(null);
+			discovery = null;
+		}
+	}
+
+	@Override
 	protected void updateModel() {
 		updateModel(0);
 	}
@@ -54,6 +65,11 @@ public class RemoteServiceAdminView extends AbstractRemoteServiceAdminView {
 	@Override
 	protected AbstractRSAContentProvider createContentProvider(IViewSite viewSite) {
 		return new RSAContentProvider(viewSite);
+	}
+
+	@Override
+	protected void setupListeners() {
+		DiscoveryComponent.getDefault().setRSAView(this);
 	}
 
 	@Override

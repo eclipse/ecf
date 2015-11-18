@@ -14,7 +14,7 @@ import java.util.List;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionLocator;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin;
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.EndpointDiscoveryView;
-import org.eclipse.ecf.remoteserviceadmin.ui.rsa.AbstractRemoteServiceAdminView;
+import org.eclipse.ecf.remoteserviceadmin.ui.rsa.RemoteServiceAdminView;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -41,7 +41,7 @@ public class DiscoveryComponent implements EndpointEventListener, RemoteServiceA
 	}
 
 	private EndpointDiscoveryView discoveryView;
-	private AbstractRemoteServiceAdminView rsaView;
+	private RemoteServiceAdminView rsaView;
 
 	private IEndpointDescriptionLocator edLocator;
 
@@ -136,7 +136,7 @@ public class DiscoveryComponent implements EndpointEventListener, RemoteServiceA
 			rsaView.handleRSAEvent(event);
 	}
 
-	public void setRSAView(AbstractRemoteServiceAdminView rsaView) {
+	public void setRSAView(RemoteServiceAdminView rsaView) {
 		this.rsaView = rsaView;
 	}
 

@@ -23,14 +23,12 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.part.ViewPart;
-import org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent;
 
 /**
  * @since 3.3
  */
 public abstract class AbstractRemoteServiceAdminView extends ViewPart {
 
-	private DiscoveryComponent discovery;
 	protected TreeViewer viewer;
 	protected AbstractRSAContentProvider contentProvider;
 
@@ -39,6 +37,7 @@ public abstract class AbstractRemoteServiceAdminView extends ViewPart {
 	}
 
 	protected RemoteServiceAdmin getLocalRSA() {
+		DiscoveryComponent discovery = DiscoveryComponent.getDefault();
 		return (discovery == null) ? null : discovery.getRSA();
 	}
 
@@ -72,27 +71,17 @@ public abstract class AbstractRemoteServiceAdminView extends ViewPart {
 		super.dispose();
 		viewer = null;
 		contentProvider = null;
-		if (discovery != null) {
-			discovery.setRSAView(null);
-			discovery = null;
-		}
-	}
-
-	public void handleRSAEvent(RemoteServiceAdminEvent event) {
-
 	}
 
 	protected abstract AbstractRSAContentProvider createContentProvider(IViewSite viewSite);
 
 	protected void updateModel() {
-
 	}
+
+	protected abstract void setupListeners();
 
 	@Override
 	public void createPartControl(Composite parent) {
-
-		this.discovery = DiscoveryComponent.getDefault();
-		this.discovery.setRSAView(this);
 
 		IViewSite viewSite = getViewSite();
 
@@ -109,7 +98,9 @@ public abstract class AbstractRemoteServiceAdminView extends ViewPart {
 
 		viewSite.setSelectionProvider(viewer);
 
-		RemoteServiceAdmin rsa = this.discovery.getRSA();
+		setupListeners();
+
+		RemoteServiceAdmin rsa = getLocalRSA();
 		if (rsa != null)
 			updateModel();
 	}
