@@ -1531,7 +1531,14 @@ public class RemoteServiceAdmin implements
 				});
 		if (service == null)
 			return null;
-		Class[] interfaceClasses = service.getClass().getInterfaces();
+		List<Class> interfaces = new ArrayList<Class>();
+		Class<?> serviceClass = service.getClass();
+		while (!serviceClass.equals(Object.class)) {
+			interfaces.addAll(Arrays.asList(serviceClass.getInterfaces()));
+			serviceClass = serviceClass.getSuperclass();
+		}
+		Class[] interfaceClasses = interfaces.toArray(new Class[interfaces.size()]);
+		
 		if (interfaceClasses == null)
 			return null;
 		Class interfaceClass = null;
@@ -1908,7 +1915,7 @@ public class RemoteServiceAdmin implements
 		public Object getService(Bundle bundle, ServiceRegistration registration) {
 			Object proxy = createProxy(bundle, registration.getReference(),
 					remoteService, interfaceVersions);
-			remoteProxyCount++;
+			if (proxy != null) remoteProxyCount++;
 			return proxy;
 		}
 
