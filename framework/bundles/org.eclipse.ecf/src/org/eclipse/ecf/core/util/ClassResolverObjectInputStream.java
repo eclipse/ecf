@@ -32,16 +32,18 @@ public class ClassResolverObjectInputStream extends ObjectInputStream {
 		primClasses.put("void", void.class); //$NON-NLS-1$
 	}
 
-	public static ObjectInputStream create(BundleContext ctxt, InputStream ins) throws IOException {
+	public static ObjectInputStream create(BundleContext ctxt, InputStream ins, String filter) throws IOException, SecurityException {
 		if (ctxt == null)
 			return new ObjectInputStream(ins);
 		try {
-			return new ClassResolverObjectInputStream(ctxt, ins, "(" + IClassResolver.BUNDLE_PROP_NAME + "=" + ctxt.getBundle().getSymbolicName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		} catch (SecurityException e) {
-			throw new IOException("Could not create ClassResolverObjectInputStream", e); //$NON-NLS-1$
+			return new ClassResolverObjectInputStream(ctxt, ins, filter);
 		} catch (InvalidSyntaxException e) {
-			throw new IOException("Could not create ClassResolverObjectInputStream", e); //$NON-NLS-1$
+			throw new IOException("Could not create ClassResolverObjectInputStream because of InvalidSyntaxException in filter=" + filter); //$NON-NLS-1$
 		}
+	}
+
+	public static ObjectInputStream create(BundleContext ctxt, InputStream ins) throws IOException {
+		return create(ctxt, ins, null);
 	}
 
 	private final BundleContext bundleContext;
