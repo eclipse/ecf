@@ -523,7 +523,8 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 
 	public static ContainerMessage deserializeContainerMessage(byte[] bytes) throws IOException {
 		final ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-		final ObjectInputStream ois = new ObjectInputStream(bis);
+
+		final ObjectInputStream ois = ProviderPlugin.getDefault().createObjectInputStream(bis);
 		Object obj = null;
 		try {
 			obj = ois.readObject();
@@ -557,6 +558,13 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 
 	protected ISynchAsynchEventHandler getReceiver() {
 		return receiver;
+	}
+
+	/**
+	 * @since 4.7
+	 */
+	public ISynchAsynchEventHandler getMessageReceiver() {
+		return getReceiver();
 	}
 
 	protected ISharedObject getSharedObject(ID id) {
@@ -997,10 +1005,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		final ByteArrayInputStream bins = new ByteArrayInputStream(bytes);
 		Object obj = null;
 		try {
-			// First try normal classloading. In Eclipse environment this will
-			// use
-			// buddy classloading
-			final ObjectInputStream oins = new ObjectInputStream(bins);
+			final ObjectInputStream oins = ProviderPlugin.getDefault().createObjectInputStream(bins);
 			obj = oins.readObject();
 		} catch (final ClassNotFoundException e) {
 			// first reset stream

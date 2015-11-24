@@ -13,7 +13,6 @@ package org.eclipse.ecf.provider.generic;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;

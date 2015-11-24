@@ -10,9 +10,7 @@
  *******************************************************************************/
 package org.eclipse.ecf.provider.util;
 
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 /**
  * Stores Java objects in the underlying stream in an manner that allows
@@ -23,8 +21,7 @@ import java.io.OutputStream;
 public class IdentifiableObjectOutputStream extends ObjectOutputStream {
 	String name = null;
 
-	public IdentifiableObjectOutputStream(String name, OutputStream outs)
-			throws IOException {
+	public IdentifiableObjectOutputStream(String name, OutputStream outs) throws IOException {
 		super(outs);
 		this.name = name;
 	}

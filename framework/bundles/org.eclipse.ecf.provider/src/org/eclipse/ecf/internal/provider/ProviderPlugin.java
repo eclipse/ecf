@@ -11,6 +11,8 @@
 
 package org.eclipse.ecf.internal.provider;
 
+import java.io.*;
+import java.util.Hashtable;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocketFactory;
 import org.eclipse.core.runtime.*;
@@ -76,6 +78,14 @@ public class ProviderPlugin implements BundleActivator {
 				context1.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(SSLGenericContainerInstantiator.SSLCLIENT_NAME, new SSLGenericContainerInstantiator(), "ECF SSL Generic Client", false, true), null); //$NON-NLS-1$
 			}
 		});
+		// testing
+		Hashtable<String, Object> props = new Hashtable<String, Object>();
+		props.put(IClassResolver.BUNDLE_PROP_NAME, PLUGIN_ID);
+		this.context.registerService(IClassResolver.class, new BundleClassResolver(context.getBundle()), props);
+	}
+
+	public ObjectInputStream createObjectInputStream(InputStream ins) throws IOException {
+		return ClassResolverObjectInputStream.create(this.context, ins, "(" + IClassResolver.BUNDLE_PROP_NAME + "=" + this.context.getBundle().getSymbolicName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
 	/**
@@ -104,6 +114,7 @@ public class ProviderPlugin implements BundleActivator {
 
 	private LogService systemLogService;
 
+	@SuppressWarnings("unchecked")
 	protected LogService getLogService() {
 		if (context == null) {
 			if (systemLogService == null)
@@ -138,6 +149,11 @@ public class ProviderPlugin implements BundleActivator {
 		return NAMESPACE_IDENTIFIER;
 	}
 
+	public BundleContext getContext() {
+		return this.context;
+	}
+
+	@SuppressWarnings("unchecked")
 	public SSLServerSocketFactory getSSLServerSocketFactory() {
 		if (context == null)
 			return null;
@@ -148,6 +164,7 @@ public class ProviderPlugin implements BundleActivator {
 		return (SSLServerSocketFactory) sslServerSocketFactoryTracker.getService();
 	}
 
+	@SuppressWarnings("unchecked")
 	public SSLSocketFactory getSSLSocketFactory() {
 		if (context == null)
 			return null;

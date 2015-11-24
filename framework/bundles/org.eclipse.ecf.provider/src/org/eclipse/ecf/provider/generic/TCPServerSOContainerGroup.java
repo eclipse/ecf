@@ -10,16 +10,15 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.generic;
 
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.net.InetAddress;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
 import org.eclipse.ecf.internal.provider.ProviderPlugin;
-import org.eclipse.ecf.provider.comm.tcp.*;
+import org.eclipse.ecf.provider.comm.tcp.Server;
 
-public class TCPServerSOContainerGroup extends SOContainerGroup implements ISocketAcceptHandler {
+public class TCPServerSOContainerGroup extends SOContainerGroup {
 
-	public static final String INVALID_CONNECT = "Invalid connect request."; //$NON-NLS-1$
 	public static final String DEFAULT_GROUP_NAME = TCPServerSOContainerGroup.class.getName();
 	private int port;
 	private Server listener;
@@ -76,44 +75,6 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements ISock
 
 	public synchronized boolean isOnTheAir() {
 		return isOnTheAir;
-	}
-
-	private void setSocketOptions(Socket aSocket) throws SocketException {
-		aSocket.setTcpNoDelay(true);
-	}
-
-	public void handleAccept(Socket aSocket) throws Exception {
-		// Set socket options
-		setSocketOptions(aSocket);
-		final ObjectOutputStream oStream = new ObjectOutputStream(aSocket.getOutputStream());
-		oStream.flush();
-		final ObjectInputStream iStream = new ObjectInputStream(aSocket.getInputStream());
-		final ConnectRequestMessage req = (ConnectRequestMessage) iStream.readObject();
-		if (req == null)
-			throw new InvalidObjectException(INVALID_CONNECT + " Connect request message cannot be null"); //$NON-NLS-1$
-		final URI uri = req.getTarget();
-		if (uri == null)
-			throw new InvalidObjectException(INVALID_CONNECT + " URI connect target cannot be null"); //$NON-NLS-1$
-		final String path = uri.getPath();
-		if (path == null)
-			throw new InvalidObjectException(INVALID_CONNECT + " Path cannot be null"); //$NON-NLS-1$
-		final TCPServerSOContainer srs = (TCPServerSOContainer) get(path);
-		if (srs == null)
-			throw new InvalidObjectException("Container not found for path=" + path); //$NON-NLS-1$
-		// Create our local messaging interface
-		final Client newClient = new Client(aSocket, iStream, oStream, srs.getReceiver());
-		// Get output stream lock so nothing is sent until we've responded
-		Object outputStreamLock = newClient.getOutputStreamLock();
-		// No other threads can access messaging interface until space has
-		// accepted/rejected
-		// connect request
-		synchronized (outputStreamLock) {
-			// Call checkConnect
-			final Serializable resp = srs.handleConnectRequest(aSocket, path, req.getData(), newClient);
-			// Create connect response wrapper and send it back
-			oStream.writeObject(new ConnectResultMessage(resp));
-			oStream.flush();
-		}
 	}
 
 	public synchronized void takeOffTheAir() {

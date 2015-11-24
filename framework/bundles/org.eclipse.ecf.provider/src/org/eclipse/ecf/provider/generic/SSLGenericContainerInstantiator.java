@@ -424,8 +424,8 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 	 */
 	public Class[][] getSupportedParameterTypes(ContainerTypeDescription description) {
 		if (!isClient(description))
-			return new Class[][] { {ID.class}, {ID.class, Integer.class}};
-		return new Class[][] { {}, {ID.class}, {ID.class, Integer.class}};
+			return new Class[][] {{ID.class}, {ID.class, Integer.class}};
+		return new Class[][] {{}, {ID.class}, {ID.class, Integer.class}};
 	}
 
 	public String[] getSupportedIntents(ContainerTypeDescription description) {

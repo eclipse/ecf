@@ -11,7 +11,6 @@
 package org.eclipse.ecf.provider.comm;
 
 import java.util.Map;
-
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;

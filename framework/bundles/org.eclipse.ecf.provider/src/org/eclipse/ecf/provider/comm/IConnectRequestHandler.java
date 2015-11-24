@@ -33,6 +33,5 @@ public interface IConnectRequestHandler {
 	 * @return any data intended as a response. If null is returned, this
 	 *         typically means refusal of connect request
 	 */
-	public Serializable handleConnectRequest(Socket aSocket, String target,
-			Serializable data, ISynchAsynchConnection conn);
+	public Serializable handleConnectRequest(Socket aSocket, String target, Serializable data, ISynchAsynchConnection conn);
 }

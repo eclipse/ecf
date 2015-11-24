@@ -17,24 +17,24 @@ import java.net.URI;
 public class ConnectRequestMessage implements Serializable {
 	private static final long serialVersionUID = 3257844363974226229L;
 	URI target;
-    Serializable data;
+	Serializable data;
 
-    public ConnectRequestMessage(URI target, Serializable data) {
-        this.target = target;
-        this.data = data;
-    }
+	public ConnectRequestMessage(URI target, Serializable data) {
+		this.target = target;
+		this.data = data;
+	}
 
-    public URI getTarget() {
-        return target;
-    }
+	public URI getTarget() {
+		return target;
+	}
 
-    public Serializable getData() {
-        return data;
-    }
+	public Serializable getData() {
+		return data;
+	}
 
-    public String toString() {
-        StringBuffer buf = new StringBuffer("ConnectRequestMessage["); //$NON-NLS-1$
-        buf.append(target).append(";").append(data).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
-        return buf.toString();
-    }
+	public String toString() {
+		StringBuffer buf = new StringBuffer("ConnectRequestMessage["); //$NON-NLS-1$
+		buf.append(target).append(";").append(data).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+		return buf.toString();
+	}
 }

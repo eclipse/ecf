@@ -10,9 +10,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.generic.gmm;
 
-import java.util.Observable;
-import java.util.TreeSet;
-import java.util.Iterator;
+import java.util.*;
 import org.eclipse.ecf.core.identity.ID;
 
 public class GMMImpl extends Observable {

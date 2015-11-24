@@ -17,17 +17,17 @@ public class ConnectResultMessage implements Serializable {
 	private static final long serialVersionUID = 3833188038300938804L;
 	Serializable data;
 
-    public ConnectResultMessage(Serializable data) {
-        this.data = data;
-    }
+	public ConnectResultMessage(Serializable data) {
+		this.data = data;
+	}
 
-    public Serializable getData() {
-        return data;
-    }
+	public Serializable getData() {
+		return data;
+	}
 
-    public String toString() {
-        StringBuffer buf = new StringBuffer("ConnectResultMessage["); //$NON-NLS-1$
-        buf.append(data).append("]"); //$NON-NLS-1$
-        return buf.toString();
-    }
+	public String toString() {
+		StringBuffer buf = new StringBuffer("ConnectResultMessage["); //$NON-NLS-1$
+		buf.append(data).append("]"); //$NON-NLS-1$
+		return buf.toString();
+	}
 }

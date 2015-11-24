@@ -10,8 +10,9 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.generic;
 
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import org.eclipse.core.runtime.IStatus;
@@ -19,7 +20,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
 import org.eclipse.ecf.internal.provider.ProviderPlugin;
-import org.eclipse.ecf.provider.comm.tcp.*;
+import org.eclipse.ecf.provider.comm.tcp.ISocketAcceptHandler;
+import org.eclipse.ecf.provider.comm.tcp.Server;
 
 /**
  * @since 4.3
@@ -27,7 +29,6 @@ import org.eclipse.ecf.provider.comm.tcp.*;
 public class SSLServerSOContainerGroup extends SOContainerGroup implements ISocketAcceptHandler {
 
 	public static final int DEFAULT_BACKLOG = 50;
-	public static final String INVALID_CONNECT = "Invalid connect request."; //$NON-NLS-1$
 	public static final String DEFAULT_GROUP_NAME = SSLServerSOContainerGroup.class.getName();
 
 	private int port = 0;
@@ -107,40 +108,6 @@ public class SSLServerSOContainerGroup extends SOContainerGroup implements ISock
 		return isOnTheAir;
 	}
 
-	void handleSyncAccept(Socket aSocket) throws Exception {
-		// Set socket options
-		aSocket.setTcpNoDelay(true);
-		final ObjectOutputStream oStream = new ObjectOutputStream(aSocket.getOutputStream());
-		oStream.flush();
-		final ObjectInputStream iStream = new ObjectInputStream(aSocket.getInputStream());
-		final ConnectRequestMessage req = (ConnectRequestMessage) iStream.readObject();
-		if (req == null)
-			throw new InvalidObjectException(INVALID_CONNECT + " Connect request message cannot be null"); //$NON-NLS-1$
-		final URI uri = req.getTarget();
-		if (uri == null)
-			throw new InvalidObjectException(INVALID_CONNECT + " URI connect target cannot be null"); //$NON-NLS-1$
-		final String path = uri.getPath();
-		if (path == null)
-			throw new InvalidObjectException(INVALID_CONNECT + " Path cannot be null"); //$NON-NLS-1$
-		final SSLServerSOContainer srs = (SSLServerSOContainer) get(path);
-		if (srs == null)
-			throw new InvalidObjectException("Container not found for path=" + path); //$NON-NLS-1$
-		// Create our local messaging interface
-		final Client newClient = new Client(aSocket, iStream, oStream, srs.getReceiver());
-		// Get output stream lock so nothing is sent until we've responded
-		Object outputStreamLock = newClient.getOutputStreamLock();
-		// No other threads can access messaging interface until space has
-		// accepted/rejected
-		// connect request
-		synchronized (outputStreamLock) {
-			// Call checkConnect
-			final Serializable resp = srs.handleConnectRequest(aSocket, path, req.getData(), newClient);
-			// Create connect response wrapper and send it back
-			oStream.writeObject(new ConnectResultMessage(resp));
-			oStream.flush();
-		}
-	}
-
 	public synchronized void takeOffTheAir() {
 		trace("Taking " + getName() + " off the air."); //$NON-NLS-1$ //$NON-NLS-2$
 		if (listenerThread != null) {
@@ -186,6 +153,13 @@ public class SSLServerSOContainerGroup extends SOContainerGroup implements ISock
 				debug("SSLServerSOContaienrGroup closing listener normally."); //$NON-NLS-1$
 			}
 		}, "SSLServerSOContainerGroup(" + port + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+
+	/**
+	 * @since 4.7
+	 */
+	protected void handleSyncAccept(final Socket aSocket) throws Exception {
+		super.handleAccept(aSocket);
 	}
 
 	public void handleAccept(final Socket aSocket) {
