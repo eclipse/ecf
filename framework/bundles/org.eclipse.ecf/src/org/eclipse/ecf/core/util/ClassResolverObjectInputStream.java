@@ -32,6 +32,18 @@ public class ClassResolverObjectInputStream extends ObjectInputStream {
 		primClasses.put("void", void.class); //$NON-NLS-1$
 	}
 
+	public static ObjectInputStream create(BundleContext ctxt, InputStream ins) throws IOException {
+		if (ctxt == null)
+			return new ObjectInputStream(ins);
+		try {
+			return new ClassResolverObjectInputStream(ctxt, ins, "(" + IClassResolver.BUNDLE_PROP_NAME + "=" + ctxt.getBundle().getSymbolicName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		} catch (SecurityException e) {
+			throw new IOException("Could not create ClassResolverObjectInputStream", e); //$NON-NLS-1$
+		} catch (InvalidSyntaxException e) {
+			throw new IOException("Could not create ClassResolverObjectInputStream", e); //$NON-NLS-1$
+		}
+	}
+
 	private final BundleContext bundleContext;
 	private ServiceTracker<IClassResolver, IClassResolver> classResolverST;
 	private final Object trackerLock = new Object();
