@@ -340,6 +340,7 @@ public class PropertiesUtil {
 
 	public static Map<String, Object> copySerializableProperties(Map<String, ?> source,
 			Map<String, Object> target) {
+		if (source == null) return target;
 		for (String key : source.keySet()) {
 			Object value = source.get(key);
 			try {
