@@ -53,7 +53,6 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.pde.internal.runtime.registry.RegistryBrowser;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
@@ -158,7 +157,7 @@ public class EndpointDiscoveryView extends ViewPart {
 			logWarning("Could not show services in PDE Plugin view", e); //$NON-NLS-1$
 		}
 		*/
-		return RegistryBrowser.BUNDLES;
+		return 0;
 	}
 
 	protected void showServicesInRegistryBrowser() {
