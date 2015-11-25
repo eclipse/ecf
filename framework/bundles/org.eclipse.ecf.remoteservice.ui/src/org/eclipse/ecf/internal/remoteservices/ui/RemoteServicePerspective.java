@@ -12,6 +12,7 @@ package org.eclipse.ecf.internal.remoteservices.ui;
 
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.EndpointDiscoveryView;
 import org.eclipse.ecf.remoteserviceadmin.ui.rsa.RemoteServiceAdminView;
+import org.eclipse.ecf.remoteserviceadmin.ui.service.ServicesView;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
@@ -35,6 +36,7 @@ public class RemoteServicePerspective implements IPerspectiveFactory {
 		layout.addShowViewShortcut("org.eclipse.ui.navigator.ProjectExplorer"); //$NON-NLS-1$
 		layout.addShowViewShortcut(EndpointDiscoveryView.ID_VIEW);
 		layout.addShowViewShortcut(RemoteServiceAdminView.ID_VIEW);
+		layout.addShowViewShortcut(ServicesView.ID_VIEW);
 		layout.addShowViewShortcut(IPageLayout.ID_OUTLINE);
 		layout.addShowViewShortcut(IPageLayout.ID_PROP_SHEET);
 		layout.addShowViewShortcut(IPageLayout.ID_PROGRESS_VIEW);
@@ -56,7 +58,7 @@ public class RemoteServicePerspective implements IPerspectiveFactory {
 		IFolderLayout rightBottom = layout.createFolder("rightBottom", //$NON-NLS-1$
 				IPageLayout.RIGHT, 0.5f, "bottom"); //$NON-NLS-1$
 		// Add the registry browser on right bottom
-		rightBottom.addView("org.eclipse.pde.runtime.RegistryBrowser"); //$NON-NLS-1$
+		rightBottom.addView(ServicesView.ID_VIEW); //$NON-NLS-1$
 		// Add properties view in the middle
 		bottom.addView(IPageLayout.ID_PROP_SHEET);
 		// Create folder for left side above Endpoint Discover/Service Discovery

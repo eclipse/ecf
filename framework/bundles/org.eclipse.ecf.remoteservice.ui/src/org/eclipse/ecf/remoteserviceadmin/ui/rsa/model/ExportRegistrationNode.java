@@ -10,6 +10,7 @@ package org.eclipse.ecf.remoteserviceadmin.ui.rsa.model;
 
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin.ExportReference;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin.ExportRegistration;
+import org.eclipse.ecf.remoteservices.ui.util.PropertyUtils;
 import org.osgi.framework.ServiceReference;
 
 /**
@@ -44,7 +45,7 @@ public class ExportRegistrationNode extends AbstractRegistrationNode {
 	}
 
 	public String getValidName() {
-		return convertObjectClassToString(getExportedService());
+		return PropertyUtils.convertObjectClassToString(getExportedService());
 	}
 
 	@Override

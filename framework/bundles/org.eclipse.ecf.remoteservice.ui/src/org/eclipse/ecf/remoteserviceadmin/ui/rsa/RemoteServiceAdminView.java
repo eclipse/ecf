@@ -90,11 +90,11 @@ public class RemoteServiceAdminView extends AbstractRemoteServiceAdminView {
 		RemoteServiceAdmin rsa = getLocalRSA();
 
 		closeExportAction = createCloseAction();
-		closeExportAction.setText("Unexport Service");
+		closeExportAction.setText(Messages.RemoteServiceAdminView_0);
 		closeExportAction.setEnabled(rsa != null);
 
 		closeImportAction = createCloseAction();
-		closeImportAction.setText("Unimport Service");
+		closeImportAction.setText(Messages.RemoteServiceAdminView_1);
 		closeImportAction.setEnabled(rsa != null);
 
 	}

@@ -20,6 +20,10 @@ public final class Messages extends NLS {
 
 	public static String AbstractRSANode_NodeClosed;
 
+	public static String AbstractServicesView_UsingBundlesNodeName;
+
+	public static String BundleIdNodeWorkbenchAdapter_BundleIdNodeLabelPrefix;
+
 	public static String DiscoveryComponent_ERROR_MSG_CANNOT_FIND_RSA_BUNDLE;
 
 	public static String EndpointConfigTypesNode_0;
@@ -125,6 +129,20 @@ public final class Messages extends NLS {
 	public static String MethodInvocationDialog_InvocationTypeOSGiServiceProxy;
 	public static String MethodInvocationDialog_InvocationTypeRemoteServiceProxy;
 	public static String MethodInvocationDialog_InvocationTypeSynchronous;
+
+	public static String PropertyUtils_0;
+
+	public static String PropertyUtils_1;
+
+	public static String PropertyUtils_2;
+
+	public static String PropertyUtils_3;
+
+	public static String RegisteringBundleIdNodeWorkbenchAdapter_RegBundleIdLabelPrefix;
+
+	public static String RemoteServiceAdminView_0;
+
+	public static String RemoteServiceAdminView_1;
 
 	public static String RSAContentProvider_ExportedServicesNodeName;
 

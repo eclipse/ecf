@@ -40,6 +40,10 @@ public class DiscoveryComponent implements EndpointEventListener, RemoteServiceA
 		rsa = null;
 	}
 
+	public BundleContext getContext() {
+		return this.context;
+	}
+
 	private EndpointDiscoveryView discoveryView;
 	private RemoteServiceAdminView rsaView;
 

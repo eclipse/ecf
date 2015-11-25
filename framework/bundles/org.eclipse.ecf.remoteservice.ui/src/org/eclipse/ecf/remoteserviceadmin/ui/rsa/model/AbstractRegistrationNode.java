@@ -11,6 +11,7 @@ package org.eclipse.ecf.remoteserviceadmin.ui.rsa.model;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ecf.internal.remoteservices.ui.Messages;
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointPropertySource;
+import org.eclipse.ecf.remoteservices.ui.util.PropertyUtils;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.osgi.framework.ServiceReference;
 
@@ -50,7 +51,7 @@ public abstract class AbstractRegistrationNode extends AbstractRSANode {
 		if (adapter == IPropertySource.class) {
 			ServiceReference sr = getServiceReference();
 			if (sr != null)
-				return new EndpointPropertySource(convertServicePropsToMap(sr));
+				return new EndpointPropertySource(PropertyUtils.convertServicePropsToMap(sr));
 		}
 		return Platform.getAdapterManager().getAdapter(this, adapter);
 	}

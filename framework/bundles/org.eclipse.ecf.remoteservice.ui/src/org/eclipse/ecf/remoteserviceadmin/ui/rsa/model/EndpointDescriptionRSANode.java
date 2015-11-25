@@ -29,6 +29,7 @@ import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointRemoteServic
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointRemoteServiceIDNode;
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointServiceIDNode;
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointTimestampNode;
+import org.eclipse.ecf.remoteservices.ui.util.PropertyUtils;
 
 /**
  * @since 3.3
@@ -52,14 +53,14 @@ public class EndpointDescriptionRSANode extends AbstractRSANode {
 		// Interfaces
 		EndpointInterfacesNode ein = new EndpointInterfacesNode();
 		for (String intf : ed.getInterfaces())
-			ein.addChild(new EndpointPackageVersionNode(EndpointNode.getPackageName(intf)));
+			ein.addChild(new EndpointPackageVersionNode(PropertyUtils.getPackageName(intf)));
 		this.endpointNode.addChild(ein);
 		// Async Interfaces (if present)
 		List<String> aintfs = ed.getAsyncInterfaces();
 		if (aintfs.size() > 0) {
 			EndpointAsyncInterfacesNode ain = new EndpointAsyncInterfacesNode();
 			for (String intf : ed.getAsyncInterfaces())
-				ain.addChild(new EndpointPackageVersionNode(EndpointNode.getPackageName(intf)));
+				ain.addChild(new EndpointPackageVersionNode(PropertyUtils.getPackageName(intf)));
 			this.endpointNode.addChild(ain);
 		}
 		// ID

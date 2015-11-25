@@ -38,12 +38,12 @@ public class RSAImageRegistry {
 	public static final String IMG_RS_OBJ = "rsvc_obj_tbg.gif"; //$NON-NLS-1$
 	public static final String IMG_ENDPOINTDESCRIPTION_OBJ = "endpoint_obj.gif"; //$NON-NLS-1$
 	public static final String IMG_RSA_OBJ = "rsa_obj.gif"; //$NON-NLS-1$
-	
+
 	public static final ImageDescriptor INTERFACE_OBJ = create(PATH_OBJ, IMG_INTERFACE_OBJ);
 	public static final ImageDescriptor RSPROXY_OBJ = create(PATH_OBJ, IMG_RSPROXY_OBJ);
 	public static final ImageDescriptor RS_OBJ = create(PATH_OBJ, IMG_RS_OBJ);
 	public static final ImageDescriptor RSA_OBJ = create(PATH_OBJ, IMG_RSA_OBJ);
-	
+
 	public static final ImageDescriptor ENDPOINTDESCRIPTION_OBJ = create(PATH_OBJ, IMG_ENDPOINTDESCRIPTION_OBJ);
 
 	public static final ImageDescriptor DESC_ERROR_ST_OBJ = create(PATH_OBJ, "error_st_obj.gif"); //$NON-NLS-1$

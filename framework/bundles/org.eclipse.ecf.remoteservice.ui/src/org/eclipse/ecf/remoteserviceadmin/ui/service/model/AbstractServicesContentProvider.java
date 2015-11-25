@@ -6,7 +6,7 @@
  * 
  * Contributors: Scott Lewis - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.remoteserviceadmin.ui.rsa.model;
+package org.eclipse.ecf.remoteserviceadmin.ui.service.model;
 
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
@@ -14,21 +14,21 @@ import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 /**
  * @since 3.3
  */
-public class AbstractRSAContentProvider extends BaseWorkbenchContentProvider {
+public class AbstractServicesContentProvider extends BaseWorkbenchContentProvider {
 
 	private IViewSite viewSite;
-	private final ExportedServicesRootNode invisibleRoot;
+	private final ServicesRootNode invisibleRoot;
 
-	public AbstractRSAContentProvider(IViewSite viewSite) {
+	public AbstractServicesContentProvider(IViewSite viewSite) {
 		this.viewSite = viewSite;
-		this.invisibleRoot = new ExportedServicesRootNode(""); //$NON-NLS-1$
+		this.invisibleRoot = new ServicesRootNode(""); //$NON-NLS-1$
 	}
 
 	protected IViewSite getViewSite() {
 		return this.viewSite;
 	}
 
-	protected ExportedServicesRootNode getInvisibleRoot() {
+	protected ServicesRootNode getInvisibleRoot() {
 		return this.invisibleRoot;
 	}
 

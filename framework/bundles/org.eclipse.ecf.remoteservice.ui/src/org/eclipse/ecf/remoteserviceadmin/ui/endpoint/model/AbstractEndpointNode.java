@@ -15,6 +15,7 @@ import java.util.Map;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
+import org.eclipse.ecf.remoteservices.ui.util.PropertyUtils;
 import org.eclipse.ui.views.properties.IPropertySource;
 
 /**
@@ -26,24 +27,11 @@ public abstract class AbstractEndpointNode implements IAdaptable {
 	private final List<AbstractEndpointNode> children = new ArrayList<AbstractEndpointNode>();
 
 	public static final String getPackageName(String fqClassName) {
-		int lastDot = fqClassName.lastIndexOf('.');
-		return (lastDot == -1) ? fqClassName : fqClassName.substring(0, lastDot);
+		return PropertyUtils.getPackageName(fqClassName);
 	}
 
 	public static final List<String> getStringArrayProperty(Map<String, Object> props, String propName) {
-		Object r = props.get(propName);
-		List<String> results = new ArrayList<String>();
-		if (r == null)
-			return results;
-		else if (r instanceof String[]) {
-			String[] vals = (String[]) r;
-			for (String v : vals)
-				results.add(v);
-		} else if (r instanceof String)
-			results.add((String) r);
-		else
-			results.add(r.toString());
-		return results;
+		return PropertyUtils.getStringArrayProperty(props, propName);
 	}
 
 	protected AbstractEndpointNode() {
