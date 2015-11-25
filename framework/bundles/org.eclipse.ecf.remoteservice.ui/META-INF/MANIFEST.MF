@@ -12,7 +12,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf.discovery;bundle-version="2.1.0",
  org.eclipse.ecf.discovery.ui;bundle-version="3.0.0",
  org.eclipse.ecf.discovery.ui.model;bundle-version="3.0.0",
- org.eclipse.pde.runtime;bundle-version="3.4.500"
+ org.eclipse.pde.runtime
 Export-Package: org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model;version="1.0.0",
  org.eclipse.ecf.remoteserviceadmin.ui.rsa,
  org.eclipse.ecf.remoteserviceadmin.ui.rsa.model,
