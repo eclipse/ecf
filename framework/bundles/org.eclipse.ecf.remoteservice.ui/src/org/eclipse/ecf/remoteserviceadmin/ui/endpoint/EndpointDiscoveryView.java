@@ -10,7 +10,6 @@ package org.eclipse.ecf.remoteserviceadmin.ui.endpoint;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,6 +72,9 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.part.ViewPart;
 import org.osgi.service.remoteserviceadmin.EndpointEvent;
 
+/**
+ * @since 3.3
+ */
 public class EndpointDiscoveryView extends ViewPart {
 
 	public static final String ID_VIEW = "org.eclipse.ecf.remoteserviceadmin.ui.views.EndpointDiscoveryView"; //$NON-NLS-1$
@@ -130,7 +132,6 @@ public class EndpointDiscoveryView extends ViewPart {
 		});
 
 		showServicesInRegistryBrowser();
-
 	}
 
 	protected EndpointContentProvider createContentProvider(IViewSite viewSite) {
@@ -139,23 +140,24 @@ public class EndpointDiscoveryView extends ViewPart {
 
 	private int previousRegistryBrowserGroupBy;
 
-	private int invokeShowGroupBy(RegistryBrowser registryBrowser, int groupBy) throws NoSuchMethodException,
-			SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		return (int) registryBrowser.getClass().getDeclaredMethod("showGroupBy", int.class) //$NON-NLS-1$
-				.invoke(registryBrowser, groupBy);
+	private IViewPart findView(String viewId) {
+		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		if (window != null) {
+			IWorkbenchPage page = window.getActivePage();
+			if (page != null)
+				return page.findView(viewId); // $NON-NLS-1$
+		}
+		return null;
 	}
 
 	protected int showInRegistryBrowser(int groupBy) {
 		// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=270684#c33
 		try {
-			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-			if (window != null) {
-				IWorkbenchPage page = window.getActivePage();
-				if (page != null) {
-					IViewPart view = page.findView("org.eclipse.pde.runtime.RegistryBrowser"); //$NON-NLS-1$
-					if (view != null)
-						return invokeShowGroupBy((RegistryBrowser) view, RegistryBrowser.SERVICES);
-				}
+			IViewPart view = findView("org.eclipse.pde.runtime.RegistryBrowser"); //$NON-NLS-1$
+			if (view != null) {
+				RegistryBrowser registryBrowser = (RegistryBrowser) view;
+				return (int) registryBrowser.getClass().getDeclaredMethod("showGroupBy", int.class) //$NON-NLS-1$
+						.invoke(registryBrowser, RegistryBrowser.SERVICES);
 			}
 		} catch (Exception e) {
 			logWarning("Could not show services in PDE Plugin view", e); //$NON-NLS-1$
@@ -163,6 +165,7 @@ public class EndpointDiscoveryView extends ViewPart {
 		return RegistryBrowser.BUNDLES;
 	}
 
+	@Deprecated
 	protected void showServicesInRegistryBrowser() {
 		this.previousRegistryBrowserGroupBy = showInRegistryBrowser(RegistryBrowser.SERVICES);
 	}

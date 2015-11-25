@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.remoteservices.ui;
 
+import java.util.List;
+
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.EndpointDiscoveryView;
 import org.eclipse.ecf.remoteserviceadmin.ui.rsa.RemoteServiceAdminView;
 import org.eclipse.ui.IFolderLayout;
@@ -55,8 +57,16 @@ public class RemoteServicePerspective implements IPerspectiveFactory {
 		// Create folder for right bottom
 		IFolderLayout rightBottom = layout.createFolder("rightBottom", //$NON-NLS-1$
 				IPageLayout.RIGHT, 0.5f, "bottom"); //$NON-NLS-1$
-		// Add the registry browser on right bottom
-		rightBottom.addView("org.eclipse.pde.runtime.RegistryBrowser"); //$NON-NLS-1$
+		
+		List<ServicesViewExtension> sves = Activator.getDefault().getLocalServicesViewExtensions();
+		
+		String viewId = "org.eclipse.pde.runtime.RegistryBrowser"; //$NON-NLS-1$
+		if (sves.size() > 0) {
+			viewId = sves.get(0).getViewId();
+			Activator.getDefault().setLocalServicesViewId(viewId);
+		}
+		rightBottom.addView(viewId);
+
 		// Add properties view in the middle
 		bottom.addView(IPageLayout.ID_PROP_SHEET);
 		// Create folder for left side above Endpoint Discover/Service Discovery

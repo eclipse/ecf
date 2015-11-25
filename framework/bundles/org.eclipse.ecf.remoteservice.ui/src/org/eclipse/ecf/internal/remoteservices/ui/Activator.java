@@ -12,6 +12,14 @@
 
 package org.eclipse.ecf.internal.remoteservices.ui;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -25,11 +33,83 @@ public class Activator extends AbstractUIPlugin {
 	// The shared instance
 	private volatile static Activator plugin;
 
+	private BundleContext context;
+	private IExtensionRegistry extensionRegistry;
+
+	private String servicesViewId;
+	
+	public String getLocalServicesViewId() {
+		return servicesViewId;
+	}
+
+	public void setLocalServicesViewId(String viewId) {
+		this.servicesViewId = viewId;
+	}
+	
 	/**
 	 * The constructor
 	 */
 	public Activator() {
 		plugin = this;
+	}
+
+	@Override
+	public void start(BundleContext context) throws Exception {
+		super.start(context);
+		this.context = context;
+		ServiceTracker<IExtensionRegistry, IExtensionRegistry> st = new ServiceTracker(this.context,
+				IExtensionRegistry.class, null);
+		st.open();
+		this.extensionRegistry = st.getService();
+		st.close();
+	}
+
+	public List<ServicesViewExtension> getLocalServicesViewExtensions() {
+		return getServicesViewExtensions(Boolean.TRUE);
+	}
+	
+	public List<ServicesViewExtension> getRemoteServicesViewExtensions() {
+		return getServicesViewExtensions(Boolean.FALSE);
+	}
+	
+	public List<ServicesViewExtension> getServicesViewExtensions() {
+		return getServicesViewExtensions(null);
+	}
+	
+	public List<ServicesViewExtension> getServicesViewExtensions(Boolean localOnly) {
+		List<ServicesViewExtension> results = new ArrayList<ServicesViewExtension>();
+		if (this.extensionRegistry != null) {
+			IExtensionPoint epoint = this.extensionRegistry
+					.getExtensionPoint("org.eclipse.ecf.remoteservice.ui.servicesview");
+			if (epoint != null) {
+				IConfigurationElement[] elements = epoint.getConfigurationElements();
+				for (IConfigurationElement element : elements) {
+					try {
+						ServicesViewExtension sve = new ServicesViewExtension(element);
+						if (localOnly != null) {
+							if (localOnly.booleanValue()) {
+								if (!sve.isLocal())
+									sve = null;
+							} else {
+								if (sve.isLocal())
+									sve = null;
+							}
+						}
+						if (sve != null)
+							results.add(sve);
+					} catch (Exception e) {
+						e.printStackTrace(System.err);
+					}
+				}
+			}
+		}
+		Collections.sort(results, new Comparator<ServicesViewExtension>() {
+			@Override
+			public int compare(ServicesViewExtension o1, ServicesViewExtension o2) {
+				return o2.getPriority() - o1.getPriority();
+			}
+		});
+		return results;
 	}
 
 	/*
@@ -44,6 +124,7 @@ public class Activator extends AbstractUIPlugin {
 			containerManagerTracker.close();
 			containerManagerTracker = null;
 		}
+		this.extensionRegistry = null;
 		super.stop(context);
 	}
 
