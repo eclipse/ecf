@@ -15,30 +15,17 @@ import org.eclipse.ecf.internal.remoteservices.ui.DiscoveryComponent;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin;
 import org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.AbstractRSAContentProvider;
 import org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.AbstractRSANode;
-import org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.ExportRegistrationNode;
-import org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.ImportRegistrationNode;
-import org.eclipse.ecf.remoteserviceadmin.ui.service.ServicesView;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewSite;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.part.ViewPart;
-import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceReference;
 
 /**
  * @since 3.3
@@ -108,42 +95,6 @@ public abstract class AbstractRemoteServiceAdminView extends ViewPart {
 		log(IStatus.ERROR, message, e);
 	}
 
-	protected void selectServiceInServicesView(final long serviceId) {
-		try {
-			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-			if (window != null) {
-				IWorkbenchPage page = window.getActivePage();
-				if (page != null) {
-					IViewPart view = page.findView(ServicesView.ID_VIEW); //$NON-NLS-1$
-					if (view != null)
-						((ServicesView) view).setSelectedService(serviceId);
-				}
-			}
-		} catch (Exception e) {
-			logWarning("Could not show services in PDE Plugin view", e); //$NON-NLS-1$
-		}
-	}
-	
-	protected void addSelectionListeners() {
-		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			@Override
-			public void selectionChanged(SelectionChangedEvent event) {
-				ISelection sel = event.getSelection();
-				Object selection = null;
-				if (sel instanceof IStructuredSelection)
-					selection = ((IStructuredSelection) sel).getFirstElement();
-				ServiceReference sr = null;
-				if (selection instanceof ExportRegistrationNode) {
-					sr = ((ExportRegistrationNode) selection).getServiceReference();
-				} else if (selection instanceof ImportRegistrationNode) {
-					sr = ((ImportRegistrationNode) selection).getServiceReference();
-				}
-				if (sr != null) 
-					selectServiceInServicesView((Long) sr.getProperty(Constants.SERVICE_ID));
-			}
-		});
-	}
-	
 	@Override
 	public void createPartControl(Composite parent) {
 
@@ -162,7 +113,6 @@ public abstract class AbstractRemoteServiceAdminView extends ViewPart {
 
 		viewSite.setSelectionProvider(viewer);
 		
-		addSelectionListeners();
 		setupListeners();
 
 		RemoteServiceAdmin rsa = getLocalRSA();

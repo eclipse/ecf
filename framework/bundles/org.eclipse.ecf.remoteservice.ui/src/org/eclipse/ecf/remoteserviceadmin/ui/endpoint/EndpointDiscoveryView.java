@@ -10,6 +10,7 @@ package org.eclipse.ecf.remoteserviceadmin.ui.endpoint;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +54,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.pde.internal.runtime.registry.RegistryBrowser;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
@@ -62,7 +64,10 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.part.ViewPart;
@@ -132,16 +137,15 @@ public class EndpointDiscoveryView extends ViewPart {
 		return new EndpointContentProvider(viewSite, Messages.EndpointDiscoveryView_ENDPOINT_ROOT_NAME);
 	}
 
-	/*
+	private int previousRegistryBrowserGroupBy;
+
 	private int invokeShowGroupBy(RegistryBrowser registryBrowser, int groupBy) throws NoSuchMethodException,
 			SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		return (int) registryBrowser.getClass().getDeclaredMethod("showGroupBy", int.class) //$NON-NLS-1$
 				.invoke(registryBrowser, groupBy);
 	}
-    */
-	
+
 	protected int showInRegistryBrowser(int groupBy) {
-		/*
 		// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=270684#c33
 		try {
 			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
@@ -156,15 +160,16 @@ public class EndpointDiscoveryView extends ViewPart {
 		} catch (Exception e) {
 			logWarning("Could not show services in PDE Plugin view", e); //$NON-NLS-1$
 		}
-		*/
-		return 0;
+		return RegistryBrowser.BUNDLES;
 	}
 
 	protected void showServicesInRegistryBrowser() {
+		this.previousRegistryBrowserGroupBy = showInRegistryBrowser(RegistryBrowser.SERVICES);
 	}
 
 	@Override
 	public void dispose() {
+		showInRegistryBrowser(previousRegistryBrowserGroupBy);
 		super.dispose();
 		viewer = null;
 		contentProvider = null;
@@ -413,6 +418,8 @@ public class EndpointDiscoveryView extends ViewPart {
 	private List<String> discoveredEndpointIds = new ArrayList<String>();
 
 	protected void addEndpoint(EndpointDescription ed) {
+		if (EndpointDiscoveryView.this.previousRegistryBrowserGroupBy != RegistryBrowser.SERVICES)
+			showServicesInRegistryBrowser();
 		String edId = ed.getId();
 		if (!discoveredEndpointIds.contains(edId)) {
 			discoveredEndpointIds.add(edId);
