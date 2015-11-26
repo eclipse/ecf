@@ -14,6 +14,6 @@ package org.eclipse.ecf.remoteservice.ui.services;
 public interface IServicesView {
 
 	public String getRemoteId();
-	
+
 	public void selectService(String remoteId, long serviceId);
 }

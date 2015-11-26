@@ -95,7 +95,7 @@ public abstract class AbstractRemoteServiceAdminView extends ViewPart {
 	}
 
 	protected void setupListeners() {
-		
+
 	}
 
 	protected void setupSelectionListeners() {
@@ -114,13 +114,13 @@ public abstract class AbstractRemoteServiceAdminView extends ViewPart {
 					} else if (selection instanceof ImportRegistrationNode) {
 						sr = ((ImportRegistrationNode) selection).getServiceReference();
 					}
-					if (sr != null) 
+					if (sr != null)
 						selectServiceInServicesView(servicesViewId, (Long) sr.getProperty(Constants.SERVICE_ID));
 				}
 			});
 		}
 	}
-	
+
 	protected void selectServiceInServicesView(String servicesViewId, final long serviceId) {
 		try {
 			IViewPart view = findView(servicesViewId);
@@ -129,7 +129,7 @@ public abstract class AbstractRemoteServiceAdminView extends ViewPart {
 					IServicesView sv = (IServicesView) view;
 					sv.selectService(null, serviceId);
 				} else {
-					logWarning("Could not select services on viewId="+servicesViewId, null);
+					logWarning("Could not select services on viewId=" + servicesViewId, null); //$NON-NLS-1$
 				}
 			}
 		} catch (Exception e) {
@@ -166,11 +166,11 @@ public abstract class AbstractRemoteServiceAdminView extends ViewPart {
 		hookContextMenu();
 
 		viewSite.setSelectionProvider(viewer);
-		
+
 		setupListeners();
 
 		setupSelectionListeners();
-		
+
 		RemoteServiceAdmin rsa = getLocalRSA();
 		if (rsa != null)
 			updateModel();
@@ -185,7 +185,6 @@ public abstract class AbstractRemoteServiceAdminView extends ViewPart {
 		}
 		return null;
 	}
-
 
 	@Override
 	public void setFocus() {

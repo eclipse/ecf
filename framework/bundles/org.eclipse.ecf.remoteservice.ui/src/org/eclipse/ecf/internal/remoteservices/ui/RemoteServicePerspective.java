@@ -57,9 +57,9 @@ public class RemoteServicePerspective implements IPerspectiveFactory {
 		// Create folder for right bottom
 		IFolderLayout rightBottom = layout.createFolder("rightBottom", //$NON-NLS-1$
 				IPageLayout.RIGHT, 0.5f, "bottom"); //$NON-NLS-1$
-		
+
 		List<ServicesViewExtension> sves = Activator.getDefault().getLocalServicesViewExtensions();
-		
+
 		String viewId = "org.eclipse.pde.runtime.RegistryBrowser"; //$NON-NLS-1$
 		if (sves.size() > 0) {
 			viewId = sves.get(0).getViewId();

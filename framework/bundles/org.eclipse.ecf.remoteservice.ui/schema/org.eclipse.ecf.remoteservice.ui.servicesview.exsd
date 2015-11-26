@@ -6,7 +6,7 @@
          <meta.schema plugin="org.eclipse.ecf.remoteservice.ui" id="org.eclipse.ecf.remoteservice.ui.servicesview" name="Services View Extension Point"/>
       </appInfo>
       <documentation>
-         [Enter description of this extension point.]
+         This extension point allows new Services views to be created by other plugins and then used by the Remote Services Perspective to display the OSGi services on the local OSGi service registry.
       </documentation>
    </annotation>
 
@@ -48,25 +48,30 @@
    </element>
 
    <element name="servicesview">
+      <annotation>
+         <documentation>
+            Defines a services view.
+         </documentation>
+      </annotation>
       <complexType>
          <attribute name="viewid" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  A required viewid for the extension services view.  The given viewid must correspond to a view that implements IViewPart, and should also implement IServicesView.   This viewid must also have been registered as an Eclipse view extension.
                </documentation>
             </annotation>
          </attribute>
          <attribute name="local" type="boolean">
             <annotation>
                <documentation>
-                  
+                  Boolean indication of whether the given view is for displaying the services from the local OSGi services registry (true) or not (false).
                </documentation>
             </annotation>
          </attribute>
          <attribute name="priority" type="string">
             <annotation>
                <documentation>
-                  
+                  Priority (positive integer) of this services view.   This allows multiple services views to determine their relative priority to each other.  The Remote Services perspective picks the services view with the highest priority value to display the contents of the local OSGi services registry.  Only service views with local=&quot;true&quot; will be considered.
                </documentation>
             </annotation>
          </attribute>
@@ -78,7 +83,7 @@
          <meta.section type="since"/>
       </appInfo>
       <documentation>
-         [Enter the first release in which this extension point appears.]
+         3.3.0 of this plugin.
       </documentation>
    </annotation>
 
@@ -87,7 +92,19 @@
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         [Enter extension point usage example here.]
+         The following example shows the use of the extension point to make a ServicesView (assumed to implement IServicesView interface with viewid=org.eclipse.ecf.remoteservice.ui.serviceview.ServiceView, local=true (for local OSGi service registry), and priority=1000.  The priority=1000 means that any local services view with a priority &gt; 1000 will be used rather than this one as the local OSGi services view in the Remote Service perspective.
+
+&lt;pre&gt;
+  &lt;extension
+         point=&quot;org.eclipse.ecf.remoteservice.ui.servicesview&quot;&gt;
+      &lt;servicesview
+            local=&quot;true&quot;
+            priority=&quot;1000&quot;
+            viewid=&quot;org.eclipse.ecf.remoteservice.ui.serviceview.ServiceView&quot;&gt;
+      &lt;/servicesview&gt;
+   &lt;/extension&gt;
+&lt;/pre&gt;
+
       </documentation>
    </annotation>
 
@@ -96,18 +113,28 @@
          <meta.section type="apiinfo"/>
       </appInfo>
       <documentation>
-         [Enter API information here.]
+         See the IServicesView interface.   This interface allows other views to set the selected service in the associated view.  If the view given does not implement IServicesView then it will not be used in this manner, but this interface should be implemented by Service View extensions.
+
       </documentation>
    </annotation>
+
 
    <annotation>
       <appInfo>
-         <meta.section type="implementation"/>
+         <meta.section type="copyright"/>
       </appInfo>
       <documentation>
-         [Enter information about supplied implementation of this extension point.]
+         /*******************************************************************************
+ * Copyright (c) 2015 Composent, Inc. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: Scott Lewis - initial API and implementation
+ ******************************************************************************/
+
+ 
       </documentation>
    </annotation>
-
 
 </schema>

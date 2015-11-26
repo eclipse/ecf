@@ -150,6 +150,7 @@ public class EndpointDiscoveryView extends ViewPart {
 		return null;
 	}
 
+	@Deprecated
 	protected int showInRegistryBrowser(int groupBy) {
 		// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=270684#c33
 		try {
@@ -167,7 +168,13 @@ public class EndpointDiscoveryView extends ViewPart {
 
 	@Deprecated
 	protected void showServicesInRegistryBrowser() {
-		this.previousRegistryBrowserGroupBy = showInRegistryBrowser(RegistryBrowser.SERVICES);
+		try {
+			this.previousRegistryBrowserGroupBy = showInRegistryBrowser(RegistryBrowser.SERVICES);
+		} catch (Exception e) {
+			logWarning("Could not find pde registry view", e); //$NON-NLS-1$
+		} catch (NoClassDefFoundError e) {
+			logWarning("Could not find pde registry view", e); //$NON-NLS-1$
+		}
 	}
 
 	@Override

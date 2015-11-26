@@ -37,7 +37,7 @@ public class Activator extends AbstractUIPlugin {
 	private IExtensionRegistry extensionRegistry;
 
 	private String servicesViewId;
-	
+
 	public String getLocalServicesViewId() {
 		return servicesViewId;
 	}
@@ -45,7 +45,7 @@ public class Activator extends AbstractUIPlugin {
 	public void setLocalServicesViewId(String viewId) {
 		this.servicesViewId = viewId;
 	}
-	
+
 	/**
 	 * The constructor
 	 */
@@ -67,20 +67,20 @@ public class Activator extends AbstractUIPlugin {
 	public List<ServicesViewExtension> getLocalServicesViewExtensions() {
 		return getServicesViewExtensions(Boolean.TRUE);
 	}
-	
+
 	public List<ServicesViewExtension> getRemoteServicesViewExtensions() {
 		return getServicesViewExtensions(Boolean.FALSE);
 	}
-	
+
 	public List<ServicesViewExtension> getServicesViewExtensions() {
 		return getServicesViewExtensions(null);
 	}
-	
+
 	public List<ServicesViewExtension> getServicesViewExtensions(Boolean localOnly) {
 		List<ServicesViewExtension> results = new ArrayList<ServicesViewExtension>();
 		if (this.extensionRegistry != null) {
 			IExtensionPoint epoint = this.extensionRegistry
-					.getExtensionPoint("org.eclipse.ecf.remoteservice.ui.servicesview");
+					.getExtensionPoint("org.eclipse.ecf.remoteservice.ui.servicesview"); //$NON-NLS-1$
 			if (epoint != null) {
 				IConfigurationElement[] elements = epoint.getConfigurationElements();
 				for (IConfigurationElement element : elements) {

@@ -37,7 +37,7 @@ public class DiscoveryComponent implements EndpointEventListener, RemoteServiceA
 	}
 
 	void unbindRemoteServiceAdmin(RemoteServiceAdmin rsa) {
-		rsa = null;
+		this.rsa = null;
 	}
 
 	public BundleContext getContext() {
