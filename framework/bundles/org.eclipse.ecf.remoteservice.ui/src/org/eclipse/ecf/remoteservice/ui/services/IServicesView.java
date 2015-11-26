@@ -15,5 +15,5 @@ public interface IServicesView {
 
 	public String getRemoteId();
 	
-	public void selectService(long serviceId);
+	public void selectService(String remoteId, long serviceId);
 }

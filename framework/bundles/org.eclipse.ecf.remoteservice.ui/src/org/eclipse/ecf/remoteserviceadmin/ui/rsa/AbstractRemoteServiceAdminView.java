@@ -127,7 +127,7 @@ public abstract class AbstractRemoteServiceAdminView extends ViewPart {
 			if (view != null) {
 				if (view instanceof IServicesView) {
 					IServicesView sv = (IServicesView) view;
-					sv.selectService(serviceId);
+					sv.selectService(null, serviceId);
 				} else {
 					logWarning("Could not select services on viewId="+servicesViewId, null);
 				}
