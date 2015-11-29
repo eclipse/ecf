@@ -30,6 +30,8 @@ import java.util.TreeMap;
 import java.util.UUID;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.ISafeRunnable;
+import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
@@ -1224,7 +1226,7 @@ public class RemoteServiceAdmin implements
 
 	}
 
-	private void publishEvent(RemoteServiceAdminEvent event,
+	private void publishEvent(final RemoteServiceAdminEvent event,
 			EndpointDescription endpointDescription) {
 		// send event synchronously to RemoteServiceAdminListeners
 		EndpointPermission perm = new EndpointPermission(endpointDescription,
@@ -1232,10 +1234,19 @@ public class RemoteServiceAdmin implements
 				EndpointPermission.READ);
 		// notify synchronously all appropriate listeners (those with READ
 		// permission)
-		RemoteServiceAdminListener[] listeners = getListeners(perm);
+		final RemoteServiceAdminListener[] listeners = getListeners(perm);
 		if (listeners != null)
-			for (int i = 0; i < listeners.length; i++)
-				listeners[i].remoteAdminEvent(event);
+			for (int i = 0; i < listeners.length; i++) {
+				final RemoteServiceAdminListener listener = listeners[i];
+				SafeRunner.run(new ISafeRunnable() {
+					public void handleException(Throwable exception) {
+						logError("publishEvent", "Exeption in RemoteServiceAdminListener.remoteAdminEvent for listener="+listener, exception); //$NON-NLS-1$ //$NON-NLS-2$
+					}
+					public void run() throws Exception {
+						listener.remoteAdminEvent(event);
+					}
+				});
+			}
 		// Now also post the event asynchronously to EventAdmin
 		postEvent(event, endpointDescription);
 	}
