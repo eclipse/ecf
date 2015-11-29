@@ -9,6 +9,7 @@
 package org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model;
 
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin.ImportReference;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin.ImportRegistration;
 
 /**
@@ -17,15 +18,22 @@ import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin.Impor
 public class EndpointNode extends AbstractEndpointNode {
 
 	private EndpointDescription endpointDescription;
-	private ImportRegistrationNode importRegistrationNode;
+	private ImportReference importReference;
 
 	public EndpointNode(EndpointDescription ed) {
 		this.endpointDescription = ed;
 	}
 
-	public EndpointNode(EndpointDescription ed, ImportRegistrationNode ir) {
+	@Deprecated
+	public EndpointNode(EndpointDescription ed, ImportRegistrationNode irn) {
+		
+	}
+	/**
+	 * @since 3.3
+	 */
+	public EndpointNode(EndpointDescription ed, ImportReference ir) {
 		this.endpointDescription = ed;
-		this.importRegistrationNode = ir;
+		this.importReference = ir;
 	}
 
 	public boolean equals(Object other) {
@@ -43,25 +51,43 @@ public class EndpointNode extends AbstractEndpointNode {
 	public EndpointDescription getEndpointDescription() {
 		return endpointDescription;
 	}
-
+	
+	@Deprecated
 	public ImportRegistrationNode getImportReg() {
-		return importRegistrationNode;
+		return null;
 	}
-
+	
+	
+	@Deprecated
 	public ImportRegistration getImportRegistration() {
-		return (importRegistrationNode == null) ? null : importRegistrationNode.getImportRegistration();
+		return null;
+	}
+	
+	/**
+	 * @since 3.3
+	 */
+	public ImportReference getImportReference() {
+		return importReference;
 	}
 
 	public boolean isImported() {
-		return getImportRegistration() != null;
+		return getImportReference() != null;
 	}
 
 	public void setEndpointDescription(EndpointDescription ed) {
 		this.endpointDescription = ed;
 	}
 
+	/**
+	 * @since 3.3
+	 */
+	public void setImportReference(ImportReference iref) {
+		this.importReference = iref;
+	}
+	
+	@Deprecated
 	public void setImportReg(ImportRegistrationNode ir) {
-		this.importRegistrationNode = ir;
+		
 	}
 
 }

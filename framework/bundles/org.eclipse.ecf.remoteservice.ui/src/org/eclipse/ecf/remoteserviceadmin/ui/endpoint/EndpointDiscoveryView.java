@@ -32,6 +32,7 @@ import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointConnectTarge
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointContentProvider;
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointDiscoveryGroupNode;
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointFrameworkIDNode;
+import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointGroupNode;
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointHostGroupNode;
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointIDNode;
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointIntentsNode;
@@ -44,7 +45,6 @@ import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointRemoteServic
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointRemoteServiceIDNode;
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointServiceIDNode;
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointTimestampNode;
-import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.ImportRegistrationNode;
 import org.eclipse.ecf.remoteservices.ui.RSAImageRegistry;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -71,6 +71,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.part.ViewPart;
 import org.osgi.service.remoteserviceadmin.EndpointEvent;
+import org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent;
 
 /**
  * @since 3.3
@@ -83,7 +84,6 @@ public class EndpointDiscoveryView extends ViewPart {
 	protected Action copyValueAction;
 	protected Action copyNameAction;
 	protected Action importAction;
-	protected Action unimportAction;
 
 	protected Action undiscoverAction;
 
@@ -218,12 +218,11 @@ public class EndpointDiscoveryView extends ViewPart {
 				manager.add(copyValueAction);
 			} else if (e instanceof EndpointNode) {
 				EndpointNode edNode = (EndpointNode) e;
-				ImportRegistration ir = edNode.getImportRegistration();
+				ImportReference ir = edNode.getImportReference();
 				if (ir == null) {
 					manager.add(importAction);
 					manager.add(undiscoverAction);
-				} else
-					manager.add(unimportAction);
+				}
 			}
 		}
 	}
@@ -295,7 +294,7 @@ public class EndpointDiscoveryView extends ViewPart {
 						} else {
 							// Success! Set registration
 							// and refresh
-							edNode.setImportReg(new ImportRegistrationNode(reg));
+							edNode.setImportReference((ImportReference) reg.getImportReference());
 							viewer.refresh();
 						}
 					}
@@ -305,28 +304,6 @@ public class EndpointDiscoveryView extends ViewPart {
 		importAction.setText(Messages.EndpointDiscoveryView_IMPORT_REMOTE_SERVICE);
 		importAction.setToolTipText(Messages.EndpointDiscoveryView_IMPORT_REMOTE_SERVICE_TT);
 		importAction.setImageDescriptor(RSAImageRegistry.DESC_RSPROXY_CO);
-
-		unimportAction = new Action() {
-			public void run() {
-				EndpointNode edNode = getEDNodeSelected();
-				if (edNode != null) {
-					ImportRegistration ir = edNode.getImportRegistration();
-					if (ir == null)
-						return;
-					try {
-						ir.close();
-						edNode.setImportReg(null);
-						viewer.refresh();
-					} catch (Exception e) {
-						logError(Messages.EndpointDiscoveryView_ERROR_MSG_CANNOT_CLOSE_IR, e);
-						showMessage(Messages.EndpointDiscoveryView_ERROR_MSG_CANNOT_CLOSE_IR_PREFIX + e.getMessage()
-								+ Messages.EndpointDiscoveryView_ERROR_MSG_SUFFIX);
-					}
-				}
-			}
-		};
-		unimportAction.setText(Messages.EndpointDiscoveryView_CLOSE_IMPORTED_REMOTE_SERVICE);
-		unimportAction.setToolTipText(Messages.EndpointDiscoveryView_CLOSE_IMPORTED_REMOTE_SERVICE_TT);
 
 		edefDiscoverAction = new Action() {
 			public void run() {
@@ -362,7 +339,7 @@ public class EndpointDiscoveryView extends ViewPart {
 		undiscoverAction = new Action() {
 			public void run() {
 				EndpointNode endpoint = getEDNodeSelected();
-				if (endpoint != null && endpoint.getImportRegistration() == null) {
+				if (endpoint != null && endpoint.getImportReference() == null) {
 					IEndpointDescriptionLocator l = discovery.getEndpointDescriptionLocator();
 					if (l != null && MessageDialog.openQuestion(viewer.getControl().getShell(),
 							Messages.EndpointDiscoveryView_REMOVE_ENDPOINT_QUESTION_TITLE,
@@ -442,7 +419,7 @@ public class EndpointDiscoveryView extends ViewPart {
 			contentProvider.getRootNode().removeChild(new EndpointNode(ed));
 	}
 
-	protected ImportRegistration findImportRegistration(EndpointDescription ed) {
+	protected ImportReference findImportReference(EndpointDescription ed) {
 		RemoteServiceAdmin rsa = discovery.getRSA();
 		if (rsa == null)
 			return null;
@@ -450,15 +427,13 @@ public class EndpointDiscoveryView extends ViewPart {
 		for (ImportRegistration ir : iRegs) {
 			ImportReference importRef = (ImportReference) ir.getImportReference();
 			if (importRef != null && ed.equals(importRef.getImportedEndpoint()))
-				return ir;
+				return importRef;
 		}
 		return null;
 	}
 
 	protected EndpointNode createEndpointDescriptionNode(EndpointDescription ed) {
-		EndpointNode edo = new EndpointNode(ed,
-				new org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.ImportRegistrationNode(
-						findImportRegistration(ed)));
+		EndpointNode edo = new EndpointNode(ed,findImportReference(ed));
 
 		// Interfaces
 		EndpointInterfacesNode ein = new EndpointInterfacesNode();
@@ -501,6 +476,43 @@ public class EndpointDiscoveryView extends ViewPart {
 					new EndpointDiscoveryGroupNode(Messages.EndpointDiscoveryView_DISCOVERY_GROUP_NAME, serviceID));
 
 		return edo;
+	}
+
+	EndpointNode findEndpointNode(final ImportReference ir) {
+		EndpointGroupNode egn = contentProvider.getRootNode();
+		for(AbstractEndpointNode aen: egn.getChildren()) {
+			if (aen instanceof EndpointNode) {
+				EndpointNode en = (EndpointNode) aen;
+				ImportReference iRef = en.getImportReference();
+				if (iRef != null && iRef.equals(ir))
+					return en;
+			}
+		}
+		return null;
+	}
+	
+	public void handleRSAEent(RemoteServiceAdminEvent event) {
+		final int type = event.getType();
+		Throwable t = event.getException();
+		if (t == null) {
+			TreeViewer treeViewer = this.viewer;
+			if (treeViewer == null) return;
+			switch (type) {
+			case RemoteServiceAdminEvent.IMPORT_UNREGISTRATION:
+				final ImportReference iRef = (ImportReference) event.getImportReference();
+				if (iRef != null) {
+					treeViewer.getControl().getDisplay().asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							EndpointNode en = findEndpointNode(iRef);
+							if (en != null)
+								en.setImportReference(null);
+							viewer.refresh();
+						}});
+				}
+				break;
+			}
+		}
 	}
 
 }

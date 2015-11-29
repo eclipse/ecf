@@ -138,6 +138,8 @@ public class DiscoveryComponent implements EndpointEventListener, RemoteServiceA
 	public void remoteAdminEvent(RemoteServiceAdminEvent event) {
 		if (rsaView != null)
 			rsaView.handleRSAEvent(event);
+		if (discoveryView != null)
+			discoveryView.handleRSAEent(event);
 	}
 
 	public void setRSAView(RemoteServiceAdminView rsaView) {
