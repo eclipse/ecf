@@ -499,14 +499,20 @@ public class EndpointDiscoveryView extends ViewPart {
 			if (treeViewer == null) return;
 			switch (type) {
 			case RemoteServiceAdminEvent.IMPORT_UNREGISTRATION:
-				final ImportReference iRef = (ImportReference) event.getImportReference();
-				if (iRef != null) {
+				final ImportReference ir = (ImportReference) event.getImportReference();
+				if (ir != null) {
 					treeViewer.getControl().getDisplay().asyncExec(new Runnable() {
 						@Override
 						public void run() {
-							EndpointNode en = findEndpointNode(iRef);
-							if (en != null)
-								en.setImportReference(null);
+							EndpointGroupNode egn = contentProvider.getRootNode();
+							for(AbstractEndpointNode aen: egn.getChildren()) {
+								if (aen instanceof EndpointNode) {
+									EndpointNode en = (EndpointNode) aen;
+									ImportReference iRef = en.getImportReference();
+									if (iRef != null && iRef.equals(ir))
+										en.setImportReference(null);
+								}
+							}
 							viewer.refresh();
 						}});
 				}
