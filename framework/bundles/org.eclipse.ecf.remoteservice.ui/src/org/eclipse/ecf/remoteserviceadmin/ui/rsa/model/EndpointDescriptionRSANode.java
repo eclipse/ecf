@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.eclipse.ecf.internal.remoteservices.ui.Messages;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin.ImportReference;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin.ImportRegistration;
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointAsyncInterfacesNode;
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.EndpointConfigTypesNode;
@@ -48,8 +49,7 @@ public class EndpointDescriptionRSANode extends AbstractRSANode {
 
 	public EndpointDescriptionRSANode(EndpointDescription ed, ImportRegistration ir) {
 		this.endpointNode = (ir == null) ? new EndpointNode(ed)
-				: new EndpointNode(ed,
-						new org.eclipse.ecf.remoteserviceadmin.ui.endpoint.model.ImportRegistrationNode(ir));
+				: new EndpointNode(ed, (ImportReference) ir.getImportReference());
 		// Interfaces
 		EndpointInterfacesNode ein = new EndpointInterfacesNode();
 		for (String intf : ed.getInterfaces())

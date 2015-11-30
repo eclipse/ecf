@@ -24,9 +24,9 @@ public class EndpointNode extends AbstractEndpointNode {
 		this.endpointDescription = ed;
 	}
 
-	@Deprecated
 	public EndpointNode(EndpointDescription ed, ImportRegistrationNode irn) {
-		
+		this.endpointDescription = ed;
+		this.importReference = (ImportReference) irn.getImportRegistration().getImportReference();
 	}
 	/**
 	 * @since 3.3
