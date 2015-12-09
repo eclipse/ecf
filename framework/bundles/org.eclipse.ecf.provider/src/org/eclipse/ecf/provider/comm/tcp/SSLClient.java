@@ -195,7 +195,7 @@ public final class SSLClient implements ISynchAsynchConnection {
 			setSocket(s);
 			outputStream = new ObjectOutputStream(s.getOutputStream());
 			outputStream.flush();
-			inputStream = new ObjectInputStream(s.getInputStream());
+			inputStream = ProviderPlugin.getDefault().createObjectInputStream(s.getInputStream());
 			debug("connect;" + anURI); //$NON-NLS-1$
 			// send connect data and get synchronous response
 			send(new ConnectRequestMessage(anURI, (Serializable) data));
@@ -212,6 +212,7 @@ public final class SSLClient implements ISynchAsynchConnection {
 		return ret;
 	}
 
+	@SuppressWarnings("unchecked")
 	private void setupThreads() {
 		// Setup threads
 		debug("setupThreads()"); //$NON-NLS-1$
@@ -519,6 +520,7 @@ public final class SSLClient implements ISynchAsynchConnection {
 		return properties;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class clazz) {
 		return null;
 	}
