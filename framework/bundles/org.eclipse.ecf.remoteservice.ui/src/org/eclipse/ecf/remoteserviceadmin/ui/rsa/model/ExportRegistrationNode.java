@@ -20,16 +20,28 @@ public class ExportRegistrationNode extends AbstractRegistrationNode {
 
 	private final ExportRegistration exportRegistration;
 
-	public ExportRegistrationNode(ExportRegistration eReg) {
-		super(eReg.getException());
-		this.exportRegistration = eReg;
-	}
-
-	public ExportRegistrationNode(Throwable t) {
-		super(t);
+	/**
+	 * @since 3.4
+	 */
+	public ExportRegistrationNode(Throwable t, boolean showStack) {
+		super(t, showStack);
 		this.exportRegistration = null;
 	}
 
+	public ExportRegistrationNode(Throwable t) {
+		this(t, false);
+	}
+
+	public ExportRegistrationNode(ExportRegistration eReg) {
+		super(eReg.getException(), false);
+		this.exportRegistration = eReg;
+	}
+
+	@Override
+	protected String getErrorName() {
+		return "Export " + super.getErrorName();
+	}
+	
 	protected ExportRegistration getExportRegistration() {
 		return this.exportRegistration;
 	}

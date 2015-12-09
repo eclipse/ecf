@@ -20,15 +20,28 @@ public class ImportRegistrationNode extends AbstractRegistrationNode {
 
 	private final ImportRegistration importRegistration;
 
-	public ImportRegistrationNode(ImportRegistration iReg) {
-		super(iReg.getException());
-		this.importRegistration = iReg;
+	/**
+	 * @since 3.4
+	 */
+	public ImportRegistrationNode(Throwable t, boolean showStack) {
+		super(t, showStack);
+		this.importRegistration = null;
 	}
 
 	public ImportRegistrationNode(Throwable t) {
-		super(t);
-		this.importRegistration = null;
+		this(t, false);
 	}
+
+	public ImportRegistrationNode(ImportRegistration iReg) {
+		super(iReg.getException(), false);
+		this.importRegistration = iReg;
+	}
+
+	@Override
+	protected String getErrorName() {
+		return "Import " + super.getErrorName();
+	}
+	
 
 	protected ImportRegistration getImportRegistration() {
 		return this.importRegistration;

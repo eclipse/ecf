@@ -24,8 +24,17 @@ public abstract class AbstractRegistrationNode extends AbstractRSANode {
 
 	private final Throwable error;
 
-	public AbstractRegistrationNode(Throwable t) {
+	/**
+	 * @since 3.4
+	 */
+	public AbstractRegistrationNode(Throwable t, boolean showStack) {
 		this.error = t;
+		if (this.error != null) 
+			addChild(new ExceptionNode(this.error, showStack));
+	}
+
+	public AbstractRegistrationNode(Throwable t) {
+		this(t, false);
 	}
 
 	protected Throwable getError() {
@@ -39,11 +48,25 @@ public abstract class AbstractRegistrationNode extends AbstractRSANode {
 	public abstract boolean isClosed();
 
 	protected abstract String getValidName();
-
+	
+	/**
+	 * @since 3.4
+	 */
+	protected String getErrorName(){
+		return ERROR;
+	}
+	
+	/**
+	 * @since 3.4
+	 */
+	protected String getClosedName() {
+		return CLOSED;
+	}
+	
 	public abstract ServiceReference getServiceReference();
 
 	public String getName() {
-		return hasError() ? ERROR : (isClosed() ? CLOSED : getValidName());
+		return hasError() ? getErrorName() : (isClosed() ? getClosedName() : getValidName());
 	}
 
 	@Override

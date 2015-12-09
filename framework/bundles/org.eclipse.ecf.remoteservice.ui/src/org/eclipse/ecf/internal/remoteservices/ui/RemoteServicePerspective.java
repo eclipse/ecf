@@ -66,13 +66,14 @@ public class RemoteServicePerspective implements IPerspectiveFactory {
 			Activator.getDefault().setLocalServicesViewId(viewId);
 		}
 		rightBottom.addView(viewId);
-
 		// Add properties view in the middle
 		bottom.addView(IPageLayout.ID_PROP_SHEET);
 		// Create folder for left side above Endpoint Discover/Service Discovery
 		// views
 		IFolderLayout left = layout.createFolder("left", IPageLayout.LEFT, 0.30f, editorArea); //$NON-NLS-1$
 		left.addView(RemoteServiceAdminView.ID_VIEW);
+		// Add error log view
+		left.addView("org.eclipse.pde.runtime.LogView");
 		// Top right.
 		IFolderLayout topRight = layout.createFolder("topRight", IPageLayout.RIGHT, 0.70f, editorArea); //$NON-NLS-1$
 		// Add Project Explorer view

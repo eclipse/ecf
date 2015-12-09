@@ -24,7 +24,8 @@ public class RSAAdapterFactory implements IAdapterFactory {
 	private ImportRegistrationNodeWorkbenchAdapter importRegistrationAdapter = new ImportRegistrationNodeWorkbenchAdapter();
 	private NameValuePropertyNodeWorkbenchAdapter nameValuePropertyAdapter = new NameValuePropertyNodeWorkbenchAdapter();
 	private EndpointDescriptionRSANodeWorkbenchAdapter edAdapter = new EndpointDescriptionRSANodeWorkbenchAdapter();
-
+	private ExceptionNodeWorkbenchAdapter enAdapter = new ExceptionNodeWorkbenchAdapter();
+	
 	@Override
 	public Object getAdapter(Object adaptableObject, @SuppressWarnings("rawtypes") Class adapterType) {
 		if (adapterType.isInstance(adaptableObject)) {
@@ -38,6 +39,8 @@ public class RSAAdapterFactory implements IAdapterFactory {
 	}
 
 	protected Object getWorkbenchElement(Object adaptableObject) {
+		if (adaptableObject instanceof ExceptionNode || adaptableObject instanceof StackTraceElementNode)
+			return enAdapter;
 		if (adaptableObject instanceof ExportedServicesRootNode)
 			return exportedServicesRootAdapter;
 		if (adaptableObject instanceof ImportedEndpointsRootNode)

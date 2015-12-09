@@ -288,7 +288,7 @@
          </adapter>
       </factory>
      
-                   <factory
+      <factory
             adaptableType="org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.EndpointDescriptionRSANode"
             class="org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.RSAAdapterFactory">
          <adapter
@@ -301,7 +301,35 @@
                type="org.eclipse.ui.model.IWorkbenchAdapter3">
          </adapter>
       </factory>
+      
+      <factory
+            adaptableType="org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.ExceptionNode"
+            class="org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.RSAAdapterFactory">
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter">
+         </adapter>
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter2">
+         </adapter>
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter3">
+         </adapter>
+      </factory>
             
+      <factory
+            adaptableType="org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.StackTraceElementNode"
+            class="org.eclipse.ecf.remoteserviceadmin.ui.rsa.model.RSAAdapterFactory">
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter">
+         </adapter>
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter2">
+         </adapter>
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter3">
+         </adapter>
+      </factory>
+
    </extension>
    
 
