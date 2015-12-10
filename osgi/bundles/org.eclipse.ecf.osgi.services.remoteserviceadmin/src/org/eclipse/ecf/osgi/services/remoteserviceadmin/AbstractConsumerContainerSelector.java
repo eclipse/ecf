@@ -199,10 +199,10 @@ public class AbstractConsumerContainerSelector extends
 					.getAdapter(IRemoteServiceContainerAdapter.class);
 			if (adapter == null)
 				throw new SelectContainerException(
-						"Container does not implement IRemoteServiceContainerAdapter", null, containerTypeDescription); //$NON-NLS-1$
+						"Container config id="+containerTypeDescriptionName+" does not implement IRemoteServiceContainerAdapter", null, containerTypeDescription); //$NON-NLS-1$ //$NON-NLS-2$
 			return new RemoteServiceContainer(container);
 		} catch (ContainerCreateException e) {
-			String message = "Cannot create container with container type description name=" //$NON-NLS-1$
+			String message = "Cannot create container config id=" //$NON-NLS-1$
 					+ containerTypeDescriptionName;
 			logException(message, e);
 			throw new SelectContainerException(message, e,
