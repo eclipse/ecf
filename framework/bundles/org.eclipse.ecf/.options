@@ -14,3 +14,5 @@ org.eclipse.ecf/debug/exceptions/throwing=false
 org.eclipse.ecf/debug/methods/entering=false
 # Trace when methods are exited
 org.eclipse.ecf/debug/methods/exiting=false
+
+org.eclipse.ecf/debug/bundleclassresolver=true

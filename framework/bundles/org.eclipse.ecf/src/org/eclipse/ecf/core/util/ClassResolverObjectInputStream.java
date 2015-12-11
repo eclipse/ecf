@@ -43,7 +43,7 @@ public class ClassResolverObjectInputStream extends ObjectInputStream {
 	}
 
 	public static ObjectInputStream create(BundleContext ctxt, InputStream ins) throws IOException {
-		return create(ctxt, ins, null);
+		return create(ctxt, ins, "(" + IClassResolver.BUNDLE_PROP_NAME + "=" + ctxt.getBundle().getSymbolicName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
 	private final BundleContext bundleContext;
@@ -82,23 +82,20 @@ public class ClassResolverObjectInputStream extends ObjectInputStream {
 		return this.bundleContext;
 	}
 
-	private IClassResolver getClassResolver() {
+	@SuppressWarnings("unused")
+	@Override
+	protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
 		synchronized (trackerLock) {
 			if (classResolverST == null) {
 				classResolverST = new ServiceTracker<IClassResolver, IClassResolver>(this.bundleContext, classResolverFilter, null);
 				classResolverST.open();
 			}
 		}
-		return this.classResolverST.getService();
-	}
-
-	@SuppressWarnings("unused")
-	@Override
-	protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
-		IClassResolver classResolver = getClassResolver();
-		if (classResolver != null)
+		IClassResolver classResolver = this.classResolverST.getService();
+		if (classResolver != null) {
 			return classResolver.resolveClass(desc);
-		throw new ClassNotFoundException("Cannot deserialize class description=" + desc + " because no OSGi IClassResolver registered"); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		throw new ClassNotFoundException("Cannot deserialize class=" + desc + " because no IClassResolver service available"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public static Class<?> resolvePrimitiveClass(ObjectStreamClass desc, ClassNotFoundException cnfe) throws ClassNotFoundException {

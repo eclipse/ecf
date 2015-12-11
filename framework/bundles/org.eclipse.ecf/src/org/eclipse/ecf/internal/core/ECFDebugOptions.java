@@ -20,4 +20,5 @@ public interface ECFDebugOptions {
 
 	public static final String METHODS_EXITING = DEBUG + "/methods/exiting"; //$NON-NLS-1$
 
+	public static final String BUNDLECLASSRESOLVER = DEBUG + "/bundleclassresolver"; //$NON-NLS-1$
 }
