@@ -203,7 +203,20 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	 * may dispose itself when the connection went down.
 	 */
 	boolean hasRedundantLinks = false;
+	
+	boolean traceChannelEndpoint = new Boolean(System.getProperty("ch.ethz.iks.r_osgi.impl.traceChannelEndpoint","false")).booleanValue();
 
+	void trace(String message) {
+		trace(message, null);
+	}
+	
+	void trace(String message, Throwable t) {
+		if (message != null) 
+			System.out.println("ChannelEndpoint;"+message);
+		if (t != null)
+			t.printStackTrace();
+	}
+	
 	/**
 	 * create a new channel endpoint.
 	 * 
@@ -218,6 +231,7 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	 */
 	ChannelEndpointImpl(final NetworkChannelFactory factory,
 			final URI endpointAddress) throws RemoteOSGiException, IOException {
+		trace("<init>(factory="+factory+",endpointAddress="+endpointAddress+")");
 		networkChannel = factory.getConnection(this, endpointAddress);
 		if (RemoteOSGiServiceImpl.DEBUG) {
 			RemoteOSGiServiceImpl.log.log(LogService.LOG_DEBUG,
@@ -234,6 +248,7 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	 *            the network channel of the incoming connection.
 	 */
 	ChannelEndpointImpl(final NetworkChannel channel) {
+		trace("<init>(channel="+channel+";remoteAddress="+channel.getRemoteAddress()+";localAddress="+channel.getLocalAddress()+")");
 		networkChannel = channel;
 		channel.bind(this);
 		initThreadPool();
@@ -298,6 +313,7 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 					if (reply != null) {
 
 						try {
+							trace("reply(msg="+reply+";remoteAddress="+networkChannel.getRemoteAddress()+")");
 							networkChannel.sendMessage(reply);
 						} catch (final NotSerializableException nse) {
 							throw new RemoteOSGiException("Error sending " //$NON-NLS-1$
@@ -1059,6 +1075,7 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 		
 		try {
 			try {
+				trace("send(msg="+msg+";remoteAddress="+networkChannel.getRemoteAddress()+")");
 				networkChannel.sendMessage(msg);
 				return;
 			} catch (final IOException ioe) {
@@ -1099,6 +1116,7 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	RemoteOSGiMessage handleMessage(final RemoteOSGiMessage msg)
 			throws RemoteOSGiException {
 
+		trace("handleMessage(msg="+msg+";remoteAddress="+networkChannel.getRemoteAddress()+")");
 		switch (msg.getFuncID()) {
 		// requests
 		case RemoteOSGiMessage.LEASE: {
