@@ -13,6 +13,7 @@
 -Dosgi.noShutdown=true 
 -DverboseRemoteServiceAdmin=true
 -Dservice.exported.configs=ecf.r_osgi.peer.ws
+-Decf.r_osgi.peer.ws.id=r-osgi.ws://myhost
 -Dch.ethz.iks.r_osgi.transport.registerHttps=false
 -Dch.ethz.iks.r_osgi.registerDefaultChannel=false
 -Dch.ethz.iks.r_osgi.topic.filter=*
@@ -44,7 +45,6 @@
       <plugin id="org.apache.felix.gogo.shell"/>
       <plugin id="org.eclipse.core.jobs"/>
       <plugin id="org.eclipse.ecf"/>
-      <plugin id="org.eclipse.ecf.console"/>
       <plugin id="org.eclipse.ecf.discovery"/>
       <plugin id="org.eclipse.ecf.identity"/>
       <plugin id="org.eclipse.ecf.osgi.services.distribution"/>
@@ -63,7 +63,7 @@
       <plugin id="org.eclipse.osgi"/>
       <plugin id="org.eclipse.osgi.services"/>
       <plugin id="org.eclipse.osgi.services.remoteserviceadmin"/>
-      <plugin id="org.objectweb.asm" version="3.3.1"/>
+      <plugin id="org.objectweb.asm"/>
    </plugins>
 
    <configurations>
@@ -77,7 +77,6 @@
       <plugin id="org.apache.felix.gogo.shell" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.core.jobs" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.ecf.console" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.discovery" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.identity" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.osgi.services.distribution" autoStart="true" startLevel="5" />
