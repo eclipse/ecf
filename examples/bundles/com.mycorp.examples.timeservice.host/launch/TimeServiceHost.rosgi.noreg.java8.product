@@ -43,7 +43,6 @@
       <plugin id="org.apache.felix.gogo.shell"/>
       <plugin id="org.eclipse.core.jobs"/>
       <plugin id="org.eclipse.ecf"/>
-      <plugin id="org.eclipse.ecf.console"/>
       <plugin id="org.eclipse.ecf.discovery"/>
       <plugin id="org.eclipse.ecf.identity"/>
       <plugin id="org.eclipse.ecf.osgi.services.distribution"/>
@@ -53,7 +52,7 @@
       <plugin id="org.eclipse.ecf.provider.jmdns"/>
       <plugin id="org.eclipse.ecf.provider.r_osgi"/>
       <plugin id="org.eclipse.ecf.remoteservice"/>
-      <plugin id="org.eclipse.ecf.remoteservice.asyncproxy" version="2.0.0.v20140410-1838"/>
+      <plugin id="org.eclipse.ecf.remoteservice.asyncproxy" version="2.0.100.v20150702-1411"/>
       <plugin id="org.eclipse.ecf.sharedobject"/>
       <plugin id="org.eclipse.equinox.common"/>
       <plugin id="org.eclipse.equinox.concurrent"/>
@@ -74,7 +73,6 @@
       <plugin id="org.apache.felix.gogo.shell" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.core.jobs" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.ecf.console" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.discovery" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.identity" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.osgi.services.distribution" autoStart="true" startLevel="5" />
