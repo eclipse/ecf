@@ -50,6 +50,10 @@ public class DnsSdNamespace extends Namespace {
 			IServiceTypeID serviceTypeID = (IServiceTypeID) parameters[0];
 			URI uri = (URI) parameters[1];
 			return new DnsSdServiceID(this, new DnsSdServiceTypeID(this, serviceTypeID), uri);
+		} else if (parameters != null && parameters.length == 2 && parameters[0] instanceof String && parameters[1] instanceof URI){
+			String serviceType = (String) parameters[0];
+			URI uri = (URI) parameters[1];
+			return new DnsSdServiceID(this, new DnsSdServiceTypeID(this, serviceType), uri);
 		} else {
 			throw new IDCreateException(Messages.DnsSdNamespace_Wrong_Parameters);
 		}
@@ -66,6 +70,6 @@ public class DnsSdNamespace extends Namespace {
 	 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedParameterTypes()
 	 */
 	public Class[][] getSupportedParameterTypes() {
-		return new Class[][] {{String.class}, {IServiceTypeID.class}, {IServiceTypeID.class, URI.class}};
+		return new Class[][] {{String.class}, {IServiceTypeID.class}, {IServiceTypeID.class, URI.class}, {String.class, URI.class}};
 	}
 }
