@@ -9,6 +9,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.discovery;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.*;
@@ -25,35 +27,42 @@ public class IServiceInfoServiceListener {
 
 	private final ServiceTracker serviceTracker;
 
+	void logException(String message, Throwable t) {
+		DiscoveryPlugin.getDefault().log(new Status(IStatus.ERROR, DiscoveryPlugin.PLUGIN_ID, message, t));
+	}
+
 	public IServiceInfoServiceListener(final IDiscoveryAdvertiser advertiser) {
-		final BundleContext bundleContext = DiscoveryPlugin.getDefault()
-				.getBundleContext();
-		serviceTracker = new ServiceTracker(bundleContext, IServiceInfo.class,
-				new ServiceTrackerCustomizer() {
+		final BundleContext bundleContext = DiscoveryPlugin.getDefault().getBundleContext();
+		serviceTracker = new ServiceTracker(bundleContext, IServiceInfo.class, new ServiceTrackerCustomizer() {
 
-					public Object addingService(ServiceReference reference) {
-						final IServiceInfo serviceInfo = (IServiceInfo) bundleContext
-								.getService(reference);
-						final IServiceInfo specific = convertToProviderSpecific(
-								advertiser, serviceInfo);
-						advertiser.registerService(specific);
-						return serviceInfo;
-					}
+			public Object addingService(ServiceReference reference) {
+				final IServiceInfo serviceInfo = (IServiceInfo) bundleContext.getService(reference);
+				try {
+					advertiser.registerService(convertToProviderSpecific(advertiser, serviceInfo));
+				} catch (Exception e) {
+					logException("Advertiser.registerService failed", e);
+				}
+				return serviceInfo;
+			}
 
-					public void modifiedService(ServiceReference reference,
-							Object service) {
-						// TODO discovery containers might require to
-						// unregisterService first
-						advertiser.registerService(convertToProviderSpecific(
-								advertiser, (IServiceInfo) service));
-					}
+			public void modifiedService(ServiceReference reference, Object service) {
+				// TODO discovery containers might require to
+				// unregisterService first
+				try {
+					advertiser.registerService(convertToProviderSpecific(advertiser, (IServiceInfo) service));
+				} catch (Exception e) {
+					logException("Advertiser.modifiedService failed", e);
+				}
+			}
 
-					public void removedService(ServiceReference reference,
-							Object service) {
-						advertiser.unregisterService(convertToProviderSpecific(
-								advertiser, (IServiceInfo) service));
-					}
-				});
+			public void removedService(ServiceReference reference, Object service) {
+				try {
+					advertiser.unregisterService(convertToProviderSpecific(advertiser, (IServiceInfo) service));
+				} catch (Exception e) {
+					logException("Advertiser.removedService failed", e);
+				}
+			}
+		});
 		serviceTracker.open();
 	}
 
@@ -63,8 +72,7 @@ public class IServiceInfoServiceListener {
 	 * specific one. This is required so that discovery providers can correctly
 	 * advertise services.
 	 */
-	private IServiceInfo convertToProviderSpecific(
-			final IDiscoveryAdvertiser advertiser,
+	private IServiceInfo convertToProviderSpecific(final IDiscoveryAdvertiser advertiser,
 			final IServiceInfo genericInfo) {
 
 		// Convert similar to
@@ -73,18 +81,13 @@ public class IServiceInfoServiceListener {
 		final Namespace servicesNamespace = advertiser.getServicesNamespace();
 
 		final IServiceID genericServiceID = genericInfo.getServiceID();
-		final ServiceID specificServiceID = (ServiceID) servicesNamespace
-				.createInstance(new Object[] {
-						genericServiceID.getServiceTypeID().getName(),
-						genericServiceID.getLocation() });
+		final ServiceID specificServiceID = (ServiceID) servicesNamespace.createInstance(
+				new Object[] { genericServiceID.getServiceTypeID().getName(), genericServiceID.getLocation() });
 
-		final IServiceTypeID serviceTypeID = specificServiceID
-				.getServiceTypeID();
+		final IServiceTypeID serviceTypeID = specificServiceID.getServiceTypeID();
 
-		return new ServiceInfo(genericServiceID.getLocation(),
-				genericInfo.getServiceName(), serviceTypeID,
-				genericInfo.getPriority(), genericInfo.getWeight(),
-				genericInfo.getServiceProperties());
+		return new ServiceInfo(genericServiceID.getLocation(), genericInfo.getServiceName(), serviceTypeID,
+				genericInfo.getPriority(), genericInfo.getWeight(), genericInfo.getServiceProperties());
 	}
 
 	public void dispose() {

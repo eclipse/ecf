@@ -102,8 +102,8 @@ public abstract class DnsSdDiscoveryContainerAdapter extends
 		Assert.isNotNull(serviceInfo);
 		// nop, we are just a Locator but AbstractDiscoveryContainerAdapter
 		// doesn't support this yet
-//		throw new UnsupportedOperationException(
-//				Messages.DnsSdDiscoveryContainerAdapter_No_IDiscovery_Advertiser);
+		throw new UnsupportedOperationException(
+				Messages.DnsSdDiscoveryContainerAdapter_No_IDiscovery_Advertiser);
 	}
 
 	/* (non-Javadoc)
@@ -113,8 +113,8 @@ public abstract class DnsSdDiscoveryContainerAdapter extends
 		Assert.isNotNull(serviceInfo);
 		// nop, we are just a Locator but AbstractDiscoveryContainerAdapter
 		// doesn't support this yet
-//		throw new UnsupportedOperationException(
-//				Messages.DnsSdDiscoveryContainerAdapter_No_IDiscovery_Advertiser);
+		throw new UnsupportedOperationException(
+				Messages.DnsSdDiscoveryContainerAdapter_No_IDiscovery_Advertiser);
 	}
 
 	/* (non-Javadoc)
