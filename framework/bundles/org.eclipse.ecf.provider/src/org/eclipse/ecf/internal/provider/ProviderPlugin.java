@@ -78,14 +78,13 @@ public class ProviderPlugin implements BundleActivator {
 				context1.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(SSLGenericContainerInstantiator.SSLCLIENT_NAME, new SSLGenericContainerInstantiator(), "ECF SSL Generic Client", false, true), null); //$NON-NLS-1$
 			}
 		});
-		// testing
 		Hashtable<String, Object> props = new Hashtable<String, Object>();
 		props.put(IClassResolver.BUNDLE_PROP_NAME, PLUGIN_ID);
 		this.context.registerService(IClassResolver.class, new BundleClassResolver(context.getBundle()), props);
 	}
 
 	public ObjectInputStream createObjectInputStream(InputStream ins) throws IOException {
-		return ClassResolverObjectInputStream.create(this.context, ins, "(" + IClassResolver.BUNDLE_PROP_NAME + "=" + this.context.getBundle().getSymbolicName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		return ClassResolverObjectInputStream.create(this.context, ins);
 	}
 
 	/**
