@@ -18,11 +18,11 @@ public class AllTests extends RndStatsTestCase {
 		}
 		
 		//$JUnit-BEGIN$
-		suite.addTestSuite(CompositeDiscoveryContainerTest.class);
-		suite.addTestSuite(CompositeDiscoveryContainerWithoutRegTest.class);
-		suite.addTestSuite(CompositeDiscoveryServiceContainerTest.class);
-		suite.addTestSuite(WithoutJMDNSCompositeDiscoveryServiceContainerTest.class);
-		suite.addTestSuite(WithoutJSLPCompositeDiscoveryServiceContainerTest.class);
+		//suite.addTestSuite(CompositeDiscoveryContainerTest.class);
+		//suite.addTestSuite(CompositeDiscoveryContainerWithoutRegTest.class);
+		//suite.addTestSuite(CompositeDiscoveryServiceContainerTest.class);
+		//suite.addTestSuite(WithoutJMDNSCompositeDiscoveryServiceContainerTest.class);
+		//suite.addTestSuite(WithoutJSLPCompositeDiscoveryServiceContainerTest.class);
 		//$JUnit-END$
 		
 		// Since using randomized tests, turn on proper cleanup
