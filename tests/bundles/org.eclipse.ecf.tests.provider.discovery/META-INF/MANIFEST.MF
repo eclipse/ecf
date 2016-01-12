@@ -18,4 +18,3 @@ Require-Bundle: org.junit,
 Bundle-Vendor: %plugin.provider
 Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
  J2SE-1.4
-Export-Package: org.eclipse.ecf.tests.provider.discovery;version="2.1.0"

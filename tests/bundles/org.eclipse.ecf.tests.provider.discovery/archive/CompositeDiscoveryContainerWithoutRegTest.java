@@ -16,8 +16,8 @@ import org.eclipse.ecf.tests.discovery.DiscoveryTestsWithoutRegister;
 public class CompositeDiscoveryContainerWithoutRegTest extends
 		DiscoveryTestsWithoutRegister {
 
-	public CompositeDiscoveryContainerWithoutRegTest() {
-		super(CompositeDiscoveryContainer.NAME);
-	}
+//	public CompositeDiscoveryContainerWithoutRegTest() {
+//		super(CompositeDiscoveryContainer.NAME);
+//	}
 
 }
