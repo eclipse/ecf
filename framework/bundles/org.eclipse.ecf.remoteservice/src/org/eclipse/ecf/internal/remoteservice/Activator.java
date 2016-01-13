@@ -11,6 +11,7 @@
 
 package org.eclipse.ecf.internal.remoteservice;
 
+import java.io.*;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.*;
@@ -186,6 +187,13 @@ public class Activator implements BundleActivator {
 		distributionProviderTracker = new ServiceTracker<IRemoteServiceDistributionProvider, IRemoteServiceDistributionProvider>(getContext(), IRemoteServiceDistributionProvider.class, distributionProviderCustomizer);
 		distributionProviderTracker.open();
 
+		Hashtable<String, Object> crProps = new Hashtable<String, Object>();
+		crProps.put(IClassResolver.BUNDLE_PROP_NAME, PLUGIN_ID);
+		this.context.registerService(IClassResolver.class, new BundleClassResolver(context.getBundle()), crProps);
+	}
+
+	public ObjectInputStream createObjectInputStream(InputStream ins) throws IOException {
+		return ClassResolverObjectInputStream.create(this.context, ins);
 	}
 
 	/*
