@@ -10,6 +10,7 @@
 package org.eclipse.ecf.remoteservice.util;
 
 import java.io.*;
+import org.eclipse.ecf.internal.remoteservice.Activator;
 
 /**
  * @since 8.1
@@ -32,7 +33,7 @@ public class ObjectSerializationUtil {
 		if (bytes.length == 0)
 			return null;
 		ByteArrayInputStream bins = new ByteArrayInputStream(bytes);
-		ObjectInputStream oins = new ObjectInputStream(bins);
+		ObjectInputStream oins = Activator.getDefault().createObjectInputStream(bins);
 		Object result = null;
 		try {
 			result = oins.readObject();
