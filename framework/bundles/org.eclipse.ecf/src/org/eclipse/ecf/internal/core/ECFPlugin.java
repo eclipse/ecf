@@ -70,7 +70,7 @@ public class ECFPlugin implements BundleActivator {
 
 	BundleContext context = null;
 
-	private Map disposables = new WeakHashMap();
+	private Map disposables = new HashMap(1);
 
 	// This is Object rather than IExtensionRegistryManager to avoid loading 
 	// IRegistryChangeListener class (optional)
@@ -387,7 +387,8 @@ public class ECFPlugin implements BundleActivator {
 			// The only required attribute is "factoryName"
 			String factoryName = member.getAttribute(FACTORY_ATTRIBUTE);
 			// Skip over if factory name is invalid
-			if (factoryName == null || "".equals(factoryName))continue; //$NON-NLS-1$
+			if (factoryName == null || "".equals(factoryName)) //$NON-NLS-1$
+				continue;
 			IContainerManager manager = (IContainerManager) ContainerFactory.getDefault();
 			IContainer[] containers = manager.getAllContainers();
 			if (containers == null)
@@ -480,7 +481,8 @@ public class ECFPlugin implements BundleActivator {
 				// The only required attribute is "factoryName"
 				factory = member.getAttribute(FACTORY_ATTRIBUTE);
 				// Skip over if factory name is invalid
-				if (factory == null || "".equals(factory))continue; //$NON-NLS-1$
+				if (factory == null || "".equals(factory)) //$NON-NLS-1$
+					continue;
 				// get id attribute
 				id = member.getAttribute(ID_ATTRIBUTE);
 				id = (id == null || "".equals(id)) ? null : id; //$NON-NLS-1$
