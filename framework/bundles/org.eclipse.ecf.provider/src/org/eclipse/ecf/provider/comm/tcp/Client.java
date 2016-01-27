@@ -97,8 +97,9 @@ public final class Client implements ISynchAsynchConnection {
 
 	public Client(Socket aSocket, ObjectInputStream iStream, ObjectOutputStream oStream, ISynchAsynchEventHandler handler, int maxmsgs) throws IOException {
 		Assert.isNotNull(aSocket);
-		if (aSocket.getKeepAlive())
-			keepAlive = aSocket.getSoTimeout();
+		keepAlive = Integer.valueOf(System.getProperty("org.eclipse.ecf.provider.comm.tcp.defaultServerKeepAlive", "30000")).intValue(); //$NON-NLS-1$ //$NON-NLS-2$
+		if (keepAlive > 0)
+			aSocket.setSoTimeout(keepAlive);
 		setSocket(aSocket);
 		inputStream = iStream;
 		outputStream = oStream;
