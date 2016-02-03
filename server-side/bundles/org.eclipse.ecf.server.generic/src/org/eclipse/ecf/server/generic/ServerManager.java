@@ -21,6 +21,7 @@ import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
+import org.eclipse.ecf.core.util.ExtensionRegistryRunnable;
 import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
@@ -64,16 +65,15 @@ public class ServerManager {
 	public static final String DISCOVERY_ATTR = "discovery"; //$NON-NLS-1$
 
 	public ServerManager() {
-		final IExtensionRegistry reg = Activator.getDefault().getExtensionRegistry();
-		try {
-			if (reg != null && reg.getExtensionPoint(EXTENSION_POINT) != null) {
-				createServersFromExtensionRegistry(reg);
-			} else {
+		SafeRunner.run(new ExtensionRegistryRunnable(Activator.getDefault().getContext()) {
+			protected void runWithoutRegistry() throws Exception {
 				createServersFromConfigurationFile(Activator.getDefault().getBundle().getEntry("server.xml").openStream()); //$NON-NLS-1$
 			}
-		} catch (final Exception e) {
-			Activator.log("Exception creating servers", e); //$NON-NLS-1$
-		}
+
+			protected void runWithRegistry(IExtensionRegistry registry) throws Exception {
+				createServersFromExtensionRegistry(registry);
+			}
+		});
 	}
 
 	public synchronized ISharedObjectContainer getServer(ID id) {
@@ -82,7 +82,7 @@ public class ServerManager {
 		return (ISharedObjectContainer) servers.get(id);
 	}
 
-	private void createServersFromExtensionRegistry(IExtensionRegistry registry) throws Exception {
+	void createServersFromExtensionRegistry(IExtensionRegistry registry) throws Exception {
 		final IExtensionPoint extensionPoint = registry.getExtensionPoint(EXTENSION_POINT);
 		if (extensionPoint == null)
 			return;
@@ -161,7 +161,7 @@ public class ServerManager {
 		}
 	}
 
-	private void createServersFromConfigurationFile(InputStream ins) throws Exception {
+	void createServersFromConfigurationFile(InputStream ins) throws Exception {
 		final ServerConfigParser scp = new ServerConfigParser();
 		final List connectors = scp.load(ins);
 		if (connectors != null)

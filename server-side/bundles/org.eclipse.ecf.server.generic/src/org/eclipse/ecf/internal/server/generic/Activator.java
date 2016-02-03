@@ -1,13 +1,11 @@
 package org.eclipse.ecf.internal.server.generic;
 
-import org.eclipse.ecf.server.generic.GenericServerContainerGroupFactory;
-
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.IContainerManager;
-import org.eclipse.ecf.core.util.LogHelper;
+import org.eclipse.ecf.core.util.*;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
-import org.eclipse.ecf.server.generic.IGenericServerContainerGroupFactory;
-import org.eclipse.ecf.server.generic.ServerManager;
+import org.eclipse.ecf.provider.remoteservice.generic.RemoteServiceContainerAdapterFactory;
+import org.eclipse.ecf.server.generic.*;
 import org.osgi.framework.*;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
@@ -27,8 +25,6 @@ public class Activator implements BundleActivator {
 
 	private ServerManager serverManager = null;
 
-	private ServiceTracker extensionRegistryTracker = null;
-
 	private ServiceTracker discoveryTracker = null;
 
 	private ServiceTracker logServiceTracker = null;
@@ -45,8 +41,8 @@ public class Activator implements BundleActivator {
 		// null constructor
 	}
 
-	public IExtensionRegistry getExtensionRegistry() {
-		return (IExtensionRegistry) extensionRegistryTracker.getService();
+	public BundleContext getContext() {
+		return context;
 	}
 
 	public IDiscoveryAdvertiser getDiscovery() {
@@ -89,14 +85,30 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext ctxt) throws Exception {
 		this.context = ctxt;
 		plugin = this;
-		this.extensionRegistryTracker = new ServiceTracker(ctxt, IExtensionRegistry.class.getName(), null);
-		this.extensionRegistryTracker.open();
 		this.discoveryTracker = new ServiceTracker(ctxt, IDiscoveryAdvertiser.class.getName(), null);
 		this.discoveryTracker.open();
-		serverManager = new ServerManager();
+		try {
+			// for backward compatibility
+			serverManager = new ServerManager();
+		} catch (Throwable t) {
+			t.printStackTrace();
+		}
 		// Register generic server container group factory service
 		this.gscgFactory = new GenericServerContainerGroupFactory();
 		this.gscgRegistration = this.context.registerService(IGenericServerContainerGroupFactory.class.getName(), gscgFactory, null);
+
+		SafeRunner.run(new ExtensionRegistryRunnable(this.context) {
+			protected void runWithoutRegistry() throws Exception {
+				AdapterManagerTracker t = new AdapterManagerTracker(getContext());
+				t.open();
+				IAdapterManager am = t.getAdapterManager();
+				t.close();
+				if (am != null) {
+					am.registerAdapters(new RemoteServiceContainerAdapterFactory(), org.eclipse.ecf.server.generic.GenericServerContainer.class);
+					am.registerAdapters(new RemoteServiceContainerAdapterFactory(), org.eclipse.ecf.server.generic.SSLGenericServerContainer.class);
+				}
+			}
+		});
 	}
 
 	/*
@@ -111,10 +123,6 @@ public class Activator implements BundleActivator {
 		if (logServiceTracker != null) {
 			logServiceTracker.close();
 			logServiceTracker = null;
-		}
-		if (extensionRegistryTracker != null) {
-			extensionRegistryTracker.close();
-			extensionRegistryTracker = null;
 		}
 		if (discoveryTracker != null) {
 			discoveryTracker.close();
