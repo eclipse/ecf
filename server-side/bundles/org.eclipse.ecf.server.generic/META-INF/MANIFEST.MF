@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.server.generic;singleton:=true
-Bundle-Version: 7.1.0.qualifier
+Bundle-Version: 8.0.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.server.generic.Activator
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
@@ -13,13 +13,13 @@ Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.ecf.discovery,
  org.eclipse.ecf.provider.remoteservice;bundle-version="3.0.0",
  org.eclipse.ecf.remoteservice;bundle-version="3.0.0",
- org.eclipse.equinox.registry;resolution:=optional
+ org.eclipse.equinox.registry;resolution:=optional,
+ org.eclipse.equinox.app;resolution:=optional
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.internal.server.generic;version="6.0.0";x-internal:=true,
  org.eclipse.ecf.server.generic;version="7.1.0",
  org.eclipse.ecf.server.generic.app;version="6.0.0"
 Import-Package: javax.xml.parsers,
- org.eclipse.equinox.app;version="1.0.0",
  org.osgi.framework,
  org.osgi.service.log,
  org.osgi.util.tracker,
