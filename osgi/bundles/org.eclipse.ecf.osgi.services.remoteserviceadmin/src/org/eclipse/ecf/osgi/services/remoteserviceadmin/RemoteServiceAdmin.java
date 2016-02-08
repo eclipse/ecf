@@ -33,9 +33,11 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.ecf.core.ContainerConnectException;
+import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.StringID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
@@ -320,8 +322,27 @@ public class RemoteServiceAdmin implements
 							}
 						});
 			} catch (PrivilegedActionException e) {
+				Exception except = e.getException();
 				// see discussion on osgi bug https://www.osgi.org/members/bugzilla/show_bug.cgi?id=2591
-				throw new IllegalArgumentException("Failed to select, create, or configure ECF host container",e.getException()); //$NON-NLS-1$
+				String errorMessage = "Failed to select host container"; //$NON-NLS-1$
+				if (except instanceof SelectContainerException) {
+					SelectContainerException sce = (SelectContainerException) except;
+					Throwable sceCause = sce.getCause();
+					if (sceCause instanceof ContainerCreateException) {
+						// Some dummy props need to be set to allow the creation of a dummy export registration
+						Map<String,Object> props = new HashMap<String,Object>(overridingProperties);
+						props.put(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID, "0"); //$NON-NLS-1$
+						props.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED_CONFIGS, "import.error.config"); //$NON-NLS-1$
+						props.put(RemoteConstants.ENDPOINT_ID,"export.error.id"); //$NON-NLS-1$
+						props.put(RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE, StringID.class.getName());
+						ExportRegistration errorRegistration = new RemoteServiceAdmin.ExportRegistration(sceCause,
+								new EndpointDescription(serviceReference,props));
+						addExportRegistration(errorRegistration);
+						resultRegistrations.add(errorRegistration);
+					} else
+						throw new IllegalArgumentException(errorMessage, except);
+				} else
+					throw new IllegalArgumentException(errorMessage, except);
 			}
 			// If no registration exist (no errorRegistration added above)
 			if (resultRegistrations.size() == 0) {
