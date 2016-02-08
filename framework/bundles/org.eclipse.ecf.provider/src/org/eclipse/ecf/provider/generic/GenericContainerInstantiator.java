@@ -296,6 +296,8 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 				gcargs = getServerArgs(args);
 				return createServerContainer(gcargs);
 			}
+		} catch (IllegalArgumentException e) {
+			throw e;
 		} catch (Exception e) {
 			Trace.catching(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "createInstance", e); //$NON-NLS-1$
 			ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, CREATE_INSTANCE_ERROR_CODE, "createInstance", e)); //$NON-NLS-1$
@@ -304,6 +306,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	protected Set getAdaptersForClass(Class clazz) {
 		Set result = new HashSet();
 		IAdapterManager adapterManager = ProviderPlugin.getDefault().getAdapterManager();
@@ -312,6 +315,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	protected Set getInterfacesForClass(Set s, Class clazz) {
 		if (clazz.equals(Object.class))
 			return s;
@@ -320,6 +324,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 		return s;
 	}
 
+	@SuppressWarnings("unchecked")
 	protected Set getInterfacesForClass(Class clazz) {
 		Set clazzes = getInterfacesForClass(new HashSet(), clazz);
 		Set result = new HashSet();
@@ -328,6 +333,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	protected String[] getInterfacesAndAdaptersForClass(Class clazz) {
 		Set result = getAdaptersForClass(clazz);
 		result.addAll(getInterfacesForClass(clazz));
@@ -369,6 +375,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 	/**
 	 * @since 3.0
 	 */
+	@SuppressWarnings("unchecked")
 	public String[] getImportedConfigs(ContainerTypeDescription description, String[] exporterSupportedConfigs) {
 		if (exporterSupportedConfigs == null)
 			return null;
