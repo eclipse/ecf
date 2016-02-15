@@ -138,7 +138,7 @@
     <rm:provider componentTypes="osgi.bundle" readerType="p2" source="false" mutable="false">
       <rm:property key="buckminster.source" value="false"/>
       <rm:property key="buckminster.mutable" value="false"/>
-      <rm:uri format="http://download.eclipse.org/tools/orbit/downloads/drops/S20151204220443/repository/"/>
+      <rm:uri format="http://download.eclipse.org/tools/orbit/downloads/drops/I20160209143415/repository/"/>
     </rm:provider>
 
     <rm:provider componentTypes="osgi.bundle" readerType="p2" source="false" mutable="false">
