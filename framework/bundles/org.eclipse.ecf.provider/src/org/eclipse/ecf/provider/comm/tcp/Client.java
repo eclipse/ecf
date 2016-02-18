@@ -51,7 +51,6 @@ public final class Client implements ISynchAsynchConnection {
 	protected boolean waitForPing = false;
 	protected PingMessage ping = new PingMessage();
 	protected PingResponseMessage pingResp = new PingResponseMessage();
-	protected int maxMsg = DEFAULT_MAX_BUFFER_MSG;
 	protected long closeTimeout = DEFAULT_CLOSE_TIMEOUT;
 	protected Map properties;
 	protected ID containerID = null;
@@ -105,7 +104,6 @@ public final class Client implements ISynchAsynchConnection {
 		outputStream = oStream;
 		this.handler = handler;
 		containerID = handler.getEventHandlerID();
-		maxMsg = maxmsgs;
 		properties = new Properties();
 		setupThreads();
 	}
@@ -245,7 +243,6 @@ public final class Client implements ISynchAsynchConnection {
 	Thread getSendThread() {
 		final Thread aThread = new Thread(new Runnable() {
 			public void run() {
-				int msgCount = 0;
 				Thread me = Thread.currentThread();
 				// Loop until done sending messages (thread explicitly
 				// interrupted or queue.peekQueue() returns null
@@ -262,14 +259,6 @@ public final class Client implements ISynchAsynchConnection {
 						send(aMsg);
 						// Successful...remove message from queue
 						queue.removeHead();
-						if (msgCount >= maxMsg) {
-							// need to synchronize to avoid concurrent access to outputStream
-							synchronized (outputStreamLock) {
-								outputStream.reset();
-							}
-							msgCount = 0;
-						} else
-							msgCount++;
 					} catch (Exception e) {
 						handleException(e);
 						break;
@@ -311,8 +300,6 @@ public final class Client implements ISynchAsynchConnection {
 	}
 
 	void send(Serializable snd) throws IOException {
-		//		debug("send(" + snd + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-		// need to synchronize to avoid concurrent access to outputStream
 		synchronized (outputStreamLock) {
 			outputStream.writeObject(snd);
 			outputStream.flush();

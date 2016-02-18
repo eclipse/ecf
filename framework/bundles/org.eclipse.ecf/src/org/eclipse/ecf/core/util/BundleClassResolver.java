@@ -10,8 +10,6 @@ package org.eclipse.ecf.core.util;
 
 import java.io.ObjectStreamClass;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.ecf.internal.core.ECFDebugOptions;
-import org.eclipse.ecf.internal.core.ECFPlugin;
 import org.osgi.framework.Bundle;
 
 /**
@@ -28,12 +26,10 @@ public class BundleClassResolver implements IClassResolver {
 
 	@SuppressWarnings("unused")
 	protected void verifyClass(ObjectStreamClass desc) throws ClassNotFoundException {
-		// do nothing
+		// do nothing by default
 	}
 
 	public Class<?> resolveClass(ObjectStreamClass desc) throws ClassNotFoundException {
-
-		Trace.trace(ECFPlugin.PLUGIN_ID, ECFDebugOptions.BUNDLECLASSRESOLVER, this.getClass(), "resolveClass", "bundle=" + this.bundle + ",class=" + desc); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 		verifyClass(desc);
 

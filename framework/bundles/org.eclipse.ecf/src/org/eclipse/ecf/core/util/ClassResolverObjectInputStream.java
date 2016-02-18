@@ -48,8 +48,6 @@ public class ClassResolverObjectInputStream extends ObjectInputStream {
 
 	private final BundleContext bundleContext;
 	private ServiceTracker<IClassResolver, IClassResolver> classResolverST;
-	private final Object trackerLock = new Object();
-	private final Filter classResolverFilter;
 
 	private Filter createClassResolverFilter(String classResolverFilterString) throws InvalidSyntaxException {
 		String objectClassFilterString = "(" + Constants.OBJECTCLASS + "=" + IClassResolver.class.getName() + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -61,7 +59,7 @@ public class ClassResolverObjectInputStream extends ObjectInputStream {
 	protected ClassResolverObjectInputStream(BundleContext ctxt, String classResolverFilter) throws IOException, SecurityException, InvalidSyntaxException {
 		super();
 		this.bundleContext = ctxt;
-		this.classResolverFilter = createClassResolverFilter(classResolverFilter);
+		this.classResolverST = new ServiceTracker<IClassResolver, IClassResolver>(this.bundleContext, createClassResolverFilter(classResolverFilter), null);
 	}
 
 	protected ClassResolverObjectInputStream(BundleContext ctxt) throws IOException, SecurityException, InvalidSyntaxException {
@@ -71,7 +69,7 @@ public class ClassResolverObjectInputStream extends ObjectInputStream {
 	public ClassResolverObjectInputStream(BundleContext ctxt, InputStream ins, String classResolverFilter) throws IOException, SecurityException, InvalidSyntaxException {
 		super(ins);
 		this.bundleContext = ctxt;
-		this.classResolverFilter = createClassResolverFilter(classResolverFilter);
+		this.classResolverST = new ServiceTracker<IClassResolver, IClassResolver>(this.bundleContext, createClassResolverFilter(classResolverFilter), null);
 	}
 
 	public ClassResolverObjectInputStream(BundleContext ctxt, InputStream ins) throws IOException, SecurityException, InvalidSyntaxException {
@@ -82,19 +80,27 @@ public class ClassResolverObjectInputStream extends ObjectInputStream {
 		return this.bundleContext;
 	}
 
+	private IClassResolver getClassResolver() {
+		IClassResolver result = null;
+		if (this.classResolverST != null) {
+			this.classResolverST.open();
+			result = this.classResolverST.getService();
+			this.classResolverST.close();
+		}
+		return result;
+	}
+
 	@SuppressWarnings("unused")
 	@Override
 	protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
-		synchronized (trackerLock) {
-			if (classResolverST == null) {
-				classResolverST = new ServiceTracker<IClassResolver, IClassResolver>(this.bundleContext, classResolverFilter, null);
-				classResolverST.open();
-			}
+		IClassResolver classResolver = null;
+		if (this.classResolverST != null) {
+			this.classResolverST.open();
+			classResolver = this.classResolverST.getService();
+			this.classResolverST.close();
 		}
-		IClassResolver classResolver = this.classResolverST.getService();
-		if (classResolver != null) {
+		if (classResolver != null)
 			return classResolver.resolveClass(desc);
-		}
 		throw new ClassNotFoundException("Cannot deserialize class=" + desc + " because no IClassResolver service available"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
@@ -105,17 +111,6 @@ public class ClassResolverObjectInputStream extends ObjectInputStream {
 		if (cnfe != null)
 			throw cnfe;
 		throw new ClassNotFoundException("Could not find class=" + desc); //$NON-NLS-1$
-	}
-
-	@Override
-	public void close() throws IOException {
-		super.close();
-		synchronized (trackerLock) {
-			if (classResolverST != null) {
-				classResolverST.close();
-				classResolverST = null;
-			}
-		}
 	}
 
 }

@@ -700,7 +700,6 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		final ID sharedObjectID = resp.getFromSharedObjectID();
 		SOWrapper sow = null;
 		Serializable obj = null;
-		debug("handleSharedObjectMessage(from=" + fromID + ",to=" + toID + ",sharedObject=" + sharedObjectID + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		synchronized (getGroupMembershipLock()) {
 			// We only deliver to local copy if the toID equals null (all), or it equals ours
 			if (verifySharedObjectMessageTarget(toID)) {

@@ -898,14 +898,12 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	protected Object callSynch(RemoteServiceRegistrationImpl registration, IRemoteCall call) throws ECFException {
-		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "callSynch", new Object[] {registration, call}); //$NON-NLS-1$
 		boolean doneWaiting = false;
 		Response response = null;
 		try {
 			// First send request
 			final Request request = sendCallRequest(registration, call);
 			long requestId = request.getRequestId();
-			Trace.trace(Activator.PLUGIN_ID, "callSync request sent with requestid=" + requestId); //$NON-NLS-1$
 			// Then get the specified timeout and calculate when we should
 			// timeout in real time
 			final long timeout = call.getTimeout() + System.currentTimeMillis();
@@ -913,13 +911,11 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			while ((timeout - System.currentTimeMillis()) > 0 && !doneWaiting) {
 				synchronized (request) {
 					if (request.isDone()) {
-						Trace.trace(Activator.PLUGIN_ID, "callSynch.request/response done for requestId=" + requestId); //$NON-NLS-1$
 						doneWaiting = true;
 						response = request.getResponse();
 						if (response == null)
 							throw new ECFException("Invalid response for requestId=" + requestId); //$NON-NLS-1$
 					} else {
-						Trace.trace(Activator.PLUGIN_ID, "Waiting " + RESPONSE_WAIT_INTERVAL + " for response to request: " + requestId); //$NON-NLS-1$ //$NON-NLS-2$
 						request.wait(RESPONSE_WAIT_INTERVAL);
 					}
 				}
@@ -934,14 +930,10 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			throw new ECFException("Wait for response interrupted", e); //$NON-NLS-1$
 		}
 		// Success...now get values and return
-		Object result = null;
 		if (response.hadException())
 			throw new ECFException("Exception in remote call", response.getException()); //$NON-NLS-1$
-		result = response.getResponse();
 
-		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "callSynch", result); //$NON-NLS-1$
-		return result;
-
+		return response.getResponse();
 	}
 
 	protected void fireCallStartEvent(IRemoteCallListener listener, final long requestId, final IRemoteServiceReference reference, final IRemoteCall call) {
@@ -1075,7 +1067,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	private static final int REQUEST_NOT_FOUND_ERROR_CODE = 211;
 
-	private static final long RESPONSE_WAIT_INTERVAL = 5000;
+	private static final long RESPONSE_WAIT_INTERVAL = 500;
 
 	private static final String ADD_REGISTRATION = "handleAddRegistration"; //$NON-NLS-1$
 
@@ -1362,7 +1354,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	protected Request sendCallRequest(RemoteServiceRegistrationImpl remoteRegistration, final IRemoteCall call) throws IOException {
-		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "sendCallRequest", new Object[] {remoteRegistration, call}); //$NON-NLS-1$
 		final Request request = createRequest(remoteRegistration, call, null);
 		addRequest(request);
 		try {
@@ -1371,7 +1362,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			removeRequest(request);
 			throw e;
 		}
-		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "sendCallRequest", request); //$NON-NLS-1$
 		return request;
 	}
 
@@ -1423,6 +1413,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 						callPolicy.checkRemoteCall(responseTarget, localRegistration, call);
 
 					result = localRegistration.callService(call);
+
 					response = new Response(request.getRequestId(), result);
 					// Invocation target exception happens if the local method being invoked throws (cause)
 				} catch (InvocationTargetException e) {
@@ -1453,7 +1444,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	protected void handleCallRequest(Request request) {
-		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "handleCallRequest", request); //$NON-NLS-1$
 		// If request is null, it's bogus, give up/do not respond
 		if (request == null) {
 			log("handleCallRequest", new NullPointerException("Request cannot be null")); //$NON-NLS-1$//$NON-NLS-2$
@@ -1483,7 +1473,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		// Else we've got a local service and we execute it using executor
 		executeRequest(executor, request, responseTarget, localRegistration, true);
 
-		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "handleCallRequest"); //$NON-NLS-1$
 	}
 
 	/**
@@ -1500,7 +1489,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	protected void sendCallRequestWithListener(RemoteServiceRegistrationImpl remoteRegistration, IRemoteCall call, IRemoteCallListener listener) {
-		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "sendCallRequestWithListener", new Object[] {remoteRegistration, call, listener}); //$NON-NLS-1$
 		final Request request = createRequest(remoteRegistration, call, listener);
 		fireCallStartEvent(listener, request.getRequestId(), remoteRegistration.getReference(), call);
 		try {
@@ -1511,7 +1499,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			removeRequest(request);
 			fireCallCompleteEvent(listener, request.getRequestId(), null, true, e);
 		}
-		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "sendCallRequestWithListener"); //$NON-NLS-1$
 	}
 
 	protected void log(int code, String method, Throwable e) {
@@ -1519,7 +1506,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	protected void sendCallResponse(ID responseTarget, Response response) {
-		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "sendCallResponse", new Object[] {responseTarget, response}); //$NON-NLS-1$
 		try {
 			sendSharedObjectMsgTo(responseTarget, SharedObjectMsg.createMsg(CALL_RESPONSE, response));
 		} catch (final IOException e) {
@@ -1535,11 +1521,9 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 					e1.printStackTrace(System.err);
 				}
 		}
-		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "sendCallResponse"); //$NON-NLS-1$
 	}
 
 	protected void handleCallResponse(Response response) {
-		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), CALL_RESPONSE, new Object[] {response});
 		final Request request = getRequest(response.getRequestId());
 		if (request == null) {
 			log(REQUEST_NOT_FOUND_ERROR_CODE, REQUEST_NOT_FOUND_ERROR_MESSAGE, new NullPointerException());
@@ -1556,7 +1540,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			request.setDone(true);
 			request.notify();
 		}
-		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), CALL_RESPONSE);
 	}
 
 	protected Request sendFireRequest(RemoteServiceRegistrationImpl remoteRegistration, IRemoteCall call) throws ECFException {
@@ -1573,8 +1556,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	protected void handleFireRequest(Request request) {
-		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), FIRE_REQUEST, new Object[] {request});
-
 		// If request is null, it's bogus, give up/do not respond
 		if (request == null) {
 			log("handleFireRequest", new NullPointerException("Request cannot be null")); //$NON-NLS-1$//$NON-NLS-2$
@@ -1603,8 +1584,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 		// Else we've got a local service and we execute it using executor
 		executeRequest(executor, request, responseTarget, localRegistration, false);
-
-		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), FIRE_REQUEST);
 	}
 
 	// RemoteServiceRegistrationImpl -> List<ID>

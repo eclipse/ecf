@@ -32,6 +32,7 @@ public class ProviderPlugin implements BundleActivator {
 
 	public static final String PLUGIN_ID = "org.eclipse.ecf.provider"; //$NON-NLS-1$
 
+	private static final boolean genericClassResolverOverride = Boolean.valueOf(System.getProperty("org.eclipse.ecf.provider.classResolverOverride", "false")); //$NON-NLS-1$ //$NON-NLS-2$
 	//The shared instance.
 	private static ProviderPlugin plugin;
 
@@ -78,13 +79,15 @@ public class ProviderPlugin implements BundleActivator {
 				context1.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(SSLGenericContainerInstantiator.SSLCLIENT_NAME, new SSLGenericContainerInstantiator(), "ECF SSL Generic Client", false, true), null); //$NON-NLS-1$
 			}
 		});
-		Hashtable<String, Object> props = new Hashtable<String, Object>();
-		props.put(IClassResolver.BUNDLE_PROP_NAME, PLUGIN_ID);
-		this.context.registerService(IClassResolver.class, new BundleClassResolver(context.getBundle()), props);
+		if (genericClassResolverOverride) {
+			Hashtable<String, Object> props = new Hashtable<String, Object>();
+			props.put(IClassResolver.BUNDLE_PROP_NAME, PLUGIN_ID);
+			this.context.registerService(IClassResolver.class, new BundleClassResolver(context.getBundle()), props);
+		}
 	}
 
 	public ObjectInputStream createObjectInputStream(InputStream ins) throws IOException {
-		return ClassResolverObjectInputStream.create(this.context, ins);
+		return (genericClassResolverOverride) ? ClassResolverObjectInputStream.create(this.context, ins) : new ObjectInputStream(ins);
 	}
 
 	/**
