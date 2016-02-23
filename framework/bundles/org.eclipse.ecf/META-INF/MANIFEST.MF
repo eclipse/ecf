@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf;singleton:=true
-Bundle-Version: 3.7.100.qualifier
+Bundle-Version: 3.7.200.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.core.ECFPlugin
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
@@ -28,4 +28,4 @@ Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.equinox.registry;resolution:=optional,
  org.eclipse.ecf.identity;visibility:=reexport
 Bundle-ActivationPolicy: lazy
-Provide-Capability: ecf.containertype;names:List<String>=”ecf.base”; version:Version=3.3
+Provide-Capability: ecf.containertype;names:List<String>="ecf.base"; version:Version=3.3
