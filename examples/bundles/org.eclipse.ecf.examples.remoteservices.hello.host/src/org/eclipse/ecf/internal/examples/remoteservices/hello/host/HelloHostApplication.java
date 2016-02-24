@@ -12,7 +12,6 @@ package org.eclipse.ecf.internal.examples.remoteservices.hello.host;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
-import java.util.Properties;
 
 import org.eclipse.ecf.examples.remoteservices.hello.IHello;
 import org.eclipse.ecf.examples.remoteservices.hello.IHelloAsync;
@@ -61,7 +60,7 @@ public class HelloHostApplication implements IApplication,
 		// Setup properties for remote service distribution, as per OSGi 4.2
 		// remote services
 		// specification (chap 13 in compendium spec)
-		Properties props = new Properties();
+		Dictionary props = new Hashtable();
 		// add OSGi service property indicated export of all interfaces exposed
 		// by service (wildcard)
 		props.put(IDistributionConstants.SERVICE_EXPORTED_INTERFACES,
