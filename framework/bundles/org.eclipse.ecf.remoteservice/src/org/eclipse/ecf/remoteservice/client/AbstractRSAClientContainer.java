@@ -63,7 +63,7 @@ public abstract class AbstractRSAClientContainer extends AbstractClientContainer
 		return new IRemoteCallable[][] {{RemoteCallableFactory.createCallable(getID().getName())}};
 	}
 
-	class RSAClientRegistration extends RemoteServiceClientRegistration {
+	public class RSAClientRegistration extends RemoteServiceClientRegistration {
 		public RSAClientRegistration(ID targetID, String[] classNames, IRemoteCallable[][] restCalls, Dictionary properties) {
 			super(getConnectNamespace(), classNames, restCalls, properties, AbstractRSAClientContainer.this.registry);
 			this.containerId = targetID;
