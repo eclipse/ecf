@@ -22,15 +22,21 @@ public abstract class AbstractRSAClientService extends AbstractClientService {
 
 	public static class RSARemoteCall extends RemoteCall {
 
+		private final Object proxy;
 		private final Method reflectMethod;
 
-		public RSARemoteCall(Method method, String methodName, Object[] parameters, long timeout) {
+		public RSARemoteCall(Object proxy, Method method, String methodName, Object[] parameters, long timeout) {
 			super(methodName, parameters, timeout);
 			this.reflectMethod = method;
+			this.proxy = proxy;
 		}
 
 		public Method getReflectMethod() {
 			return reflectMethod;
+		}
+
+		public Object getProxy() {
+			return proxy;
 		}
 	}
 
@@ -46,12 +52,12 @@ public abstract class AbstractRSAClientService extends AbstractClientService {
 		super(container, registration);
 	}
 
-	protected abstract Object invokeAsync(Method method, Object[] args);
+	protected abstract Object invokeAsync(RSARemoteCall remoteCall);
 
 	protected abstract Object invokeSync(RSARemoteCall remoteCall) throws ECFException;
 
-	protected RSARemoteCall createRemoteCall(Method method, String methodName, Object[] parameters, long timeout) {
-		return new RSARemoteCall(method, methodName, parameters, timeout);
+	protected RSARemoteCall createRemoteCall(Object proxy, Method method, String methodName, Object[] parameters, long timeout) {
+		return new RSARemoteCall(proxy, method, methodName, parameters, timeout);
 	}
 
 	@Override
@@ -61,11 +67,11 @@ public abstract class AbstractRSAClientService extends AbstractClientService {
 			if (resultObject != null)
 				return resultObject;
 			if (isAsync(proxy, method, args))
-				return invokeAsync(method, args);
+				return invokeAsync(createRemoteCall(proxy, method, getAsyncInvokeMethodName(method), args, IRemoteCall.DEFAULT_TIMEOUT));
 			final String callMethod = getCallMethodNameForProxyInvoke(method, args);
 			final Object[] callParameters = getCallParametersForProxyInvoke(callMethod, method, args);
 			final long callTimeout = getCallTimeoutForProxyInvoke(callMethod, method, args);
-			return invokeSync(createRemoteCall(method, callMethod, callParameters, callTimeout));
+			return invokeSync(createRemoteCall(proxy, method, callMethod, callParameters, callTimeout));
 		} catch (Throwable t) {
 			if (t instanceof ServiceException)
 				throw t;
