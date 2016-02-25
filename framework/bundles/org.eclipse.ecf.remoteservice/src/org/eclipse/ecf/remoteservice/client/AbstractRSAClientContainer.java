@@ -107,15 +107,15 @@ public abstract class AbstractRSAClientContainer extends AbstractClientContainer
 
 	public IRemoteServiceReference[] importEndpoint(Map<String, Object> endpointDescriptionProperties) throws ContainerConnectException, InvalidSyntaxException {
 		// ecf.endpoint.id
-		String ecfid = EndpointDescriptionPropertiesUtil.verifyStringProperty(endpointDescriptionProperties, "ecf.endpoint.id"); //$NON-NLS-1$
+		String ecfid = EndpointDescriptionPropertiesUtil.verifyStringProperty(endpointDescriptionProperties, Constants.ENDPOINT_ID);
 		if (ecfid == null)
 			ecfid = EndpointDescriptionPropertiesUtil.verifyStringProperty(endpointDescriptionProperties, "endpoint.id"); //$NON-NLS-1$
 		// ecf.endpoint.ts
-		Long timestamp = EndpointDescriptionPropertiesUtil.verifyLongProperty(endpointDescriptionProperties, "ecf.endpoint.ts"); //$NON-NLS-1$
+		Long timestamp = EndpointDescriptionPropertiesUtil.verifyLongProperty(endpointDescriptionProperties, Constants.ENDPOINT_TIMESTAMP);
 		if (timestamp == null)
 			timestamp = getServiceId(endpointDescriptionProperties);
 		// ecf.endpoint.ns
-		String idNamespace = EndpointDescriptionPropertiesUtil.verifyStringProperty(endpointDescriptionProperties, "ecf.endpoint.id.ns"); //$NON-NLS-1$
+		String idNamespace = EndpointDescriptionPropertiesUtil.verifyStringProperty(endpointDescriptionProperties, Constants.ENDPOINT_CONTAINER_ID_NAMESPACE);
 		// Create/verify endpointContainerID
 		ID endpointContainerID = EndpointDescriptionPropertiesUtil.verifyIDProperty(idNamespace, ecfid);
 		// Get rsId
@@ -124,12 +124,12 @@ public abstract class AbstractRSAClientContainer extends AbstractClientContainer
 		if (rsId == null)
 			rsId = EndpointDescriptionPropertiesUtil.verifyLongProperty(endpointDescriptionProperties, "endpoint.service.id"); //$NON-NLS-1$
 		// Get connectTargetID
-		ID connectTargetID = EndpointDescriptionPropertiesUtil.verifyIDProperty(idNamespace, EndpointDescriptionPropertiesUtil.verifyStringProperty(endpointDescriptionProperties, "ecf.endpoint.connecttarget.id")); //$NON-NLS-1$
+		ID connectTargetID = EndpointDescriptionPropertiesUtil.verifyIDProperty(idNamespace, EndpointDescriptionPropertiesUtil.verifyStringProperty(endpointDescriptionProperties, Constants.ENDPOINT_CONNECTTARGET_ID));
 		// If not explicitly set, then set to endpointContainerID
 		if (connectTargetID == null)
 			connectTargetID = endpointContainerID;
 		// Get idFilter
-		ID[] idFilter = EndpointDescriptionPropertiesUtil.verifyIDArray(endpointDescriptionProperties, "ecf.endpoint.idfilter.ids", idNamespace); //$NON-NLS-1$
+		ID[] idFilter = EndpointDescriptionPropertiesUtil.verifyIDArray(endpointDescriptionProperties, Constants.ENDPOINT_IDFILTER_IDS, idNamespace);
 		// If not set, then set to endpointContainerID
 		idFilter = (idFilter == null) ? new ID[] {endpointContainerID} : idFilter;
 		// Get rsFilter
