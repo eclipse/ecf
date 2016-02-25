@@ -16,10 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
-import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.IDUtil;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
 import org.eclipse.ecf.remoteservice.Constants;
@@ -159,62 +156,28 @@ public class EndpointDescription extends
 	}
 	
 	private Long verifyLongProperty(String propName) {
-		Object r = getProperties().get(propName);
-		try {
-			return (Long) r;
-		} catch (ClassCastException e) {
-			IllegalArgumentException iae = new IllegalArgumentException(
-					"property value is not a Long: " + propName); //$NON-NLS-1$
-			iae.initCause(e);
-			throw iae;
-		}
+		return org.eclipse.ecf.remoteservice.util.EndpointDescriptionPropertiesUtil.verifyLongProperty(getProperties(),
+				propName);
 	}
 
 	private String verifyStringProperty(String propName) {
-		Object r = getProperties().get(propName);
-		try {
-			return (String) r;
-		} catch (ClassCastException e) {
-			IllegalArgumentException iae = new IllegalArgumentException(
-					"property value is not a String: " + propName); //$NON-NLS-1$
-			iae.initCause(e);
-			throw iae;
-		}
+		return org.eclipse.ecf.remoteservice.util.EndpointDescriptionPropertiesUtil
+				.verifyStringProperty(getProperties(), propName);
 	}
 
 	private ID verifyIDProperty(String idNamespace, String idName) {
-		if (idName == null)
-			return null;
-		try {
-			return IDUtil.createID(idNamespace, idName);
-		} catch (IDCreateException e) {
-			return IDFactory.getDefault().createStringID(idName);
-		}
+		return org.eclipse.ecf.remoteservice.util.EndpointDescriptionPropertiesUtil.verifyIDProperty(idNamespace,
+				idName);
 	}
 
 	private ID verifyIDProperty(String namePropName) {
-		return verifyIDProperty(idNamespace, verifyStringProperty(namePropName));
+		return org.eclipse.ecf.remoteservice.util.EndpointDescriptionPropertiesUtil
+				.verifyIDProperty(idNamespace, verifyStringProperty(namePropName));
 	}
 
 	private ID[] verifyIDFilter() {
-		List<String> idNames = PropertiesUtil.getStringPlusProperty(
-				getProperties(), RemoteConstants.ENDPOINT_IDFILTER_IDS);
-		if (idNames.size() == 0)
-			return null;
-		List<ID> results = new ArrayList();
-		String idNamespace = getIdNamespace();
-		for (String idName : idNames) {
-			try {
-				results.add(IDUtil.createID(idNamespace, idName));
-			} catch (IDCreateException e) {
-				IllegalArgumentException iae = new IllegalArgumentException(
-						"cannot create ID[]: idNamespace=" + idNamespace //$NON-NLS-1$
-								+ " idName=" + idName); //$NON-NLS-1$
-				iae.initCause(e);
-				throw iae;
-			}
-		}
-		return (ID[]) results.toArray(new ID[results.size()]);
+		return org.eclipse.ecf.remoteservice.util.EndpointDescriptionPropertiesUtil
+		.verifyIDArray(getProperties(), RemoteConstants.ENDPOINT_IDFILTER_IDS, getIdNamespace());
 	}
 
 	private void addInterfaceVersions(List<String> interfaces, Map<String,Version> result) {

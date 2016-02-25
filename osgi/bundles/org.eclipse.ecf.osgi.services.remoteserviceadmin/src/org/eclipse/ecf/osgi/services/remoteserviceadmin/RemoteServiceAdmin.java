@@ -43,6 +43,7 @@ import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
+import org.eclipse.ecf.remoteservice.IRSAConsumerContainerAdapter;
 import org.eclipse.ecf.remoteservice.IExtendedRemoteServiceRegistration;
 import org.eclipse.ecf.remoteservice.IOSGiRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteService;
@@ -2346,7 +2347,7 @@ public class RemoteServiceAdmin implements
 	}
 
 	private ImportRegistration importService(
-			EndpointDescription endpointDescription,
+			final EndpointDescription endpointDescription,
 			IRemoteServiceContainer rsContainer) {
 		// Get interfaces from endpoint description
 		Collection<String> interfaces = endpointDescription.getInterfaces();
@@ -2366,7 +2367,7 @@ public class RemoteServiceAdmin implements
 		final ID targetID = tID;
 		// Get idFilter...also may be null
 		final ID[] idFilter = getIDFilter(endpointDescription,
-				endpointContainerID);
+				targetID);
 		// Get remote service filter
 		final String rsFilter = getRemoteServiceFilter(endpointDescription);
 		// IRemoteServiceReferences from query
@@ -2377,6 +2378,7 @@ public class RemoteServiceAdmin implements
 		// rsContainerID
 		ID rsContainerID = rsContainer.getContainer().getID();
 		try {
+			final IRSAConsumerContainerAdapter cca = (IRSAConsumerContainerAdapter) containerAdapter.getAdapter(IRSAConsumerContainerAdapter.class);				
 			// Get first interface name for service reference
 			// lookup
 			final String intf = interfaces.iterator().next();
@@ -2386,7 +2388,12 @@ public class RemoteServiceAdmin implements
 						public IRemoteServiceReference[] run()
 								throws ContainerConnectException,
 								InvalidSyntaxException {
-							return containerAdapter.getRemoteServiceReferences(
+							// If the RSAConsumerContainerAdapter is present, use it
+							if (cca != null) 
+							// Call importEndpoint if the IRSAConsumerContainerAdapter is present
+								return cca.importEndpoint(endpointDescription.getProperties());
+							// Otherwise use the 'old' container adapter
+							else return containerAdapter.getRemoteServiceReferences(
 									targetID, idFilter, intf, rsFilter);
 						}
 					});
