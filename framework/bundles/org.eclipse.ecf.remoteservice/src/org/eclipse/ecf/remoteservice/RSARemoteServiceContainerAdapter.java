@@ -15,6 +15,12 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.equinox.concurrent.future.IExecutor;
 
 /**
+ * A container adapter intended for use by remote service host containers.  Implements IRemoteServiceContainerAdapter
+ * and IRSAHostContainerAdapter.  A IRSAHostContainerAdapter that gets the actual registerService call
+ * is expected to be provided upon construction.  
+ * 
+ * Subclasses should extend as appropriate.
+ * 
  * @since 8.9
  */
 public class RSARemoteServiceContainerAdapter extends RemoteServiceContainerAdapterImpl implements IRSAHostContainerAdapter {

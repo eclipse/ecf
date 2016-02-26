@@ -19,6 +19,7 @@ import org.eclipse.ecf.remoteservice.util.EndpointDescriptionPropertiesUtil;
 import org.osgi.framework.InvalidSyntaxException;
 
 /**
+ * Abstract client container for use by RSA distribution providers.   Implements IRSAConsumerContainerAdapter.
  * @since 8.9
  */
 public abstract class AbstractRSAClientContainer extends AbstractClientContainer implements IRSAConsumerContainerAdapter {

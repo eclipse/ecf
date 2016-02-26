@@ -17,6 +17,10 @@ import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.remoteservice.RSARemoteServiceContainerAdapter.RSARemoteServiceRegistration;
 
 /**
+ * Abstract container that is intended for use by RSA distribution providers.  Subclasses may extend
+ * and override to create custom container adapter types.  By default, an instance of RSARemoteServiceContainerAdapter
+ * is created by this class upon construction.
+ * 
  * @since 8.9
  */
 public abstract class AbstractRSAContainer extends AbstractContainer {

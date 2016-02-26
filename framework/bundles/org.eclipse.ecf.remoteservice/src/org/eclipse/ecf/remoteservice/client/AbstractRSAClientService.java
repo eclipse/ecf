@@ -16,6 +16,9 @@ import org.eclipse.ecf.remoteservice.RemoteCall;
 import org.osgi.framework.ServiceException;
 
 /**
+ * Abstract client remote service instance.   This class should be overridden to implement the abstract
+ * invokeAsync, and invokeSync methods, which will be called when the proxy created is called by clients.
+ * 
  * @since 8.9
  */
 public abstract class AbstractRSAClientService extends AbstractClientService {
@@ -52,8 +55,24 @@ public abstract class AbstractRSAClientService extends AbstractClientService {
 		super(container, registration);
 	}
 
+	/**
+	 * Invoke a remote call asynchronously.  This method should not block and should return either a {@link org.eclipse.equinox.concurrent.future.IFuture}, {@link java.util.concurrent.Future}, or {@link java.util.concurrent.CompletableFuture}
+	 * or a
+	 * CompletableFuture based upon the return type defined in the asynchronous service interface.
+	 * 
+	 * @param remoteCall the RSARemoteCall to use to make the asynchronous remote call.  Will not be <code>null</code>.
+	 * @return Object.   Should return a non-null instance of {@link org.eclipse.equinox.concurrent.future.IFuture}, {@link java.util.concurrent.Future}, or {@link java.util.concurrent.CompletableFuture}
+	 */
 	protected abstract Object invokeAsync(RSARemoteCall remoteCall);
 
+	/**
+	 * Invoke a remote call synchronously.  This method should block until a value may be returned, or the remote
+	 * call has failed or timed out.
+	 * 
+	 * @param remoteCall the RSARemoteCall to synchronously invoke.  Will not be <code>null</code>.
+	 * @return the result (of appropriate type)
+	 * @throws ECFException if some exception occurred during invocation
+	 */
 	protected abstract Object invokeSync(RSARemoteCall remoteCall) throws ECFException;
 
 	protected RSARemoteCall createRemoteCall(Object proxy, Method method, String methodName, Object[] parameters, long timeout) {
