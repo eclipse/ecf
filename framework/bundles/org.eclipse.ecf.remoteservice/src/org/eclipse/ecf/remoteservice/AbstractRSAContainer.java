@@ -38,15 +38,7 @@ public abstract class AbstractRSAContainer extends AbstractContainer {
 	protected abstract void unregisterEndpoint(RSARemoteServiceRegistration registration);
 
 	protected RSARemoteServiceContainerAdapter createContainerAdapter() {
-		return new RSARemoteServiceContainerAdapter(this, new IRSAHostContainerAdapter() {
-			public void unregisterEndpoint(RSARemoteServiceRegistration registration) {
-				AbstractRSAContainer.this.unregisterEndpoint(registration);
-			}
-
-			public Map<String, Object> registerEndpoint(RSARemoteServiceRegistration registration) {
-				return AbstractRSAContainer.this.registerEndpoint(registration);
-			}
-		});
+		return new RSARemoteServiceContainerAdapter(this);
 	}
 
 	public void connect(ID targetID, IConnectContext connectContext) throws ContainerConnectException {

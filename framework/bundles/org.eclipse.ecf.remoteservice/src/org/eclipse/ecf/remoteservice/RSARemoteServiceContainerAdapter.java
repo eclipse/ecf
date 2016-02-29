@@ -11,7 +11,6 @@ package org.eclipse.ecf.remoteservice;
 
 import java.util.Dictionary;
 import java.util.Map;
-import org.eclipse.ecf.core.IContainer;
 import org.eclipse.equinox.concurrent.future.IExecutor;
 
 /**
@@ -23,18 +22,18 @@ import org.eclipse.equinox.concurrent.future.IExecutor;
  * 
  * @since 8.9
  */
-public class RSARemoteServiceContainerAdapter extends RemoteServiceContainerAdapterImpl implements IRSAHostContainerAdapter {
+public class RSARemoteServiceContainerAdapter extends RemoteServiceContainerAdapterImpl {
 
-	private final IRSAHostContainerAdapter rsaAdapter;
-
-	public RSARemoteServiceContainerAdapter(IContainer container, IExecutor executor, IRSAHostContainerAdapter rsaAdapter) {
+	public RSARemoteServiceContainerAdapter(AbstractRSAContainer container, IExecutor executor) {
 		super(container, executor);
-		this.rsaAdapter = rsaAdapter;
 	}
 
-	public RSARemoteServiceContainerAdapter(IContainer container, IRSAHostContainerAdapter rsaAdapter) {
+	public RSARemoteServiceContainerAdapter(AbstractRSAContainer container) {
 		super(container);
-		this.rsaAdapter = rsaAdapter;
+	}
+
+	protected AbstractRSAContainer getRSAContainer() {
+		return (AbstractRSAContainer) super.getContainer();
 	}
 
 	@Override
@@ -50,11 +49,11 @@ public class RSARemoteServiceContainerAdapter extends RemoteServiceContainerAdap
 		@Override
 		public void publish(RemoteServiceRegistryImpl reg, Object svc, String[] clzzes, Dictionary props) {
 			super.publish(reg, svc, clzzes, props);
-			this.extraProperties = registerEndpoint(this);
+			this.extraProperties = getRSAContainer().registerEndpoint(this);
 		}
 
 		public void unregister() {
-			unregisterEndpoint(this);
+			getRSAContainer().unregisterEndpoint(this);
 		}
 
 		public Map<String, Object> getExtraProperties() {
@@ -62,12 +61,4 @@ public class RSARemoteServiceContainerAdapter extends RemoteServiceContainerAdap
 		}
 	}
 
-	public Map<String, Object> registerEndpoint(RSARemoteServiceRegistration registration) {
-		return (rsaAdapter != null) ? rsaAdapter.registerEndpoint(registration) : null;
-	}
-
-	public void unregisterEndpoint(RSARemoteServiceRegistration registration) {
-		if (rsaAdapter != null)
-			rsaAdapter.unregisterEndpoint(registration);
-	}
 }
