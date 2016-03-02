@@ -34,9 +34,9 @@ public abstract class RemoteServiceContainerInstantiator extends BaseContainerIn
 	/**
 	 * @since 8.9
 	 */
-	protected RemoteServiceContainerInstantiator(String serverProvider, String clientProvider) {
-		this.exporterConfigs.add(serverProvider);
-		this.exporterConfigToImporterConfigs.put(serverProvider, Arrays.asList(new String[] {clientProvider}));
+	protected RemoteServiceContainerInstantiator(String exportingProvider, String importingProvider) {
+		this.exporterConfigs.add(exportingProvider);
+		this.exporterConfigToImporterConfigs.put(exportingProvider, Arrays.asList(new String[] {importingProvider}));
 	}
 
 	protected RemoteServiceContainerInstantiator(List<String> exporterConfigs, Map<String, List<String>> exporterConfigToImporterConfig) {
