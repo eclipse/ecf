@@ -19,7 +19,10 @@ import org.eclipse.core.runtime.Assert;
  */
 public class URIID extends BaseID implements IResourceID {
 
-	static class URIIDNamespace extends Namespace {
+	/**
+	 * @since 3.7
+	 */
+	public static class URIIDNamespace extends Namespace {
 
 		private static final long serialVersionUID = 115165512542491014L;
 
@@ -42,8 +45,7 @@ public class URIID extends BaseID implements IResourceID {
 					return new URIID(this, new URI((String) parameters[0]));
 				throw new IDCreateException("Cannot create URIID");
 			} catch (Exception e) {
-				throw new IDCreateException(URIIDNamespace.this.getName()
-						+ " createInstance()", e); //$NON-NLS-1$
+				throw new IDCreateException(URIIDNamespace.this.getName() + " createInstance()", e); //$NON-NLS-1$
 			}
 		}
 
