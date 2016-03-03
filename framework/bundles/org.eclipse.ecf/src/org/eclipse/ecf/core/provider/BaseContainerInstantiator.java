@@ -14,6 +14,8 @@ package org.eclipse.ecf.core.provider;
 import java.util.*;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.*;
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.internal.core.ECFPlugin;
 
 /**
@@ -117,6 +119,27 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 	 */
 	protected String getParameterValue(Map<String, ?> parameters, String key) {
 		return getParameterValue(parameters, key, null);
+	}
+
+	/**
+	 * @since 3.8
+	 */
+	protected <T> ID getIDParameterValue(Namespace ns, Map<String, ?> parameters, String key, Class<T> type, T def) {
+		return ns.createInstance(new Object[] {getParameterValue(parameters, key, type, def)});
+	}
+
+	/**
+	 * @since 3.8
+	 */
+	protected ID getIDParameterValue(Namespace ns, Map<String, ?> parameters, String key, String def) {
+		return getIDParameterValue(ns, parameters, key, String.class, def);
+	}
+
+	/**
+	 * @since 3.8
+	 */
+	protected ID getIDParameterValue(Namespace ns, Map<String, ?> parameters, String key) {
+		return getIDParameterValue(ns, parameters, key, null);
 	}
 
 	/**
