@@ -145,6 +145,13 @@ public abstract class AbstractRSAClientContainer extends AbstractClientContainer
 		return getRemoteServiceReferences(idFilter, interfaces.iterator().next(), rsFilter);
 	}
 
+	/**
+	 * Create a remote service for a given remote service registration.   This method will be 
+	 * called as part of the RemoteServiceAdmin.importService.   
+	 * 
+	 * @param registration the remote service client registration associated with the service
+	 * being imported.   Will not be <code>null</code>.
+	 */
 	@Override
 	protected abstract IRemoteService createRemoteService(RemoteServiceClientRegistration registration);
 

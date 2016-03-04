@@ -33,8 +33,30 @@ public abstract class AbstractRSAContainer extends AbstractContainer {
 		this.containerAdapter = createContainerAdapter();
 	}
 
+	/**
+	 *  Register an endpoint specified by the RSARemoteServiceRegistration.  Subclasses must
+	 *  implement to respond to a remote service export.  This method will be called by
+	 *  the ECF RemoteServiceAdmin.exportService when this container should handle the export.
+	 *  
+	 * @param registration the RSARemoteServiceRegistration that is being registered.  Will not
+	 * be <code>null</code>.
+	 *  
+	 * @return Map<String, Object> of extra properties to add to the RSA EndpointDescription.   
+	 * Any properties in the returned map will override or add to the endpoint description.  For example,
+	 * if one of the properties in the returned Map is a String value for the key 'ecf.endpoint.id', 
+	 * then the value from the map will override this property in the endpoint description.  The result
+	 * may be <code>null</code>, in which case no properties will be overridden or added.
+	 */
 	protected abstract Map<String, Object> registerEndpoint(RSARemoteServiceRegistration registration);
 
+	/**
+	 * Unregister the endpoint for the given RSARemoteServiceRegistration.   Subclasses must implement
+	 * to respond to a remote service export.  This method will be called when a remote service
+	 * is unregistered, or unexported.
+	 * 
+	 * @param registration the registration identifying the remote service to unregister.  Will not
+	 * be <code>null</code>.
+	 */
 	protected abstract void unregisterEndpoint(RSARemoteServiceRegistration registration);
 
 	protected RSARemoteServiceContainerAdapter createContainerAdapter() {
