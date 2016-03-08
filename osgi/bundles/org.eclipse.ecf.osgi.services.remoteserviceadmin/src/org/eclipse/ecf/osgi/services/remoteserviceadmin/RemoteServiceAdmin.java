@@ -1896,7 +1896,7 @@ public class RemoteServiceAdmin implements
 						+ ") for using BundleContext proxy service factory"); //$NON-NLS-1$
 			return bundleContext;
 		}
-		return a.getProxyServiceFactoryBundleContext();
+		return a.getProxyServiceFactoryBundleContext(endpointDescription);
 	}
 
 	private ServiceFactory createProxyServiceFactory(
