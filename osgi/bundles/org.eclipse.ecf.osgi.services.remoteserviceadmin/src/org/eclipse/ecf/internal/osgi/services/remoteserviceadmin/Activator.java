@@ -41,6 +41,7 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
@@ -124,15 +125,70 @@ public class Activator implements BundleActivator {
 		uninstallProxyBundles();
 	}
 
+	static boolean startProxyBundle(Bundle b) {
+		try {
+			b.start();
+			return true;
+		} catch (BundleException e) {
+			LogUtility.logError("startProxyBundle", DebugOptions.REMOTE_SERVICE_ADMIN, Activator.class, "Could not start proxy bundle "+b.getSymbolicName(),e); //$NON-NLS-1$ //$NON-NLS-2$
+			return false;
+		}
+	}
+	
 	public BundleContext getProxyServiceFactoryBundleContext(EndpointDescription endpointDescription) {
-		Bundle b = generateProxyBundle(endpointDescription);
-		if (b != null)
-			return b.getBundleContext();
-		return proxyServiceFactoryBundleContext;
+		String edId = endpointDescription.getId();
+		Bundle proxyBundle = null;
+		final BundleContext bc = getContext();
+		if (bc != null) 
+			for(Bundle b: bc.getBundles()) 
+				if (b.getSymbolicName().equals(edId)) {
+					proxyBundle = b;
+					break;
+				}
+		if (proxyBundle == null) {
+			final Manifest mf = new Manifest();
+			final Attributes attr = mf.getMainAttributes();
+			attr.putValue("Manifest-Version", "1.0"); //$NON-NLS-1$ //$NON-NLS-2$
+			attr.putValue("Bundle-ManifestVersion", "2"); //$NON-NLS-1$ //$NON-NLS-2$
+			attr.putValue("Bundle-SymbolicName", new StringBuffer(RSA_PROXY_PREFIX).append(edId).toString()); //$NON-NLS-1$
+			attr.putValue("Bundle-Version", "1.0.0"); //$NON-NLS-1$ //$NON-NLS-2$
+			attr.putValue("Created-By", "ECF RSA Proxy Generator"); //$NON-NLS-1$ //$NON-NLS-2$
+			final ByteArrayOutputStream bout = new ByteArrayOutputStream();
+			try {
+				final JarOutputStream out = new JarOutputStream(bout, mf);
+				out.flush();
+				out.finish();
+				out.close();
+				// Install
+				proxyBundle = bc.installBundle(edId,
+						new ByteArrayInputStream(bout.toByteArray()));
+			} catch (Throwable t) {
+				LogUtility.logError("generateProxyBundle", DebugOptions.REMOTE_SERVICE_ADMIN, Activator.class, //$NON-NLS-1$
+						"Could not create or start proxy bundle", t); //$NON-NLS-1$
+			}
+
+		}
+		if (proxyBundle != null && proxyBundle.getState() != Bundle.ACTIVE) {
+			try {
+				proxyBundle.start();
+			} catch (BundleException e) {
+				LogUtility.logError("startProxyBundle", DebugOptions.REMOTE_SERVICE_ADMIN, Activator.class, "Could not start proxy bundle "+proxyBundle.getSymbolicName(),e); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+		}
+		return (proxyBundle != null)?proxyBundle.getBundleContext():proxyServiceFactoryBundleContext;
 	}
 
 	private static final String RSA_PROXY_PREFIX = "ECF RSA PROXY for "; //$NON-NLS-1$
 
+	static Bundle findExistingProxyBundle(String bundleSymbolicName) {
+		BundleContext bc = getContext();
+		if (bc != null) 
+			for(Bundle b: bc.getBundles()) 
+				if (b.getSymbolicName().equals(bundleSymbolicName))
+					return b;
+		return null;
+	}
+	
 	static void uninstallProxyBundles() {
 		BundleContext bc = getContext();
 		if (bc != null)
@@ -144,33 +200,6 @@ public class Activator implements BundleActivator {
 					LogUtility.logError("uninstallProxyBundles", DebugOptions.REMOTE_SERVICE_ADMIN, Activator.class, //$NON-NLS-1$
 							"Could not uninstall proxy bundle " + b.getSymbolicName(), t); //$NON-NLS-1$
 				}
-	}
-
-	static Bundle generateProxyBundle(EndpointDescription ed) {
-		final Manifest mf = new Manifest();
-		final Attributes attr = mf.getMainAttributes();
-		attr.putValue("Manifest-Version", "1.0"); //$NON-NLS-1$ //$NON-NLS-2$
-		attr.putValue("Bundle-ManifestVersion", "2"); //$NON-NLS-1$ //$NON-NLS-2$
-		attr.putValue("Bundle-SymbolicName", new StringBuffer(RSA_PROXY_PREFIX).append(ed.getId()).toString()); //$NON-NLS-1$
-		attr.putValue("Bundle-Version", "1.0.0"); //$NON-NLS-1$ //$NON-NLS-2$
-		attr.putValue("Created-By", "ECF RSA Proxy Generator"); //$NON-NLS-1$ //$NON-NLS-2$
-		final ByteArrayOutputStream bout = new ByteArrayOutputStream();
-		Bundle proxyBundle = null;
-		try {
-			final JarOutputStream out = new JarOutputStream(bout, mf);
-			out.flush();
-			out.finish();
-			out.close();
-			// Install
-			BundleContext bc = getContext();
-			proxyBundle = bc.installBundle(ed.getId(),
-					new ByteArrayInputStream(bout.toByteArray()));
-			proxyBundle.start();
-		} catch (Throwable t) {
-			LogUtility.logError("generateProxyBundle", DebugOptions.REMOTE_SERVICE_ADMIN, Activator.class, //$NON-NLS-1$
-					"Could not create or start proxy bundle", t); //$NON-NLS-1$
-		}
-		return proxyBundle;
 	}
 
 	private Map<Bundle, RemoteServiceAdmin> remoteServiceAdmins = new HashMap<Bundle, RemoteServiceAdmin>(1);
