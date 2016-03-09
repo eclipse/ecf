@@ -9,8 +9,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.remoteserviceadmin;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Dictionary;
@@ -19,9 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
-import java.util.jar.Attributes;
-import java.util.jar.JarOutputStream;
-import java.util.jar.Manifest;
 
 import javax.xml.parsers.SAXParserFactory;
 
@@ -41,7 +36,6 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
@@ -57,7 +51,6 @@ public class Activator implements BundleActivator {
 
 	public static final String PLUGIN_ID = "org.eclipse.ecf.osgi.services.remoteserviceadmin"; //$NON-NLS-1$
 
-	private static final String RSA_PROXY_PREFIX = "ECF RSA PROXY for ED="; //$NON-NLS-1$
 	private static final String RSA_PROXY_BUNDLE_SYMBOLIC_ID = "org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy"; //$NON-NLS-1$
 
 	private static BundleContext context;
@@ -108,8 +101,6 @@ public class Activator implements BundleActivator {
 		if (proxyServiceFactoryBundleContext == null)
 			throw new IllegalStateException("RSA Proxy bundle (symbolic id=='" //$NON-NLS-1$
 					+ RSA_PROXY_BUNDLE_SYMBOLIC_ID + "') cannot be found, so RSA cannot be started"); //$NON-NLS-1$
-		// Now uninstall any found proxy bundles
-		uninstallProxyBundles();
 	}
 
 	private void stopProxyServiceFactoryBundle() {
@@ -122,83 +113,10 @@ public class Activator implements BundleActivator {
 			}
 			proxyServiceFactoryBundleContext = null;
 		}
-		// Now uninstall any proxy bundles
-		uninstallProxyBundles();
 	}
 
-	static boolean startProxyBundle(Bundle b) {
-		try {
-			b.start();
-			return true;
-		} catch (BundleException e) {
-			LogUtility.logError("startProxyBundle", DebugOptions.REMOTE_SERVICE_ADMIN, Activator.class, "Could not start proxy bundle "+b.getSymbolicName(),e); //$NON-NLS-1$ //$NON-NLS-2$
-			return false;
-		}
-	}
-	
 	public BundleContext getProxyServiceFactoryBundleContext(EndpointDescription endpointDescription) {
-		String edId = endpointDescription.getId();
-		Bundle proxyBundle = null;
-		final BundleContext bc = getContext();
-		if (bc != null) 
-			for(Bundle b: bc.getBundles()) 
-				if (b.getSymbolicName().equals(edId)) {
-					proxyBundle = b;
-					break;
-				}
-		if (proxyBundle == null) {
-			final Manifest mf = new Manifest();
-			final Attributes attr = mf.getMainAttributes();
-			attr.putValue("Manifest-Version", "1.0"); //$NON-NLS-1$ //$NON-NLS-2$
-			attr.putValue("Bundle-ManifestVersion", "2"); //$NON-NLS-1$ //$NON-NLS-2$
-			attr.putValue("Bundle-SymbolicName", new StringBuffer(RSA_PROXY_PREFIX).append(edId).toString()); //$NON-NLS-1$
-			attr.putValue("Bundle-Version", "1.0.0"); //$NON-NLS-1$ //$NON-NLS-2$
-			attr.putValue("Created-By", "ECF RSA Proxy Generator"); //$NON-NLS-1$ //$NON-NLS-2$
-			final ByteArrayOutputStream bout = new ByteArrayOutputStream();
-			try {
-				final JarOutputStream out = new JarOutputStream(bout, mf);
-				out.flush();
-				out.finish();
-				out.close();
-				// Install
-				proxyBundle = bc.installBundle(edId,
-						new ByteArrayInputStream(bout.toByteArray()));
-			} catch (Throwable t) {
-				LogUtility.logError("generateProxyBundle", DebugOptions.REMOTE_SERVICE_ADMIN, Activator.class, //$NON-NLS-1$
-						"Could not create or start proxy bundle", t); //$NON-NLS-1$
-			}
-
-		}
-		if (proxyBundle != null && proxyBundle.getState() != Bundle.ACTIVE) {
-			try {
-				proxyBundle.start();
-			} catch (BundleException e) {
-				LogUtility.logError("startProxyBundle", DebugOptions.REMOTE_SERVICE_ADMIN, Activator.class, "Could not start proxy bundle "+proxyBundle.getSymbolicName(),e); //$NON-NLS-1$ //$NON-NLS-2$
-			}
-		}
-		return (proxyBundle != null)?proxyBundle.getBundleContext():proxyServiceFactoryBundleContext;
-	}
-
-	static Bundle findExistingProxyBundle(String bundleSymbolicName) {
-		BundleContext bc = getContext();
-		if (bc != null) 
-			for(Bundle b: bc.getBundles()) 
-				if (b.getSymbolicName().equals(bundleSymbolicName))
-					return b;
-		return null;
-	}
-	
-	static void uninstallProxyBundles() {
-		BundleContext bc = getContext();
-		if (bc != null)
-			for (Bundle b : bc.getBundles())
-				try {
-					if (b.getSymbolicName().startsWith(RSA_PROXY_PREFIX) && b.getState() != Bundle.UNINSTALLED)
-						b.uninstall();
-				} catch (Throwable t) {
-					LogUtility.logError("uninstallProxyBundles", DebugOptions.REMOTE_SERVICE_ADMIN, Activator.class, //$NON-NLS-1$
-							"Could not uninstall proxy bundle " + b.getSymbolicName(), t); //$NON-NLS-1$
-				}
+		return proxyServiceFactoryBundleContext;
 	}
 
 	private Map<Bundle, RemoteServiceAdmin> remoteServiceAdmins = new HashMap<Bundle, RemoteServiceAdmin>(1);
