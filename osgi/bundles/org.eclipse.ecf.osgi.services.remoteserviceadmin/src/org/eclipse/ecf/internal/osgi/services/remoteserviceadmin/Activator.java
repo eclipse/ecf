@@ -57,6 +57,9 @@ public class Activator implements BundleActivator {
 
 	public static final String PLUGIN_ID = "org.eclipse.ecf.osgi.services.remoteserviceadmin"; //$NON-NLS-1$
 
+	private static final String RSA_PROXY_PREFIX = "ECF RSA PROXY for ED="; //$NON-NLS-1$
+	private static final String RSA_PROXY_BUNDLE_SYMBOLIC_ID = "org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy"; //$NON-NLS-1$
+
 	private static BundleContext context;
 	private static Activator instance;
 
@@ -86,8 +89,6 @@ public class Activator implements BundleActivator {
 	// Sax parser
 	private Object saxParserFactoryTrackerLock = new Object();
 	private ServiceTracker saxParserFactoryTracker;
-
-	private static final String RSA_PROXY_BUNDLE_SYMBOLIC_ID = "org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy"; //$NON-NLS-1$
 
 	private BundleContext proxyServiceFactoryBundleContext;
 
@@ -177,8 +178,6 @@ public class Activator implements BundleActivator {
 		}
 		return (proxyBundle != null)?proxyBundle.getBundleContext():proxyServiceFactoryBundleContext;
 	}
-
-	private static final String RSA_PROXY_PREFIX = "ECF RSA PROXY for "; //$NON-NLS-1$
 
 	static Bundle findExistingProxyBundle(String bundleSymbolicName) {
 		BundleContext bc = getContext();

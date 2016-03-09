@@ -43,9 +43,9 @@ import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
-import org.eclipse.ecf.remoteservice.IRSAConsumerContainerAdapter;
 import org.eclipse.ecf.remoteservice.IExtendedRemoteServiceRegistration;
 import org.eclipse.ecf.remoteservice.IOSGiRemoteServiceContainerAdapter;
+import org.eclipse.ecf.remoteservice.IRSAConsumerContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
@@ -929,11 +929,10 @@ public class RemoteServiceAdmin implements
 
 	class ImportEndpoint {
 
-		private ID importContainerID;
+		private IRemoteServiceContainer rsContainer;
 		private IRemoteService rs;
-		private IRemoteServiceContainerAdapter rsContainerAdapter;
-		private EndpointDescription endpointDescription;
 		private IRemoteServiceListener rsListener;
+		private EndpointDescription endpointDescription;
 		private IRemoteServiceReference rsReference;
 		private ServiceRegistration proxyRegistration;
 		private Set<ImportRegistration> activeImportRegistrations = new HashSet<ImportRegistration>();
@@ -945,25 +944,22 @@ public class RemoteServiceAdmin implements
 			return buf.toString();
 		}
 		
-		ImportEndpoint(ID importContainerID, IRemoteServiceContainerAdapter rsContainerAdapter,
+		ImportEndpoint(IRemoteServiceContainer rsContainer,
 				IRemoteServiceReference rsReference,
 				IRemoteService rs,
-				IRemoteServiceListener rsListener,
 				ServiceRegistration proxyRegistration,
 				EndpointDescription endpointDescription) {
-			this.importContainerID = importContainerID;
-			this.rsContainerAdapter = rsContainerAdapter;
-			this.endpointDescription = endpointDescription;
+			this.rsContainer = rsContainer;
 			this.rsReference = rsReference;
+			this.endpointDescription = endpointDescription;
 			this.rs = rs;
-			this.rsListener = rsListener;
 			this.proxyRegistration = proxyRegistration;
+			this.rsListener = new RemoteServiceListener();
 			// Add the remoteservice listener to the container adapter, so that
 			// the rsListener notified asynchronously if our underlying remote
-			// service
-			// reference is unregistered locally due to disconnect or remote
+			// service reference is unregistered locally due to disconnect or remote
 			// ejection
-			this.rsContainerAdapter.addRemoteServiceListener(this.rsListener);
+			this.rsContainer.getContainerAdapter().addRemoteServiceListener(this.rsListener);
 		}
 
 		synchronized EndpointDescription getEndpointDescription() {
@@ -988,24 +984,28 @@ public class RemoteServiceAdmin implements
 					.remove(importRegistration);
 			if (removed && activeImportRegistrations.size() == 0) {
 				if (proxyRegistration != null) {
-					proxyRegistration.unregister();
+					try {
+						proxyRegistration.unregister();
+					} catch (Throwable t) {
+						// do nothing
+					}
 					proxyRegistration = null;
 				}
+				IRemoteServiceContainerAdapter rsContainerAdapter = rsContainer.getContainerAdapter();
 				if (rsContainerAdapter != null) {
 					if (rsReference != null) {
 						rsContainerAdapter.ungetRemoteService(rsReference);
 						rsReference = null;
 					}
-					// remove remote service listener
 					if (rsListener != null) {
 						rsContainerAdapter
 								.removeRemoteServiceListener(rsListener);
 						rsListener = null;
 					}
-					rs = null;
-					rsContainerAdapter = null;
 				}
+				rs = null;
 				endpointDescription = null;
+				rsContainer = null;
 			}
 			return removed;
 		}
@@ -1030,7 +1030,7 @@ public class RemoteServiceAdmin implements
 			EndpointDescription updatedEndpoint = (endpoint instanceof EndpointDescription) ? ((EndpointDescription) endpoint)
 					: new EndpointDescription(endpoint.getProperties());
 			// Create new proxy properties from updatedEndpoint and rsReference and rs
-			Map newProxyProperties = createProxyProperties(importContainerID, updatedEndpoint,
+			Map newProxyProperties = createProxyProperties(rsContainer.getContainer().getID(), updatedEndpoint,
 					rsReference, rs);
 			// set the endpoint description with the proxy properties
 			updatedEndpoint.setPropertiesOverrides(newProxyProperties);
@@ -1855,9 +1855,7 @@ public class RemoteServiceAdmin implements
 					}
 				});
 
-		return new ImportEndpoint(rsContainerID, containerAdapter, selectedRsReference, rs,
-				new RemoteServiceListener(), proxyRegistration,
-				endpointDescription);
+		return new ImportEndpoint(rsContainer, selectedRsReference, rs, proxyRegistration, endpointDescription);
 	}
 
 	private BundleContext getProxyServiceFactoryContext(
