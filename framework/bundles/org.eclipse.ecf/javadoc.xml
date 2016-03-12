@@ -46,6 +46,8 @@
 	        	<exclude name="**/collab/**"/>
 	        	<exclude name="**/osgi/services/discovery/**"/>
 	        	<exclude name="**/com/mycorp/examples/**"/>
+        		<exclude name="**/org/eclipse/ecf/core/start/**"/>
+        		<exclude name="**/org/eclipse/ecf/core/user/**"/>
 	        	<exclude name="**/org/eclipse/ecf/docshare/**"/>
         		<exclude name="**/org/eclipse/ecf/datashare/**"/>
 	        	<exclude name="**/org/eclipse/ecf/examples/**"/>
