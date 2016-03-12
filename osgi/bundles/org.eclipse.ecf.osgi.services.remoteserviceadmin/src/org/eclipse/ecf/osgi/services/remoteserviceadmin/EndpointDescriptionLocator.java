@@ -765,6 +765,9 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 	}
 
 	/**
+	 * @param description description
+	 * @param type type
+	 * @return EndpointEventListenerHolder[] matching endpoint event listener holders
 	 * @since 4.1
 	 */
 	protected EndpointEventListenerHolder[] getMatchingEndpointEventListenerHolders(
@@ -843,6 +846,10 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 	}
 
 	/**
+	 * @param refs service references
+	 * @param description description
+	 * @param type type
+	 * @return EndpointEventListenerHolder[] matching endpoint event listener holders
 	 * @since 4.1
 	 */
 	public EndpointEventListenerHolder[] getMatchingEndpointEventListenerHolders(

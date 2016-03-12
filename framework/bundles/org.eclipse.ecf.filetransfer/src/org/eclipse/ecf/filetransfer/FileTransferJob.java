@@ -56,6 +56,7 @@ public class FileTransferJob extends Job {
 	}
 
 	/**
+	 * @param fileTransfer file transfer instance
 	 * @since 3.0
 	 */
 	public final void setFileTransfer(IFileTransfer fileTransfer) {

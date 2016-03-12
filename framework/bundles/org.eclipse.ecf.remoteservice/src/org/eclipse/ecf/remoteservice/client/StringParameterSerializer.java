@@ -21,7 +21,13 @@ import org.eclipse.ecf.remoteservice.IRemoteCall;
 public class StringParameterSerializer extends AbstractParameterSerializer implements IRemoteCallParameterSerializer {
 
 	/**
-	 * @throws NotSerializableException  
+	 * @param uri uri
+	 * @param call call
+	 * @param callable callable
+	 * @param paramDefault parameter default
+	 * @param paramToSerialize the parameter to serialize
+	 * @return IRemoteCallParameter created as result of serialization
+	 * @throws NotSerializableException if input parameters cannot be serialized
 	 */
 	public IRemoteCallParameter serializeParameter(String uri, IRemoteCall call, IRemoteCallable callable, IRemoteCallParameter paramDefault, Object paramToSerialize) throws NotSerializableException {
 		if (paramToSerialize == null) {

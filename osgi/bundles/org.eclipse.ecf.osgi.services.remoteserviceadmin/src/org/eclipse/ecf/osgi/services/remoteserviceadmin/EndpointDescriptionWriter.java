@@ -194,6 +194,9 @@ public class EndpointDescriptionWriter {
 	}
 
 	/**
+	 * @param endpointDescription the endpoint description to write
+	 * @return Writer the writer used
+	 * @throws IOException if endpoint descriptino cannot be written
 	 * @since 4.2
 	 */
 	public Writer writeEndpointDescription(
@@ -203,6 +206,9 @@ public class EndpointDescriptionWriter {
 	}
 
 	/**
+	 * @param endpointDescriptions the endpoint descriptions to write
+	 * @return Writer used to write descriptions
+	 * @throws IOException if problem writing
 	 * @since 4.2
 	 */
 	public Writer writeEndpointDescriptions(
@@ -216,6 +222,9 @@ public class EndpointDescriptionWriter {
 	}
 
 	/**
+	 * @param writer the writer to use
+	 * @param endpointDescription the endpointDescription to write
+	 * @throws IOException thrown if some problem writing
 	 * @since 4.2
 	 */
 	public void writeEndpointDescription(

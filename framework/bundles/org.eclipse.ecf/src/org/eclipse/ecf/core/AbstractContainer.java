@@ -47,7 +47,7 @@ public abstract class AbstractContainer implements IContainer {
 	/**
 	 * Fires a container event
 	 * 
-	 * @param event
+	 * @param event event
 	 */
 	protected void fireContainerEvent(IContainerEvent event) {
 		List toNotify = null;

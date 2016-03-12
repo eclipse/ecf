@@ -413,7 +413,8 @@ public class RemoteServiceContainerAdapterImpl implements IRemoteServiceContaine
 	}
 
 	/**
-	 * @throws ContainerConnectException  
+	 * @param target the ID target
+	 * @throws ContainerConnectException container connect exception if cannot connect
 	 */
 	protected void connectToRemoteServiceTarget(ID target) throws ContainerConnectException {
 		// Do nothing by default

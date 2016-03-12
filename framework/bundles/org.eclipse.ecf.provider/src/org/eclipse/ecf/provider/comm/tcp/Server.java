@@ -36,6 +36,12 @@ public class Server extends ServerSocket {
 	}
 
 	/**
+	 * @param group thread group for created threads
+	 * @param port port
+	 * @param backlog backlog
+	 * @param bindAddress a bindAddress
+	 * @param handler the socket accept handler
+	 * @throws IOException if server setup cannot be done
 	 * @since 4.4
 	 */
 	public Server(ThreadGroup group, int port, int backlog, InetAddress bindAddress, ISocketAcceptHandler handler) throws IOException {
@@ -49,6 +55,11 @@ public class Server extends ServerSocket {
 	}
 
 	/**
+	 * @param group thread group for created threads
+	 * @param port port
+	 * @param bindAddress a bindAddress
+	 * @param handler the socket accept handler
+	 * @throws IOException if server setup cannot be done
 	 * @since 4.4
 	 */
 	public Server(ThreadGroup group, int port, InetAddress bindAddress, ISocketAcceptHandler handler) throws IOException {
@@ -56,6 +67,11 @@ public class Server extends ServerSocket {
 	}
 
 	/**
+	 * @param group thread group for created threads
+	 * @param port port
+	 * @param backlog backlog
+	 * @param handler the socket accept handler
+	 * @throws IOException if server setup cannot be done
 	 * @since 4.4
 	 */
 	public Server(ThreadGroup group, int port, int backlog, ISocketAcceptHandler handler) throws IOException {

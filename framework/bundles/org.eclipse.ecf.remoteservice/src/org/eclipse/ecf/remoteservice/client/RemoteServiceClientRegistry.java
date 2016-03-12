@@ -92,6 +92,13 @@ public class RemoteServiceClientRegistry implements Serializable {
 	}
 
 	/**
+	 * @param target target
+	 * @param idFilter id filter
+	 * @param clazz the interface class to use for lookup
+	 * @param filter a remote service filter to use to look for remote service references
+	 * @return IRemoteServiceReference[] remote service references matching the given 
+	 * input params
+	 * @throws ContainerConnectException if container cannot be connected
 	 * @since 5.0
 	 */
 	public IRemoteServiceReference[] getRemoteServiceReferences(ID target, ID[] idFilter, String clazz, IRemoteFilter filter) throws ContainerConnectException {

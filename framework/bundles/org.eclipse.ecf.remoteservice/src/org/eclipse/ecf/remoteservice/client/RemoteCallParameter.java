@@ -74,6 +74,8 @@ public class RemoteCallParameter implements IRemoteCallParameter {
 		}
 
 		/**
+		 * @param param remote call parameter to add
+		 * @return Builder the builder
 		 * @since 8.8
 		 */
 		public Builder addParameter(IRemoteCallParameter param) {

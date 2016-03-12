@@ -44,7 +44,10 @@ public abstract class AbstractRSAClientService extends AbstractClientService {
 	}
 
 	/**
-	 * @throws ECFException  
+	 * @param call the remote call to invoke
+	 * @param callable the remote callable to invoke
+	 * @return Object result of remote call
+	 * @throws ECFException if invoke fails
 	 */
 	@Override
 	protected Object invokeRemoteCall(IRemoteCall call, IRemoteCallable callable) throws ECFException {
@@ -62,6 +65,7 @@ public abstract class AbstractRSAClientService extends AbstractClientService {
 	 * 
 	 * @param remoteCall the RSARemoteCall to use to make the asynchronous remote call.  Will not be <code>null</code>.
 	 * @return Object.   Should return a non-null instance of {@link org.eclipse.equinox.concurrent.future.IFuture}, {@link java.util.concurrent.Future}, or {@link java.util.concurrent.CompletableFuture}
+	 * @throws ECFException if async cannot be invoked
 	 */
 	protected abstract Object invokeAsync(RSARemoteCall remoteCall) throws ECFException;
 

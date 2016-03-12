@@ -21,14 +21,11 @@ import org.osgi.framework.ServiceReference;
  * {@link RemoteServiceAdmin#exportService(ServiceReference, java.util.Map)} ),
  * the RSA first gets an instance of this service via the service registry, and
  * then uses it to select an array of ECF host container instances by calling
- * {@link #selectHostContainers(ServiceReference, Map<String,Object>, String[],
- * String[], String[])} .
- * <p>
+ * selectHostContainers.
  * <p>
  * The {@link IRemoteServiceContainer} array returned is then used to actually
  * export the remote service (typically via
  * {@link IRemoteServiceContainerAdapter#registerRemoteService(String[], Object, java.util.Dictionary)}
- * <p>
  * <p>
  * If no other instances of this service have been registered, a default
  * instance of {@link HostContainerSelector} will be used. Note that this

@@ -26,7 +26,7 @@ public interface IEndpointDescriptionLocator {
 	/**
 	 * Get the service ID associated with the given endpoint description.
 	 * 
-	 * @param endpointDescription
+	 * @param endpointDescription endpoint description
 	 * @return IServiceID associated discovered endpoint description. Will
 	 *         return <code>null</code> if no associated serviceID
 	 */

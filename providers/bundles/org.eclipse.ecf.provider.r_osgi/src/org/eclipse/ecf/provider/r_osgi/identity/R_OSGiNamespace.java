@@ -58,6 +58,8 @@ public class R_OSGiNamespace extends Namespace {
 	}
 
 	/**
+	 * @param name name
+	 * @param description description
 	 * @since 3.5
 	 */
 	protected R_OSGiNamespace(String name, String description) {

@@ -33,14 +33,12 @@ import org.osgi.framework.Version;
  * href="http://www.osgi.org/download/r4v42/r4.enterprise.pdf">OSGi 4.2
  * Enterprise Specification</a>.
  * <p>
- * <p>
  * ECF remote services have capabilities beyond typical OSGi remote services. To
  * expose these capabilities, this EndpointDescription adds <b>optional</b>
  * meta-data. This meta-data may then be used by the remote service consumer to
  * customize ECF remote services import. Specifically, to customize the behavior
  * of the ECF implementation of
  * {@link RemoteServiceAdmin#importService(org.osgi.service.remoteserviceadmin.EndpointDescription)}.
- * <p>
  */
 public class EndpointDescription extends
 		org.osgi.service.remoteserviceadmin.EndpointDescription {
@@ -190,11 +188,11 @@ public class EndpointDescription extends
 		}
 	}
 	/**
-	 * Get a map of the service interface name -> Version information for all
+	 * Get a map of the service interface name to Version information for all
 	 * the service interfaces exposed by this endpoint description (i.e. those
 	 * returned by {@link #getInterfaces()} which have a
 	 * 
-	 * @return Map<String,Version> of interface versions for all our service
+	 * @return Map of interface versions for all our service
 	 *         interfaces. Every service interface returned by
 	 *         {@link #getInterfaces()} will have an associated Version, but it
 	 *         may have value Version#emptyVersion
@@ -207,6 +205,7 @@ public class EndpointDescription extends
 	}
 
 	/**
+	 * @return String ecf endpoint id
 	 * @since 4.0
 	 */
 	public String getEndpointId() {
@@ -214,6 +213,7 @@ public class EndpointDescription extends
 	}
 	
 	/**
+	 * @return Long ecf timestamp
 	 * @since 4.0
 	 */
 	public Long getTimestamp() {
@@ -221,6 +221,7 @@ public class EndpointDescription extends
 	}
 	
 	/**
+	 * @return Long ecf remote service id
 	 * @since 4.0
 	 */
 	public Long getRemoteServiceId() {
@@ -294,6 +295,7 @@ public class EndpointDescription extends
 	}
 	
 	/**
+	 * @return List ecf asynchronous proxy interfaces
 	 * @since 4.0
 	 */
 	public List<String> getAsyncInterfaces() {

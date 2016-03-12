@@ -15,10 +15,9 @@ import org.eclipse.ecf.discovery.IServiceInfo;
 /**
  * Service info factory service contract. A service info factory is used to
  * convert {@link EndpointDescription}s to {@link IServiceInfo} instances (via
- * {@link #createServiceInfo(IDiscoveryAdvertiser, EndpointDescription)}. The
+ * createServiceInfo. The
  * resulting IServiceInfo instances are then used to publish the
  * EndpointDescription metadata to a {@link IDiscoveryAdvertiser}.
- * <p>
  * <p>
  * If no other instances of this service have been registered, a default
  * instance of {@link ServiceInfoFactory} will be used. Note that this default
@@ -32,8 +31,8 @@ import org.eclipse.ecf.discovery.IServiceInfo;
  * <li>register it with the OSGi service registry with a priority
  * ({org.osgi.framework.Constants#SERVICE_RANKING}) higher than
  * {@link Integer#MIN_VALUE}</li>
- * <ul>
- * Then at runtime, when needed by the {@link EndpointDescriptionAdvertiser},
+ * </ul>
+ * Then at runtime, when needed by the EndpointDescriptionAdvertiser,
  * the new service info factory will be used.
  * 
  * @see IDiscoveredEndpointDescriptionFactory

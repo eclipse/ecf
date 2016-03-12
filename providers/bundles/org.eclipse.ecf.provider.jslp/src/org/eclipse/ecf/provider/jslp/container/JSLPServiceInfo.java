@@ -15,8 +15,10 @@ import ch.ethz.iks.slp.ServiceURL;
 import java.net.URI;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.discovery.*;
-import org.eclipse.ecf.discovery.identity.*;
+import org.eclipse.ecf.discovery.IServiceInfo;
+import org.eclipse.ecf.discovery.ServiceInfo;
+import org.eclipse.ecf.discovery.identity.IServiceTypeID;
+import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 import org.eclipse.ecf.internal.provider.jslp.ServicePropertiesAdapter;
 import org.eclipse.ecf.internal.provider.jslp.ServiceURLAdapter;
 import org.eclipse.ecf.provider.jslp.identity.JSLPNamespace;
@@ -25,28 +27,28 @@ public class JSLPServiceInfo extends ServiceInfo implements IServiceInfo {
 
 	private static final long serialVersionUID = 6828789192986625259L;
 
-//	public JSLPServiceInfo(final URI anURI, final IServiceID serviceID, final int priority, final int weight, final IServiceProperties props) {
-//		super(anURI, serviceID, priority, weight, props);
-//	}
-//
-//	/**
-//	 * @param serviceID
-//	 * @deprecated
-//	 */
-//	public JSLPServiceInfo(final IServiceID serviceID) {
-//		super(null, serviceID, DEFAULT_PRIORITY, DEFAULT_WEIGHT, new ServiceProperties());
-//	}
-//
+	//	public JSLPServiceInfo(final URI anURI, final IServiceID serviceID, final int priority, final int weight, final IServiceProperties props) {
+	//		super(anURI, serviceID, priority, weight, props);
+	//	}
+	//
+	//	/**
+	//	 * @param serviceID
+	//	 * @deprecated
+	//	 */
+	//	public JSLPServiceInfo(final IServiceID serviceID) {
+	//		super(null, serviceID, DEFAULT_PRIORITY, DEFAULT_WEIGHT, new ServiceProperties());
+	//	}
+	//
 	public JSLPServiceInfo(final IServiceInfo aSI) throws IDCreateException {
 		super(aSI.getServiceID().getLocation(), aSI.getServiceName(), ServiceIDFactory.getDefault().createServiceTypeID(IDFactory.getDefault().getNamespaceByName(JSLPNamespace.NAME), aSI.getServiceID().getServiceTypeID()), aSI.getPriority(), aSI.getWeight(), aSI.getServiceProperties());
 	}
 
 	/**
-	 * @param aServiceName 
-	 * @param anAdapter 
-	 * @param priority 
-	 * @param weight 
-	 * @param aServicePropertiesAdapter 
+	 * @param aServiceName service name
+	 * @param anAdapter service url adapter
+	 * @param priority priority
+	 * @param weight weight
+	 * @param aServicePropertiesAdapter service properties adapter
 	 * @since 3.0
 	 */
 	public JSLPServiceInfo(final String aServiceName, final ServiceURLAdapter anAdapter, final int priority, final int weight, final ServicePropertiesAdapter aServicePropertiesAdapter) {

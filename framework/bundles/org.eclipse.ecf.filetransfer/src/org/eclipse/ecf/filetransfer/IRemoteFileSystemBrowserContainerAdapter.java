@@ -36,6 +36,7 @@ public interface IRemoteFileSystemBrowserContainerAdapter extends IAdaptable {
 	 * @param listener the listener that will be notified asynchronously when a response to this request is received.  Must not be
 	 * <code>null</code>.  
 	 * @return IRemoteFileSystemRequest the request instance.
+	 * @throws RemoteFileSystemException if browse request cannot be accomplished
 	 */
 	public IRemoteFileSystemRequest sendBrowseRequest(IFileID directoryOrFileID, IRemoteFileSystemListener listener) throws RemoteFileSystemException;
 

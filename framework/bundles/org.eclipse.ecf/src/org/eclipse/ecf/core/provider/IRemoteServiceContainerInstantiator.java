@@ -49,16 +49,16 @@ public interface IRemoteServiceContainerInstantiator {
 	 * <p>Get the imported config types for a given ContainerTypeDescription for the given exporter supported config types.  This
 	 * method will be called to determine what the local container imported configs are for the given description and
 	 * exporterSupportedConfigTypes.  The local provider can decide which (if any) imported config types should be 
-	 * returned and return them. </p>
-	 * <p></p>
-	 * <p>As an example, consider the config types for the ECF generic provider.  A generic server has a config type
+	 * returned and return them. 
+	 * <p>
+	 * As an example, consider the config types for the ECF generic provider.  A generic server has a config type
 	 * of 'ecf.generic.server', and the client has 'ecf.generic.server'.  If the generic server exports a given
 	 * service, the exportersSupportedConfigTypes will be '[ecf.generic.server]'.  When this method is called
 	 * with the ecf.generic.client description (i.e. the container type description named 'ecf.generic.client'), it
 	 * should respond with a non-null, non-empty array...e.g.:  [ecf.generic.client].  This indicates that the
 	 * ecf.generic.client can serve as an importer for the given exporter config type.  All, other descriptions
-	 * should return <code>null<code>, to indicate that they cannot import a remote service exported by the given
-	 * exporterSupportedConfigTypes. </p>
+	 * should return <code>null</code>, to indicate that they cannot import a remote service exported by the given
+	 * exporterSupportedConfigTypes. 
 	 * 
 	 * @param description the container type description under consideration.
 	 * @param exporterSupportedConfigs the exporter supported config types under consideration.

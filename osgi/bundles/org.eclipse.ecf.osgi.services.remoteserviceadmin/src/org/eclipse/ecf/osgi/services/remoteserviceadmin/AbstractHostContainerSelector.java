@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
@@ -46,6 +45,12 @@ public abstract class AbstractHostContainerSelector extends
 	}
 
 	/**
+	 * @param serviceReference service reference
+	 * @param overridingProperties overriding properties
+	 * @param serviceExportedInterfaces service exported interfaces to select for
+	 * @param serviceExportedConfigs service exported configs to select for
+	 * @param serviceIntents service exported intents to select for 
+	 * @return Collection of existing host containers
 	 * @since 2.0
 	 */
 	protected Collection selectExistingHostContainers(
@@ -104,6 +109,10 @@ public abstract class AbstractHostContainerSelector extends
 	}
 
 	/**
+	 * @param serviceReference serviceReference
+	 * @param properties properties
+	 * @param container container to match
+	 * @return boolean true if match false otherwise
 	 * @since 2.0
 	 */
 	protected boolean matchHostContainerToConnectTarget(
@@ -141,6 +150,14 @@ public abstract class AbstractHostContainerSelector extends
 	}
 
 	/**
+	 * @param serviceReference service reference
+	 * @param properties properties
+	 * @param container container
+	 * @param adapter remote service container adapter
+	 * @param description container type description
+	 * @param requiredConfigTypes required config types
+	 * @param requiredServiceIntents required service intents
+	 * @return boolean true if match, false otherwise
 	 * @since 2.0
 	 */
 	protected boolean matchExistingHostContainer(
@@ -158,6 +175,10 @@ public abstract class AbstractHostContainerSelector extends
 	}
 
 	/**
+	 * @param serviceReference serviceReference
+	 * @param properties properties
+	 * @param container container
+	 * @return boolean true if match, false otherwise
 	 * @since 2.0
 	 */
 	protected boolean matchHostContainerID(ServiceReference serviceReference,
@@ -198,6 +219,11 @@ public abstract class AbstractHostContainerSelector extends
 		return containerID.equals(cID);
 	}
 
+	/**
+	 * @param requiredConfigTypes request config types
+	 * @param containerTypeDescription container type description
+	 * @return boolean true if match, false otherwise
+	 */
 	protected boolean matchHostSupportedConfigTypes(
 			String[] requiredConfigTypes,
 			ContainerTypeDescription containerTypeDescription) {
@@ -222,6 +248,13 @@ public abstract class AbstractHostContainerSelector extends
 	}
 
 	/**
+	 * @param serviceReference service reference
+	 * @param properties overriding properties
+	 * @param serviceExportedInterfaces service exported interfaces to select for
+	 * @param requiredConfigs service exported configs to select for
+	 * @param requiredIntents intents to select for 
+	 * @return Collection of host containers
+	 * @throws SelectContainerException if container cannot be created or configured
 	 * @since 2.0
 	 */
 	protected Collection createAndConfigureHostContainers(
@@ -303,7 +336,14 @@ public abstract class AbstractHostContainerSelector extends
 	}
 
 	/**
-	 * @throws ContainerCreateException
+	 * @param containerTypeDescription containerTypeDescription
+	 * @param serviceReference reference
+	 * @param properties properties
+	 * @param serviceExportedInterfaces exported interfaces
+	 * @param requiredConfigs configs
+	 * @param requiredIntents intents
+	 * @return IRemoteServiceContainer matching container created
+	 * @throws SelectContainerException container cannot be created or selected
 	 * @since 2.0
 	 */
 	protected IRemoteServiceContainer createMatchingContainer(
@@ -323,7 +363,11 @@ public abstract class AbstractHostContainerSelector extends
 	}
 
 	/**
-	 * @throws ContainerCreateException
+	 * @param serviceReference serviceReference
+	 * @param properties properties
+	 * @param containerTypeDescription container type description
+	 * @return IRemoteServiceContainer created remote service container
+	 * @throws SelectContainerException if could not be created
 	 * @since 2.0
 	 */
 	protected IRemoteServiceContainer createRSContainer(
@@ -341,6 +385,12 @@ public abstract class AbstractHostContainerSelector extends
 	}
 
 	/**
+	 * @param serviceReference service reference
+	 * @param properties properties
+	 * @param container container
+	 * @param target target
+	 * @throws ContainerConnectException if container cannot be connected
+	 * @throws IDCreateException thrown if ID cannot be created
 	 * @since 2.0
 	 */
 	protected void connectHostContainer(ServiceReference serviceReference,

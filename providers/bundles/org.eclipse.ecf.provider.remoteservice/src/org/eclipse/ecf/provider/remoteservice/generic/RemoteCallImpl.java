@@ -20,6 +20,11 @@ public class RemoteCallImpl extends SharedObjectMsg implements IRemoteCall, Seri
 	long timeout = IRemoteCall.DEFAULT_TIMEOUT;
 
 	/**
+	 * @param clazz the class
+	 * @param method the method
+	 * @param parameters the parameters
+	 * @param timeout timeout
+	 * @return RemoteCallImpl created remote call
 	 * @since 4.0
 	 */
 	public static RemoteCallImpl createRemoteCall(String clazz, String method, Object[] parameters, long timeout) {
@@ -40,9 +45,10 @@ public class RemoteCallImpl extends SharedObjectMsg implements IRemoteCall, Seri
 		synchronized (buf) {
 			buf.append("class=").append(clazz).append(';'); //$NON-NLS-1$
 			buf.append("method=").append(method).append(';'); //$NON-NLS-1$
-			buf.append("params=").append( //$NON-NLS-1$
-					parameters == null ? "" : Arrays.asList(parameters) //$NON-NLS-1$
-							.toString()).append(';');
+			buf.append("params=") //$NON-NLS-1$
+					.append(parameters == null ? "" : Arrays.asList(parameters) //$NON-NLS-1$
+							.toString())
+					.append(';');
 			buf.append("timeout=").append(timeout).append(']'); //$NON-NLS-1$
 		}
 		return buf.toString();

@@ -35,6 +35,11 @@ public class SocketFactory implements IClientSocketFactory, IServerSocketFactory
 	}
 
 	/**
+	 * @param port port
+	 * @param backlog backlog
+	 * @param bindAddress bindAddress
+	 * @return ServerSocket server socket created
+	 * @throws IOException if server socket cannot be created
 	 * @since 4.4
 	 */
 	public ServerSocket createServerSocket(int port, int backlog, InetAddress bindAddress) throws IOException {

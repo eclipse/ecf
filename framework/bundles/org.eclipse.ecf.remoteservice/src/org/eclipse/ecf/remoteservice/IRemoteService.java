@@ -19,7 +19,7 @@ import org.eclipse.equinox.concurrent.future.IFuture;
  * implementing this interface will be returned from the
  * IRemoteServiceContainerAdapter.getRemoteService(IRemoteServiceReference) and
  * may then be used to communicate with a remote service. The methods on this
- * interface support accessing the remote service in several ways:<br/>
+ * interface support accessing the remote service in several ways:<br>
  * <ul>
  * <li>callSync -- A synchronous invocation that will block the calling thread
  * until complete (or timeout) and return the result from the remote or throw
@@ -37,15 +37,8 @@ import org.eclipse.equinox.concurrent.future.IFuture;
  * method failure information</li>
  * <li>getProxy -- Access to a local proxy for the remote service that will
  * expose the appropriate interface to the caller, and synchronously call the
- * remote methods when invoked. For example:</li>
- * 
- * <pre>
- * IRemoteServiceReference[] references = serviceContainer
- * 		.getRemoteServiceReferences(null, &quot;java.lang.Runnable&quot;, null);
- * IRemoteService remoteService = serviceContainer.getRemoteService(references[0]);
- * Runnable runnable = (Runnable) remoteService.getProxy();
- * runnable.run();
- * </pre>
+ * remote methods when invoked. 
+ * </ul>
  * 
  */
 public interface IRemoteService {

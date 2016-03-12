@@ -179,6 +179,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	}
 
 	/**
+	 * @return ISharedObjectMessageSerializer the shared object message serializer
 	 * @since 2.0
 	 */
 	protected ISharedObjectMessageSerializer getSharedObjectMessageSerializer() {
@@ -438,8 +439,8 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	abstract protected void forwardToRemote(ID from, ID to, ContainerMessage data) throws IOException;
 
 	/**
-	 * @param sd
-	 * @return Object []
+	 * @param sd shared object description
+	 * @return Object[] arguments from the shared object description properties
 	 */
 	protected Object[] getArgsFromProperties(SharedObjectDescription sd) {
 		if (sd == null)
@@ -459,8 +460,8 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	}
 
 	/**
-	 * @param sd
-	 * @return String []
+	 * @param sd shared object description
+	 * @return String[] arguments types from shared object description properties
 	 */
 	protected String[] getArgTypesFromProperties(SharedObjectDescription sd) {
 		if (sd == null)
@@ -494,8 +495,8 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	}
 
 	/**
-	 * @param sd
-	 * @return ClassLoader
+	 * @param sd shared object description
+	 * @return ClassLoader classloader to used for given shared object description
 	 */
 	protected ClassLoader getClassLoaderForSharedObject(SharedObjectDescription sd) {
 		return getClassLoaderForContainer();
@@ -545,6 +546,8 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	}
 
 	/**
+	 * @param message message
+	 * @param t exception to print to system error
 	 * @since 2.0
 	 */
 	protected static void printToSystemError(String message, Throwable t) {
@@ -561,6 +564,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	}
 
 	/**
+	 * @return ISynchAsyncEventHandler message receiver
 	 * @since 4.7
 	 */
 	public ISynchAsynchEventHandler getMessageReceiver() {
@@ -659,11 +663,13 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	}
 
 	/**
-	 * @param mess
+	 * @param mess leave group message
 	 */
 	protected abstract void handleLeaveGroupMessage(ContainerMessage mess);
 
 	/**
+	 * @param containerID containerID
+	 * @return boolean true if verified, false otherwise
 	 * @since 4.0
 	 */
 	protected boolean verifySharedObjectMessageTarget(ID containerID) {
@@ -735,6 +741,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	}
 
 	/**
+	 * @param resp response message
 	 * @since 4.0
 	 */
 	protected void handleUndeliveredSharedObjectMessage(SharedObjectMessage resp) {
@@ -742,7 +749,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	}
 
 	/**
-	 * @param mess
+	 * @param mess message
 	 * @throws IOException not thrown by this implementation.
 	 */
 	protected void handleUnidentifiedMessage(ContainerMessage mess) throws IOException {
@@ -767,9 +774,9 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	}
 
 	/**
-	 * @param id
-	 * @param obj
-	 * @param props
+	 * @param id id 
+	 * @param obj obj
+	 * @param props props
 	 * @return SOConfig a non-<code>null</code> instance.
 	 * @throws ECFException not thrown by this implementation.
 	 */
@@ -850,7 +857,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	}
 
 	/**
-	 * @param event
+	 * @param event event
 	 * @throws IOException not thrown by this implementation.
 	 */
 	protected void processAsynch(AsynchEvent event) throws IOException {
@@ -985,6 +992,10 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	}
 
 	/**
+	 * @param sharedObjectID shared object ID
+	 * @param message message
+	 * @return byte[] serialized message
+	 * @throws IOException if some problem serializing 
 	 * @since 2.0
 	 */
 	protected byte[] defaultSerializeSharedObjectMessage(ID sharedObjectID, Object message) throws IOException {
@@ -998,6 +1009,10 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	}
 
 	/**
+	 * @param bytes data to deserialized
+	 * @return Object the deserialized shared object message
+	 * @throws IOException if deserialization cannot be done
+	 * @throws ClassNotFoundException if deserialization cannot be done
 	 * @since 2.0
 	 */
 	protected Object defaultDeserializeSharedObjectMessage(byte[] bytes) throws IOException, ClassNotFoundException {
@@ -1058,7 +1073,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	}
 
 	/**
-	 * @param containerEvent
+	 * @param containerEvent container event
 	 */
 	protected void fireDelegateContainerEvent(IContainerEvent containerEvent) {
 		super.fireContainerEvent(containerEvent);

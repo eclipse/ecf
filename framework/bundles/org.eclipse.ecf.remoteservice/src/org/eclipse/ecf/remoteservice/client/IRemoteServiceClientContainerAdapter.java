@@ -30,10 +30,9 @@ public interface IRemoteServiceClientContainerAdapter extends IRemoteServiceCont
 	 * instances and associate an array of IRemoteCallables with each given serviceInterfaceName, so that subsequent lookup operations result in 
 	 * appropriate remote service registrations.  The IRemoteCallable instances should correspond to <b>methods</b> within the
 	 * particular service interface class.</p>
-	 * <p></p>
-	 * <p>Note that the number of serviceInterfaceNames (i.e. the length of the given String[]) <b>must</b> be equal to
+	 * <p>
+	 * Note that the number of serviceInterfaceNames (i.e. the length of the given String[]) <b>must</b> be equal to
 	 * the number of rows of the remoteCallable two-dimensional array.  </p>
-	 * <p></p>
 	 * <p>For example, suppose we have a service interface "org.eclipse.ecf.IFoo":
 	 * <pre>
 	 * public interface IFoo {
@@ -49,7 +48,8 @@ public interface IRemoteServiceClientContainerAdapter extends IRemoteServiceCont
 	 * IRemoteServiceRegistration reg = this.registerRemoteCallable(new String[] { "org.eclipse.ecf.IFoo" }, callables, null);
 	 * </pre>
 	 * 
-	 * @param remoteCallables the IRemoteCallables to register.  Each IRemoteCallable represents a specific method->resourcePath mapping.
+	 * @param serviceInterfaceNames service interface names
+	 * @param remoteCallables the IRemoteCallables to register.  Each IRemoteCallable represents a specific method to resourcePath mapping.
 	 * Must not be <code>null</code>.
 	 * @param properties any service properties to associate with the given registration.
 	 * @return IRemoteServiceRegistration to use to unregister the remote service.  Will not be <code>null</code>.
@@ -60,7 +60,7 @@ public interface IRemoteServiceClientContainerAdapter extends IRemoteServiceCont
 	 * Register remoteCallables for remote service client.  This method allows providers to register {@link IRemoteCallable}
 	 * instances, so that subsequent lookup operations result in appropriate remote service registrations.
 	 * 
-	 * @param remoteCallables the IRemoteCallables to register.  Each IRemoteCallable represents a specific method->resourcePath mapping.
+	 * @param remoteCallables the IRemoteCallables to register.  Each IRemoteCallable represents a specific method to resourcePath mapping.
 	 * Must not be <code>null</code>.
 	 * @param properties any service properties to associate with the given registration.
 	 * @return IRemoteServiceRegistration to use to unregister the remote service.  Will not be <code>null</code>.

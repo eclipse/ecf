@@ -20,6 +20,9 @@ public class JMDNSServiceID extends ServiceID {
 	private static final long serialVersionUID = 8389531866888790264L;
 
 	/**
+	 * @param namespace namespace for this ID
+	 * @param type service type ID
+	 * @param anURI uri for the service id
 	 * @since 3.0
 	 */
 	public JMDNSServiceID(final Namespace namespace, final IServiceTypeID type, final URI anURI) {

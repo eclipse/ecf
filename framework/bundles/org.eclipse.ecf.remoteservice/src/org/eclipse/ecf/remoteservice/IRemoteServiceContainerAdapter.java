@@ -76,7 +76,6 @@ public interface IRemoteServiceContainerAdapter extends IRemoteServiceHost, IRem
 	 * returned array of <code>IRemoteServiceReference</code> objects contains
 	 * services that were registered under the specified class and match the
 	 * specified idFilter, and filter criteria.
-	 * </p>
 	 * <p>
 	 * Note this method assumes that the enclosing container has previously
 	 * been connected, and uses the idFilter to filter among targets within the
@@ -186,7 +185,6 @@ public interface IRemoteServiceContainerAdapter extends IRemoteServiceHost, IRem
 	 * returned array of <code>IRemoteServiceReference</code> objects contains
 	 * services that were registered under the specified class and match the
 	 * specified idFilter, and filter criteria.
-	 * </p>
 	 * <p>
 	 * Note this method assumes that the enclosing container has previously
 	 * been connected, and uses the idFilter to filter among targets within the

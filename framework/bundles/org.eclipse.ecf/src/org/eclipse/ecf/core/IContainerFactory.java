@@ -36,7 +36,7 @@ public interface IContainerFactory {
 	 * 
 	 * @return List of ContainerTypeDescription instances
 	 */
-	public List /* ContainerTypeDescription */getDescriptions();
+	public List /* ContainerTypeDescription */ getDescriptions();
 
 	/**
 	 * Check to see if a given named description is already contained by this
@@ -108,7 +108,7 @@ public interface IContainerFactory {
 	 * @param containerTypeDescriptionName
 	 *            the ContainerTypeDescription name to lookup. Must not be <code>null</code>.
 	 * @return a valid instance of IContainer. Will not be <code>null</code>.
-	 * @throws ContainerCreateException
+	 * @throws ContainerCreateException if cannot create container of given name
 	 */
 	public IContainer createContainer(String containerTypeDescriptionName) throws ContainerCreateException;
 

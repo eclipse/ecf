@@ -234,7 +234,6 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	 * the this shared object and it's enclosing {@link IContainer}. The event
 	 * to post must not be <code>null</code>.
 	 * <p>
-	 * </p>
 	 * This implementation goes through the following steps
 	 * <ol>
 	 * <li>Call {@link #getEventToSend(Event)}. If the Event returned from
@@ -273,7 +272,6 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	 * serialized and sent via
 	 * {@link #sendSharedObjectMsgTo(ID, SharedObjectMsg)}.
 	 * <p>
-	 * </p>
 	 * Prior to actual sending, the {@link #getTarget(Event)} method will be
 	 * called, to allow subclasses to determine the target receiver. Then the
 	 * {@link #createMessageDataFromEvent(ID, Event)} method is called, to
@@ -281,11 +279,9 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	 * returned from {@link #createMessageDataFromEvent(ID, Event)} must be
 	 * serializable. See {@link #createMessageDataFromEvent(ID, Event)}.
 	 * <p>
-	 * </p>
 	 * Subclasses may override this method to customize or replace this
 	 * sendMessage behavior.
 	 * <p>
-	 * </p>
 	 * If an exception occurs on serialization or sending, the
 	 * {@link #handleSendMessageException(String, Event, Object[], IOException)}
 	 * method will be called to handle it.
@@ -315,15 +311,12 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	 * deserialize via {@link #createEventFromMessageData(ID, Object[])} on the
 	 * receiver.
 	 * <p>
-	 * </p>
 	 * The default implementation creates a single {@link EventMessage} instance
 	 * and adds it to an Object[] of length 1.
 	 * <p>
-	 * </p>
 	 * Subclasses may override as appropriate to customize the serialization of
 	 * the given eventToSend.
 	 * <p>
-	 * </p>
 	 * Subclasses may override as appropriate. If this method is overridden,
 	 * then {@link #createEventFromMessageData(ID, Object[])} should also be
 	 * overridden as well on the receiver.
@@ -348,6 +341,8 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	}
 
 	/**
+	 * @param topic topic
+	 * @return SerializationHandler the serialization handler associated with topic
 	 * @since 1.2
 	 */
 	protected SerializationHandler getSerializationHandler(String topic) {
@@ -366,7 +361,6 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	 * of the messageData, casts the messageData[0] to EventMessage, and then
 	 * returns eventMessage.getEvent().
 	 * <p>
-	 * </p>
 	 * Subclasses can override as appropriate. If this method is overridden,
 	 * then {@link #createMessageDataFromEvent(ID, Event)} should also be
 	 * overridden as well on the sender.
@@ -398,6 +392,7 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	 *            the event that was to be sent.
 	 * @param messageParams
 	 *            the message params that were to be
+	 * @param exception exception
 	 * @since 1.1
 	 */
 	protected void handleSendMessageException(String message,
@@ -448,7 +443,6 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	 * implementation of this method is to simply return the event passed in as
 	 * the method argument.
 	 * <p>
-	 * </p>
 	 * Subclasses may override...to filter or transform the event prior to
 	 * calling {@link #sendMessage(Event)}.
 	 * 
@@ -483,7 +477,6 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	 * appropriate. If the returned Event is <code>null</code> then no local
 	 * dispatch will occur for the given Event.
 	 * <p>
-	 * </p>
 	 * Subclasses may override as appropriate.
 	 * 
 	 * @param event
@@ -505,7 +498,6 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	 * <code>true</code>), then the dispatch could occur before, after, or
 	 * during the actual handling via the matching {@link EventHandler}s.
 	 * <p>
-	 * </p>
 	 * Subclasses may override as appropriate.
 	 * 
 	 * @param event
@@ -588,7 +580,7 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 /**
 	 * Handle the shared object message.  This method is called on receiver implementations of 
 	 * the DistributedEventAdmin, so that they can deliver to locally registered {@link EventHandler}s.
-	 * <p></p>
+	 * <p>
 	 * This implementation does the following:
 	 * <ol>
 	 * <li>Verifies that the value {@link SharedObjectMsg#getMethod()} matches the appropriate String.</li>
@@ -628,6 +620,8 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	}
 
 	/**
+	 * @param fromID fromID
+	 * @param receivedEvent received event
 	 * @since 1.1
 	 */
 	protected void notifyReceivedEvent(ID fromID, Event receivedEvent) {
@@ -657,7 +651,6 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	/**
 	 * Log a warning.
 	 * <p>
-	 * </p>
 	 * Subclasses may override as appropriate.
 	 * 
 	 * @param message
@@ -672,7 +665,6 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	/**
 	 * Log a warning.
 	 * <p>
-	 * </p>
 	 * Subclasses may override as appropriate.
 	 * 
 	 * @param message
@@ -698,7 +690,6 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	/**
 	 * Log an error.
 	 * <p>
-	 * </p>
 	 * Subclasses may override as appropriate.
 	 * 
 	 * @param message
@@ -713,7 +704,6 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	/**
 	 * Log an error.
 	 * <p>
-	 * </p>
 	 * Subclasses may override as appropriate.
 	 * 
 	 * @param message
@@ -735,6 +725,8 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	}
 
 	/**
+	 * @param filters topic filters to add
+	 * @return boolean true if given filters added, false otherwise
 	 * @since 1.2
 	 */
 	public boolean addEventTopicFilters(String[] filters) {
@@ -743,6 +735,8 @@ public class DistributedEventAdmin extends BaseSharedObject implements
 	}
 	
 	/**
+	 * @param filters topic filters to add
+	 * @return boolean true if given filters added, false otherwise
 	 * @since 1.2
 	 */
 	public boolean removeEventTopicFilters(String[] filters) {

@@ -395,6 +395,7 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 
 	/**
 	 * @since 8.9
+	 * @return String[] the interface classes associated with this registration
 	 */
 	public String[] getInterfaces() {
 		return this.clazzes;

@@ -29,7 +29,7 @@ public interface IContainerManager {
 
 	/**
 	 * Get container for given ID. If <code>containerID</code> is
-	 * <code>, null will be returned.  If 
+	 * <code>null</code> then <code>null</code> will be returned.  If 
 	 * active container with given <code>containerID,</code> is not known to this container manager,
 	 * then <code>null</code> will also be returned.
 	 * @param containerID the ID of the container instance to retrieve from this manager.  If <code>null</code>

@@ -35,7 +35,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 
 	/**
 	 * IRemoteServiceContainerAdapter containerAdapter against which 
-	 * this <code>RemoteServiceTracker</code></code> is tracking.
+	 * this <code>RemoteServiceTracker</code> is tracking.
 	 */
 	protected final IRemoteServiceContainerAdapter containerAdapter;
 	/**
@@ -96,15 +96,16 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 	private volatile IRemoteService cachedService;
 
 	/**
-	 * Create a <code>RemoteServiceTracker</code></code> on the specified
+	 * Create a <code>RemoteServiceTracker</code> on the specified
 	 * <code>IRemoteServiceReference</code>.
 	 * 
 	 * <p>
 	 * The remote service referenced by the specified <code>IRemoteServiceReference</code>
-	 * object will be tracked by this <code>RemoteServiceTracker</code></code> object.
+	 * object will be tracked by this <code>RemoteServiceTracker</code> object.
 	 * 
 	 * @param containerAdapter <code>IRemoteServiceContainerAdapter</code> against which the
 	 *        tracking is done.
+	 * @param containerIDs container IDs
 	 * @param reference <code>IRemoteServiceReference</code> for the remote service
 	 *        to be tracked.
 	 * @param customizer The customizer object to call when services are added,
@@ -143,6 +144,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 	 * 
 	 * @param containerAdapter <code>BundleContext</code> object against which the
 	 *        tracking is done.
+	 * @param containerIDs container ids
 	 * @param clazz Class name of the services to be tracked.
 	 * @param customizer The customizer object to call when services are added,
 	 *        modified, or removed in this <code>RemoteServiceTracker</code> object.
@@ -268,7 +270,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 	 * <code>IRemoteServiceTrackerCustomizer.addingService</code> method.
 	 * 
 	 * <p>
-	 * This method is only called when this <code>RemoteServiceTracker</code></code> object
+	 * This method is only called when this <code>RemoteServiceTracker</code> object
 	 * has been constructed with a <code>null IRemoteServiceTrackerCustomizer</code>
 	 * argument.
 	 * 
@@ -285,7 +287,7 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 	 * @param reference Reference to service being added to this
 	 *        <code>RemoteServiceTracker</code> object.
 	 * @return The IRemoteService object to be tracked for the service added to this
-	 *         <code>RemoteServiceTracker</code></code> object.
+	 *         <code>RemoteServiceTracker</code> object.
 	 * @see IRemoteServiceTrackerCustomizer
 	 */
 	public IRemoteService addingService(IRemoteServiceReference reference) {

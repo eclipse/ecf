@@ -22,14 +22,9 @@ public interface IContainerInstantiator {
 	 * and arguments that will be passed into this method (and therefore to the
 	 * provider implementation implementing this method). For example:
 	 * <p>
-	 * </p>
-	 * <p>
 	 * <b> ContainerFactory.getDefault().createContainer("foocontainer",new
 	 * Object { "hello" });</b>
-	 * </p>
 	 * <p>
-	 * </p>
-	 * 
 	 * @param description
 	 *            the ContainerTypeDescription associated with the registered
 	 *            container provider implementation
@@ -40,7 +35,7 @@ public interface IContainerInstantiator {
 	 * @return IContainer instance. The provider implementation must return a
 	 *         valid object implementing IContainer OR throw a
 	 *         ContainerCreateException. Null will not be returned.
-	 * @throws ContainerCreateException
+	 * @throws ContainerCreateException thrown if instance cannot be created
 	 */
 	public IContainer createInstance(ContainerTypeDescription description, Object[] parameters) throws ContainerCreateException;
 
@@ -75,17 +70,12 @@ public interface IContainerInstantiator {
 	 * set of parameter types understood for calls to
 	 * {@link #createInstance(ContainerTypeDescription, Object[])}.
 	 * <p>
-	 * </p>
 	 * Each of the rows of the returned array specifies a Class[] of parameter
 	 * types. These parameter types correspond to the types of Object[] that can
 	 * be passed into the second parameter of
 	 * {@link #createInstance(ContainerTypeDescription, Object[])}.
 	 * <p>
-	 * </p>
 	 * Consider the following example:
-	 * <p>
-	 * </p>
-	 * 
 	 * <pre>
 	 * public Class[][] getSupportedParameterTypes() {
 	 * 	return new Class[][] { { String.class }, { String.class, String.class } };
@@ -104,10 +94,7 @@ public interface IContainerInstantiator {
 	 * IContainer container2 = ContainerFactory.getDefault().createContainer(
 	 * 		description, new Object[] { &quot;Hello&quot; });
 	 * </pre>
-	 * 
 	 * <p>
-	 * </p>
-	 * 
 	 * @param description
 	 *            the ContainerTypeDescription to return parameter types for
 	 * @return Class[][] array of Class[]s. Each row in the table corresponds to

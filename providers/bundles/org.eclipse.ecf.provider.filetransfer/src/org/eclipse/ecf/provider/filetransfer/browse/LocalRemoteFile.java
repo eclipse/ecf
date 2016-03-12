@@ -33,7 +33,7 @@ public class LocalRemoteFile implements IRemoteFile {
 	IRemoteFileInfo info;
 
 	/**
-	 * @param file
+	 * @param file the file
 	 */
 	public LocalRemoteFile(File file) {
 		this.file = file;

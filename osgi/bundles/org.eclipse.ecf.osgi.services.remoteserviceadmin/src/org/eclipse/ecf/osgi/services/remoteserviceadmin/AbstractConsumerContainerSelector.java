@@ -184,6 +184,11 @@ public class AbstractConsumerContainerSelector extends
 	}
 
 	/**
+	 * @param containerTypeDescription containerTypeDescription
+	 * @param containerTypeDescriptionName containerTypeDescriptionName
+	 * @param properties properties
+	 * @return IRemoteServiceContainer created container.  Should not be <code>null</code>
+	 * @throws SelectContainerException thrown if container cannot be created or configured
 	 * @since 2.0
 	 */
 	protected IRemoteServiceContainer createContainer(

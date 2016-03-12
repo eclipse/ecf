@@ -169,7 +169,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
 	}
 
 	/**
-	 * @param mess
+	 * @param mess message
 	 * @throws IOException not thrown by this implementation.
 	 */
 	protected void handleViewChangeMessage(ContainerMessage mess) throws IOException {

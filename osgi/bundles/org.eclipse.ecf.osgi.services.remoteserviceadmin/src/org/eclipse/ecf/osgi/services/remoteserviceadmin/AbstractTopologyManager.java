@@ -130,6 +130,8 @@ public abstract class AbstractTopologyManager {
 	}
 	
 	/**
+	 * @param ctx the bundle context
+	 * @return Filter the created filter
 	 * @since 4.0
 	 */
 	protected Filter createISIFFilter(BundleContext ctx) {
@@ -168,6 +170,7 @@ public abstract class AbstractTopologyManager {
 	}
 	
 	/**
+	 * @param endpointDescription endpoint description
 	 * @since 4.1
 	 */
 	protected void advertiseModifyEndpointDescription(
@@ -204,6 +207,7 @@ public abstract class AbstractTopologyManager {
 	}
 
 	/**
+	 * @param endpointDescription endpoint description
 	 * @since 3.0
 	 */
 	protected void advertiseEndpointDescription(
@@ -243,6 +247,7 @@ public abstract class AbstractTopologyManager {
 	}
 
 	/**
+	 * @param endpointDescription endpoint description
 	 * @since 3.0
 	 */
 	protected void unadvertiseEndpointDescription(
@@ -283,6 +288,7 @@ public abstract class AbstractTopologyManager {
 	}
 
 	/**
+	 * @param endpointDescription endpoint description
 	 * @since 3.0
 	 */
 	protected void handleECFEndpointAdded(
@@ -296,6 +302,7 @@ public abstract class AbstractTopologyManager {
 	}
 
 	/**
+	 * @param endpointDescription endpoint description
 	 * @since 3.0
 	 */
 	protected void handleECFEndpointRemoved(
@@ -317,6 +324,7 @@ public abstract class AbstractTopologyManager {
 	}
 
 	/**
+	 * @param endpoint endpoint description
 	 * @since 4.1
 	 */
 	protected void handleECFEndpointModified(EndpointDescription endpoint) {
@@ -337,6 +345,8 @@ public abstract class AbstractTopologyManager {
 	}
 
 	/**
+	 * @param listener listener
+	 * @param endpointDescription endpoint description
 	 * @since 3.0
 	 */
 	protected void handleNonECFEndpointAdded(
@@ -346,6 +356,8 @@ public abstract class AbstractTopologyManager {
 	}
 
 	/**
+	 * @param listener listener
+	 * @param endpointDescription endpoint description
 	 * @since 3.0
 	 */
 	protected void handleNonECFEndpointRemoved(
@@ -355,6 +367,8 @@ public abstract class AbstractTopologyManager {
 	}
 
 	/**
+	 * @param basicTopologyManagerImpl basic topology manager
+	 * @param endpointDescription endpointDescription
 	 * @since 4.1
 	 */
 	protected void handleNonECFEndpointModified(
@@ -364,6 +378,8 @@ public abstract class AbstractTopologyManager {
 	}
 
 	/**
+	 * @param endpointDescription endpoint description
+	 * @param matchedFilter matched filter
 	 * @since 3.0
 	 */
 	protected void handleNonECFEndpointRemoved(
@@ -373,6 +389,9 @@ public abstract class AbstractTopologyManager {
 	}
 
 	/**
+	 * @param result result
+	 * @param endpointDescription endpoint description
+	 * @param advertise advertise
 	 * @since 3.0
 	 */
 	protected void handleAdvertisingResult(
@@ -393,6 +412,8 @@ public abstract class AbstractTopologyManager {
 	}
 
 	/**
+	 * @param event the service event
+	 * @param listeners map of listeners
 	 * @since 3.0
 	 */
 	protected void handleEvent(ServiceEvent event, Map listeners) {

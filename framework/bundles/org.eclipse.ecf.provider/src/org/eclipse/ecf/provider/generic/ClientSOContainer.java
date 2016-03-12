@@ -270,9 +270,9 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 	}
 
 	/**
-	 * @param from
-	 * @param excluding
-	 * @param data
+	 * @param from from
+	 * @param excluding excluding
+	 * @param data data
 	 * @throws IOException not thrown by this implementation.
 	 */
 	protected void forwardExcluding(ID from, ID excluding, ContainerMessage data) throws IOException {
@@ -311,10 +311,10 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 	}
 
 	/**
-	 * @param from
-	 * @param excluding
-	 * @param msg
-	 * @param data
+	 * @param from from 
+	 * @param excluding excluding
+	 * @param msg msg
+	 * @param data data
 	 * @throws IOException not thrown by this implementation.
 	 */
 	protected void forwardExcluding(ID from, ID excluding, byte msg, Serializable data) throws IOException {
@@ -322,9 +322,9 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 	}
 
 	/**
-	 * @param from
-	 * @param to
-	 * @param message
+	 * @param from from 
+	 * @param to to 
+	 * @param message message
 	 * @throws IOException not thrown by this implementation.
 	 */
 	protected void forwardToRemote(ID from, ID to, ContainerMessage message) throws IOException {

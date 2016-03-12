@@ -21,8 +21,8 @@ import org.eclipse.ecf.core.identity.IIdentifiable;
  */
 public interface IUser extends IIdentifiable, Serializable, IAdaptable {
 	/**
-	 * Get basic name for user. Will not return <code>null</.
-	 * @return String
+	 * Get basic name for user. Will not return <code>null</code>.
+	 * @return String name
 	 */
 	public String getName();
 
@@ -37,7 +37,7 @@ public interface IUser extends IIdentifiable, Serializable, IAdaptable {
 	/**
 	 * Get map of properties associated with this user. May be <code>null</code>.
 	 * 
-	 * @return Map
+	 * @return Map properties
 	 */
 	public Map getProperties();
 

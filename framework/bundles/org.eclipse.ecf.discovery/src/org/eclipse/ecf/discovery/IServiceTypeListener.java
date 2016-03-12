@@ -12,13 +12,11 @@ package org.eclipse.ecf.discovery;
 /**
  * Listener for service type notifications
  * <p>
- * </p>
  * Note these methods will be called asynchronously when notifications of remote
  * changes are received by the provider implementation code. The provider is
  * free to call the methods below with an arbitrary thread, so the
  * implementation of these methods must be appropriately prepared.
  * <p>
- * </p>
  * For example, if the code implementing any of these methods must interact with
  * user interface code, then it should use code such as the following to execute
  * on the SWT UI thread:
@@ -31,15 +29,16 @@ package org.eclipse.ecf.discovery;
  * 	});
  * </pre>
  * 
- * Further, the code in the implementations of these methods should <b>not block</b>
- * via I/O operations or blocking UI calls.
+ * Further, the code in the implementations of these methods should <b>not
+ * block</b> via I/O operations or blocking UI calls.
  */
 public interface IServiceTypeListener {
 
 	/**
 	 * Notification that a service type has been discovered
 	 * 
-	 * @param event  Must not be <code>null</code>.
+	 * @param event
+	 *            Must not be <code>null</code>.
 	 */
 	public void serviceTypeDiscovered(IServiceTypeEvent event);
 }

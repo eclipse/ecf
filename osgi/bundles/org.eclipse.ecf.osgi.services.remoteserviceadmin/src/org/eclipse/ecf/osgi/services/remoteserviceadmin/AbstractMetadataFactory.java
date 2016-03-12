@@ -175,6 +175,9 @@ public abstract class AbstractMetadataFactory {
 	}
 
 	/**
+	 * @param discoveredServiceProperties discovered service properties
+	 * @return org.osgi.service.remoteserviceadmin.EndpointDescription endpoint description decoded from service p
+	 * properties
 	 * @since 3.0
 	 */
 	protected org.osgi.service.remoteserviceadmin.EndpointDescription decodeEndpointDescription(
@@ -273,6 +276,8 @@ public abstract class AbstractMetadataFactory {
 	}
 
 	/**
+	 * @param endpointDescription endpoint description to encode
+	 * @param result service properties to add encoded endpoint description properties to
 	 * @since 3.0
 	 */
 	protected void encodeOSGiServiceProperties(
@@ -360,6 +365,9 @@ public abstract class AbstractMetadataFactory {
 	}
 
 	/**
+	 * @param endpointDescription endpoint description to encode
+	 * @param result service properties to add encoded endpoint description properties to
+	 * 
 	 * @since 3.0
 	 */
 	protected void encodeServiceProperties(

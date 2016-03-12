@@ -35,8 +35,8 @@ public class ServiceTypeID extends BaseID implements IServiceTypeID {
 		super(namespace);
 	}
 
-	protected ServiceTypeID(Namespace namespace, String[] services,
-			String[] scopes, String[] protocols, String namingAuthority) {
+	protected ServiceTypeID(Namespace namespace, String[] services, String[] scopes, String[] protocols,
+			String namingAuthority) {
 		super(namespace);
 		Assert.isNotNull(services);
 		this.services = services;
@@ -51,8 +51,7 @@ public class ServiceTypeID extends BaseID implements IServiceTypeID {
 	}
 
 	protected ServiceTypeID(Namespace ns, IServiceTypeID id) {
-		this(ns, id.getServices(), id.getScopes(), id.getProtocols(), id
-				.getNamingAuthority());
+		this(ns, id.getServices(), id.getScopes(), id.getProtocols(), id.getNamingAuthority());
 	}
 
 	/**
@@ -60,7 +59,9 @@ public class ServiceTypeID extends BaseID implements IServiceTypeID {
 	 * and/or {@link ServiceIDFactory} instead.
 	 * 
 	 * @param namespace
+	 *            namespace should not be <code>null</code>
 	 * @param aType
+	 *            type should not be <code>null</code>
 	 */
 	public ServiceTypeID(Namespace namespace, String aType) {
 		this(namespace);
@@ -88,8 +89,7 @@ public class ServiceTypeID extends BaseID implements IServiceTypeID {
 
 				// protocol and scope
 				String string = split[--offset];
-				String[] protoAndScope = StringUtils.split(string,
-						".", string.indexOf(".") - 1); //$NON-NLS-1$ //$NON-NLS-2$
+				String[] protoAndScope = StringUtils.split(string, ".", string.indexOf(".") - 1); //$NON-NLS-1$ //$NON-NLS-2$
 				this.protocols = new String[] { protoAndScope[0] };
 				this.scopes = new String[] { protoAndScope[1] };
 

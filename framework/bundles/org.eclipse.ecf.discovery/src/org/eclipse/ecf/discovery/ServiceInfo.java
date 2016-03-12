@@ -9,15 +9,12 @@
 
 package org.eclipse.ecf.discovery;
 
-import org.eclipse.ecf.discovery.identity.ServiceID;
-
 import java.io.Serializable;
 import java.net.URI;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.discovery.identity.IServiceID;
-import org.eclipse.ecf.discovery.identity.IServiceTypeID;
+import org.eclipse.ecf.discovery.identity.*;
 import org.eclipse.ecf.internal.discovery.DiscoveryPlugin;
 
 /**
@@ -48,7 +45,7 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 	protected int weight;
 
 	protected IServiceProperties properties;
-	
+
 	/**
 	 * @since 4.0
 	 */
@@ -59,49 +56,105 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 	}
 
 	/**
+	 * Create an IServiceInfo instance.
+	 * 
+	 * @param anURI
+	 *            The (absolute) location of the service.
+	 * @param aServiceName
+	 *            a user chosen service name. Only ASCII characters are allowed.
+	 * @param aServiceTypeID
+	 *            the service type identifier.
 	 * @since 3.0
-	 * @see ServiceInfo#ServiceInfo(URI, String, IServiceTypeID, int, int, IServiceProperties)
 	 */
 	public ServiceInfo(URI anURI, String aServiceName, IServiceTypeID aServiceTypeID) {
 		this(anURI, aServiceName, aServiceTypeID, DEFAULT_PRIORITY, DEFAULT_WEIGHT, null);
 	}
-	
+
 	/**
+	 * Create an IServiceInfo instance.
+	 * 
+	 * @param anURI
+	 *            The (absolute) location of the service.
+	 * @param aServiceName
+	 *            a user chosen service name. Only ASCII characters are allowed.
+	 * @param aServiceTypeID
+	 *            the service type identifier.
+	 * @param props
+	 *            generic service properties.
 	 * @since 3.0
-	 * @see ServiceInfo#ServiceInfo(URI, String, IServiceTypeID, int, int, IServiceProperties)
 	 */
 	public ServiceInfo(URI anURI, String aServiceName, IServiceTypeID aServiceTypeID, IServiceProperties props) {
 		this(anURI, aServiceName, aServiceTypeID, DEFAULT_PRIORITY, DEFAULT_WEIGHT, props);
 	}
-	
 
 	/**
+	 * Create an IServiceInfo instance.
+	 * 
+	 * @param anURI
+	 *            The (absolute) location of the service.
+	 * @param aServiceName
+	 *            a user chosen service name. Only ASCII characters are allowed.
+	 * @param aServiceTypeID
+	 *            the service type identifier.
+	 * @param priority
+	 *            the service priority. The priority of this target host. A
+	 *            client MUST attempt to contact the target host with the
+	 *            lowest-numbered priority it can reach; target hosts with the
+	 *            same priority SHOULD be tried in an order defined by the
+	 *            weight field.
+	 *
+	 * @param weight
+	 *            the service weight. A server selection mechanism. The weight
+	 *            field specifies a relative weight for entries with the same
+	 *            priority. Larger weights SHOULD be given a proportionately
+	 *            higher probability of being selected. Domain administrators
+	 *            SHOULD use Weight 0 when there isn't any server selection to
+	 *            do. In the presence of records containing weights greater than
+	 *            0, records with weight 0 should have a very small chance of
+	 *            being selected.
+	 * @param props
+	 *            generic service properties.
 	 * @since 3.0
-	 * @see ServiceInfo#ServiceInfo(URI, String, IServiceTypeID, int, int, IServiceProperties)
 	 */
-	public ServiceInfo(URI anURI, String aServiceName, IServiceTypeID aServiceTypeID, int priority,
-			int weight, IServiceProperties props) {
+	public ServiceInfo(URI anURI, String aServiceName, IServiceTypeID aServiceTypeID, int priority, int weight,
+			IServiceProperties props) {
 		this(anURI, aServiceName, aServiceTypeID, priority, weight, props, DEFAULT_TTL);
 	}
+
 	/**
 	 * Create an IServiceInfo instance.
-	 * @param anURI The (absolute) location of the service.
-	 * @param aServiceName a user chosen service name. Only ASCII characters are allowed.
-	 * @param aServiceTypeID the service type identifier.
-	 * @param priority the service priority. The priority of this target host. A client MUST attempt to contact the target host with the lowest-numbered priority it can reach; 
-	 * target hosts with the same priority SHOULD be tried in an order defined by the weight field.
+	 * 
+	 * @param anURI
+	 *            The (absolute) location of the service.
+	 * @param aServiceName
+	 *            a user chosen service name. Only ASCII characters are allowed.
+	 * @param aServiceTypeID
+	 *            the service type identifier.
+	 * @param priority
+	 *            the service priority. The priority of this target host. A
+	 *            client MUST attempt to contact the target host with the
+	 *            lowest-numbered priority it can reach; target hosts with the
+	 *            same priority SHOULD be tried in an order defined by the
+	 *            weight field.
 	 *
-	 * @param weight the service weight. A server selection mechanism. The weight field specifies a relative weight for entries with the same priority. 
-	 * Larger weights SHOULD be given a proportionately higher probability of being selected. 
-	 *  Domain administrators SHOULD use Weight 0 when there isn't any server selection to do.
-	 *  In the presence of records containing weights greater than 0, records with weight 0 should have a very small chance of being selected.
-	 * @param props generic service properties.
-	 * @param ttl time to live
+	 * @param weight
+	 *            the service weight. A server selection mechanism. The weight
+	 *            field specifies a relative weight for entries with the same
+	 *            priority. Larger weights SHOULD be given a proportionately
+	 *            higher probability of being selected. Domain administrators
+	 *            SHOULD use Weight 0 when there isn't any server selection to
+	 *            do. In the presence of records containing weights greater than
+	 *            0, records with weight 0 should have a very small chance of
+	 *            being selected.
+	 * @param props
+	 *            generic service properties.
+	 * @param ttl
+	 *            time to live
 	 * 
 	 * @since 4.0
 	 */
-	public ServiceInfo(URI anURI, String aServiceName, IServiceTypeID aServiceTypeID, int priority,
-			int weight, IServiceProperties props, long ttl) {
+	public ServiceInfo(URI anURI, String aServiceName, IServiceTypeID aServiceTypeID, int priority, int weight,
+			IServiceProperties props, long ttl) {
 		Assert.isNotNull(anURI);
 		Assert.isNotNull(aServiceName);
 		Assert.isNotNull(aServiceTypeID);
@@ -157,19 +210,19 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 			fragment = "#" + fragment;
 		}
 		URI uri = URI.create(scheme + "://" + userInfo + host + ":" + port + path + query + fragment);
-		
+
 		// service id
 		Namespace ns = aServiceTypeID.getNamespace();
-		this.serviceID = (IServiceID) ns.createInstance(new Object[]{aServiceTypeID, uri});
+		this.serviceID = (IServiceID) ns.createInstance(new Object[] { aServiceTypeID, uri });
 		((ServiceID) serviceID).setServiceInfo(this);
-		
+
 		this.serviceName = aServiceName;
-		
+
 		this.weight = weight;
 		this.priority = priority;
-		
+
 		properties = (props == null) ? new ServiceProperties() : props;
-		
+
 		this.timeToLive = ttl;
 	}
 
@@ -226,9 +279,11 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 	public String toString() {
 		final StringBuffer buf = new StringBuffer("ServiceInfo["); //$NON-NLS-1$
 		buf.append("uri=").append(getLocation()).append(";id=").append(serviceID) //$NON-NLS-1$ //$NON-NLS-2$
-				.append(";priority=").append( //$NON-NLS-1$
-						priority).append(";weight=").append(weight).append( //$NON-NLS-1$
-						";props=").append(properties).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+				.append(";priority=") //$NON-NLS-1$
+				.append(priority).append(";weight=").append(weight) //$NON-NLS-1$
+				.append(
+						";props=")
+				.append(properties).append("]"); //$NON-NLS-1$
 		return buf.toString();
 	}
 
@@ -241,8 +296,7 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 		if (adapter.isInstance(this)) {
 			return this;
 		}
-		final IAdapterManager adapterManager = DiscoveryPlugin.getDefault()
-				.getAdapterManager();
+		final IAdapterManager adapterManager = DiscoveryPlugin.getDefault().getAdapterManager();
 		if (adapterManager == null)
 			return null;
 		return adapterManager.loadAdapter(this, adapter.getName());
@@ -250,15 +304,17 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 
 	/**
 	 * (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IServiceInfo#getServiceName()	 
+	 * 
+	 * @see org.eclipse.ecf.discovery.IServiceInfo#getServiceName()
 	 * @since 3.0
 	 */
 	public String getServiceName() {
 		return serviceName;
 	}
-	
+
 	/**
 	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.discovery.IServiceInfo#getTTL()
 	 * @since 4.0
 	 */

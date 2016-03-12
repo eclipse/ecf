@@ -23,7 +23,7 @@ public interface IIncomingFileTransferReceiveDoneEvent extends IIncomingFileTran
 	 * <code>null</code>. If the file transfer completed unsuccessfully (some
 	 * exception occurred), then this method will return a non-<code>null</code>
 	 * Exception instance that occurred.
-	 * <p></p>
+	 * <p>
 	 * If the the file transfer was canceled by the user, then the exception 
 	 * returned will be an instance of {@link UserCancelledException}.  
 	 * 

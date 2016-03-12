@@ -23,7 +23,7 @@ public class InvalidFileRangeSpecificationException extends IncomingFileTransfer
 	private IFileRangeSpecification rangeSpec = null;
 
 	/**
-	 * 
+	 * @param rangeSpec rangeSpec
 	 */
 	public InvalidFileRangeSpecificationException(IFileRangeSpecification rangeSpec) {
 		super();
@@ -31,7 +31,8 @@ public class InvalidFileRangeSpecificationException extends IncomingFileTransfer
 	}
 
 	/**
-	 * @param status
+	 * @param status status
+	 * @param rangeSpec range spec
 	 */
 	public InvalidFileRangeSpecificationException(IStatus status, IFileRangeSpecification rangeSpec) {
 		super(status);
@@ -39,8 +40,9 @@ public class InvalidFileRangeSpecificationException extends IncomingFileTransfer
 	}
 
 	/**
-	 * @param message
-	 * @param cause
+	 * @param message message
+	 * @param cause cause
+	 * @param rangeSpec range spec
 	 */
 	public InvalidFileRangeSpecificationException(String message, Throwable cause, IFileRangeSpecification rangeSpec) {
 		super(message, cause);
@@ -48,7 +50,8 @@ public class InvalidFileRangeSpecificationException extends IncomingFileTransfer
 	}
 
 	/**
-	 * @param message
+	 * @param message message
+	 * @param rangeSpec range spec
 	 */
 	public InvalidFileRangeSpecificationException(String message, IFileRangeSpecification rangeSpec) {
 		super(message);
@@ -56,7 +59,8 @@ public class InvalidFileRangeSpecificationException extends IncomingFileTransfer
 	}
 
 	/**
-	 * @param cause
+	 * @param cause cause
+	 * @param rangeSpec range spec
 	 */
 	public InvalidFileRangeSpecificationException(Throwable cause, IFileRangeSpecification rangeSpec) {
 		super(cause);

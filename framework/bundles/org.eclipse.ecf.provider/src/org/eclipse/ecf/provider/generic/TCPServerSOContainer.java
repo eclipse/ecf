@@ -66,6 +66,12 @@ public class TCPServerSOContainer extends ServerSOContainer implements IConnectR
 	}
 
 	/**
+	 * @param config config
+	 * @param port port
+	 * @param bindAddress bind address
+	 * @param path path
+	 * @param keepAlive keep alive
+	 * @throws IOException if some problem creating
 	 * @since 4.4
 	 */
 	public TCPServerSOContainer(ISharedObjectContainerConfig config, int port, InetAddress bindAddress, String path, int keepAlive) throws IOException {
@@ -79,6 +85,11 @@ public class TCPServerSOContainer extends ServerSOContainer implements IConnectR
 	}
 
 	/**
+	 * @param config config
+	 * @param bindAddress bind address
+	 * @param keepAlive keep alive
+	 * @throws IOException if some problem creating
+	 * @throws URISyntaxException if some problem creating
 	 * @since 4.4
 	 */
 	public TCPServerSOContainer(ISharedObjectContainerConfig config, InetAddress bindAddress, int keepAlive) throws IOException, URISyntaxException {

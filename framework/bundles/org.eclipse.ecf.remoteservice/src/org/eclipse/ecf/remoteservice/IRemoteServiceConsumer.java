@@ -46,7 +46,6 @@ public interface IRemoteServiceConsumer extends IAdaptable {
 	 * returned array of <code>IRemoteServiceReference</code> objects contains
 	 * services that were registered under the specified class and match the
 	 * specified idFilter, and filter criteria.
-	 * </p>
 	 * <p>
 	 * Note this method assumes that the enclosing container has previously
 	 * been connected, and uses the idFilter to filter among targets within the
@@ -93,6 +92,7 @@ public interface IRemoteServiceConsumer extends IAdaptable {
 	 *            <code>null</code> if no services are found that match the search.
 	 * 
 	 * @throws InvalidSyntaxException If filter contains an invalid filter string that cannot be parsed.
+	 * @throws ContainerConnectException if container cannot connect
 	 * @since 5.0
 	 */
 	public IRemoteServiceReference[] getRemoteServiceReferences(ID target, ID[] idFilter, String clazz, String filter) throws InvalidSyntaxException, ContainerConnectException;
@@ -156,7 +156,6 @@ public interface IRemoteServiceConsumer extends IAdaptable {
 	 * returned array of <code>IRemoteServiceReference</code> objects contains
 	 * services that were registered under the specified class and match the
 	 * specified idFilter, and filter criteria.
-	 * </p>
 	 * <p>
 	 * Note this method assumes that the enclosing container has previously
 	 * been connected, and uses the idFilter to filter among targets within the
@@ -243,6 +242,7 @@ public interface IRemoteServiceConsumer extends IAdaptable {
 	 *            <code>null</code> if no services are found that match the search.
 	 * 
 	 * @throws InvalidSyntaxException If filter contains an invalid filter string that cannot be parsed.
+	 * @throws ContainerConnectException if container cannot connect
 	 * @since 3.0
 	 */
 	public IRemoteServiceReference[] getRemoteServiceReferences(ID target, String clazz, String filter) throws InvalidSyntaxException, ContainerConnectException;

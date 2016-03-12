@@ -19,10 +19,8 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
  * and then uses it to select an ECF consumer container instance by calling
  * {@link #selectConsumerContainer(EndpointDescription)}.
  * <p>
- * <p>
  * The {@link IRemoteServiceContainer} returned is then used on the consumer
  * side, to actually import the remote service.
- * <p>
  * <p>
  * If no other instances of this service have been registered, a default
  * instance of {@link ConsumerContainerSelector} will be used. Note that this

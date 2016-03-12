@@ -47,6 +47,8 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 
 	/**
 	 * @since 8.2
+	 * @param call the remote call to get the ExecutorService for
+	 * @return ExecutorService
 	 */
 	protected ExecutorService getFutureExecutorService(IRemoteCall call) {
 		synchronized (this) {
@@ -58,6 +60,7 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 
 	/**
 	 * @since 8.2
+	 * @param executorService the ExecutorService to use for this remote service
 	 */
 	protected void setFutureExecutorService(ExecutorService executorService) {
 		this.futureExecutorService = executorService;
@@ -70,6 +73,8 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 
 	/**
 	 * @since 8.2
+	 * @param call the IRemoteCall to get the IExecutor for
+	 * @return IExecutor the executor to use for the given call instance.
 	 */
 	protected IExecutor getIFutureExecutor(IRemoteCall call) {
 		synchronized (this) {
@@ -80,6 +85,7 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 	}
 
 	/**
+	 * @param executor executor
 	 * @since 8.2
 	 */
 	protected void setIFutureExecutor(IExecutor executor) {
@@ -98,6 +104,10 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 
 	/**
 	 * @since 6.0
+	 * @param cl the ClassLoader to load the interface class.  Will not be <code>null</code>
+	 * @param className the interface class to load
+	 * @return Class the class loaded.  Must not be <code>null</code>
+	 * @throws ClassNotFoundException if class cannot be found
 	 */
 	protected Class loadInterfaceClass(ClassLoader cl, String className) throws ClassNotFoundException {
 		return Class.forName(className, true, cl);
@@ -150,6 +160,7 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 
 	/**
 	 * @since 6.0
+	 * @param classes the interface classes to add to
 	 */
 	protected void addRemoteServiceProxyToProxy(List classes) {
 		IRemoteServiceReference rsReference = getRemoteServiceReference();
@@ -169,6 +180,9 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 
 	/**
 	 * @since 8.3
+	 * @param cl ClassLoader to use to add async proxy classes
+	 * @param interfaces the Class[] of interface classes
+	 * @return List the list of interfaces plus any async proxy interface classes.
 	 */
 	protected List addAsyncProxyClasses(ClassLoader cl, Class[] interfaces) {
 		List intfs = Arrays.asList(interfaces);
@@ -243,6 +257,7 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 
 	/**
 	 * @since 8.0
+	 * @return IRemoteServiceProxyCreator
 	 */
 	protected IRemoteServiceProxyCreator getRemoteServiceProxyCreator() {
 		ServiceTracker st = new ServiceTracker(Activator.getDefault().getContext(), IRemoteServiceProxyCreator.class, null);
@@ -254,6 +269,9 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 
 	/**
 	 * @since 6.0
+	 * @param cl ClassLoader for proxy creation
+	 * @param classes the Class[] for proxy classes
+	 * @return Object the proxy implementing the given Class[]
 	 */
 	protected Object createProxy(ClassLoader cl, Class[] classes) {
 		IRemoteServiceProxyCreator proxyCreator = getRemoteServiceProxyCreator();
@@ -268,6 +286,8 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 
 	/**
 	 * @since 3.3
+	 * @param c Class
+	 * @return Class
 	 */
 	protected Class findAsyncRemoteServiceProxyClass(Class c) {
 		String proxyClassName = convertInterfaceNameToAsyncInterfaceName(c.getName());
@@ -284,6 +304,9 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 
 	/**
 	 * @since 6.0
+	 * @param cl ClassLoader
+	 * @param c Class
+	 * @return Class
 	 */
 	protected Class findAsyncRemoteServiceProxyClass(ClassLoader cl, Class c) {
 		String proxyClassName = convertInterfaceNameToAsyncInterfaceName(c.getName());
@@ -354,6 +377,10 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 
 	/**
 	 * @since 8.3
+	 * @param proxy proxy instance
+	 * @param method the java Method invoked
+	 * @param args arguments
+	 * @return true if given proxy/method/args combination represents an async proxy class
 	 */
 	protected boolean isAsync(Object proxy, Method method, Object[] args) {
 		return (Arrays.asList(method.getDeclaringClass().getInterfaces()).contains(IAsyncRemoteServiceProxy.class) || method.getName().endsWith(IAsyncRemoteServiceProxy.ASYNC_METHOD_SUFFIX));
@@ -361,6 +388,10 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 
 	/**
 	 * @since 8.3
+	 * @param callMethod call method
+	 * @param callParameters call parameters
+	 * @param callTimeout call timeout
+	 * @return IRemoteCall remote call created.  Should not be <code>null</code>
 	 */
 	protected IRemoteCall createRemoteCall(final String callMethod, final Object[] callParameters, final long callTimeout) {
 		return new IRemoteCall() {
@@ -380,6 +411,9 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 
 	/**
 	 * @since 8.6
+	 * @param message message for exception
+	 * @param t Throwable to wrap
+	 * @throws ServiceException thrown if subclasses do not override
 	 */
 	protected void handleProxyException(String message, Throwable t) throws ServiceException {
 		if (t instanceof ServiceException)
@@ -389,6 +423,9 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 
 	/**
 	 * @since 8.6
+	 * @param methodName method name
+	 * @param e exception thrown if subclasses do not override
+	 * @throws Throwable thrown if subclasses to not override
 	 */
 	protected void handleInvokeSyncException(String methodName, ECFException e) throws Throwable {
 		Throwable cause = e.getCause();
@@ -478,6 +515,9 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 
 	/**
 	 * @since 8.4
+	 * @param invokeMethodName invoke method name
+	 * @param asyncArgs asynch arguments
+	 * @return RemoteCall remote call created.  Should not be <code>null</code>
 	 */
 	protected RemoteCall getAsyncRemoteCall(String invokeMethodName, Object[] asyncArgs) {
 		return new RemoteCall(invokeMethodName, asyncArgs, IRemoteCall.DEFAULT_TIMEOUT);
@@ -485,6 +525,10 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 
 	/**
 	 * @since 3.3
+	 * @param method java Method invoked
+	 * @param args arguments
+	 * @return Object async future result.  Should be of type IFuture, Future, or CompletableFuture
+	 * @throws Throwable thrown if some problem invoking async
 	 */
 	protected Object invokeAsync(final Method method, final Object[] args) throws Throwable {
 		final String invokeMethodName = getAsyncInvokeMethodName(method);
@@ -496,6 +540,9 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 
 	/**
 	 * @since 8.2
+	 * @param call remote call
+	 * @param listener remote call listener
+	 * @return Object will be <code>null</code> unless subclasses override
 	 */
 	protected Object callAsyncWithResult(IRemoteCall call, IRemoteCallListener listener) {
 		callAsync(call, listener);
@@ -504,6 +551,8 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 
 	/**
 	 * @since 8.4
+	 * @param call abstract remote call
+	 * @param completable async proxy completable
 	 */
 	@Override
 	protected void callCompletableAsync(AbstractAsyncProxyRemoteCall call, final IAsyncProxyCompletable completable) {
@@ -519,6 +568,8 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 
 	/**
 	 * @since 8.4
+	 * @param call abstract async proxy remote call
+	 * @return Future future result
 	 */
 	@Override
 	protected Future callFutureAsync(AbstractAsyncProxyRemoteCall call) {
@@ -527,6 +578,8 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 
 	/**
 	 * @since 8.2
+	 * @param call remote call
+	 * @return Future future result
 	 */
 	protected Future callFutureAsync(final IRemoteCall call) {
 		ExecutorService executorService = getFutureExecutorService(call);
@@ -541,6 +594,9 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 
 	/**
 	 * @since 3.3
+	 * @param method method 
+	 * @param args args 
+	 * @return AsyncArgs async arguments
 	 */
 	protected AsyncArgs getAsyncArgs(Method method, Object[] args) {
 		IRemoteCallListener listener = null;
@@ -570,6 +626,8 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 
 	/**
 	 * @since 3.3
+	 * @param method java method invoked
+	 * @return String synchronous method name without asynchronous suffix (i.e. fooAsync to foo)
 	 */
 	protected String getAsyncInvokeMethodName(Method method) {
 		String methodName = method.getName();

@@ -67,6 +67,9 @@ public class SOContainerGroup implements ISocketAcceptHandler {
 	}
 
 	/**
+	 * @param aSocket socket
+	 * @return ObjectOutputStream new object output stream for socket
+	 * @throws IOException if object output stream cannot be created
 	 * @since 4.7
 	 */
 	protected ObjectOutputStream createObjectOutputStream(Socket aSocket) throws IOException {
@@ -74,6 +77,9 @@ public class SOContainerGroup implements ISocketAcceptHandler {
 	}
 
 	/**
+	 * @param aSocket socket
+	 * @return ObjectInputStream new object input stream for socket
+	 * @throws IOException if object input stream cannot be created
 	 * @since 4.7
 	 */
 	protected ObjectInputStream createObjectInputStream(Socket aSocket) throws IOException {
@@ -81,6 +87,10 @@ public class SOContainerGroup implements ISocketAcceptHandler {
 	}
 
 	/**
+	 * @param ins object input stream.  Will not be <code>null</code>
+	 * @return ConnectRequestMessage connect request message read from object input stream
+	 * @throws IOException if object cannot be read from stream
+	 * @throws ClassNotFoundException if object cannot be read from stream
 	 * @since 4.7
 	 */
 	protected ConnectRequestMessage readConnectRequestMessage(ObjectInputStream ins) throws IOException, ClassNotFoundException {
@@ -91,6 +101,7 @@ public class SOContainerGroup implements ISocketAcceptHandler {
 	}
 
 	/**
+	 * @param aSocket socket
 	 * @since 4.7
 	 */
 	public void handleAccept(Socket aSocket) throws Exception {

@@ -118,6 +118,11 @@ public abstract class AbstractContainerSelector {
 	}
 
 	/**
+	 * @param serviceReference serviceReference
+	 * @param properties overriding properties
+	 * @param containerTypeDescription containerTypeDescription
+	 * @return IContainer created container.  Should not be <code>null</code>
+	 * @throws SelectContainerException thrown if some create or configure failure
 	 * @since 2.0
 	 */
 	protected IContainer createContainer(ServiceReference serviceReference,
@@ -157,6 +162,10 @@ public abstract class AbstractContainerSelector {
 	}
 
 	/**
+	 * @param serviceReference serviceReference
+	 * @param properties overriding properties
+	 * @param containerTypeDescription containerTypeDescription
+	 * @return Object container factory arguments to use
 	 * @since 2.0
 	 */
 	protected Object getContainerFactoryArguments(
@@ -187,6 +196,11 @@ public abstract class AbstractContainerSelector {
 	}
 
 	/**
+	 * @param serviceReference serviceReference
+	 * @param properties overriding properties
+	 * @param container the container to create connect context for
+	 * @param context a possible connect context]
+	 * @return IConnectContext a connect context or null
 	 * @since 2.0
 	 */
 	protected IConnectContext createConnectContext(

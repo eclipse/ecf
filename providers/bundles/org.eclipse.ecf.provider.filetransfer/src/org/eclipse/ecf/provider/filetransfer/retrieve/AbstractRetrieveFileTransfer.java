@@ -434,8 +434,8 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 		return bytesReceived;
 	}
 
-	// TODO: replace other instances.
 	/**
+	 * @return UserCancelledException if some user cancellation
 	 * @since 3.0
 	 */
 	protected UserCancelledException newUserCancelledException() {
@@ -561,7 +561,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 	 * must be non-<code>null</code> after successful completion of the
 	 * implementation of this method.
 	 * 
-	 * @throws IncomingFileTransferException
+	 * @throws IncomingFileTransferException if some problem
 	 */
 	protected abstract void openStreams() throws IncomingFileTransferException;
 
@@ -852,7 +852,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 	 * org.eclipse.ecf.filetransfer.IFileTransferListener, java.util.Map)
 	 */
 	/**
-	 * @throws IncomingFileTransferException  
+	 * @throws IncomingFileTransferException if some problem sending retrieve request
 	 */
 	public void sendRetrieveRequest(IFileID rFileID, IFileRangeSpecification rangeSpec, IFileTransferListener transferListener, Map ops) throws IncomingFileTransferException {
 		Assert.isNotNull(rFileID, Messages.AbstractRetrieveFileTransfer_RemoteFileID_Not_Null);
@@ -906,7 +906,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 	 * This implementation selects in the following manner: 1) If proxies
 	 * provided is null or array of 0 length, null is returned. If only one
 	 * proxy is available (array of length 1) then the entry is returned. If
-	 * proxies provided is length > 1, then if the type of a proxy in the array
+	 * proxies provided is length greater than 1, then if the type of a proxy in the array
 	 * matches the given protocol (e.g. http, https), then the first matching
 	 * proxy is returned. If the protocol does not match any of the proxies,
 	 * then the *first* proxy (i.e. proxies[0]) is returned. Subclasses may

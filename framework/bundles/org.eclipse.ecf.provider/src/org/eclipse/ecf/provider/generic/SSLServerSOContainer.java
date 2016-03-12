@@ -67,6 +67,12 @@ public class SSLServerSOContainer extends ServerSOContainer implements IConnectR
 	}
 
 	/**
+	 * @param config config
+	 * @param port port
+	 * @param bindAddress bind address
+	 * @param path path
+	 * @param keepAlive keep alive
+	 * @throws IOException if some problem 
 	 * @since 4.4
 	 */
 	public SSLServerSOContainer(ISharedObjectContainerConfig config, int port, InetAddress bindAddress, String path, int keepAlive) throws IOException {
@@ -81,6 +87,11 @@ public class SSLServerSOContainer extends ServerSOContainer implements IConnectR
 	}
 
 	/**
+	 * @param config config
+	 * @param sslServerSocket socket
+	 * @param keepAlive keep alive
+	 * @throws IOException if some problem 
+	 * @throws URISyntaxException if some problem
 	 * @since 4.6
 	 */
 	public SSLServerSOContainer(ISharedObjectContainerConfig config, SSLServerSocket sslServerSocket, int keepAlive) throws IOException, URISyntaxException {
@@ -96,6 +107,11 @@ public class SSLServerSOContainer extends ServerSOContainer implements IConnectR
 	}
 
 	/**
+	 * @param config config
+	 * @param bindAddress bind address
+	 * @param keepAlive keep alive
+	 * @throws IOException if some problem 
+	 * @throws URISyntaxException if some problem with uri syntax based upon getID().getName()
 	 * @since 4.4
 	 */
 	public SSLServerSOContainer(ISharedObjectContainerConfig config, InetAddress bindAddress, int keepAlive) throws IOException, URISyntaxException {

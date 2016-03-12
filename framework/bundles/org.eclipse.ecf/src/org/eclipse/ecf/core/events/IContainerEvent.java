@@ -19,7 +19,7 @@ public interface IContainerEvent extends Event {
 	/**
 	 * Get ID of local discovery container (the discovery container receiving this event).
 	 * 
-	 * @return ID for local container. Will not return <code>null</code).
+	 * @return ID for local container. Will not return <code>null</code>.
 	 */
 	public ID getLocalContainerID();
 }

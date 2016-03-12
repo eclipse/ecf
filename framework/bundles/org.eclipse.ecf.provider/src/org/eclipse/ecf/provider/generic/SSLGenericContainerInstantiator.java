@@ -123,6 +123,7 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 		}
 
 		/**
+		 * @return InetAddress the bind address.  May be <code>null</code>
 		 * @since 4.5
 		 */
 		public InetAddress getBindAddress() {
@@ -130,6 +131,7 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 		}
 
 		/**
+		 * @return boolean true if wants client auth
 		 * @since 4.6
 		 */
 		public boolean getWantClientAuth() {
@@ -137,6 +139,7 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 		}
 
 		/**
+		 * @return boolean true if needs client auth
 		 * @since 4.6
 		 */
 		public boolean getNeedClientAuth() {
@@ -144,6 +147,7 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 		}
 
 		/**
+		 * @return boolean retrieve whether client auth is needed or wanted
 		 * @since 4.6
 		 */
 		public boolean getClientAuth() {
@@ -152,6 +156,9 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 	}
 
 	/**
+	 * @param args arguments
+	 * @return GenericContainerArgs generic container args instance
+	 * @throws IDCreateException if some problem creating arguments
 	 * @since 3.0
 	 */
 	protected GenericContainerArgs getClientArgs(Object[] args) throws IDCreateException {
@@ -187,6 +194,9 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 	}
 
 	/**
+	 * @param args arguments
+	 * @return GenericContainerArgs the client args created
+	 * @throws IDCreateException if the client args cannot be retrieved from given args
 	 * @since 3.0
 	 */
 	protected GenericContainerArgs getServerArgs(Object[] args) throws IDCreateException {
@@ -280,6 +290,7 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 	}
 
 	/**
+	 * @return SSLServerSocketFactory server socket factory
 	 * @since 4.6
 	 */
 	private SSLServerSocketFactory getServerSocketFactory() {
@@ -322,6 +333,9 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 	}
 
 	/**
+	 * @param gcargs the generic container args
+	 * @return IContainer the created container
+	 * @throws Exception if something goes wrong
 	 * @since 4.5
 	 */
 	protected IContainer createClientContainer(GenericContainerArgs gcargs) throws Exception {
@@ -329,6 +343,10 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 	}
 
 	/**
+	 * @param port port
+	 * @param inetAddress inet address
+	 * @return SSLServerSocket new ssl server socket
+	 * @throws IOException if some problem creating server socket
 	 * @since 4.6
 	 */
 	protected SSLServerSocket createSSLServerSocket(int port, InetAddress inetAddress) throws IOException {
@@ -339,6 +357,9 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 	}
 
 	/**
+	 * @param gcargs the generic container args
+	 * @return IContainer the created container
+	 * @throws Exception if something goes wrong
 	 * @since 4.5
 	 */
 	protected IContainer createServerContainer(GenericContainerArgs gcargs) throws Exception {
@@ -377,6 +398,7 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	protected Set getAdaptersForClass(Class clazz) {
 		Set result = new HashSet();
 		IAdapterManager adapterManager = ProviderPlugin.getDefault().getAdapterManager();
@@ -385,6 +407,7 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	protected Set getInterfacesForClass(Set s, Class clazz) {
 		if (clazz.equals(Object.class))
 			return s;
@@ -393,6 +416,7 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 		return s;
 	}
 
+	@SuppressWarnings("unchecked")
 	protected Set getInterfacesForClass(Class clazz) {
 		Set clazzes = getInterfacesForClass(new HashSet(), clazz);
 		Set result = new HashSet();
@@ -401,6 +425,7 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	protected String[] getInterfacesAndAdaptersForClass(Class clazz) {
 		Set result = getAdaptersForClass(clazz);
 		result.addAll(getInterfacesForClass(clazz));
@@ -442,6 +467,7 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 	/**
 	 * @since 3.0
 	 */
+	@SuppressWarnings("unchecked")
 	public String[] getImportedConfigs(ContainerTypeDescription description, String[] exporterSupportedConfigs) {
 		if (exporterSupportedConfigs == null)
 			return null;

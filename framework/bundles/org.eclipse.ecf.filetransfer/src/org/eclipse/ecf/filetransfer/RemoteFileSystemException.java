@@ -29,29 +29,29 @@ public class RemoteFileSystemException extends ECFException {
 	}
 
 	/**
-	 * @param status
+	 * @param status status
 	 */
 	public RemoteFileSystemException(IStatus status) {
 		super(status);
 	}
 
 	/**
-	 * @param message
-	 * @param cause
+	 * @param message message
+	 * @param cause cause
 	 */
 	public RemoteFileSystemException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
 	/**
-	 * @param message
+	 * @param message message
 	 */
 	public RemoteFileSystemException(String message) {
 		super(message);
 	}
 
 	/**
-	 * @param cause
+	 * @param cause cause
 	 */
 	public RemoteFileSystemException(Throwable cause) {
 		super(cause);

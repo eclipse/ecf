@@ -24,8 +24,8 @@ public interface IContainerFilter {
 	/**
 	 * Match a given containerToMatch against some set of implementation-defined criteria.
 	 * @param containerToMatch the containerToMatch.  Will not be <code>null</code>.
-	 * @return <true> if the given containerToMatch fulfills some
-	 * implementation-dependent criteria.  <false> if not.
+	 * @return boolean true if the given containerToMatch fulfills some
+	 * implementation-dependent criteria.  false if not.
 	 */
 	public boolean match(IContainer containerToMatch);
 }

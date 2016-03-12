@@ -28,6 +28,10 @@ public class AddRegistrationRequest implements Serializable {
 	private boolean done = false;
 
 	/**
+	 * @param targetID targetID
+	 * @param service service
+	 * @param filter filter
+	 * @param parent parent request
 	 * @since 3.0
 	 */
 	public AddRegistrationRequest(ID targetID, String service, String filter, AddRegistrationRequest parent) {
@@ -40,6 +44,9 @@ public class AddRegistrationRequest implements Serializable {
 	private transient Vector requests = null;
 
 	/**
+	 * @param service service
+	 * @param filter filter
+	 * @param requests other requests
 	 * @since 3.3
 	 */
 	@SuppressWarnings("unchecked")
@@ -67,6 +74,7 @@ public class AddRegistrationRequest implements Serializable {
 	}
 
 	/**
+	 * @param timeout timeout
 	 * @since 3.3
 	 */
 	public void waitForResponse(long timeout) {
@@ -119,6 +127,8 @@ public class AddRegistrationRequest implements Serializable {
 	}
 
 	/**
+	 * @param from from ID
+	 * @param exception exception
 	 * @since 3.0
 	 */
 	public void notifyResponse(ID from, AccessControlException exception) {

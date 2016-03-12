@@ -203,6 +203,13 @@ public abstract class AbstractClientService extends AbstractRemoteService {
 	}
 
 	/**
+	 * @param uri uri
+	 * @param call call
+	 * @param callable callable
+	 * @param responseHeaders responseHeaders
+	 * @param responseBody responseBody
+	 * @return Object processed response
+	 * @throws NotSerializableException if response cannot be deserialized
 	 * @since 8.0
 	 */
 	protected Object processResponse(String uri, IRemoteCall call, IRemoteCallable callable, Map responseHeaders, byte[] responseBody) throws NotSerializableException {
@@ -249,6 +256,10 @@ public abstract class AbstractClientService extends AbstractRemoteService {
 	}
 
 	/**
+	 * @param endpoint endpoint
+	 * @param call call
+	 * @param callable callable
+	 * @return UriRequest new UriRequest
 	 * @since 8.5
 	 */
 	protected UriRequest createUriRequest(String endpoint, IRemoteCall call, IRemoteCallable callable) {

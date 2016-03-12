@@ -227,6 +227,8 @@ public class PollingInputStream extends FilterInputStream {
 	/**
 	 * Reads any pending input from the input stream so that the stream can
 	 * savely be closed.
+	 * 
+	 * @throws IOException if some problem reading
 	 */
 	protected void readPendingInput() throws IOException {
 		byte[] buffer = new byte[2048];

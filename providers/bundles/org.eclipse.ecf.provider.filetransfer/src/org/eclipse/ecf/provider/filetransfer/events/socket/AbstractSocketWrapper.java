@@ -24,7 +24,7 @@ public abstract class AbstractSocketWrapper extends Socket {
 	private Socket socket;
 
 	/**
-	 * @throws IOException  
+	 * @throws IOException if some problem
 	 */
 	protected void checkCancel() throws IOException {
 		// default does not check for cancel
@@ -35,7 +35,7 @@ public abstract class AbstractSocketWrapper extends Socket {
 	}
 
 	/**
-	 * @param socket
+	 * @param socket for the wrapper
 	 */
 	public AbstractSocketWrapper(Socket socket) {
 		super();

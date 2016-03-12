@@ -53,6 +53,10 @@ public class SSLServerSOContainerGroup extends SOContainerGroup implements ISock
 	}
 
 	/**
+	 * @param name name
+	 * @param group thread group to use to create thread
+	 * @param port port
+	 * @param bindAddress bind address
 	 * @since 4.4
 	 */
 	public SSLServerSOContainerGroup(String name, ThreadGroup group, int port, InetAddress bindAddress) {
@@ -72,6 +76,9 @@ public class SSLServerSOContainerGroup extends SOContainerGroup implements ISock
 	}
 
 	/**
+	 * @param name name
+	 * @param group thread group to use
+	 * @param sslServerSocket the ssl server socket
 	 * @since 4.6
 	 */
 	public SSLServerSOContainerGroup(String name, ThreadGroup group, SSLServerSocket sslServerSocket) {
@@ -156,6 +163,8 @@ public class SSLServerSOContainerGroup extends SOContainerGroup implements ISock
 	}
 
 	/**
+	 * @param aSocket socket
+	 * @throws Exception if some problem with handling accept
 	 * @since 4.7
 	 */
 	protected void handleSyncAccept(final Socket aSocket) throws Exception {

@@ -35,7 +35,8 @@ public class RemoteFilterImpl implements IRemoteFilter {
 	long rsId = 0;
 
 	/**
-	 * @param createFilter
+	 * @param createFilter filter
+	 * @throws InvalidSyntaxException if the createFilter is not of valid syntax
 	 */
 	public RemoteFilterImpl(String createFilter) throws InvalidSyntaxException {
 		this(Activator.getDefault().getContext(), createFilter);
@@ -59,6 +60,7 @@ public class RemoteFilterImpl implements IRemoteFilter {
 	}
 
 	/**
+	 * @return long the remote service container relative id
 	 * @since 8.4
 	 */
 	public long getRsId() {
@@ -66,7 +68,9 @@ public class RemoteFilterImpl implements IRemoteFilter {
 	}
 
 	/**
-	 * @param createFilter
+	 * @param context bundle context
+	 * @param createFilter filter
+	 * @throws InvalidSyntaxException if given createFilter is not of valid filter syntax
 	 * @since 6.0
 	 */
 	public RemoteFilterImpl(BundleContext context, String createFilter) throws InvalidSyntaxException {
@@ -156,7 +160,8 @@ public class RemoteFilterImpl implements IRemoteFilter {
 	}
 
 	/**
-	 * @see org.osgi.framework.Filter#matches(java.util.Map)
+	 * @param map map
+	 * @return boolean true if map matches this filter, false otherwise
 	 * @since 6.0
 	 */
 	@SuppressWarnings("unchecked")

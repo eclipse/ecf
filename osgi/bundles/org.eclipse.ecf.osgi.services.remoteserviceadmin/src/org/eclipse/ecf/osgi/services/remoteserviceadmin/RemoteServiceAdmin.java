@@ -136,6 +136,7 @@ public class RemoteServiceAdmin implements
 	private ServiceRegistration eventListenerHookRegistration;
 
 	/**
+	 * @return List of exported registrations
 	 * @since 4.2
 	 */
 	public List<ExportRegistration> getExportedRegistrations() {
@@ -145,6 +146,7 @@ public class RemoteServiceAdmin implements
 	}
 
 	/**
+	 * @return List of imported registrations
 	 * @since 4.2
 	 */
 	public List<ImportRegistration> getImportedRegistrations() {
@@ -161,6 +163,9 @@ public class RemoteServiceAdmin implements
 	}
 	
 	/**
+	 * @param clientBundle client bundle for RemoteServiceAdmin instance
+	 * @param exportedRegistrations of exported registrations
+	 * @param importedRegistrations of imported registrations
 	 * @since 4.1
 	 */
 	public RemoteServiceAdmin(Bundle clientBundle, Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> exportedRegistrations, Collection<org.osgi.service.remoteserviceadmin.ImportRegistration> importedRegistrations) {
@@ -2601,6 +2606,7 @@ public class RemoteServiceAdmin implements
 		}
 
 		/**
+		 * @return EndpointDescription for this remote service admin event
 		 * @since 3.0
 		 */
 		public EndpointDescription getEndpointDescription() {

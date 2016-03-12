@@ -46,6 +46,7 @@ public class R_OSGiID extends BaseID {
 	}
 
 	/**
+	 * @param ns namespace
 	 * @since 3.5
 	 */
 	protected R_OSGiID(Namespace ns) {

@@ -39,8 +39,8 @@ public class TCPClientSOContainer extends ClientSOContainer {
 	}
 
 	/**
-	 * @param remoteSpace
-	 * @param data
+	 * @param remoteSpace remote space
+	 * @param data and data
 	 * @return ISynchAsynchConnection a non-<code>null</code> instance.
 	 * @throws ConnectionCreateException not thrown by this implementation.
 	 */

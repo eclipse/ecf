@@ -84,6 +84,7 @@ public class RemoteServiceHelper {
 	 * @param method the method to invoke.  Must not be <code>null</code>.
 	 * @param parameters the parameters associated with the method to invoke.  May be <code>null</code> (no parameters).
 	 * @param timeout the timeout (in ms) for the remote call.
+	 * @return IFuture the future created
 	 */
 	public static IFuture futureExec(IRemoteService remoteService, final String method, final Object[] parameters, final long timeout) {
 		Assert.isNotNull(remoteService);
@@ -111,6 +112,7 @@ public class RemoteServiceHelper {
 	 * @param remoteService the IRemoteService to invoke.  Must not be <code>null</code>.
 	 * @param method the method to invoke.  Must not be <code>null</code>.
 	 * @param parameters the parameters associated with the method to invoke.  May be <code>null</code> (no parameters).
+	 * @return IFuture the future created
 	 */
 	public static IFuture futureExec(IRemoteService remoteService, final String method, final Object[] parameters) {
 		return futureExec(remoteService, method, parameters, getDefaultTimeout());
@@ -124,6 +126,8 @@ public class RemoteServiceHelper {
 	 * @param method the method to invoke.  Must not be <code>null</code>.
 	 * @param parameters the parameters associated with the method to invoke.  May be <code>null</code> (no parameters).
 	 * @param timeout the timeout (in ms) for the remote call.
+	 * @return Object the result of this synchronous execution
+	 * @throws ECFException if some problem with execution
 	 */
 	public static Object syncExec(IRemoteService remoteService, final String method, final Object[] parameters, final long timeout) throws ECFException {
 		Assert.isNotNull(remoteService);
@@ -152,6 +156,8 @@ public class RemoteServiceHelper {
 	 * @param remoteService the IRemoteService to invoke.  Must not be <code>null</code>.
 	 * @param method the method to invoke.  Must not be <code>null</code>.
 	 * @param parameters the parameters associated with the method to invoke.  May be <code>null</code> (no parameters).
+	 * @return Object the result of this synchronous execution
+	 * @throws ECFException if some problem with execution
 	 */
 	public static Object syncExec(IRemoteService remoteService, final String method, final Object[] parameters) throws ECFException {
 		return syncExec(remoteService, method, parameters, getDefaultTimeout());

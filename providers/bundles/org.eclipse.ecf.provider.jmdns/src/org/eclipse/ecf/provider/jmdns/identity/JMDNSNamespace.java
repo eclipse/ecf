@@ -28,6 +28,7 @@ public class JMDNSNamespace extends Namespace {
 	}
 
 	/**
+	 * @param description description for namespace
 	 * @since 4.3
 	 */
 	public JMDNSNamespace(String description) {
@@ -102,6 +103,6 @@ public class JMDNSNamespace extends Namespace {
 	 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedParameterTypesForCreateInstance()
 	 */
 	public Class[][] getSupportedParameterTypes() {
-		return new Class[][] { {String.class}, {String.class, String.class}};
+		return new Class[][] {{String.class}, {String.class, String.class}};
 	}
 }

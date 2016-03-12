@@ -25,6 +25,7 @@ public class AsynchMessage implements Serializable {
 	}
 
 	/**
+	 * @param data data for message
 	 * @since 4.3
 	 */
 	public AsynchMessage(Serializable data) {
@@ -32,6 +33,7 @@ public class AsynchMessage implements Serializable {
 	}
 
 	/**
+	 * @return Serializable data from this message
 	 * @since 4.3
 	 */
 	public Serializable getData() {

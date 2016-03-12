@@ -32,14 +32,14 @@ public interface IFileTransferPausable {
 	 * successfully paused. Returns false if the implementing file transfer
 	 * cannot be paused, or transfer has already completed.
 	 * 
-	 * @return true if file transfer successfully paused. False if cannot be
+	 * @return boolean true if file transfer successfully paused. False if cannot be
 	 *         paused, or the transfer has already completed
 	 */
 	public boolean pause();
 
 	/**
 	 * 
-	 * @return true if file transfer paused, false if not paused
+	 * @return boolean true if file transfer paused, false if not paused
 	 */
 	public boolean isPaused();
 
@@ -48,6 +48,7 @@ public interface IFileTransferPausable {
 	 * then returns true. If the associated IFileShare is not already paused, or
 	 * has already completed then this method returns false.
 	 * 
+	 * @return boolean true if transfer is successfully resumed, false otherwise
 	 */
 	public boolean resume();
 }

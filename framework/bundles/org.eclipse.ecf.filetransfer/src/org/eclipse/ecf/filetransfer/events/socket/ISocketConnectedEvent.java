@@ -34,7 +34,7 @@ public interface ISocketConnectedEvent extends ISocketEvent {
 	 * {@link #getSocket()} will be the same. 
 	 * Otherwise {@link #getSocket()} will return the passed in socket.  
 	 * </p>
-	 * @param socket
+	 * @param socket socket
 	 */
 	void setSocket(Socket socket);
 }

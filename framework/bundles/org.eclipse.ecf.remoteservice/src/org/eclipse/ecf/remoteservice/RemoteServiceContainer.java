@@ -33,6 +33,7 @@ public class RemoteServiceContainer implements IRemoteServiceContainer {
 
 	/**
 	 * @since 3.2
+	 * @param container container
 	 */
 	@SuppressWarnings("cast")
 	public RemoteServiceContainer(IContainer container) {

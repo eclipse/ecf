@@ -282,7 +282,7 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 	 * must be non-<code>null</code> after successful completion of the
 	 * implementation of this method.
 	 * 
-	 * @throws SendFileTransferException
+	 * @throws SendFileTransferException if some problem
 	 */
 	protected abstract void openStreams() throws SendFileTransferException;
 
@@ -367,7 +367,7 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 	 * Select a single proxy from a set of proxies available for the given host.  This implementation
 	 * selects in the following manner:  1) If proxies provided is null or array of 0 length, null 
 	 * is returned.  If only one proxy is available (array of length 1) then the entry is returned.
-	 * If proxies provided is length > 1, then if the type of a proxy in the array matches the given
+	 * If proxies provided is length greater than 1, then if the type of a proxy in the array matches the given
 	 * protocol (e.g. http, https), then the first matching proxy is returned.  If the protocol does
 	 * not match any of the proxies, then the *first* proxy (i.e. proxies[0]) is returned.  Subclasses may
 	 * override if desired.

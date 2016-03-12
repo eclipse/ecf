@@ -34,7 +34,7 @@ public interface IFileRangeSpecification {
 	 * Get the end position of transfer range.  The position is in bytes, and byte 0 is the first byte
 	 * of the file, N-1 is the last position in the file, where N is the length of the file in bytes.  
 	 * @return the position in the file (in bytes) to indicate the end of range to retrieve.  If equal to -1,
-	 * then this means that no end position is specified, and the download will continue to the end of file.  If >= 0,
+	 * then this means that no end position is specified, and the download will continue to the end of file.  If gt or eq 0,
 	 * but less than the {@link #getStartPosition()} then this range specification is invalid.  If greater than or
 	 * equal to N (where N is length of the file in bytes), then the remaining part of the given file will
 	 * be downloaded.  If both {@link #getStartPosition()} and {@link #getEndPosition()} are valid, then

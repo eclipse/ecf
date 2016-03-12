@@ -210,6 +210,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
+	 * @param registration registration
+	 * @return RemoteServiceImpl remote service implementation
 	 * @since 4.1
 	 */
 	protected RemoteServiceImpl createRemoteService(RemoteServiceRegistrationImpl registration) {
@@ -498,6 +500,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	// End ISharedObject overrides
 	/**
+	 * @return int connect timeout
 	 * @since 3.3
 	 */
 	protected int getRSConnectTimeout() {
@@ -505,6 +508,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
+	 * @return long registry update request timeout
 	 * @since 3.4
 	 */
 	protected long getRegistryUpdateRequestTimeout() {
@@ -577,6 +581,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
+	 * @return int add registration request timeout
 	 * @since 3.0
 	 */
 	protected int getAddRegistrationRequestTimeout() {
@@ -584,6 +589,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
+	 * @param targetID target ID to connect to
+	 * @throws ContainerConnectException if container cannot connect to target ID
 	 * @since 3.3 for preventing issues like bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=304427
 	 */
 	protected void connectToRemoteServiceTarget(ID targetID) throws ContainerConnectException {
@@ -670,10 +677,11 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
+	 * @param event event to handle
 	 * @since 3.3
 	 */
-	protected void handleContainerEjectedEvent(IContainerEjectedEvent arg0) {
-		handleTargetGoneEvent(arg0.getTargetID());
+	protected void handleContainerEjectedEvent(IContainerEjectedEvent event) {
+		handleTargetGoneEvent(event.getTargetID());
 	}
 
 	/**
@@ -738,6 +746,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
+	 * @param connected true if registry is connected, false otherwise
 	 * @since 3.3
 	 */
 	protected void setRegistryConnected(boolean connected) {
@@ -756,6 +765,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
+	 * @param targetContainerID target container ID
+	 * @param requestId requestId
 	 * @since 3.4
 	 */
 	protected void sendRegistryUpdate(ID targetContainerID, Integer requestId) {
@@ -822,6 +833,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
+	 * @param targetID targetID
 	 * @since 3.4
 	 */
 	protected void handleTargetConnected(ID targetID) {
@@ -1092,6 +1104,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	private static final String REGISTRY_UPDATE_REQUEST = "handleRegistryUpdateRequest"; //$NON-NLS-1$
 
 	/**
+	 * @param receiver receiver
+	 * @param requestId requestId
 	 * @since 3.4
 	 */
 	protected void sendRegistryUpdateRequest(ID receiver, Integer requestId) {
@@ -1105,6 +1119,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
+	 * @param remoteContainerID remoteContainerID
+	 * @param requestId requestId
 	 * @since 3.4
 	 */
 	protected void handleRegistryUpdateRequest(ID remoteContainerID, Integer requestId) {
@@ -1221,6 +1237,9 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
+	 * @param receiver receiver
+	 * @param requestId requestId
+	 * @param regs registrations to send
 	 * @since 3.3
 	 */
 	protected void sendAddRegistrations(ID receiver, Integer requestId, RemoteServiceRegistrationImpl[] regs) {
@@ -1261,6 +1280,9 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
+	 * @param remoteContainerID container id
+	 * @param requestId requestId
+	 * @param registrations the registrations to add
 	 * @since 3.3
 	 */
 	@SuppressWarnings("unchecked")
@@ -1334,7 +1356,9 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
-	 * @param requestId
+	 * @param remoteContainerID remoteContainerID
+	 * @param requestId requestId
+	 * @param exception exception
 	 * @since 3.2
 	 */
 	protected void notifyAddRegistrationResponse(ID remoteContainerID, Integer requestId, AccessControlException exception) {
@@ -1373,6 +1397,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
+	 * @param request request
+	 * @return IExcecutor excecutor to use for given request
 	 * @since 3.4
 	 */
 	protected IExecutor createRequestExecutor(final Request request) {
@@ -1396,6 +1422,11 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
+	 * @param executor executor to use to execute request
+	 * @param request the request to execute
+	 * @param responseTarget response target
+	 * @param localRegistration the local registration
+	 * @param respond true if response is expected, false otherwise
 	 * @since 3.4
 	 */
 	@SuppressWarnings("unchecked")
@@ -1476,6 +1507,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
+	 * @param message message
+	 * @param e the exception
 	 * @since 3.4
 	 */
 	protected void logRemoteCallException(String message, Throwable e) {
@@ -1736,10 +1769,6 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		};
 	}
 
-	/**
-	 * End message send/handlers
-	 */
-
 	@SuppressWarnings("unchecked")
 	protected RemoteServiceRegistryImpl addRemoteRegistry(RemoteServiceRegistryImpl registry) {
 		return (RemoteServiceRegistryImpl) remoteRegistrys.put(registry.getContainerID(), registry);
@@ -1754,7 +1783,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
-	 *
+	 * @param request request
+	 * @return RemoteServiceRegistrationImpl the registration
 	 * @since 3.2
 	 */
 	protected RemoteServiceRegistrationImpl getLocalRegistrationForRequest(Request request) {
@@ -1764,6 +1794,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
+	 * @param request the request to add
+	 * @return true if added, false if not added
 	 * @since 3.2
 	 */
 	@SuppressWarnings("unchecked")
@@ -1774,6 +1806,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
+	 * @param requestId requestId
+	 * @return Request the request associated with the given requestId or <code>null</code>
 	 * @since 3.2
 	 */
 	protected Request getRequest(long requestId) {
@@ -1790,6 +1824,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
+	 * @param request request
+	 * @return boolean true if removed, false otherwise
 	 * @since 3.2
 	 */
 	protected boolean removeRequest(Request request) {
@@ -1813,6 +1849,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
+	 * @return IRemoteServiceCallPolicy the policy.  May be <code>null</code>
 	 * @since 4.0
 	 */
 	protected IRemoteServiceCallPolicy getRemoteServiceCallPolicy() {
@@ -1822,6 +1859,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
+	 * @param policy the policy to set.  May be <code>null</code>
+	 * @return boolean true if set, false if cannot be set.
 	 * @since 4.0
 	 */
 	public boolean setRemoteServiceCallPolicy(IRemoteServiceCallPolicy policy) {

@@ -162,6 +162,10 @@ public final class Client implements ISynchAsynchConnection {
 	}
 
 	/**
+	 * @param remote remote URI
+	 * @param timeout timeout
+	 * @return Socket the created socket
+	 * @throws ECFException if socket cannot be created for input parameters
 	 * @since 4.4
 	 */
 	protected Socket createConnectSocket(URI remote, int timeout) throws ECFException {
@@ -177,6 +181,9 @@ public final class Client implements ISynchAsynchConnection {
 	}
 
 	/**
+	 * @param remote the remtoe ID
+	 * @return URI the parsed remote ID
+	 * @throws ECFException if remote ID cannot be parsed
 	 * @since 4.4
 	 */
 	protected URI parseRemoteID(ID remote) throws ECFException {
@@ -543,6 +550,7 @@ public final class Client implements ISynchAsynchConnection {
 	}
 
 	/**
+	 * @return Object the output stream lock
 	 * @since 4.6
 	 */
 	public Object getOutputStreamLock() {

@@ -22,7 +22,8 @@ import org.osgi.framework.ServiceReference;
 public class RemoteFilterImpl extends org.eclipse.ecf.remoteservice.util.RemoteFilterImpl implements IRemoteFilter {
 
 	/**
-	 * @param createFilter
+	 * @param createFilter filter to use
+	 * @throws InvalidSyntaxException if given createFilter is not a valid filter
 	 */
 	public RemoteFilterImpl(String createFilter) throws InvalidSyntaxException {
 		super(createFilter);

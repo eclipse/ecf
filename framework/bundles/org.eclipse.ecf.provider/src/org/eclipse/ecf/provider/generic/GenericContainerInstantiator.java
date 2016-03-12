@@ -108,6 +108,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 		}
 
 		/**
+		 * @return InetAddress the bind address.  May be <code>null</code>
 		 * @since 4.5
 		 */
 		public InetAddress getBindAddress() {
@@ -116,6 +117,9 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 	}
 
 	/**
+	 * @param args arguments
+	 * @return GenericContainerArgs the client args created
+	 * @throws IDCreateException if the client args cannot be retrieved from given args
 	 * @since 3.0
 	 */
 	protected GenericContainerArgs getClientArgs(Object[] args) throws IDCreateException {
@@ -155,6 +159,9 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 	}
 
 	/**
+	 * @param args arguments
+	 * @return GenericContainerArgs the server args created
+	 * @throws IDCreateException if the server args cannot be retrieved from given args
 	 * @since 3.0
 	 */
 	protected GenericContainerArgs getServerArgs(Object[] args) throws IDCreateException {
@@ -269,6 +276,9 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 	}
 
 	/**
+	 * @param gcargs the generic container args
+	 * @return IContainer the created container
+	 * @throws Exception if something goes wrong
 	 * @since 4.5
 	 */
 	protected IContainer createClientContainer(GenericContainerArgs gcargs) throws Exception {
@@ -276,6 +286,9 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 	}
 
 	/**
+	 * @param gcargs the generic container args
+	 * @return IContainer the created container
+	 * @throws Exception if something goes wrong
 	 * @since 4.5
 	 */
 	protected IContainer createServerContainer(GenericContainerArgs gcargs) throws Exception {

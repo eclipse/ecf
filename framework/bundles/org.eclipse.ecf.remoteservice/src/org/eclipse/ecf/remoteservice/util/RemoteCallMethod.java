@@ -48,6 +48,9 @@ public class RemoteCallMethod extends RemoteCall implements IRemoteCall {
 	}
 
 	/**
+	 * @param method method
+	 * @param parameters parameters
+	 * @throws NotSerializableException if given parameters cannot be serialized
 	 * @since 4.0
 	 */
 	public void setParameters(Method method, Object[] parameters) throws NotSerializableException {

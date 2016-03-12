@@ -63,8 +63,11 @@ public class URLFileSystemBrowser extends AbstractFileSystemBrowser {
 	protected String password = null;
 
 	/**
-	 * @param directoryOrFileID
-	 * @param listener
+	 * @param directoryOrFileID directory or file id
+	 * @param listener listener
+	 * @param directoryOrFileURL directory or file url
+	 * @param connectContext connect context
+	 * @param proxy proxy
 	 */
 	public URLFileSystemBrowser(IFileID directoryOrFileID, IRemoteFileSystemListener listener, URL directoryOrFileURL, IConnectContext connectContext, Proxy proxy) {
 		super(directoryOrFileID, listener, directoryOrFileURL, connectContext, proxy);

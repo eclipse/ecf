@@ -19,6 +19,7 @@ public @interface AsyncMethod {
 	/**
 	 * value values are:  "none", "callback", "future", "both".  All other values
 	 * will be ignored
+	 * @return String type value
 	 */
 	String type();
 }

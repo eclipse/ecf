@@ -151,6 +151,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	private FileTransferJob connectJob;
 
 	/**
+	 * @param httpClient http client
 	 * @since 5.0
 	 */
 	public HttpClientRetrieveFileTransfer(DefaultHttpClient httpClient) {
@@ -292,6 +293,9 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	}
 
 	/**
+	 * @return Credentials file request credentials
+	 * @throws UnsupportedCallbackException if some problem
+	 * @throws IOException if some problem
 	 * @since 5.0
 	 */
 	protected Credentials getFileRequestCredentials() throws UnsupportedCallbackException, IOException {
@@ -541,6 +545,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	}
 
 	/**
+	 * @return int connect timeout
 	 * @since 4.0
 	 */
 	protected int getConnectTimeout() {
@@ -966,6 +971,8 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	}
 
 	/**
+	 * @param p proxy to create NTCredentials for
+	 * @return NTCredentials new ntlm credentials given proxy
 	 * @since 5.0
 	 */
 	public static NTCredentials createNTLMCredentials(Proxy p) {

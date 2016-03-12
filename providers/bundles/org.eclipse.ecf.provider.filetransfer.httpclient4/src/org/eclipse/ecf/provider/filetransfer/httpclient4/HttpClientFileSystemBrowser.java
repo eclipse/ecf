@@ -102,8 +102,12 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 	protected volatile HttpContext httpContext;
 
 	/**
-	 * @param directoryOrFileID
-	 * @param listener
+	 * @param httpClient http client
+	 * @param directoryOrFileID directory or file id
+	 * @param listener listener
+	 * @param directoryOrFileURL directory or file id
+	 * @param connectContext connect context
+	 * @param proxy proxy
 	 * @since 5.0
 	 */
 	public HttpClientFileSystemBrowser(DefaultHttpClient httpClient, IFileID directoryOrFileID, IRemoteFileSystemListener listener, URL directoryOrFileURL, IConnectContext connectContext, Proxy proxy) {

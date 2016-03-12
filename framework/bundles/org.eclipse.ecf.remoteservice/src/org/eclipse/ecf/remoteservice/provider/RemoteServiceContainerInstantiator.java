@@ -40,6 +40,8 @@ public abstract class RemoteServiceContainerInstantiator extends BaseContainerIn
 	protected Map<String, List<String>> exporterConfigToImporterConfigs;
 
 	/**
+	 * @param exportingProvider exporting provider (e.g. server or service host)
+	 * @param importingProvider importing provider (e.g. client or service client)
 	 * @since 8.9
 	 */
 	protected RemoteServiceContainerInstantiator(String exportingProvider, String importingProvider) {

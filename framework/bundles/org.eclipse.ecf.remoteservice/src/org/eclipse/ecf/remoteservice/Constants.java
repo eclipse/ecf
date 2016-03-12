@@ -11,10 +11,6 @@
 
 package org.eclipse.ecf.remoteservice;
 
-import java.util.Map;
-import org.eclipse.ecf.core.IContainerFactory;
-import org.eclipse.ecf.core.security.IConnectContext;
-
 /**
  * Remote service API constants.
  * 
@@ -211,48 +207,48 @@ public interface Constants {
 	 * ECF discovery service type for Remote Service Admin. All ECF remote
 	 * services published by Remote Service Admin advertisers should have this
 	 * value as one of the entries in the list returned from
-	 * {@link IServiceTypeID#getServices()}.
+	 * IServiceTypeID#getServices().
 	 * @since 8.9
 	 */
 	public static final String DISCOVERY_SERVICE_TYPE = "ecfosgirsvc"; //$NON-NLS-1$
 	/**
 	 * ECF discovery scope property. Value type is String+. If set, the value
-	 * will be used by the {@link IServiceInfoFactory} during
-	 * {@link IServiceInfoFactory#createServiceInfo(org.eclipse.ecf.discovery.IDiscoveryAdvertiser, EndpointDescription)}
-	 * to create an {@link IServiceTypeID} via
-	 * {@link IServiceIDFactory#createServiceTypeID(org.eclipse.ecf.core.identity.Namespace, String[], String[], String[], String)}
+	 * will be used by the IServiceInfoFactory during
+	 * IServiceInfoFactory#createServiceInfo(org.eclipse.ecf.discovery.IDiscoveryAdvertiser, EndpointDescription)
+	 * to create an IServiceTypeID via
+	 * IServiceIDFactory#createServiceTypeID(org.eclipse.ecf.core.identity.Namespace, String[], String[], String[], String)
 	 * . The scopes value determines the third parameter. If not explicitly set,
-	 * the {@link IServiceTypeID#DEFAULT_SCOPE} is used.
+	 * the IServiceTypeID#DEFAULT_SCOPE is used.
 	 * @since 8.9
 	 */
 	public static final String DISCOVERY_SCOPE = "ecf.endpoint.discovery.scope"; //$NON-NLS-1$
 	/**
 	 * ECF discovery protocols property. Value type is String+. If set, the
-	 * value will be used by the {@link IServiceInfoFactory} during
-	 * {@link IServiceInfoFactory#createServiceInfo(org.eclipse.ecf.discovery.IDiscoveryAdvertiser, EndpointDescription)}
-	 * to create an {@link IServiceTypeID} via
-	 * {@link IServiceIDFactory#createServiceTypeID(org.eclipse.ecf.core.identity.Namespace, String[], String[], String[], String)}
+	 * value will be used by the IServiceInfoFactory during
+	 * IServiceInfoFactory#createServiceInfo(org.eclipse.ecf.discovery.IDiscoveryAdvertiser, EndpointDescription)
+	 * to create an IServiceTypeID via
+	 * IServiceIDFactory#createServiceTypeID(org.eclipse.ecf.core.identity.Namespace, String[], String[], String[], String)
 	 * . The protocols value determines the fourth parameter. If not explicitly
-	 * set, the {@link IServiceTypeID#DEFAULT_PROTO} is used.
+	 * set, the IServiceTypeID#DEFAULT_PROTO is used.
 	 * @since 8.9
 	 */
 	public static final String DISCOVERY_PROTOCOLS = "ecf.endpoint.discovery.protocols"; //$NON-NLS-1$
 	/**
 	 * ECF discovery naming authority property. Value type is String. If set,
-	 * the value will be used by the {@link IServiceInfoFactory} during
-	 * {@link IServiceInfoFactory#createServiceInfo(org.eclipse.ecf.discovery.IDiscoveryAdvertiser, EndpointDescription)}
-	 * to create an {@link IServiceTypeID} via
-	 * {@link IServiceIDFactory#createServiceTypeID(org.eclipse.ecf.core.identity.Namespace, String[], String[], String[], String)}
+	 * the value will be used by the IServiceInfoFactory during
+	 * IServiceInfoFactory#createServiceInfo(org.eclipse.ecf.discovery.IDiscoveryAdvertiser, EndpointDescription)
+	 * to create an IServiceTypeID via
+	 * IServiceIDFactory#createServiceTypeID(org.eclipse.ecf.core.identity.Namespace, String[], String[], String[], String)
 	 * . The protocols value determines the fifth parameter. If not explicitly
-	 * set, the {@link IServiceTypeID#DEFAULT_NA} is used.
+	 * set, the IServiceTypeID#DEFAULT_NA is used.
 	 * @since 8.9
 	 */
 	public static final String DISCOVERY_NAMING_AUTHORITY = "ecf.endpoint.discovery.namingauthority"; //$NON-NLS-1$
 	/**
 	 * ECF discovery service name property. Value type is String. If set, the
-	 * value will be used by the {@link IServiceInfoFactory} during
-	 * {@link IServiceInfoFactory#createServiceInfo(org.eclipse.ecf.discovery.IDiscoveryAdvertiser, EndpointDescription)}
-	 * to create an {@link IServiceInfo} with a given name. The default is a
+	 * value will be used by the IServiceInfoFactory during
+	 * IServiceInfoFactory#createServiceInfo(org.eclipse.ecf.discovery.IDiscoveryAdvertiser, EndpointDescription)
+	 * to create an IServiceInfo with a given name. The default is a
 	 * globally unique identifier. Note that if this value is explicitly set,
 	 * care should be taken to not have the name conflict with other remote
 	 * service names.
@@ -266,27 +262,27 @@ public interface Constants {
 	 */
 	public static final String DISCOVERY_DEFAULT_SERVICE_NAME_PREFIX = "osgirsvc_"; //$NON-NLS-1$
 	/**
-	 * ECF {@link EndpointDescription} property (with value of type String) that
-	 * defines the unique {@link org.eclipse.ecf.core.identity.Namespace} name.
-	 * If present in the {@link EndpointDescription}, the value will be used to
+	 * ECF EndpointDescription property (with value of type String) that
+	 * defines the unique org.eclipse.ecf.core.identity.Namespace name.
+	 * If present in the EndpointDescription, the value will be used to
 	 * create the containerID for accessing a remote service. The Namespace name
 	 * is optional because typically the ID protocol specifier (e.g. 'ecftcp' in
 	 * ID with name: 'ecftcp://localhost:3282/server') can be used to
 	 * unambiguously determine the appropriate
-	 * {@link org.eclipse.ecf.core.identity.Namespace} used to create the
+	 * org.eclipse.ecf.core.identity.Namespace used to create the
 	 * container ID for remote service import.
 	 * @since 8.9
 	 */
 	public static final String ENDPOINT_CONTAINER_ID_NAMESPACE = "ecf.endpoint.id.ns"; //$NON-NLS-1$
 	/**
-	 * ECF {@link EndpointDescription} property (with value of type String) that
+	 * ECF EndpointDescription property (with value of type String) that
 	 * defines the ecf endpoint id (typically the container id).
 	 * 
 	 * @since 8.9
 	 */
 	public static final String ENDPOINT_ID = "ecf.endpoint.id"; //$NON-NLS-1$
 	/**
-	 * ECF {@link EndpointDescription} property (with value of type Long) that
+	 * ECF EndpointDescription property (with value of type Long) that
 	 * defines a service timestamp set upon initial export of the remote
 	 * service.
 	 * 
@@ -294,7 +290,7 @@ public interface Constants {
 	 */
 	public static final String ENDPOINT_TIMESTAMP = "ecf.endpoint.ts"; //$NON-NLS-1$
 	/**
-	 * Optional ECF {@link EndpointDescription} property (with value of type
+	 * Optional ECF EndpointDescription property (with value of type
 	 * String) that defines a connect target ID. If set/non-<code>null</code>,
 	 * this property can be used by remote service consumers to connect to a
 	 * specific container, and access a remote service exposed by some
@@ -303,18 +299,18 @@ public interface Constants {
 	 */
 	public static final String ENDPOINT_CONNECTTARGET_ID = "ecf.endpoint.connecttarget.id"; //$NON-NLS-1$
 	/**
-	 * Optional ECF {@link EndpointDescription} property (with value of type
+	 * Optional ECF EndpointDescription property (with value of type
 	 * String+) that defines one or more IDs used for filtering remote service
 	 * references during
-	 * {@link RemoteServiceAdmin#importService(org.osgi.service.remoteserviceadmin.EndpointDescription)}
+	 * RemoteServiceAdmin#importService(org.osgi.service.remoteserviceadmin.EndpointDescription)
 	 * .
 	 * @since 8.9
 	 */
 	public static final String ENDPOINT_IDFILTER_IDS = "ecf.endpoint.idfilter.ids"; //$NON-NLS-1$
 	/**
-	 * Optional ECF {@link EndpointDescription} property (with value of type
+	 * Optional ECF EndpointDescription property (with value of type
 	 * String), that defines a remote services properties filter used during
-	 * {@link RemoteServiceAdmin#importService(org.osgi.service.remoteserviceadmin.EndpointDescription)}
+	 * RemoteServiceAdmin#importService(org.osgi.service.remoteserviceadmin.EndpointDescription)
 	 * .
 	 * @since 8.9
 	 */
@@ -325,14 +321,14 @@ public interface Constants {
 	 * specified as a service property upon remote service registration, this
 	 * property allows ECF containers to be initialized and configured upon
 	 * creation during the call to
-	 * {@link HostContainerSelector#selectHostContainers(org.osgi.framework.ServiceReference, Map, String[], String[], String[])}
+	 * HostContainerSelector#selectHostContainers(org.osgi.framework.ServiceReference, Map, String[], String[], String[])
 	 * . The type of the value may be String, ID, or Object[]. The
 	 * IContainerFactory.createContainer method is then selected based upon the
 	 * type of the value...i.e.
-	 * {@link IContainerFactory#createContainer(org.eclipse.ecf.core.ContainerTypeDescription, String)}
+	 * IContainerFactory#createContainer(org.eclipse.ecf.core.ContainerTypeDescription, String)
 	 * ,
-	 * {@link IContainerFactory#createContainer(org.eclipse.ecf.core.identity.ID)}
-	 * , or {@link IContainerFactory#createContainer(String, Object[])}, and the
+	 * IContainerFactory#createContainer(org.eclipse.ecf.core.identity.ID)
+	 * , or IContainerFactory#createContainer(String, Object[]), and the
 	 * value is passed in for container creation.
 	 * @since 8.9
 	 */
@@ -342,8 +338,8 @@ public interface Constants {
 	 * as a service property for remote service export, this property allows ECF
 	 * containers to have given a connect context for authentication upon
 	 * container connection by
-	 * {@link HostContainerSelector#selectHostContainers(org.osgi.framework.ServiceReference, Map, String[], String[], String[])}
-	 * . The type of the value is {@link IConnectContext}.
+	 * HostContainerSelector#selectHostContainers(org.osgi.framework.ServiceReference, Map, String[], String[], String[])
+	 * . The type of the value is IConnectContext.
 	 * @since 8.9
 	 */
 	public static final String SERVICE_EXPORTED_CONTAINER_CONNECT_CONTEXT = "ecf.exported.containerconnectcontext"; //$NON-NLS-1$
@@ -351,7 +347,7 @@ public interface Constants {
 	 * Container ID of the target host container for remote service export. If
 	 * specified as a service property for remote service export, this property
 	 * is used to match against the set of available containers in
-	 * {@link HostContainerSelector#selectHostContainers(org.osgi.framework.ServiceReference, Map, String[], String[], String[])}
+	 * HostContainerSelector#selectHostContainers(org.osgi.framework.ServiceReference, Map, String[], String[], String[])
 	 * . The type of the value is ID.
 	 * @since 8.9
 	 */
@@ -362,25 +358,25 @@ public interface Constants {
 	 * the async interfaces under which this service will be exported on the
 	 * remote proxy. This list must be a subset of the types service was
 	 * exported (i.e. subset of interfaces specified by #
-	 * {@link org.osgi.service.remoteserviceadmin.RemoteConstants#SERVICE_EXPORTED_INTERFACES}
+	 * org.osgi.service.remoteserviceadmin.RemoteConstants#SERVICE_EXPORTED_INTERFACES
 	 * . The single value of an asterisk (&quot;*&quot;, &#92;u002A) indicates
 	 * all the interface types under which the service was exported.
 	 * <p>
 	 * The interfaces in the String[] can either be
 	 * <ol>
 	 * <li>The same fully qualified name as an interface in the #
-	 * {@link org.osgi.service.remoteserviceadmin.RemoteConstants#SERVICE_EXPORTED_INTERFACES}
+	 * org.osgi.service.remoteserviceadmin.RemoteConstants#SERVICE_EXPORTED_INTERFACES
 	 * property</li>
 	 * <li>The fully qualified name of an interface that follows the
 	 * asynchronous proxy conventions to match with one of the existing exported
 	 * types.</li>
-	 * 
+	 * </ol>
 	 * <p>
-	 * This property may be supplied in the {@code properties}
-	 * {@code Dictionary} object passed to the
-	 * {@code BundleContext.registerService} method. The value of this property
-	 * must be of type {@code String}, {@code String[]}, or {@code Collection}
-	 * of {@code String}.
+	 * This property may be supplied in the properties
+	 * Dictionary object passed to the
+	 * BundleContext.registerService method. The value of this property
+	 * must be of type String, String[], or Collection
+	 * of String.
 	 * @since 8.9
 	 * 
 	 */
@@ -389,10 +385,10 @@ public interface Constants {
 	/**
 	 * Allows exporting ECF containers to determine the type of value associated
 	 * with the
-	 * {@link org.osgi.service.remoteserviceadmin.RemoteConstants#SERVICE_IMPORTED}
+	 * org.osgi.service.remoteserviceadmin.RemoteConstants#SERVICE_IMPORTED
 	 * property on the OSGi remote service consumer. For ECF, the default value
-	 * type is {@link IRemoteService}. If set to some other value (e.g.
-	 * {@link Boolean} by the exporting host container, then consumers can use
+	 * type is IRemoteService. If set to some other value (e.g.
+	 * Boolean by the exporting host container, then consumers can use
 	 * the SERVICE_IMPORTED value appropriately.
 	 * @since 8.9
 	 */

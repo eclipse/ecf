@@ -56,7 +56,7 @@ public interface IFileTransfer extends IAdaptable, IIdentifiable {
 	 * completed unsuccessfully (some exception occurred), then
 	 * {@link #isDone()} will return true, and this method will return a
 	 * non-null Exception instance that occurred.
-	 * <p></p>
+	 * <p>
 	 * If the the file transfer was canceled by the user, then the exception 
 	 * returned will be an instance of {@link UserCancelledException}.  
 	 * 
@@ -86,6 +86,7 @@ public interface IFileTransfer extends IAdaptable, IIdentifiable {
 	 * -1 will be returned.  Note that if a {@link IFileRangeSpecification} is provided that the returned
 	 * file length is the expected file length of just the range retrieved (and not the entire file).
 	 *
+	 *@return long file length
 	 * @since 2.0
 	 */
 	public long getFileLength();

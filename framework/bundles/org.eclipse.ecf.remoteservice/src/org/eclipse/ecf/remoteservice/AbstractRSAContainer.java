@@ -41,7 +41,7 @@ public abstract class AbstractRSAContainer extends AbstractContainer {
 	 * @param registration the RSARemoteServiceRegistration that is being registered.  Will not
 	 * be <code>null</code>.
 	 *  
-	 * @return Map<String, Object> of extra properties to add to the RSA EndpointDescription.   
+	 * @return Map of extra properties to add to the RSA EndpointDescription.   
 	 * Any properties in the returned map will override or add to the endpoint description.  For example,
 	 * if one of the properties in the returned Map is a String value for the key 'ecf.endpoint.id', 
 	 * then the value from the map will override this property in the endpoint description.  The result

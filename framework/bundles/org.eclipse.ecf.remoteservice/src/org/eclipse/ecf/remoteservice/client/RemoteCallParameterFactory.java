@@ -47,7 +47,7 @@ public class RemoteCallParameterFactory {
 	 * The order given reflects in the order during call time, e.g.
 	 * - model object A will be serialized to the first element, B to the second, ...
 	 * Make sure to use a LinkedHashMap that preserves insertion order!!!
-	 * @param nameValues 
+	 * @param nameValues name values map for remote call parameters
 	 * @return Map of params converted into a IRemoteCallParameter array
 	 */
 	public static IRemoteCallParameter[] createParameters(Map nameValues) {

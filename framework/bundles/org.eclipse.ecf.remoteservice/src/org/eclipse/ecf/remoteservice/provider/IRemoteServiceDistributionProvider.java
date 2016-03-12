@@ -35,7 +35,7 @@ public interface IRemoteServiceDistributionProvider {
 	/**
 	 * Return any properties that are to be used when registering the ContainerTypeDescription
 	 * returned by above method.  <code>Null</code> may be returned.
-	 * @return Dictionary<String, ?> to use when registering the ContainerTypeDescription.  
+	 * @return Dictionary to use when registering the ContainerTypeDescription  
 	 * May be <code>null</code>.
 	 */
 	Dictionary<String, ?> getContainerTypeDescriptionProperties();
@@ -53,7 +53,7 @@ public interface IRemoteServiceDistributionProvider {
 	/**
 	 * Return any properties that are to be used when registering the Namespace
 	 * returned by above method.  <code>Null</code> may be returned.
-	 * @return Dictionary<String, ?> to use when registering this provider's Namespace.  
+	 * @return Dictionary to use when registering this provider's Namespace.  
 	 * May be <code>null</code>.
 	 */
 	Dictionary<String, ?> getNamespaceProperties();

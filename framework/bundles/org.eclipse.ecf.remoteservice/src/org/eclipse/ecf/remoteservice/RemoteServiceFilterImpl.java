@@ -1,7 +1,6 @@
 package org.eclipse.ecf.remoteservice;
 
 import org.eclipse.ecf.remoteservice.util.RemoteFilterImpl;
-
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 
@@ -11,7 +10,9 @@ import org.osgi.framework.ServiceReference;
 public class RemoteServiceFilterImpl extends RemoteFilterImpl {
 
 	/**
-	 * @param createFilter
+	 * @param createFilter filter as string
+	 * @throws InvalidSyntaxException thrown if given String filter cannot be converted
+	 * into a valid filter
 	 */
 	public RemoteServiceFilterImpl(String createFilter) throws InvalidSyntaxException {
 		super(createFilter);

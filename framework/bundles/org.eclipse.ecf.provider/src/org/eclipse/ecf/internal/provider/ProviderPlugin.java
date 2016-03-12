@@ -139,6 +139,7 @@ public class ProviderPlugin implements BundleActivator {
 
 	/**
 	 * Returns the shared instance.
+	 * @return ProviderPlugin default instance
 	 */
 	public synchronized static ProviderPlugin getDefault() {
 		if (plugin == null) {

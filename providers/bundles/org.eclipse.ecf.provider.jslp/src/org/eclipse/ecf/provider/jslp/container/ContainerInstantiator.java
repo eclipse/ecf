@@ -53,8 +53,8 @@ public class ContainerInstantiator implements IContainerInstantiator {
 	}
 
 	/**
-	 * @param description 
-	 * @return String[]
+	 * @param description description
+	 * @return String[] supported intents
 	 * @since 3.0
 	 */
 	public String[] getSupportedIntents(final ContainerTypeDescription description) {

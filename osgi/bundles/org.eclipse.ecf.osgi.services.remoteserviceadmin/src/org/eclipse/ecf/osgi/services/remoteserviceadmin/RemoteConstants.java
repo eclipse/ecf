@@ -42,7 +42,7 @@ public final class RemoteConstants {
 	/**
 	 * ECF discovery scope property. Value type is String+. If set, the value
 	 * will be used by the {@link IServiceInfoFactory} during
-	 * {@link IServiceInfoFactory#createServiceInfo(org.eclipse.ecf.discovery.IDiscoveryAdvertiser, EndpointDescription)}
+	 * IServiceInfoFactory#createServiceInfo(org.eclipse.ecf.discovery.IDiscoveryAdvertiser, EndpointDescription)
 	 * to create an {@link IServiceTypeID} via
 	 * {@link IServiceIDFactory#createServiceTypeID(org.eclipse.ecf.core.identity.Namespace, String[], String[], String[], String)}
 	 * . The scopes value determines the third parameter. If not explicitly set,
@@ -52,7 +52,7 @@ public final class RemoteConstants {
 	/**
 	 * ECF discovery protocols property. Value type is String+. If set, the
 	 * value will be used by the {@link IServiceInfoFactory} during
-	 * {@link IServiceInfoFactory#createServiceInfo(org.eclipse.ecf.discovery.IDiscoveryAdvertiser, EndpointDescription)}
+	 * IServiceInfoFactory#createServiceInfo(org.eclipse.ecf.discovery.IDiscoveryAdvertiser, EndpointDescription)
 	 * to create an {@link IServiceTypeID} via
 	 * {@link IServiceIDFactory#createServiceTypeID(org.eclipse.ecf.core.identity.Namespace, String[], String[], String[], String)}
 	 * . The protocols value determines the fourth parameter. If not explicitly
@@ -62,7 +62,7 @@ public final class RemoteConstants {
 	/**
 	 * ECF discovery naming authority property. Value type is String. If set,
 	 * the value will be used by the {@link IServiceInfoFactory} during
-	 * {@link IServiceInfoFactory#createServiceInfo(org.eclipse.ecf.discovery.IDiscoveryAdvertiser, EndpointDescription)}
+	 * IServiceInfoFactory#createServiceInfo(org.eclipse.ecf.discovery.IDiscoveryAdvertiser, EndpointDescription)
 	 * to create an {@link IServiceTypeID} via
 	 * {@link IServiceIDFactory#createServiceTypeID(org.eclipse.ecf.core.identity.Namespace, String[], String[], String[], String)}
 	 * . The protocols value determines the fifth parameter. If not explicitly
@@ -72,7 +72,7 @@ public final class RemoteConstants {
 	/**
 	 * ECF discovery service name property. Value type is String. If set, the
 	 * value will be used by the {@link IServiceInfoFactory} during
-	 * {@link IServiceInfoFactory#createServiceInfo(org.eclipse.ecf.discovery.IDiscoveryAdvertiser, EndpointDescription)}
+	 * IServiceInfoFactory#createServiceInfo(org.eclipse.ecf.discovery.IDiscoveryAdvertiser, EndpointDescription)
 	 * to create an {@link IServiceInfo} with a given name. The default is a
 	 * globally unique identifier. Note that if this value is explicitly set,
 	 * care should be taken to not have the name conflict with other remote
@@ -186,7 +186,7 @@ public final class RemoteConstants {
 	 * <li>The fully qualified name of an interface that follows the
 	 * asynchronous proxy conventions to match with one of the existing exported
 	 * types.</li>
-	 * 
+	 * </ol>
 	 * <p>
 	 * This property may be supplied in the {@code properties}
 	 * {@code Dictionary} object passed to the

@@ -54,6 +54,8 @@ public class ContainerTypeDescription {
 	}
 
 	/**
+	 * @param name name
+	 * @param instantiator instantiator
 	 * @since 3.4
 	 */
 	public ContainerTypeDescription(String name, IContainerInstantiator instantiator) {
@@ -147,7 +149,7 @@ public class ContainerTypeDescription {
 	 * 
 	 * Note that the returned types do not guarantee that a subsequent call to
 	 * {@link IContainer#getAdapter(Class)} with the same type name as a
-	 * returned value will return a non-<code>null</code result. In other words, even if the
+	 * returned value will return a non-<code>null</code> result. In other words, even if the
 	 * class name is in the returned array, subsequent calls to
 	 * {@link IContainer#getAdapter(Class)} may still return <code>null</code>.
 	 * 
@@ -226,6 +228,7 @@ public class ContainerTypeDescription {
 	}
 
 	/**
+	 * @return String[] supported configs
 	 * @since 3.1
 	 */
 	public String[] getSupportedConfigs() {
@@ -239,6 +242,8 @@ public class ContainerTypeDescription {
 	}
 
 	/**
+	 * @param exporterSupportedConfigs exporter supported configs
+	 * @return String[] imported configs
 	 * @since 3.1
 	 */
 	public String[] getImportedConfigs(String[] exporterSupportedConfigs) {
@@ -254,6 +259,9 @@ public class ContainerTypeDescription {
 	}
 
 	/**
+	 * @param importedConfigs imported configs
+	 * @param exportedProperties exported properties
+	 * @return Dictionary dictionary of properties for imported configs
 	 * @since 3.1
 	 */
 	public Dictionary getPropertiesForImportedConfigs(String[] importedConfigs, Dictionary exportedProperties) {

@@ -269,6 +269,10 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 	}
 
 	/**
+	 * @param serviceType serviceType
+	 * @param callables callables
+	 * @param properties properties
+	 * @return IRemoteServiceRegistration registration created for registration
 	 * @since 8.5
 	 */
 	public IRemoteServiceRegistration registerCallables(Class<?> serviceType, IRemoteCallable[] callables, Dictionary properties) {
@@ -383,6 +387,11 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 	}
 
 	/**
+	 * @param uri uri
+	 * @param call remote call
+	 * @param callable callable
+	 * @return IRemoteCallParameter[] remote call parameters prepared
+	 * @throws NotSerializableException if cannot be serialized
 	 * @since 8.5
 	 */
 	protected IRemoteCallParameter[] prepareCallParameters(String uri, IRemoteCall call, IRemoteCallable callable) throws NotSerializableException {
@@ -414,6 +423,11 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 	}
 
 	/**
+	 * @param uri uri
+	 * @param call call
+	 * @param callable callable
+	 * @return IRemoteCallParameter[] extra parameters
+	 * @throws NotSerializableException if not serializable
 	 * @since 8.5
 	 */
 	protected IRemoteCallParameter[] prepareExtraParameters(String uri, IRemoteCall call, IRemoteCallable callable) throws NotSerializableException {
@@ -451,9 +465,15 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 	}
 
 	/**
-	 * Serialze the parameter using the container's parameterSerializer. If there is no serializer for this container, return null.
+	 * Serialize the parameter using the container's parameterSerializer. If there is no serializer for this container, return null.
 	 * 
-	 * @return the serialized parameter or null if there is no parameterSerializer for this container
+	 * @param uri uri
+	 * @param call call
+	 * @param callable callable
+	 * @param defaultParameter default parameter
+	 * @param parameterValue parameter value
+	 * @return IRemoteCallParameter the serialized parameter or null if there is no parameterSerializer for this container
+	 * @throws NotSerializableException thrown if parameters cannot be serialized
 	 * @see IRemoteCallParameterSerializer#serializeParameter(String, IRemoteCall, IRemoteCallable, IRemoteCallParameter, Object)
 	 * @since 4.1
 	 */
@@ -465,6 +485,15 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 	}
 
 	/**
+	 * Serialize the parameter using the container's parameterSerializer. If there is no serializer for this container, return null.
+	 * 
+	 * @param uri uri
+	 * @param call call
+	 * @param callable callable
+	 * @param currentParameters current parameters
+	 * @param parameterValue parameter value
+	 * @return IRemoteCallParameter[] parameters for given 
+	 * @throws NotSerializableException thrown if parameters cannot be serialized
 	 * @since 8.0
 	 */
 	protected IRemoteCallParameter[] serializeParameter(String uri, IRemoteCall call, IRemoteCallable callable, List currentParameters, Object[] parameterValue) throws NotSerializableException {
@@ -476,6 +505,13 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 	}
 
 	/**
+	 * @param uri uri
+	 * @param call call
+	 * @param callable callable
+	 * @param responseHeaders http response headers
+	 * @param responseBody response body as byte[]
+	 * @return Object response deserialized via response deserializer
+	 * @throws NotSerializableException if response cannot be deserialized for processing
 	 * @since 8.0
 	 */
 	protected Object processResponse(String uri, IRemoteCall call, IRemoteCallable callable, Map responseHeaders, byte[] responseBody) throws NotSerializableException {
@@ -502,6 +538,10 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 	protected abstract String prepareEndpointAddress(IRemoteCall call, IRemoteCallable callable);
 
 	/**
+	 * @param endpoint endpoint
+	 * @param call call
+	 * @param callable callable
+	 * @return UriRequest to use for request.  May be <code>null</code>
 	 * @since 8.5
 	 */
 	public UriRequest createUriRequest(String endpoint, IRemoteCall call, IRemoteCallable callable) {

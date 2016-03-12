@@ -17,6 +17,7 @@ public class SynchMessage extends AsynchMessage {
 	private static final long serialVersionUID = 3906091152452434226L;
 
 	/**
+	 * @param data data
 	 * @since 4.3
 	 */
 	public SynchMessage(Serializable data) {

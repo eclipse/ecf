@@ -29,6 +29,8 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 	protected static Class[][] EMPTY_CLASS_ARRAY = new Class[][] {{}};
 
 	/**
+	 * @param arg object to get Integer from
+	 * @return Integer created from Object arg
 	 * @since 3.6
 	 */
 	protected Integer getIntegerFromArg(Object arg) {
@@ -43,6 +45,8 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 	}
 
 	/**
+	 * @param arg object to get String from
+	 * @return String created from Object arg
 	 * @since 3.6
 	 */
 	protected String getStringFromArg(Object arg) {
@@ -85,6 +89,8 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 	}
 
 	/**
+	 * @param parameters parameters to get Map from
+	 * @return Map from first of parameters that is instance of Map
 	 * @since 3.6
 	 */
 	protected Map<String, ?> getMap(Object[] parameters) {
@@ -96,6 +102,12 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 	}
 
 	/**
+	 * @param parameters Map parameters to get value from
+	 * @param key the key to use to get value from parameters
+	 * @param clazz the expected type of the value accessed by key
+	 * @param def the default of the value accessed by key.  May be <code>null</code>
+	 * @param <T> the expected value type
+	 * @return T value from parameters with key and of type clazz
 	 * @since 3.6
 	 */
 	protected <T> T getParameterValue(Map<String, ?> parameters, String key, Class<T> clazz, T def) {
@@ -108,6 +120,10 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 	}
 
 	/**
+	 * @param parameters Map parameters to get value from
+	 * @param key the key to use to get value from parameters
+	 * @param def the default of the value accessed by key.  May be <code>null</code>
+	 * @return String value from parameters with key
 	 * @since 3.6
 	 */
 	protected String getParameterValue(Map<String, ?> parameters, String key, String def) {
@@ -115,6 +131,9 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 	}
 
 	/**
+	 * @param parameters Map parameters to get value from
+	 * @param key the key to use to get value from parameters
+	 * @return String value from parameters with key
 	 * @since 3.6
 	 */
 	protected String getParameterValue(Map<String, ?> parameters, String key) {
@@ -122,6 +141,13 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 	}
 
 	/**
+	 * @param ns namespace to use for ID creation.  Must not be <code>null</code>
+	 * @param parameters Map parameters to get value from
+	 * @param key the key to use to get value from parameters
+	 * @param type the expected type of the value from parameters
+	 * @param def a default value to use if value from parameters is null
+	 * @param <T> the expected value type
+	 * @return ID the created ID
 	 * @since 3.8
 	 */
 	protected <T> ID getIDParameterValue(Namespace ns, Map<String, ?> parameters, String key, Class<T> type, T def) {
@@ -129,6 +155,11 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 	}
 
 	/**
+	 * @param ns namespace to use for ID creation.  Must not be <code>null</code>
+	 * @param parameters Map parameters to get value from
+	 * @param key the key to use to get value from parameters
+	 * @param def a default String value to use if value from parameters is null
+	 * @return ID the created ID
 	 * @since 3.8
 	 */
 	protected ID getIDParameterValue(Namespace ns, Map<String, ?> parameters, String key, String def) {
@@ -136,6 +167,10 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 	}
 
 	/**
+	 * @param ns namespace to use for ID creation.  Must not be <code>null</code>
+	 * @param parameters Map parameters to get value from
+	 * @param key the key to use to get value from parameters
+	 * @return ID the created ID
 	 * @since 3.8
 	 */
 	protected ID getIDParameterValue(Namespace ns, Map<String, ?> parameters, String key) {
@@ -143,6 +178,12 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 	}
 
 	/**
+	 * @param parameters parameters assumed to contain a Map
+	 * @param key key to use to get parameter value from Map
+	 * @param clazz the expected type of the value from Map
+	 * @param def a default value to use if value from Map is <code>null</code>
+	 * @param <T> the expected value type
+	 * @return T the parameter value with key from Map
 	 * @since 3.6
 	 */
 	protected <T> T getParameterValue(Object[] parameters, String key, Class<T> clazz, T def) {
@@ -150,6 +191,11 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 	}
 
 	/**
+	 * @param parameters parameters assumed to contain a Map
+	 * @param key key to use to get parameter value from Map
+	 * @param clazz the expected type of the value from Map
+	 * @param <T> the expected value type
+	 * @return T the parameter value with key from Map
 	 * @since 3.6
 	 */
 	protected <T> T getParameterValue(Object[] parameters, String key, Class<T> clazz) {
@@ -157,6 +203,10 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 	}
 
 	/**
+	 * @param parameters parameters assumed to contain a Map
+	 * @param key key to use to get parameter value from Map
+	 * @param def a default String value to use if value from Map is <code>null</code>
+	 * @return Sting the parameter value with key from Map
 	 * @since 3.6
 	 */
 	protected String getMapParameterString(Object[] parameters, String key, String def) {
@@ -164,6 +214,9 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 	}
 
 	/**
+	 * @param parameters parameters assumed to contain a Map
+	 * @param key key to use to get parameter value from Map
+	 * @return Sting the parameter value with key from Map
 	 * @since 3.6
 	 */
 	protected String getMapParameterString(Object[] parameters, String key) {

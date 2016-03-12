@@ -18,12 +18,15 @@ public class DiscoveryContainerConfig {
 
 	/**
 	 * @param anID
+	 *            an ID
 	 */
 	public DiscoveryContainerConfig(ID anID) {
 		id = anID;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.discovery.IContainerConfig#getID()
 	 */
 	public ID getID() {

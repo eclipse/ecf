@@ -34,6 +34,8 @@ public class FileTransferID extends BaseID implements IFileID {
 	}
 
 	/**
+	 * @param namespace namespace
+	 * @param uri uri
 	 * @since 3.2
 	 */
 	public FileTransferID(Namespace namespace, URI uri) {

@@ -28,8 +28,9 @@ public class LocalFileSystemBrowser extends AbstractFileSystemBrowser {
 	protected File local;
 
 	/**
-	 * @param listener 
-	 * @param directoryID2 
+	 * @param listener listener
+	 * @param directoryID2 remote directory
+	 * @throws RemoteFileSystemException if some problem 
 	 */
 	public LocalFileSystemBrowser(IFileID directoryID2, IRemoteFileSystemListener listener) throws RemoteFileSystemException {
 		super(directoryID2, listener, null, null, null);

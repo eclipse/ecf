@@ -64,6 +64,10 @@ public class IncomingFileTransferException extends ECFException {
 	}
 
 	/**
+	 * @param message message
+	 * @param cause cause
+	 * @param errorCode errorCode
+	 * @param responseHeaders responseHeaders
 	 * @since 4.0
 	 */
 	public IncomingFileTransferException(String message, Throwable cause, int errorCode, Map responseHeaders) {
@@ -73,6 +77,9 @@ public class IncomingFileTransferException extends ECFException {
 	}
 
 	/**
+	 * @param message message
+	 * @param errorCode errorCode
+	 * @param responseHeaders responseHeaders
 	 * @since 4.0
 	 */
 	public IncomingFileTransferException(String message, int errorCode, Map responseHeaders) {
@@ -82,6 +89,9 @@ public class IncomingFileTransferException extends ECFException {
 	}
 
 	/**
+	 * @param cause cause
+	 * @param errorCode errorCode
+	 * @param responseHeaders responseHeaders
 	 * @since 4.0
 	 */
 	public IncomingFileTransferException(Throwable cause, int errorCode, Map responseHeaders) {
@@ -96,6 +106,7 @@ public class IncomingFileTransferException extends ECFException {
 
 	/**
 	 * @since 4.0
+	 * @return Map response headers
 	 */
 	public Map getResponseHeaders() {
 		return responseHeaders;

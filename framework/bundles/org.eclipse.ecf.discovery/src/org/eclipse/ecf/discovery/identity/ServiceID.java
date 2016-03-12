@@ -35,6 +35,12 @@ public class ServiceID extends BaseID implements IServiceID {
 	protected URI location;
 
 	/**
+	 * @param namespace
+	 *            namespace should not be <code>null</code>
+	 * @param type
+	 *            service type ID should not be <code>null</code>
+	 * @param anURI
+	 *            uri for service location should not be <code>null</code>
 	 * @since 3.0
 	 */
 	protected ServiceID(Namespace namespace, IServiceTypeID type, URI anURI) {
@@ -136,9 +142,8 @@ public class ServiceID extends BaseID implements IServiceID {
 	 */
 	public String toString() {
 		final StringBuffer buf = new StringBuffer("ServiceID["); //$NON-NLS-1$
-		buf
-				.append("type=").append(type).append(";location=").append(getLocation()).append( //$NON-NLS-1$ //$NON-NLS-2$
-						";full=" + getFullyQualifiedName()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append("type=").append(type).append(";location=").append(getLocation()).append( //$NON-NLS-1$ //$NON-NLS-2$
+				";full=" + getFullyQualifiedName()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
 	}
 
@@ -177,8 +182,7 @@ public class ServiceID extends BaseID implements IServiceID {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result
-				+ ((location == null) ? 0 : location.hashCode());
+		result = prime * result + ((location == null) ? 0 : location.hashCode());
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
 	}

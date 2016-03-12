@@ -11,9 +11,7 @@
 package org.eclipse.ecf.core;
 
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IIdentifiable;
-import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.security.IConnectContext;
 
 /**
@@ -174,7 +172,8 @@ public interface IContainer extends IAdaptable, IIdentifiable {
 	 * Add listener to IContainer. The listener's handleEvent method will be
 	 * synchronously called when container methods are called. Minimally, the
 	 * events delivered to the listener are as follows <br>
-	 * <table BORDER=1 BORDERCOLOR="#000000" CELLPADDING=4 CELLSPACING=0>
+	 * <table BORDER=1 CELLPADDING=4 CELLSPACING=0>
+	 * <caption>Container Events</caption>
 	 * <tr>
 	 * <td>container action</td>
 	 * <td>Event</td>

@@ -40,6 +40,9 @@ public class EventMessage implements Serializable {
 	}
 	
 	/**
+	 * @param event event
+	 * @param serializationHandler serialization handler
+	 * @throws NotSerializableException if event can't be serialized
 	 * @since 1.2
 	 */
 	public EventMessage(Event event,
@@ -102,6 +105,7 @@ public class EventMessage implements Serializable {
 	}
 
 	/**
+	 * @param serializationHandler serialization handler
 	 * @since 1.2
 	 */
 	public void setSerializationHandler(

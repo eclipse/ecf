@@ -68,6 +68,12 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 	}
 
 	/**
+	 * @param endpointDescription endpoint description
+	 * @param advertiser advertiser
+	 * @param serviceTypeID serviceTypeID
+	 * @param serviceName serviceName
+	 * @param uri uri
+	 * @return IServiceProperties for the given input parameters
 	 * @since 3.0
 	 */
 	protected IServiceProperties createServiceProperties(
@@ -80,6 +86,12 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 	}
 
 	/**
+	 * @param endpointDescription endpoint description
+	 * @param advertiser advertiser
+	 * @param serviceTypeID serviceTypeID
+	 * @param serviceName service name
+	 * @return URI created
+	 * @throws URISyntaxException thrown if URI cannot be created
 	 * @since 3.0
 	 */
 	protected URI createURI(
@@ -134,6 +146,10 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 	}
 
 	/**
+	 * @param endpointDescription endpoint description
+	 * @param advertiser advertiser
+	 * @param serviceTypeID serviceTypeID
+	 * @return String created service name for input parameters
 	 * @since 3.0
 	 */
 	protected String createServiceName(
@@ -150,6 +166,10 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 	}
 
 	/**
+	 * @param endpointDescription endpoint description
+	 * @param advertiser advertiser
+	 * @param serviceTypeID serviceTypeID
+	 * @return String default service name created
 	 * @since 3.0
 	 */
 	protected String createDefaultServiceName(
@@ -160,6 +180,9 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 	}
 
 	/**
+	 * @param endpointDescription endpoint description
+	 * @param advertiser advertiser
+	 * @return IServiceTypeID created service type ID
 	 * @since 3.0
 	 */
 	protected IServiceTypeID createServiceTypeID(

@@ -35,6 +35,7 @@ public class ServiceProperties implements IServiceProperties {
 	 * Creates a copy of the given {@link IServiceProperties}
 	 * 
 	 * @param sp
+	 *            service properties
 	 * @since 2.1
 	 */
 	public ServiceProperties(IServiceProperties sp) {

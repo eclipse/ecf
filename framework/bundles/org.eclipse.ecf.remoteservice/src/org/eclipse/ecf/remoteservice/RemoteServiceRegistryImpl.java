@@ -57,6 +57,7 @@ public class RemoteServiceRegistryImpl implements Serializable {
 	}
 
 	/**
+	 * @param containerID the containerID to set
 	 * @since 3.4
 	 */
 	public void setContainerID(ID containerID) {
@@ -191,6 +192,9 @@ public class RemoteServiceRegistryImpl implements Serializable {
 	}
 
 	/**
+	 * @param remoteServiceID the remote service id to find the registration for.
+	 * @return RemoteServiceRegistrationImpl the registration found for the given remoteServiceID.
+	 * Will be <code>null</code> if no remote service registration found for given remoteServiceID
 	 * @since 3.0
 	 */
 	protected RemoteServiceRegistrationImpl findRegistrationForRemoteServiceId(IRemoteServiceID remoteServiceID) {
@@ -209,6 +213,8 @@ public class RemoteServiceRegistryImpl implements Serializable {
 	}
 
 	/**
+	 * @param serviceid the container relative service id 
+	 * @return the IRemoteServiceID with same container and giveen serviceid
 	 * @since 3.0
 	 */
 	public IRemoteServiceID createRemoteServiceID(long serviceid) {

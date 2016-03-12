@@ -33,13 +33,12 @@ import org.eclipse.ecf.discovery.identity.IServiceID;
  * will be preferred/used over the default. This means that those wishing to
  * customize/control this process of converting {@link IServiceInfo}s to
  * {@link DiscoveredEndpointDescription} must
- * <ul>
- * <li>create their own implementation of
- * {@link IDiscoveredEndpointDescriptionFactory}</li>
- * <li>register it with the OSGi service registry with a priority
+ * create their own implementation of
+ * {@link IDiscoveredEndpointDescriptionFactory}
+ *  and register it with the OSGi service registry with a priority
  * ({org.osgi.framework.Constants#SERVICE_RANKING}) higher than
- * {@link Integer#MIN_VALUE}</li>
- * <ul>
+ * {@link Integer#MIN_VALUE}
+ * <p>
  * Then at runtime, when needed by the {@link EndpointDescriptionLocator}, the
  * new discovered endpoint description factory will be used.
  * 
