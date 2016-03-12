@@ -47,12 +47,16 @@
 	        	<exclude name="**/osgi/services/discovery/**"/>
 	        	<exclude name="**/com/mycorp/examples/**"/>
 	        	<exclude name="**/org/eclipse/ecf/docshare/**"/>
+        		<exclude name="**/org/eclipse/ecf/datashare/**"/>
 	        	<exclude name="**/org/eclipse/ecf/examples/**"/>
 	        	<exclude name="**/org/eclipse/ecf/example/**"/>
 	        	<exclude name="**/org/eclipse/ecf/presence/**"/>
 	        	<exclude name="**/org/eclipse/ecf/protocol/bittorrent/**"/>
 	        	<exclude name="**/org/eclipse/ecf/protocol/msn/**"/>
 	        	<exclude name="**/org/eclipse/ecf/provider/irc/**"/>
+        		<exclude name="**/org/eclipse/ecf/provider/datashare/**"/>
+        		<exclude name="**/org/eclipse/ecf/provider/discovery/**"/>
+        		<exclude name="**/org/eclipse/ecf/provider/xmpp/**"/>
 	        	<exclude name="**/org/eclipse/ecf/remoteservice/rpc/**"/>
 	        	<exclude name="**/org/eclipse/ecf/remoteservice/soap/**"/>
 	        	<exclude name="**/org/eclipse/ecf/server/**"/>
