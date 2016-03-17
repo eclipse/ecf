@@ -14,28 +14,32 @@
     <xsl:param name="contactMail">ecf-dev@eclipse.org</xsl:param>
     
     <xsl:template match="/">
-        <aggregator:Aggregator 
+        <aggregator:Aggregation 
             xmi:version="2.0" 
             xmlns:xmi="http://www.omg.org/XMI" 
-            xmlns:aggregator="http://www.eclipse.org/b3/2010/aggregator/1.0.0" 
+            xmlns:aggregator="http://www.eclipse.org/b3/2011/aggregator/1.1.0" 
             buildmaster="//@contacts[email='{$contactMail}']" 
             label="{$title}"
-            type="{$releaseType}" 
+            type="{$releaseType}"
+            packedStrategy="SKIP"
             mavenResult="true">
+ 			
+ 			<validationSets label="main">
+
+	            <contributions label="{$title}">
+        	        <repositories location="{$repository}"/>
+      	    	</contributions>
+
+	            <xsl:apply-templates/>
+
+            </validationSets>
             
             <configurations architecture="x86_64"/>
             <configurations operatingSystem="linux" windowSystem="gtk"/>
             <configurations operatingSystem="linux" windowSystem="gtk" architecture="x86_64"/>
- 
-            <contributions label="{$title}">
-                <repositories location="{$repository}"/>
-            </contributions>
-
             <contacts name="{$contactName}" email="{$contactMail}"/>
-
-            <xsl:apply-templates/>
             
-        </aggregator:Aggregator>
+        </aggregator:Aggregation>
     </xsl:template>
     
     <xsl:template match="bm:provider">
