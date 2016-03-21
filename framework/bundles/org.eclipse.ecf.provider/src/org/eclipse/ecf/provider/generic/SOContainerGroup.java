@@ -16,6 +16,7 @@ import java.net.Socket;
 import java.net.URI;
 import java.util.*;
 import org.eclipse.ecf.internal.provider.ProviderPlugin;
+import org.eclipse.ecf.provider.comm.IConnectRequestHandler;
 import org.eclipse.ecf.provider.comm.tcp.*;
 
 public class SOContainerGroup implements ISocketAcceptHandler {
@@ -122,7 +123,7 @@ public class SOContainerGroup implements ISocketAcceptHandler {
 			throw new InvalidObjectException(INVALID_CONNECT + " Path cannot be null"); //$NON-NLS-1$
 
 		// Given path, lookup associated container
-		final TCPServerSOContainer srs = (TCPServerSOContainer) get(path);
+		final SOContainer srs = get(path);
 		if (srs == null)
 			throw new InvalidObjectException("Container not found for path=" + path); //$NON-NLS-1$
 
@@ -134,7 +135,7 @@ public class SOContainerGroup implements ISocketAcceptHandler {
 		// accepted or rejected connect request
 		synchronized (outputStreamLock) {
 			// Call checkConnect
-			final Serializable resp = srs.handleConnectRequest(aSocket, path, req.getData(), newClient);
+			final Serializable resp = ((IConnectRequestHandler) srs).handleConnectRequest(aSocket, path, req.getData(), newClient);
 			// Create connect response wrapper and send it back
 			oStream.writeObject(new ConnectResultMessage(resp));
 			oStream.flush();
