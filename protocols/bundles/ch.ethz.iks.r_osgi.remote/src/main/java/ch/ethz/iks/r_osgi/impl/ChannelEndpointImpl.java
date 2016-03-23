@@ -211,6 +211,7 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	}
 	
 	void trace(String message, Throwable t) {
+		if (!traceChannelEndpoint) return;
 		if (message != null) 
 			System.out.println("ChannelEndpoint;"+message);
 		if (t != null)
