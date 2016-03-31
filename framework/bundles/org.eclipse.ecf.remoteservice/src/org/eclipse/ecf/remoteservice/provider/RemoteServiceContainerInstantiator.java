@@ -45,15 +45,15 @@ public abstract class RemoteServiceContainerInstantiator extends BaseContainerIn
 	 * @since 8.9
 	 */
 	protected RemoteServiceContainerInstantiator(String exportingProvider, String importingProvider) {
-		this.exporterConfigs = new ArrayList<String>();
-		this.exporterConfigToImporterConfigs = new HashMap<String, List<String>>();
+		this();
 		this.exporterConfigs.add(exportingProvider);
 		this.exporterConfigToImporterConfigs.put(exportingProvider, Arrays.asList(new String[] {importingProvider}));
 	}
 
 	protected RemoteServiceContainerInstantiator(List<String> exporterConfigs, Map<String, List<String>> exporterConfigToImporterConfig) {
-		this.exporterConfigs = (exporterConfigs == null) ? new ArrayList<String>() : exporterConfigs;
-		this.exporterConfigToImporterConfigs = (exporterConfigToImporterConfig == null) ? new HashMap<String, List<String>>() : exporterConfigToImporterConfig;
+		this();
+		this.exporterConfigs.addAll(exporterConfigs);
+		this.exporterConfigToImporterConfigs.putAll(exporterConfigToImporterConfig);
 	}
 
 	protected RemoteServiceContainerInstantiator() {
