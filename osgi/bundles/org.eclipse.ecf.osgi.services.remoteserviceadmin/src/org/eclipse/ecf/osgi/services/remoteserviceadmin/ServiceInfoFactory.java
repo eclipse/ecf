@@ -12,7 +12,10 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
@@ -32,6 +35,21 @@ import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
 public class ServiceInfoFactory extends AbstractMetadataFactory implements
 		IServiceInfoFactory {
 
+	private final List<String> discoveryProperties;
+	
+	public ServiceInfoFactory() {
+		discoveryProperties = Arrays.asList(new String[] {
+				RemoteConstants.DISCOVERY_DEFAULT_SERVICE_NAME_PREFIX,
+				RemoteConstants.DISCOVERY_NAMING_AUTHORITY,
+				RemoteConstants.DISCOVERY_PROTOCOLS,
+				RemoteConstants.DISCOVERY_SCOPE,
+				RemoteConstants.DISCOVERY_SERVICE_NAME,
+				RemoteConstants.DISCOVERY_SERVICE_PRIORITY,
+				RemoteConstants.DISCOVERY_SERVICE_TTL,
+				RemoteConstants.DISCOVERY_SERVICE_TYPE,
+				RemoteConstants.DISCOVERY_SERVICE_WEIGHT
+		});
+	}
 	/**
 	 * @since 3.0
 	 */
@@ -48,9 +66,13 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 				IServiceProperties serviceProperties = createServiceProperties(
 						endpointDescription, advertiser, serviceTypeID,
 						serviceName, uri);
-				IServiceInfo newServiceInfo = createServiceInfo(uri,
-						serviceName, serviceTypeID, serviceProperties);
-				return newServiceInfo;
+				
+				Map edProperties = endpointDescription.getProperties();
+				int priority = PropertiesUtil.getIntWithDefault(edProperties, RemoteConstants.DISCOVERY_SERVICE_PRIORITY, ServiceInfo.DEFAULT_PRIORITY);
+				int weight = PropertiesUtil.getIntWithDefault(edProperties, RemoteConstants.DISCOVERY_SERVICE_WEIGHT,ServiceInfo.DEFAULT_WEIGHT);
+				Long ttl = PropertiesUtil.getLongWithDefault(edProperties, RemoteConstants.DISCOVERY_SERVICE_TTL, ServiceInfo.DEFAULT_TTL);
+				return new ServiceInfo(uri, serviceName, serviceTypeID,
+						priority, weight, serviceProperties, ttl);
 		} catch (Exception e) {
 			logError(
 					"createServiceInfo", //$NON-NLS-1$
@@ -80,9 +102,15 @@ public class ServiceInfoFactory extends AbstractMetadataFactory implements
 			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
 			IDiscoveryAdvertiser advertiser, IServiceTypeID serviceTypeID,
 			String serviceName, URI uri) {
-		ServiceProperties result = new ServiceProperties();
-		encodeServiceProperties(endpointDescription, result);
-		return result;
+		Map<String,Object> props = endpointDescription.getProperties();
+		Map<String,Object> result = new TreeMap<String,Object>(String.CASE_INSENSITIVE_ORDER);
+		for(String key: props.keySet())
+			if (!discoveryProperties.contains(key))
+				result.put(key, props.get(key));
+		
+		ServiceProperties spResult = new ServiceProperties();
+		encodeServiceProperties(new EndpointDescription(result), spResult);
+		return spResult;
 	}
 
 	/**

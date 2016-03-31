@@ -57,15 +57,11 @@ public class PropertiesUtil {
 
 	protected static final List ecfProperties = Arrays.asList(new String[] {
 			// ECF properties
-			org.eclipse.ecf.remoteservice.Constants.OBJECTCLASS, org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,
-			RemoteConstants.DISCOVERY_DEFAULT_SERVICE_NAME_PREFIX, RemoteConstants.DISCOVERY_NAMING_AUTHORITY,
-			RemoteConstants.DISCOVERY_PROTOCOLS, RemoteConstants.DISCOVERY_SCOPE,
-			RemoteConstants.DISCOVERY_SERVICE_NAME, RemoteConstants.ENDPOINT_CONNECTTARGET_ID,
+			org.eclipse.ecf.remoteservice.Constants.OBJECTCLASS, org.eclipse.ecf.remoteservice.Constants.SERVICE_ID, 
+			RemoteConstants.ENDPOINT_CONNECTTARGET_ID,
 			RemoteConstants.ENDPOINT_ID, RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE,
 			RemoteConstants.ENDPOINT_TIMESTAMP, RemoteConstants.ENDPOINT_IDFILTER_IDS,
-			RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER, RemoteConstants.SERVICE_EXPORTED_CONTAINER_CONNECT_CONTEXT,
-			RemoteConstants.SERVICE_EXPORTED_CONTAINER_FACTORY_ARGS, RemoteConstants.SERVICE_EXPORTED_CONTAINER_ID,
-			RemoteConstants.SERVICE_IMPORTED_VALUETYPE, RemoteConstants.DISCOVERY_SERVICE_TYPE });
+			RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER, RemoteConstants.SERVICE_IMPORTED_VALUETYPE });
 
 	public static void testSerializable(Object value) throws Exception {
 		new ObjectOutputStream(new ByteArrayOutputStream()).writeObject(value);
@@ -271,6 +267,15 @@ public class PropertiesUtil {
 		return def;
 	}
 
+	public static Integer getIntWithDefault(Map props, String key, Integer def) {
+		Object o = props.get(key);
+		if (o instanceof Integer)
+			return (Integer) o;
+		if (o instanceof String)
+			return Integer.valueOf((String) o);
+		return def;
+	}
+	
 	public static String[] getStringArrayWithDefault(Map<String, Object> properties, String key, String[] def) {
 		Object o = properties.get(key);
 		if (o instanceof String) {

@@ -255,6 +255,22 @@ public interface Constants {
 	 * @since 8.9
 	 */
 	public static final String DISCOVERY_SERVICE_NAME = "ecf.endpoint.discovery.servicename"; //$NON-NLS-1$
+
+	/**
+	 * @since 8.10
+	 */
+	public static final String DISCOVERY_SERVICE_TTL = "ecf.endpoint.discovery.ttl"; //$NON-NLS-1$
+
+	/**
+	 * @since 8.10
+	 */
+	public static final String DISCOVERY_SERVICE_PRIORITY = "ecf.endpoint.discovery.priority"; //$NON-NLS-1$
+
+	/**
+	 * @since 8.10
+	 */
+	public static final String DISCOVERY_SERVICE_WEIGHT = "ecf.endpoint.discovery.weight"; //$NON-NLS-1$
+
 	/**
 	 * ECF service name default prefix. If the DISCOVERY_SERVICE_NAME is
 	 * <b>not</b> set, this prefix will be the precede the unique identifier.

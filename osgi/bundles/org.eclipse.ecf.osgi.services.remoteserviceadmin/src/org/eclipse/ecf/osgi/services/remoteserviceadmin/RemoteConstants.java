@@ -84,6 +84,22 @@ public final class RemoteConstants {
 	 * <b>not</b> set, this prefix will be the precede the unique identifier.
 	 */
 	public static final String DISCOVERY_DEFAULT_SERVICE_NAME_PREFIX = org.eclipse.ecf.remoteservice.Constants.DISCOVERY_DEFAULT_SERVICE_NAME_PREFIX;
+	
+	/**
+	 * @since 4.4
+	 */
+	public static final String DISCOVERY_SERVICE_TTL = org.eclipse.ecf.remoteservice.Constants.DISCOVERY_SERVICE_TTL;
+	
+	/**
+	 * @since 4.4
+	 */
+	public static final String DISCOVERY_SERVICE_PRIORITY = org.eclipse.ecf.remoteservice.Constants.DISCOVERY_SERVICE_PRIORITY;
+	
+	/**
+	 * @since 4.4
+	 */
+	public static final String DISCOVERY_SERVICE_WEIGHT = org.eclipse.ecf.remoteservice.Constants.DISCOVERY_SERVICE_WEIGHT;
+
 	/**
 	 * ECF {@link EndpointDescription} property (with value of type String) that
 	 * defines the unique {@link org.eclipse.ecf.core.identity.Namespace} name.

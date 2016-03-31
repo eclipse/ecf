@@ -87,7 +87,8 @@ public class IServiceInfoServiceListener {
 		final IServiceTypeID serviceTypeID = specificServiceID.getServiceTypeID();
 
 		return new ServiceInfo(genericServiceID.getLocation(), genericInfo.getServiceName(), serviceTypeID,
-				genericInfo.getPriority(), genericInfo.getWeight(), genericInfo.getServiceProperties());
+				genericInfo.getPriority(), genericInfo.getWeight(), genericInfo.getServiceProperties(),
+				genericInfo.getTTL());
 	}
 
 	public void dispose() {
