@@ -30,10 +30,10 @@ public final class Client implements ISynchAsynchConnection {
 	public static final int DEFAULT_SNDR_PRIORITY = Thread.NORM_PRIORITY;
 	public static final int DEFAULT_RCVR_PRIORITY = Thread.NORM_PRIORITY;
 	// Default close timeout is 2 seconds
-	public static final long DEFAULT_CLOSE_TIMEOUT = 2000;
+	public static final long DEFAULT_CLOSE_TIMEOUT = Integer.parseInt(System.getProperty("org.eclipse.ecf.provider.comm.tcp.client.closetimeout", "2000")); //$NON-NLS-1$ //$NON-NLS-2$
 	// Default maximum cached messages on object stream is 50
-	public static final int DEFAULT_MAX_BUFFER_MSG = 50;
-	public static final int DEFAULT_WAIT_INTERVAL = 10;
+	public static final int DEFAULT_MAX_BUFFER_MSG = Integer.parseInt(System.getProperty("org.eclipse.ecf.provider.comm.tcp.client.maxmsgs", "50")); //$NON-NLS-1$ //$NON-NLS-2$
+	public static final int DEFAULT_WAIT_INTERVAL = Integer.parseInt(System.getProperty("org.eclipse.ecf.provider.comm.tcp.client.waitinterval", "10")); //$NON-NLS-1$ //$NON-NLS-2$
 	protected Socket socket;
 	private String addressPort = "-1:<no endpoint>:-1"; //$NON-NLS-1$
 	// Underlying streams
@@ -58,6 +58,7 @@ public final class Client implements ISynchAsynchConnection {
 	boolean disconnectHandled = false;
 	private final Object disconnectLock = new Object();
 	protected final Object outputStreamLock = new Object();
+	private int maxmsgs = DEFAULT_MAX_BUFFER_MSG;
 
 	private String getHostNameForAddressWithoutLookup(InetAddress inetAddress) {
 		// First get InetAddress.toString(), which returns
@@ -105,6 +106,7 @@ public final class Client implements ISynchAsynchConnection {
 		this.handler = handler;
 		containerID = handler.getEventHandlerID();
 		properties = new Properties();
+		this.maxmsgs = maxmsgs;
 		setupThreads();
 	}
 
@@ -306,10 +308,17 @@ public final class Client implements ISynchAsynchConnection {
 		}
 	}
 
+	private int resetCounter = 0;
+
 	void send(Serializable snd) throws IOException {
 		synchronized (outputStreamLock) {
 			outputStream.writeObject(snd);
 			outputStream.flush();
+			if (resetCounter > this.maxmsgs) {
+				outputStream.reset();
+				resetCounter = 0;
+			} else
+				resetCounter++;
 		}
 	}
 
