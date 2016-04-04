@@ -49,7 +49,13 @@ public class RSARemoteServiceContainerAdapter extends RemoteServiceContainerAdap
 		@Override
 		public void publish(RemoteServiceRegistryImpl reg, Object svc, String[] clzzes, Dictionary props) {
 			super.publish(reg, svc, clzzes, props);
-			this.extraProperties = getRSAContainer().exportRemoteService(this);
+			try {
+				this.extraProperties = getRSAContainer().exportRemoteService(this);
+			} catch (RuntimeException t) {
+				// unpublish in the event of 
+				reg.unpublishService(this);
+				throw t;
+			}
 		}
 
 		public void unregister() {

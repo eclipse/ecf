@@ -91,10 +91,8 @@ public class RemoteServiceContainerAdapterImpl implements IRemoteServiceContaine
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceImplDebugOptions.METHODS_ENTERING, this.getClass(), "registerRemoteService", new Object[] {clazzes, service, properties}); //$NON-NLS-1$
 		if (service == null)
 			throw new NullPointerException("service cannot be null"); //$NON-NLS-1$
-		final int size = clazzes.length;
-
-		if (size == 0)
-			throw new IllegalArgumentException("service classes list is empty"); //$NON-NLS-1$
+		if (clazzes.length == 0)
+			throw new IllegalArgumentException("service classes cannot be empty"); //$NON-NLS-1$
 
 		final String[] copy = new String[clazzes.length];
 		for (int i = 0; i < clazzes.length; i++)
