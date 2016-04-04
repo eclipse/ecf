@@ -2,9 +2,5 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc label="Tutorials" link_to="toc.xml#tutorials"> 
-	<topic label="Building your first Remote Service" href="https://wiki.eclipse.org/Tutorial:_Building_your_first_OSGi_Remote_Service"/>
-	<topic label="Building your first Asynchronous Remote Service" href="https://wiki.eclipse.org/Tutorial:_Building_your_first_Asynchronous_OSGi_Remote_Service"/>
-	<topic label="Remote Services for the Raspberry Pi" href="https://wiki.eclipse.org/Tutorial:_OSGi_Remote_Services_for_the_Raspberry_Pi"/>
-	<topic label="Creating a RESTful Remote Service Provider" href="https://wiki.eclipse.org/Tutorial:_Creating_a_RESTful_Remote_Service_Provider"/>
-	<topic label="Other Info" href="http://wiki.eclipse.org/ECF"/>
+    <topic label="See ECF Wiki page for latest tutorials" href="https://wiki.eclipse.org/Eclipse_Communication_Framework_Project#Tutorials"/>
 </toc>
