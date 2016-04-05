@@ -13,13 +13,38 @@ import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.identity.Namespace;
 
 /**
+ * Service interface for registering distribution providers.   When IRemoteServiceDistributionProvider implementations
+ * are registered, they result in the two methods below being called by the org.eclipse.ecf.remoteservice bundle, 
+ * with the BundleContext from the org.eclipse.ecf.remoteservice bundle.  Intended to be implemented by remote 
+ * service distribution provider implementations.  When instance of this service interface is registered, the 
+ * methods below will be called in order to register the ContainerTypeDescription, Namespace, and AdapterConfig 
+ * for this distribution provider.
+ * <p>
+ * <b>Please NOTE</b>:  IRemoteServiceDistributionProviders should be registered (and therefore the bundles containing implementations started) <b>before</b>
+ * any remote services using these distribution providers are exported.  In other words, if you create and register
+ * a IRemoteServiceDistributionProvider with name 'com.myproject.myprovider' the provider implementation bundle should 
+ * be started and the IRemoteServiceDistributionProvider service must be registered prior to registering the service
+ * that is to be exported using that provider.  For example
+ * <p>
+ * <pre>
+ * #Must first register the com.myproject.myprovider distribution provider, so it's available
+ * providerBuilder.setName('com.myproject.myprovider')...
+ * bundleContext.registerService(IRemoteServiceDistributionProvider.class,providerBuilder.build(),null);
+ * 
+ * ...
+ * 
+ * #Then may register a remote service that uses com.myproject.myprovider distribution provider
+ * props.put("service.exported.interfaces","*");
+ * 
+ * #This specifies that com.myproject.myprovider is to be used to export the service, but the above registration
+ * #must take place before MyService registration so it can be active for exporting this service
+ * props.put("service.exported.configs","com.myproject.myprovider");
+ * 
+ * #With usual topology manager the following will export MyService using com.myproject.myprovider
+ * #distribution provider
+ * bundleContext.registerService(MyService.class,new MyServiceImpl(),props);
+ * </pre>
  * @since 8.7
- * A service interface for distribution providers.   When instances of this interface are registered, they result in the
- * two methods below being called by the org.eclipse.ecf.remoteservice bundle, with the BundleContext from
- * the org.eclipse.ecf.remoteservice bundle.  Intended to be implemented by remote service distribution provider
- * implementations.  When instance of this service interface is registered, the methods below will be called
- * in order to register the ContainerTypeDescription, Namespace, and AdapterConfig for this distribution
- * provider.
  */
 public interface IRemoteServiceDistributionProvider {
 
