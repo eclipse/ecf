@@ -23,4 +23,13 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/org/eclipse/ecf/provider/generic/TCPClientSOContainer.java" type="org.eclipse.ecf.provider.generic.TCPClientSOContainer">
+        <filter id="389242988">
+            <message_arguments>
+                <message_argument value="org.eclipse.ecf.provider.generic.TCPClientSOContainer"/>
+                <message_argument value="DEFAULT_TCP_CONNECT_TIMEOUT"/>
+                <message_argument value="30000"/>
+            </message_arguments>
+        </filter>
+    </resource>
 </component>
