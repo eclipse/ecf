@@ -21,7 +21,7 @@ import org.eclipse.ecf.provider.comm.tcp.Client;
 public class TCPClientSOContainer extends ClientSOContainer {
 	int keepAlive = 0;
 
-	public static final int DEFAULT_TCP_CONNECT_TIMEOUT = 30000;
+	public static final int DEFAULT_TCP_CONNECT_TIMEOUT = Integer.parseInt(System.getProperty("org.eclipse.ecf.provider.generic.TCPClientSOContainer.defaultConnectTimeout", "30000")); //$NON-NLS-1$ //$NON-NLS-2$
 
 	public static final String DEFAULT_COMM_NAME = org.eclipse.ecf.provider.comm.tcp.Client.class.getName();
 
