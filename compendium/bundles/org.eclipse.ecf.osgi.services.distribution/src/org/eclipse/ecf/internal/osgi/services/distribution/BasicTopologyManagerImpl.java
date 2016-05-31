@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * Copyright (c) 2015 Composent, Inc. and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Composent, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
 import java.util.Map;
@@ -13,12 +22,10 @@ import org.osgi.service.remoteserviceadmin.EndpointEvent;
 import org.osgi.service.remoteserviceadmin.EndpointEventListener;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent;
 
-public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
-		EndpointEventListener {
+public class BasicTopologyManagerImpl extends AbstractTopologyManager implements EndpointEventListener {
 
 	private static final boolean allowLoopbackReference = new Boolean(
-			System.getProperty(
-					"org.eclipse.ecf.osgi.services.discovery.allowLoopbackReference", //$NON-NLS-1$
+			System.getProperty("org.eclipse.ecf.osgi.services.discovery.allowLoopbackReference", //$NON-NLS-1$
 					"false")).booleanValue(); //$NON-NLS-1$
 
 	private static final String defaultScope = System
@@ -43,7 +50,8 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 			StringBuffer elScope = new StringBuffer(""); //$NON-NLS-1$
 			// filter so that local framework uuid is not the same as local
 			// value
-			elScope.append("(&(!(").append(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID).append("=").append(getFrameworkUUID()).append("))"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			elScope.append("(&(!(").append(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID) //$NON-NLS-1$
+					.append("=").append(getFrameworkUUID()).append("))"); //$NON-NLS-1$ //$NON-NLS-2$
 			elScope.append(ONLY_ECF_SCOPE);
 			elScope.append(")"); //$NON-NLS-1$
 			ecfEndpointListenerScope = elScope.toString();
@@ -58,12 +66,10 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 		return super.getFrameworkUUID();
 	}
 
-	void exportRegisteredServices(String exportRegisteredSvcsClassname,
-			String exportRegisteredSvcsFilter) {
+	void exportRegisteredServices(String exportRegisteredSvcsClassname, String exportRegisteredSvcsFilter) {
 		try {
 			final ServiceReference[] existingServiceRefs = getContext()
-					.getAllServiceReferences(exportRegisteredSvcsClassname,
-							exportRegisteredSvcsFilter);
+					.getAllServiceReferences(exportRegisteredSvcsClassname, exportRegisteredSvcsFilter);
 			// Now export as if the service was registering right now...i.e.
 			// perform
 			// export
@@ -87,29 +93,24 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 				}, "BasicTopologyManagerPreRegSrvExporter").start(); //$NON-NLS-1$
 			}
 		} catch (InvalidSyntaxException e) {
-			logError(
-					"exportRegisteredServices", //$NON-NLS-1$
+			logError("exportRegisteredServices", //$NON-NLS-1$
 					"Could not retrieve existing service references for exportRegisteredSvcsClassname=" //$NON-NLS-1$
-							+ exportRegisteredSvcsClassname
-							+ " and exportRegisteredSvcsFilter=" //$NON-NLS-1$
-							+ exportRegisteredSvcsFilter, e);
+							+ exportRegisteredSvcsClassname + " and exportRegisteredSvcsFilter=" //$NON-NLS-1$
+							+ exportRegisteredSvcsFilter,
+					e);
 		}
 	}
 
-	protected void handleEndpointAdded(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
+	protected void handleEndpointAdded(org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
 			String matchedFilter) {
-		if (matchedFilter.equals(ecfEndpointListenerScope)
-				&& (endpoint instanceof EndpointDescription)) {
+		if (matchedFilter.equals(ecfEndpointListenerScope) && (endpoint instanceof EndpointDescription)) {
 			handleECFEndpointAdded((EndpointDescription) endpoint);
 		}
 	}
 
-	protected void handleEndpointRemoved(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
+	protected void handleEndpointRemoved(org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
 			String matchedFilter) {
-		if (matchedFilter.equals(ecfEndpointListenerScope)
-				&& (endpoint instanceof EndpointDescription)) {
+		if (matchedFilter.equals(ecfEndpointListenerScope) && (endpoint instanceof EndpointDescription)) {
 			handleECFEndpointRemoved((EndpointDescription) endpoint);
 		}
 	}
@@ -126,8 +127,7 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 		RemoteServiceAdmin.RemoteServiceAdminEvent rsaEvent = (RemoteServiceAdmin.RemoteServiceAdminEvent) event;
 
 		int eventType = event.getType();
-		EndpointDescription endpointDescription = rsaEvent
-				.getEndpointDescription();
+		EndpointDescription endpointDescription = rsaEvent.getEndpointDescription();
 
 		switch (eventType) {
 		case RemoteServiceAdminEvent.EXPORT_REGISTRATION:
@@ -137,12 +137,10 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 			unadvertiseEndpointDescription(endpointDescription);
 			break;
 		case RemoteServiceAdminEvent.EXPORT_ERROR:
-			logError(
-					"handleRemoteAdminEvent.EXPORT_ERROR", "Export error with event=" + rsaEvent); //$NON-NLS-1$ //$NON-NLS-2$
+			logError("handleRemoteAdminEvent.EXPORT_ERROR", "Export error with event=" + rsaEvent); //$NON-NLS-1$ //$NON-NLS-2$
 			break;
 		case RemoteServiceAdminEvent.EXPORT_WARNING:
-			logWarning(
-					"handleRemoteAdminEvent.EXPORT_WARNING", "Export warning with event=" + rsaEvent); //$NON-NLS-1$ //$NON-NLS-2$
+			logWarning("handleRemoteAdminEvent.EXPORT_WARNING", "Export warning with event=" + rsaEvent); //$NON-NLS-1$ //$NON-NLS-2$
 			break;
 		case RemoteServiceAdminEvent.EXPORT_UPDATE:
 			advertiseModifyEndpointDescription(endpointDescription);
@@ -152,16 +150,14 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 		case RemoteServiceAdminEvent.IMPORT_UNREGISTRATION:
 			break;
 		case RemoteServiceAdminEvent.IMPORT_ERROR:
-			logError(
-					"handleRemoteAdminEvent.IMPORT_ERROR", "Import error with event=" + rsaEvent); //$NON-NLS-1$//$NON-NLS-2$
+			logError("handleRemoteAdminEvent.IMPORT_ERROR", "Import error with event=" + rsaEvent); //$NON-NLS-1$//$NON-NLS-2$
 			break;
 		case RemoteServiceAdminEvent.IMPORT_WARNING:
-			logWarning(
-					"handleRemoteAdminEvent.IMPORT_WARNING", "Import warning with event=" + rsaEvent); //$NON-NLS-1$ //$NON-NLS-2$
+			logWarning("handleRemoteAdminEvent.IMPORT_WARNING", "Import warning with event=" + rsaEvent); //$NON-NLS-1$ //$NON-NLS-2$
 			break;
 		default:
-			logWarning(
-					"handleRemoteAdminEvent", "RemoteServiceAdminEvent=" + rsaEvent + " received with unrecognized type"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			logWarning("handleRemoteAdminEvent", //$NON-NLS-1$
+					"RemoteServiceAdminEvent=" + rsaEvent + " received with unrecognized type"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -174,8 +170,7 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 	 */
 	public void endpointChanged(EndpointEvent event, String matchedFilter) {
 		int eventType = event.getType();
-		org.osgi.service.remoteserviceadmin.EndpointDescription ed = event
-				.getEndpoint();
+		org.osgi.service.remoteserviceadmin.EndpointDescription ed = event.getEndpoint();
 		switch (eventType) {
 		case EndpointEvent.ADDED:
 			handleEndpointAdded(ed, matchedFilter);
@@ -192,18 +187,15 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 		}
 	}
 
-	protected void handleEndpointModifiedEndmatch(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
+	protected void handleEndpointModifiedEndmatch(org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
 			String matchedFilter) {
 		// By default do nothing for end match. subclasses may decide
 		// to change this behavior
 	}
 
-	protected void handleEndpointModified(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
+	protected void handleEndpointModified(org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
 			String matchedFilter) {
-		if (matchedFilter.equals(ecfEndpointListenerScope)
-				&& (endpoint instanceof EndpointDescription)) {
+		if (matchedFilter.equals(ecfEndpointListenerScope) && (endpoint instanceof EndpointDescription)) {
 			handleECFEndpointModified((EndpointDescription) endpoint);
 		}
 	}

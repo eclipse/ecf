@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * Copyright (c) 2015 Composent, Inc. and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Composent, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.distribution;
 
 import java.util.Map;
@@ -7,16 +16,15 @@ import org.osgi.service.remoteserviceadmin.EndpointEventListener;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener;
 
-public class BasicTopologyManagerComponent implements EventListenerHook,
-		RemoteServiceAdminListener {
+public class BasicTopologyManagerComponent implements EventListenerHook, RemoteServiceAdminListener {
 
 	private boolean exportRegisteredSvcs = new Boolean(
-			System.getProperty(
-					"org.eclipse.ecf.osgi.services.basictopologymanager.exportRegisteredSvcs", "true")).booleanValue(); //$NON-NLS-1$ //$NON-NLS-2$
+			System.getProperty("org.eclipse.ecf.osgi.services.basictopologymanager.exportRegisteredSvcs", "true")) //$NON-NLS-1$ //$NON-NLS-2$
+					.booleanValue();
 
-	private String exportRegisteredSvcsFilter = System
-			.getProperty(
-					"org.eclipse.ecf.osgi.services.basictopologymanager.exportRegisteredSvcsFilter", "(service.exported.interfaces=*)"); //$NON-NLS-1$ //$NON-NLS-2$
+	private String exportRegisteredSvcsFilter = System.getProperty(
+			"org.eclipse.ecf.osgi.services.basictopologymanager.exportRegisteredSvcsFilter", //$NON-NLS-1$
+			"(service.exported.interfaces=*)"); //$NON-NLS-1$
 
 	private String exportRegisteredSvcsClassname = System
 			.getProperty("org.eclipse.ecf.osgi.services.basictopologymanager.exportRegisteredSvcsClassname"); //$NON-NLS-1$
@@ -25,8 +33,7 @@ public class BasicTopologyManagerComponent implements EventListenerHook,
 
 	void bindEndpointEventListener(EndpointEventListener el) {
 		if (el instanceof Activator.ProxyEndpointEventListener)
-			basicTopologyManagerImpl = ((Activator.ProxyEndpointEventListener) el)
-					.getBasicTopologyManagerImpl();
+			basicTopologyManagerImpl = ((Activator.ProxyEndpointEventListener) el).getBasicTopologyManagerImpl();
 		else if (el instanceof BasicTopologyManagerImpl)
 			basicTopologyManagerImpl = (BasicTopologyManagerImpl) el;
 	}
@@ -39,8 +46,8 @@ public class BasicTopologyManagerComponent implements EventListenerHook,
 		if (basicTopologyManagerImpl == null)
 			return;
 		if (exportRegisteredSvcs)
-			basicTopologyManagerImpl.exportRegisteredServices(
-					exportRegisteredSvcsClassname, exportRegisteredSvcsFilter);
+			basicTopologyManagerImpl.exportRegisteredServices(exportRegisteredSvcsClassname,
+					exportRegisteredSvcsFilter);
 	}
 
 	// RemoteServiceAdminListener impl
