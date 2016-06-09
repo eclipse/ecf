@@ -31,6 +31,7 @@ package ch.ethz.iks.r_osgi.impl;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -48,6 +49,7 @@ import ch.ethz.iks.r_osgi.channels.NetworkChannelFactory;
  */
 public final class RemoteOSGiActivator implements BundleActivator {
 
+	private static final boolean DELETE_PROXY_BUNDLES_ON_INIT = new Boolean(System.getProperty("ch.ethz.iks.r_osgi.deleteProxyBundlesOnInit","true")).booleanValue();
 	/**
 	 * the Remote OSGi service instance.
 	 */
@@ -85,6 +87,9 @@ public final class RemoteOSGiActivator implements BundleActivator {
 			RemoteOSGiServiceImpl.log = (LogService) context.getService(logRef);
 		}
 
+		if (DELETE_PROXY_BUNDLES_ON_INIT)
+			deleteProxyBundles(context);
+		
 		if (remoting == null) {
 			// get the instance of RemoteOSGiServiceImpl
 			remoting = new RemoteOSGiServiceImpl();
@@ -107,6 +112,20 @@ public final class RemoteOSGiActivator implements BundleActivator {
 		}
 	}
 
+	private void deleteProxyBundles(BundleContext context) {
+		Bundle[] bundles = context.getBundles();
+		for(int i=0; i < bundles.length; i++) {
+			Bundle b = bundles[i];
+			String bName = b.getSymbolicName();
+			if (bName.startsWith("R-OSGi Proxy Bundle generated for Endpoint")) 
+				try {
+					b.uninstall();
+				} catch (Exception e) {
+					if (RemoteOSGiServiceImpl.log != null) 
+						RemoteOSGiServiceImpl.log.log(LogService.LOG_WARNING, "Could not uninstall proxy bundle name="+bName);
+				}
+		}
+	}
 	/**
 	 * called when the bundle is stopped.
 	 * 
