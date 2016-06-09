@@ -63,59 +63,144 @@
   </pluginRepositories>
 
   <modules>
-    <module>framework/bundles/org.eclipse.ecf</module>
-    <module>framework/bundles/org.eclipse.ecf.filetransfer</module>
-    <module>framework/bundles/org.eclipse.ecf.identity</module>
-    <module>framework/bundles/org.eclipse.ecf.ssl</module>
-    <module>framework/bundles/org.eclipse.ecf.discovery</module>
-    <module>framework/bundles/org.eclipse.ecf.sharedobject</module>
-    <module>framework/bundles/org.eclipse.ecf.provider</module>
+    <module>doc/bundles/org.eclipse.ecf.doc</module>
+
+    <module>examples/bundles/com.mycorp.examples.timeservice</module>
+    <module>examples/bundles/com.mycorp.examples.timeservice.consumer</module>
+    <module>examples/bundles/com.mycorp.examples.timeservice.consumer.ds</module>
+    <module>examples/bundles/com.mycorp.examples.timeservice.consumer.filediscovery</module>
+    <module>examples/bundles/com.mycorp.examples.timeservice.consumer.filediscovery.rest</module>
+    <module>examples/bundles/com.mycorp.examples.timeservice.host</module>
+    <module>examples/bundles/com.mycorp.examples.timeservice.provider.rest.consumer</module>
+    <module>examples/bundles/com.mycorp.examples.timeservice.provider.rest.host</module>
+    <module>examples/bundles/org.eclipse.ecf.example.clients</module>
+    <module>examples/bundles/org.eclipse.ecf.example.collab.editor</module>
+    <module>examples/bundles/org.eclipse.ecf.example.collab</module>
+    <module>examples/bundles/org.eclipse.ecf.examples.eventadmin.app</module>
+    <module>examples/bundles/org.eclipse.ecf.examples.remoteservices.hello.consumer.edef</module>
+    <module>examples/bundles/org.eclipse.ecf.examples.remoteservices.hello.consumer</module>
+    <module>examples/bundles/org.eclipse.ecf.examples.remoteservices.hello.ds.consumer</module>
+    <module>examples/bundles/org.eclipse.ecf.examples.remoteservices.hello.host</module>
+    <module>examples/bundles/org.eclipse.ecf.examples.remoteservices.hello</module>
+    <module>examples/bundles/org.eclipse.ecf.examples.remoteservices.rest.rss</module>
+
+    <module>framework/bundles/org.eclipse.ecf.console</module>
     <module>framework/bundles/org.eclipse.ecf.datashare</module>
+    <module>framework/bundles/org.eclipse.ecf.discovery</module>
+    <module>framework/bundles/org.eclipse.ecf.discovery.ui.browser</module>
+    <module>framework/bundles/org.eclipse.ecf.discovery.ui.edit</module>
+    <module>framework/bundles/org.eclipse.ecf.discovery.ui.model</module>
+    <module>framework/bundles/org.eclipse.ecf.discovery.ui</module>
+    <module>framework/bundles/org.eclipse.ecf.discovery.ui.properties</module>
+    <module>framework/bundles/org.eclipse.ecf.discovery.ui.properties.tabbed</module>
+    <module>framework/bundles/org.eclipse.ecf.discovery.ui.userinput</module>
     <module>framework/bundles/org.eclipse.ecf.docshare</module>
-    <module>framework/bundles/org.eclipse.ecf.sync</module>
-    <module>framework/bundles/org.eclipse.ecf.ui</module>
+    <module>framework/bundles/org.eclipse.ecf.filetransfer</module>
+    <module>framework/bundles/org.eclipse.ecf.filetransfer.ui</module>
+    <module>framework/bundles/org.eclipse.ecf.identity</module>
+    <module>framework/bundles/org.eclipse.ecf</module>
+    <module>framework/bundles/org.eclipse.ecf.presence.bot</module>
+    <module>framework/bundles/org.eclipse.ecf.presence.collab.ui</module>
     <module>framework/bundles/org.eclipse.ecf.presence</module>
     <module>framework/bundles/org.eclipse.ecf.presence.ui</module>
-    <module>framework/bundles/org.eclipse.ecf.console</module>
-    <module>framework/bundles/org.eclipse.ecf.remoteservice</module>
+    <module>framework/bundles/org.eclipse.ecf.provider</module>
     <module>framework/bundles/org.eclipse.ecf.remoteservice.asyncproxy</module>
     <module>framework/bundles/org.eclipse.ecf.remoteservice.asyncproxy.j8</module>
+    <module>framework/bundles/org.eclipse.ecf.remoteservice</module>
+    <module>framework/bundles/org.eclipse.ecf.remoteservice.rest</module>
+    <module>framework/bundles/org.eclipse.ecf.remoteservice.rest.synd</module>
+    <module>framework/bundles/org.eclipse.ecf.remoteservice.servlet</module>
+    <module>framework/bundles/org.eclipse.ecf.remoteservice.soap</module>
+    <module>framework/bundles/org.eclipse.ecf.remoteservice.ui</module>
+    <module>framework/bundles/org.eclipse.ecf.sharedobject</module>
+    <module>framework/bundles/org.eclipse.ecf.ssl</module>
+    <module>framework/bundles/org.eclipse.ecf.storage</module>
+    <module>framework/bundles/org.eclipse.ecf.sync</module>
+    <module>framework/bundles/org.eclipse.ecf.telephony.call</module>
+    <module>framework/bundles/org.eclipse.ecf.telephony.call.ui</module>
+    <module>framework/bundles/org.eclipse.ecf.ui.capabilities</module>
+    <module>framework/bundles/org.eclipse.ecf.ui</module>
+    <module>framework/bundles/org.eclipse.team.ecf.core</module>
+    <module>framework/bundles/org.eclipse.team.ecf.ui</module>
 
-    <module>providers/bundles/org.eclipse.ecf.provider.filetransfer</module>
-    <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient4</module>
-    <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient4.ssl</module>
-    <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.ssl</module>
-    <module>providers/bundles/org.eclipse.ecf.provider.discovery</module>
-    <module>providers/bundles/org.eclipse.ecf.provider.dnssd</module>
-    <module>providers/bundles/org.eclipse.ecf.provider.jmdns</module>
-    <module>providers/bundles/org.eclipse.ecf.provider.zookeeper</module>
-    <module>providers/bundles/org.eclipse.ecf.provider.datashare</module>
-    <module>providers/bundles/org.eclipse.ecf.provider.datashare.nio</module>
-
-    <module>osgi/bundles/org.eclipse.osgi.services.remoteserviceadmin</module>
-    <module>osgi/bundles/org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy</module>
     <module>osgi/bundles/org.eclipse.ecf.osgi.services.remoteserviceadmin</module>
+    <module>osgi/bundles/org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy</module>
+    <module>osgi/bundles/org.eclipse.osgi.services.remoteserviceadmin</module>
     <module>compendium/bundles/org.eclipse.ecf.osgi.services.distribution</module>
 
+    <module>protocols/bundles/ch.ethz.iks.r_osgi.remote</module>
+    <module>protocols/bundles/ch.ethz.iks.slp</module>
+    <module>protocols/bundles/org.eclipse.ecf.protocol.bittorrent</module>
+    <module>protocols/bundles/org.eclipse.ecf.protocol.msn</module>
+    <module>protocols/bundles/org.jivesoftware.smack</module>
+
+    <module>providers/bundles/org.eclipse.ecf.provider.bittorrent</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.bittorrent.ui</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.datashare</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.datashare.nio</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.discovery</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.dnssd</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.efs</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient4</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient4.ssl</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.filetransfer</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.scp</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.ssl</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.irc</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.irc.ui</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.jmdns</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.jslp</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.msn</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.msn.ui</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.remoteservice</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.r_osgi</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.ui</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.xmpp.datashare</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.xmpp</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.xmpp.remoteservice</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.xmpp.ui</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.zookeeper</module>
+
+    <module>server-side/bundles/org.eclipse.ecf.remoteservice.eventadmin</module>
+    <module>server-side/bundles/org.eclipse.ecf.server.generic</module>
+    <module>server-side/bundles/org.eclipse.ecf.server</module>
+    <module>server-side/features/org.eclipse.ecf.server.generic.feature</module>
+
+    <module>tooling/plugins/org.eclipse.ecf.remoteservices.tooling.pde</module>
+
+    <module>releng/features/org.eclipse.ecf.console.feature</module>
+    <module>releng/features/org.eclipse.ecf.core</module>
     <module>releng/features/org.eclipse.ecf.core.feature</module>
     <module>releng/features/org.eclipse.ecf.core.ssl.feature</module>
+    <module>releng/features/org.eclipse.ecf.datashare.feature</module>
+    <module>releng/features/org.eclipse.ecf.discovery.dnssd.feature</module>
+    <module>releng/features/org.eclipse.ecf.discovery.feature</module>
+    <module>releng/features/org.eclipse.ecf.discovery.jmdns.feature</module>
+    <module>releng/features/org.eclipse.ecf.discovery.slp.feature</module>
+    <module>releng/features/org.eclipse.ecf.discovery.zookeeper.feature</module>
+    <module>releng/features/org.eclipse.ecf.docshare.feature</module>
+    <module>releng/features/org.eclipse.ecf.eventadmin.examples.feature</module>
+    <module>releng/features/org.eclipse.ecf.eventadmin.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.httpclient4.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.httpclient4.ssl.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.ssl.feature</module>
-    <module>releng/features/org.eclipse.ecf.discovery.feature</module>
-    <module>releng/features/org.eclipse.ecf.discovery.dnssd.feature</module>
-    <module>releng/features/org.eclipse.ecf.discovery.jmdns.feature</module>
-    <module>releng/features/org.eclipse.ecf.discovery.zookeeper.feature</module>
-    <module>releng/features/org.eclipse.ecf.sharedobject.feature</module>
-    <module>releng/features/org.eclipse.ecf.provider.generic.feature</module>
-    <module>releng/features/org.eclipse.ecf.docshare.feature</module>
-    <module>releng/features/org.eclipse.ecf.datashare.feature</module>
-    <module>releng/features/org.eclipse.ecf.presence.feature</module>
-    <module>releng/features/org.eclipse.ecf.console.feature</module>
-    <module>releng/features/org.eclipse.ecf.provider.generic.datashare.feature</module>
-    <module>releng/features/org.eclipse.ecf.remoteservice.feature</module>
     <module>releng/features/org.eclipse.ecf.osgi.services.feature</module>
+    <module>releng/features/org.eclipse.ecf.presence.feature</module>
+    <module>releng/features/org.eclipse.ecf.provider.generic.datashare.feature</module>
+    <module>releng/features/org.eclipse.ecf.provider.generic.feature</module>
+    <module>releng/features/org.eclipse.ecf.provider.generic.remoteservice.feature</module>
+    <module>releng/features/org.eclipse.ecf.remoteservice.examples.feature</module>
+    <module>releng/features/org.eclipse.ecf.remoteservice.feature</module>
+    <module>releng/features/org.eclipse.ecf.remoteservice.rest.feature</module>
+    <module>releng/features/org.eclipse.ecf.remoteservice.rest.synd.feature</module>
+    <module>releng/features/org.eclipse.ecf.remoteservice.rosgi.feature</module>
+    <module>releng/features/org.eclipse.ecf.remoteservice.sdk.examples.feature</module>
+    <module>releng/features/org.eclipse.ecf.remoteservice.sdk.feature</module>
+    <module>releng/features/org.eclipse.ecf.remoteservice.servlet.feature</module>
+    <module>releng/features/org.eclipse.ecf.remoteservice.soap.feature</module>
+    <module>releng/features/org.eclipse.ecf.sharedobject.feature</module>
+    <module>releng/features/org.eclipse.ecf.xmpp.feature</module>
 
     <module>releng/org.eclipse.ecf.releng.target</module>
     <module>releng/org.eclipse.ecf.releng.repository</module>

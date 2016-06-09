@@ -120,7 +120,6 @@ public class LastActivityManager {
         }, new PacketTypeFilter(Presence.class));
 
         connection.addPacketListener(new PacketListener() {
-            @Override
             public void processPacket(Packet packet) {
                 Message message = (Message) packet;
                 // if it's not an error message, reset the idle time

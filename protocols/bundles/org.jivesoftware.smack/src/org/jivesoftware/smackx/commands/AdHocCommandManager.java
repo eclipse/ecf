@@ -187,7 +187,6 @@ public class AdHocCommandManager {
                         return answer;
                     }
 
-                    @Override
                     public List<PacketExtension> getNodePacketExtensions() {
                         return null;
                     }
@@ -325,7 +324,6 @@ public class AdHocCommandManager {
                                 return null;
                             }
 
-                            @Override
                             public List<PacketExtension> getNodePacketExtensions() {
                                 return null;
                             }

@@ -102,7 +102,6 @@ public class DeliveryReceiptManager implements PacketListener {
     }
 
     // handle incoming receipts and receipt requests
-    @Override
     public void processPacket(Packet packet) {
         DeliveryReceipt dr = (DeliveryReceipt)packet.getExtension(
                 DeliveryReceipt.ELEMENT, DeliveryReceipt.NAMESPACE);

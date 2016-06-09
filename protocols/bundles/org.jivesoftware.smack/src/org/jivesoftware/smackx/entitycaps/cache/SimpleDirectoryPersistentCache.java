@@ -84,7 +84,6 @@ public class SimpleDirectoryPersistentCache implements EntityCapsPersistentCache
         this.filenameEncoder = filenameEncoder;
     }
 
-    @Override
     public void addDiscoverInfoByNodePersistent(String node, DiscoverInfo info) {
         String filename = filenameEncoder.encode(node);
         File nodeFile = new File(cacheDir, filename);
@@ -96,7 +95,6 @@ public class SimpleDirectoryPersistentCache implements EntityCapsPersistentCache
         }
     }
 
-    @Override
     public void replay() throws IOException {
         File[] files = cacheDir.listFiles();
         for (File f : files) {

@@ -1,84 +1,15 @@
-<?xml version="1.0"?>
-<project>
-	<modelVersion>4.0.0</modelVersion>	
-	<parent>
-		<groupId>ch.ethz.iks.r-osgi</groupId>
-		<artifactId>project</artifactId>
-		<version>1.0.0.RC1</version>
-	</parent>
-	<groupId>ch.ethz.iks.r-osgi</groupId>
-	<artifactId>remote</artifactId>
-	<packaging>osgi-bundle</packaging>
-	<name>R-OSGi Remote Service</name>
-	
-	<build>
-		<resources>
-			<resource>
-				<targetPath>META-INF</targetPath>
-				<directory>resources</directory>
-			</resource>
-		</resources>
-		<plugins>
-			<plugin>
-		        <groupId>org.apache.maven.plugins</groupId>
-        		<artifactId>maven-compiler-plugin</artifactId>
-          		<configuration>
-	    			<source>1.2</source>
-	    			<target>1.1</target>
-	    			<optimize>true</optimize>
-	    			<debug>false</debug>
-	    		</configuration>
-	    	</plugin>
-			<plugin>
-				<groupId>org.apache.felix.plugins</groupId>
-				<artifactId>maven-osgi-plugin</artifactId>
-				<version>0.9.0-incubator-SNAPSHOT</version>
-				<extensions>true</extensions>
-				<configuration>
-					<osgiManifest>
-						<bundleActivator>ch.ethz.iks.r_osgi.impl.RemoteOSGiActivator</bundleActivator>
-						<bundleName>R-OSGi Remote Service</bundleName>
-						<bundleSymbolicName>ch.ethz.iks.r_osgi.remote</bundleSymbolicName>
-						<bundleDescription>R-OSGi Remote Service</bundleDescription>
-						<bundleVendor>Jan S. Rellermeyer, ETH Zurich</bundleVendor>
-						<importPackage>org.osgi.framework, org.osgi.util.tracker, org.osgi.service.log, org.osgi.service.event</importPackage>
-						<exportPackage>ch.ethz.iks.r_osgi, ch.ethz.iks.r_osgi.channels, ch.ethz.iks.r_osgi.messages, ch.ethz.iks.r_osgi.types, ch.ethz.iks.r_osgi.service_discovery, ch.ethz.iks.util, org.objectweb.asm</exportPackage>
-						<dynamicImportPackage>*</dynamicImportPackage>
-					</osgiManifest>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-
-	<dependencies>
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi</artifactId>
-			<version>3.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.ow2.asm</groupId>
-			<artifactId>asm</artifactId>
-			<version>5.0.1</version>
-		</dependency>
-		<dependency>
-        	<groupId>junit</groupId>
-         	<artifactId>junit</artifactId>
-         	<version>3.8.1</version>
-         	<scope>test</scope>
-      	</dependency>
-	</dependencies>
-
-	<reporting>
-		<plugins>
-	       <plugin>
-    	      <artifactId>maven-site-plugin</artifactId>
-   	    	</plugin>
-   	 		<plugin>
-				<artifactId>maven-javadoc-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</reporting>
-
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.eclipse.ecf</groupId>
+    <artifactId>ecf-parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <relativePath>../../../</relativePath>
+  </parent>
+  <groupId>org.eclipse.ecf</groupId>
+  <artifactId>ch.ethz.iks.r_osgi.remote</artifactId>
+  <version>1.0.8-SNAPSHOT</version>
+  <packaging>eclipse-plugin</packaging>
 </project>

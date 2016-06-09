@@ -40,7 +40,6 @@ public class Base32Encoder implements StringEncoder {
         return instance;
     }
 
-    @Override
     public String decode(String str) {
         ByteArrayOutputStream bs = new ByteArrayOutputStream();
         byte[] raw = str.getBytes();
@@ -99,7 +98,6 @@ public class Base32Encoder implements StringEncoder {
         return new String(bs.toByteArray());
     }
 
-    @Override
     public String encode(String str) {
         byte[] b = str.getBytes();
         ByteArrayOutputStream os = new ByteArrayOutputStream();

@@ -135,7 +135,6 @@ public class MultiUserChat {
                             return null;
                         }
 
-                        @Override
                         public List<PacketExtension> getNodePacketExtensions() {
                             return null;
                         }

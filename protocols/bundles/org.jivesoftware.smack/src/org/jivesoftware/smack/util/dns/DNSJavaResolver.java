@@ -38,7 +38,6 @@ public class DNSJavaResolver implements DNSResolver {
         return instance;
     }
 
-    @Override
     public List<SRVRecord> lookupSRVRecords(String name) {
         List<SRVRecord> res = new ArrayList<SRVRecord>();
 

@@ -66,7 +66,6 @@ public class JavaxResolver implements DNSResolver {
         return dirContext != null;
     }
 
-    @Override
     public List<SRVRecord> lookupSRVRecords(String name) {
         List<SRVRecord> res = new ArrayList<SRVRecord>();
         

@@ -42,19 +42,16 @@ public class DeliveryReceipt implements PacketExtension
         return id;
     }
 
-    @Override
     public String getElementName()
     {
         return ELEMENT;
     }
 
-    @Override
     public String getNamespace()
     {
         return NAMESPACE;
     }
 
-    @Override
     public String toXML()
     {
         return "<received xmlns='" + NAMESPACE + "' id='" + id + "'/>";

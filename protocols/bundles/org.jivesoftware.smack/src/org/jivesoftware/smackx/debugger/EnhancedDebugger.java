@@ -324,7 +324,6 @@ public class EnhancedDebugger implements SmackDebugger {
         clearb.addActionListener(new AbstractAction() {    
 	    private static final long serialVersionUID = -8576045822764763613L;
 
-	    @Override
 	    public void actionPerformed(ActionEvent e) {
             messagesTable.setRowCount(0);
 		

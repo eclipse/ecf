@@ -34,17 +34,11 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
       <import plugin="org.apache.commons.logging" version="1.1.1" match="compatible"/>
       <import plugin="org.apache.httpcomponents.httpclient" version="4.2" match="compatible"/>
       <import plugin="org.apache.httpcomponents.httpcore" version="4.2" match="compatible"/>
+      <import plugin="org.json" version="1.0.0" match="compatible"/>
    </requires>
 
    <plugin
          id="org.eclipse.ecf.remoteservice.rest"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.json"
          download-size="0"
          install-size="0"
          version="0.0.0"

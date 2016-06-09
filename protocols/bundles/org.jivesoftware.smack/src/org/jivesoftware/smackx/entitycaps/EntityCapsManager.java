@@ -267,7 +267,6 @@ public class EntityCapsManager {
         connection.addPacketListener(new PacketListener() {
             // Listen for remote presence stanzas with the caps extension
             // If we receive such a stanza, record the JID and nodeVer
-            @Override
             public void processPacket(Packet packet) {
                 if (!entityCapsEnabled())
                     return;
@@ -291,7 +290,6 @@ public class EntityCapsManager {
         packetFilter = new AndFilter(new PacketTypeFilter(Presence.class), new NotFilter(new PacketExtensionFilter(
                 ELEMENT, NAMESPACE)));
         connection.addPacketListener(new PacketListener() {
-            @Override
             public void processPacket(Packet packet) {
                 // always remove the JID from the map, even if entityCaps are
                 // disabled
@@ -302,7 +300,6 @@ public class EntityCapsManager {
 
         packetFilter = new PacketTypeFilter(Presence.class);
         connection.addPacketSendingListener(new PacketListener() {
-            @Override
             public void processPacket(Packet packet) {
                 presenceSend = true;
             }
@@ -462,22 +459,18 @@ public class EntityCapsManager {
             List<Identity> identities = new LinkedList<Identity>(ServiceDiscoveryManager.getIdentities());
             List<PacketExtension> packetExtensions = sdm.getExtendedInfoAsList();
 
-            @Override
             public List<Item> getNodeItems() {
                 return null;
             }
 
-            @Override
             public List<String> getNodeFeatures() {
                 return features;
             }
 
-            @Override
             public List<Identity> getNodeIdentities() {
                 return identities;
             }
 
-            @Override
             public List<PacketExtension> getNodePacketExtensions() {
                 return packetExtensions;
             }

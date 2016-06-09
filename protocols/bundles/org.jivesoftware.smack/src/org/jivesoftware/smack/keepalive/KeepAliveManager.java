@@ -95,7 +95,6 @@ public class KeepAliveManager {
     private synchronized static void enableExecutorService() {
         if (periodicPingExecutorService == null) {
             periodicPingExecutorService = new ScheduledThreadPoolExecutor(1, new ThreadFactory() {
-                @Override
                 public Thread newThread(Runnable runnable) {
                     Thread pingThread = new Thread(runnable, "Smack Keepalive");
                     pingThread.setDaemon(true);
@@ -133,7 +132,6 @@ public class KeepAliveManager {
         // one arrives.
         connection.addPacketListener(new PacketListener() {
 
-            @Override
             public void processPacket(Packet packet) {
                 // reschedule the ping based on this last server contact
                 lastSuccessfulContact = System.currentTimeMillis();
@@ -145,29 +143,24 @@ public class KeepAliveManager {
     private void init() {
         connection.addConnectionListener(new ConnectionListener() {
 
-            @Override
             public void connectionClosed() {
                 stopPingServerTask();
                 handleDisconnect(connection);
             }
 
-            @Override
             public void connectionClosedOnError(Exception arg0) {
                 stopPingServerTask();
                 handleDisconnect(connection);
             }
 
-            @Override
             public void reconnectionSuccessful() {
                 handleConnect();
                 schedulePingServerTask();
             }
 
-            @Override
             public void reconnectingIn(int seconds) {
             }
 
-            @Override
             public void reconnectionFailed(Exception e) {
             }
         });
@@ -272,7 +265,6 @@ public class KeepAliveManager {
         
         if (pingInterval > 0) {
             periodicPingTask = periodicPingExecutorService.schedule(new Runnable() {
-                @Override
                 public void run() {
                     Ping ping = new Ping();
                     PacketFilter responseFilter = new PacketIDFilter(ping.getPacketID());
@@ -282,7 +274,6 @@ public class KeepAliveManager {
                     if (response != null) {
                         // Schedule a collector for the ping reply, notify listeners if none is received.
                         periodicPingExecutorService.schedule(new Runnable() {
-                            @Override
                             public void run() {
                                 Packet result = response.nextResult(1);
                 

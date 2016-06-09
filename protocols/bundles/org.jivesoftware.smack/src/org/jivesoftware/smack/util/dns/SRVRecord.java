@@ -60,7 +60,6 @@ public class SRVRecord extends HostAddress implements Comparable<SRVRecord> {
         return weight;
     }
 
-    @Override
     public int compareTo(SRVRecord other) {
         // According to RFC2782,
         // "[a] client MUST attempt to contact the target host with the lowest-numbered priority it can reach".

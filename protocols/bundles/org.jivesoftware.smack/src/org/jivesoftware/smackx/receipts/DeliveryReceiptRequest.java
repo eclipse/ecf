@@ -46,7 +46,6 @@ public class DeliveryReceiptRequest implements PacketExtension
      * This Provider parses and returns DeliveryReceiptRequest packets.
      */
     public static class Provider implements PacketExtensionProvider {
-        @Override
         public PacketExtension parseExtension(XmlPullParser parser) {
             return new DeliveryReceiptRequest();
         }
