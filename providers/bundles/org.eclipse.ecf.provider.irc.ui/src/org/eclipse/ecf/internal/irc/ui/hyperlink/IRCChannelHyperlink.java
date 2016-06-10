@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.irc.ui.hyperlink;
 
+import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 import org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView;
 import org.eclipse.jface.text.IRegion;
@@ -46,8 +47,8 @@ public class IRCChannelHyperlink implements IHyperlink {
 	}
 
 	public void open() {
-		final IChatRoomManager manager = (IChatRoomManager) view.getRootChatRoomContainer();
-
+		IChatRoomContainer container = view.getRootChatRoomContainer();
+		final IChatRoomManager manager = (IChatRoomManager) container.getAdapter(IChatRoomManager.class);
 		view.joinRoom(manager.getChatRoomInfo(channel), "");
 	}
 
