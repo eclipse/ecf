@@ -53,7 +53,6 @@
       <import plugin="org.eclipse.ecf.remoteservice"/>
       <import plugin="org.eclipse.ecf.examples.remoteservices.common"/>
       <import plugin="org.eclipse.ecf.ui"/>
-      <import plugin="org.eclipse.update.ui"/>
       <import plugin="org.eclipse.equinox.common"/>
       <import plugin="javax.servlet"/>
       <import plugin="org.eclipse.osgi.services"/>
