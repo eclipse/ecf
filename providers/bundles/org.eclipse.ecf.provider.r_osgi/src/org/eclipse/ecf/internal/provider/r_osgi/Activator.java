@@ -39,6 +39,9 @@ public final class Activator implements BundleActivator {
 	// 
 	public static final String CONSUMER_SYNC_EXECUTOR_TYPE = "org.eclipse.ecf.provider.r_osgi.consumerExecutor"; //$NON-NLS-1$
 
+	// see bug 495535
+	private static final boolean DELETE_PROXY_BUNDLES_ON_INIT = new Boolean(System.getProperty("ch.ethz.iks.r_osgi.deleteProxyBundlesOnInit", "true")).booleanValue(); //$NON-NLS-1$ //$NON-NLS-2$
+
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.r_osgi"; //$NON-NLS-1$
 
@@ -69,6 +72,11 @@ public final class Activator implements BundleActivator {
 		this.context = bc;
 		r_osgi_tracker = new ServiceTracker(context, RemoteOSGiService.class.getName(), null);
 		r_osgi_tracker.open();
+
+		// bug 495535
+		if (DELETE_PROXY_BUNDLES_ON_INIT)
+			deleteProxyBundles();
+
 		SafeRunner.run(new ExtensionRegistryRunnable(bc) {
 			protected void runWithoutRegistry() throws Exception {
 				bc.registerService(Namespace.class, new R_OSGiNamespace(), null);
@@ -80,6 +88,20 @@ public final class Activator implements BundleActivator {
 				bc.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(R_OSGiContainerInstantiator.NAME_HTTPS, new R_OSGiContainerInstantiator(), "R_OSGi Secure Websockets Container", true, false), null); //$NON-NLS-1$
 			}
 		});
+	}
+
+	private void deleteProxyBundles() {
+		Bundle[] bundles = context.getBundles();
+		for (int i = 0; i < bundles.length; i++) {
+			Bundle b = bundles[i];
+			String bName = b.getSymbolicName();
+			if (bName.startsWith("R-OSGi Proxy Bundle generated for Endpoint")) //$NON-NLS-1$
+				try {
+					b.uninstall();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+		}
 	}
 
 	/**
