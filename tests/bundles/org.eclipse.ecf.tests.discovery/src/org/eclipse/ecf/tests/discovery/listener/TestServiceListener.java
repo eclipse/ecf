@@ -67,10 +67,12 @@ public class TestServiceListener extends TestListener implements IServiceListene
 	/**
 	 * @return A DiscoveryLocator (Container)
 	 */
+	/*
 	public IContainer getLocator() {
 		return (IContainer) locator;
 	}
-
+	*/
+	
 	public boolean triggerDiscovery() {
 		return false;
 	}
