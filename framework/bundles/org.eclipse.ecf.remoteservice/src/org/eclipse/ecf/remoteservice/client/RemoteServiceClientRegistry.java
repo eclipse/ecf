@@ -133,16 +133,16 @@ public class RemoteServiceClientRegistry implements Serializable {
 			}
 		}
 		// check the filter
+		List ret = new ArrayList();
 		if (remoteFilter != null) {
 			for (int i = 0; i < result.size(); i++) {
 				RemoteServiceClientReference ref = (RemoteServiceClientReference) result.get(i);
-				if (!remoteFilter.match(ref))
-					result.remove(i);
+				if (remoteFilter == null || remoteFilter.match(ref))
+					ret.add(ref);
 			}
 		}
-		if (result.size() > 0) {
-			RemoteServiceClientReference[] array = new RemoteServiceClientReference[result.size()];
-			result.toArray(array);
+		if (ret.size() > 0) {
+			RemoteServiceClientReference[] array = (RemoteServiceClientReference[]) ret.toArray(new RemoteServiceClientReference[ret.size()]);
 			return (array.length == 0) ? null : array;
 		}
 		return null;
