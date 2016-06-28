@@ -105,7 +105,8 @@ public class AbstractConsumerContainerSelector extends
 		ContainerTypeDescription description = getContainerTypeDescription(container);
 		if (description == null)
 			return false;
-		return description.getImportedConfigs(remoteSupportedConfigs) != null;
+		String[] importedConfigs = description.getImportedConfigs(remoteSupportedConfigs);
+		return (importedConfigs == null || importedConfigs.length == 0)?false:true;
 	}
 
 	protected void connectContainerToTarget(
