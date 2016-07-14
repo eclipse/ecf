@@ -2275,9 +2275,8 @@ public class RemoteServiceAdmin implements
 					.put(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_IMPORTED,
 							new Boolean(true));
 
-		String[] exporterSupportedConfigs = (String[]) endpointDescription
-				.getProperties()
-				.get(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED);
+		String[] exporterSupportedConfigs = PropertiesUtil.getStringArrayFromPropertyValue(endpointDescription.getProperties().get(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED));
+
 		String[] importedConfigs = getImportedConfigs(importContainerID, exporterSupportedConfigs);
 		// Set service.imported.configs
 		resultProperties
