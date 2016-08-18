@@ -623,7 +623,7 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 						}
 
 					});
-			remoteServiceTracker.open();
+			remoteServiceTracker.open(true);
 
 			networkChannelFactoryTracker = new ServiceTracker(
 					context,
@@ -1016,7 +1016,7 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 
 		try {
 			final ServiceReference[] refs = RemoteOSGiActivator.getActivator()
-					.getContext().getServiceReferences((String) null, filter);
+					.getContext().getAllServiceReferences((String) null, filter);
 			if (refs == null) {
 				if (log != null) {
 					log.log(LogService.LOG_WARNING, "COULD NOT FIND " + filter); //$NON-NLS-1$
