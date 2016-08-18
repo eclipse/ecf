@@ -13,6 +13,8 @@ package org.eclipse.ecf.internal.provider.r_osgi;
 
 import ch.ethz.iks.r_osgi.*;
 import java.io.IOException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.*;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -27,6 +29,8 @@ import org.eclipse.ecf.remoteservice.events.IRemoteServiceUnregisteredEvent;
 import org.eclipse.equinox.concurrent.future.*;
 import org.osgi.framework.*;
 import org.osgi.framework.Constants;
+import org.osgi.framework.wiring.BundleCapability;
+import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
@@ -267,9 +271,11 @@ class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerAdapter
 				if (clazz == null) {
 					results.add(createLocalRemoteServiceReference(ref));
 				} else {
-					IRemoteFilter rf = createRemoteFilter(filter != null ? "(&" + filter + "(" //$NON-NLS-1$ //$NON-NLS-2$
-							+ Constants.OBJECTCLASS + "=" + clazz + "))" : "(" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-							+ Constants.OBJECTCLASS + "=" + clazz + ")"); //$NON-NLS-1$//$NON-NLS-2$
+					IRemoteFilter rf = createRemoteFilter(filter != null
+							? "(&" + filter + "(" //$NON-NLS-1$ //$NON-NLS-2$
+									+ Constants.OBJECTCLASS + "=" + clazz + "))" //$NON-NLS-1$//$NON-NLS-2$
+							: "(" //$NON-NLS-1$
+									+ Constants.OBJECTCLASS + "=" + clazz + ")"); //$NON-NLS-1$//$NON-NLS-2$
 					if (rf.match(refProperties)) {
 						results.add(createLocalRemoteServiceReference(ref));
 					}
@@ -372,6 +378,65 @@ class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerAdapter
 		return registerRemoteService(clazzes, service, properties, bundleContext);
 	}
 
+	private String getPackageName(String className) {
+		int lastDotIndex = className.lastIndexOf("."); //$NON-NLS-1$
+		if (lastDotIndex == -1)
+			return ""; //$NON-NLS-1$
+		return className.substring(0, lastDotIndex);
+	}
+
+	private Version getPackageVersion(final Object service, String serviceInterface, String packageName) {
+		List<Class> interfaces = new ArrayList<Class>();
+		Class<?> serviceClass = service.getClass();
+		while (!serviceClass.equals(Object.class)) {
+			interfaces.addAll(Arrays.asList(serviceClass.getInterfaces()));
+			serviceClass = serviceClass.getSuperclass();
+		}
+		Class[] interfaceClasses = interfaces.toArray(new Class[interfaces.size()]);
+
+		if (interfaceClasses == null)
+			return null;
+		Class interfaceClass = null;
+		for (int i = 0; i < interfaceClasses.length; i++)
+			if (interfaceClasses[i].getName().equals(serviceInterface))
+				interfaceClass = interfaceClasses[i];
+		if (interfaceClass == null)
+			return null;
+		Bundle providingBundle = FrameworkUtil.getBundle(interfaceClass);
+		if (providingBundle == null)
+			return null;
+		return getVersionForPackage(providingBundle, packageName);
+	}
+
+	private Version getVersionForMatchingCapability(String packageName, BundleCapability capability) {
+		// If it's a package namespace (Import-Package)
+		Map<String, Object> attributes = capability.getAttributes();
+		// Then we get the package attribute
+		String p = (String) attributes.get(BundleRevision.PACKAGE_NAMESPACE);
+		// And compare it to the package name
+		if (p != null && packageName.equals(p))
+			return (Version) attributes.get(Constants.VERSION_ATTRIBUTE);
+		return null;
+	}
+
+	private Version getVersionForPackage(final Bundle providingBundle, String packageName) {
+		Version result = null;
+		BundleRevision providingBundleRevision = AccessController.doPrivileged(new PrivilegedAction<BundleRevision>() {
+			public BundleRevision run() {
+				return providingBundle.adapt(BundleRevision.class);
+			}
+		});
+		if (providingBundleRevision == null)
+			return null;
+		List<BundleCapability> providerCapabilities = providingBundleRevision.getDeclaredCapabilities(BundleRevision.PACKAGE_NAMESPACE);
+		for (BundleCapability c : providerCapabilities) {
+			result = getVersionForMatchingCapability(packageName, c);
+			if (result != null)
+				return result;
+		}
+		return result;
+	}
+
 	private IRemoteServiceRegistration registerRemoteService(final String[] clazzes, final Object service, final Dictionary properties, final BundleContext aContext) {
 		if (containerID == null) {
 			throw new IllegalStateException("Container is not connected"); //$NON-NLS-1$
@@ -395,6 +460,16 @@ class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerAdapter
 		serviceRanking = (serviceRanking == null) ? new Integer(0) : serviceRanking;
 		props.put(org.eclipse.ecf.remoteservice.Constants.SERVICE_RANKING, serviceRanking);
 
+		for (String clazz : clazzes) {
+			// Add osgi-standard remote service version for each package
+			String packageName = getPackageName(clazz);
+			String packageVersionKey = "endpoint.package.version." + packageName; //$NON-NLS-1$
+			Version packageVersion = getPackageVersion(service, clazz, packageName);
+			if (packageVersion != null) {
+				props.put(packageVersionKey, packageVersion.toString());
+			}
+		}
+
 		final ServiceRegistration reg = aContext.registerService(clazzes, service, props);
 		// Set ECF remote service id property based upon local service property
 		reg.setProperties(prepareProperties(reg.getReference()));
@@ -403,7 +478,7 @@ class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerAdapter
 			remoteServicesRegs.put(reg.getReference(), reg);
 		}
 		// Construct a IRemoteServiceID, and provide to new registration impl instance
-		return new RemoteServiceRegistrationImpl(createRemoteServiceID(containerID, (Long) reg.getReference().getProperty(Constants.SERVICE_ID)), reg);
+		return new RemoteServiceRegistrationImpl(this, createRemoteServiceID(containerID, (Long) reg.getReference().getProperty(Constants.SERVICE_ID)), reg);
 	}
 
 	Dictionary prepareProperties(ServiceReference reference) {
@@ -792,6 +867,12 @@ class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerAdapter
 	public boolean setRemoteServiceCallPolicy(IRemoteServiceCallPolicy policy) {
 		// XXX...we need to see if r-OSGi has a means to implement this
 		return false;
+	}
+
+	void removeRegistration(ServiceRegistration reg) {
+		synchronized (remoteServicesRegs) {
+			remoteServicesRegs.remove(reg.getReference());
+		}
 	}
 
 }

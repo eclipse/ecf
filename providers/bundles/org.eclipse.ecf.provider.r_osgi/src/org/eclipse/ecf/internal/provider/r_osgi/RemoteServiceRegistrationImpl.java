@@ -29,6 +29,8 @@ final class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration 
 	private ServiceRegistration reg;
 	private IRemoteServiceReference remoteReference;
 
+	private R_OSGiRemoteServiceContainer container;
+
 	/**
 	 * constructor.
 	 * 
@@ -37,9 +39,11 @@ final class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration 
 	 * @param reg
 	 *            the R-OSGi internal service registration.
 	 */
-	public RemoteServiceRegistrationImpl(final IRemoteServiceID remoteServiceID, final ServiceRegistration reg) {
+	public RemoteServiceRegistrationImpl(final R_OSGiRemoteServiceContainer container, final IRemoteServiceID remoteServiceID, final ServiceRegistration reg) {
 		Assert.isNotNull(remoteServiceID);
 		Assert.isNotNull(reg);
+		Assert.isNotNull(container);
+		this.container = container;
 		this.remoteServiceID = remoteServiceID;
 		this.reg = reg;
 		this.remoteReference = new LocalRemoteServiceReferenceImpl(remoteServiceID, reg.getReference());
@@ -105,6 +109,7 @@ final class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration 
 	 * @see org.eclipse.ecf.remoteservice.IRemoteServiceRegistration#unregister()
 	 */
 	public void unregister() {
+		container.removeRegistration(reg);
 		try {
 			reg.unregister();
 		} catch (IllegalStateException e) {
