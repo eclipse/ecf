@@ -424,6 +424,9 @@ public abstract class AbstractTopologyManager {
 		case ServiceEvent.REGISTERED:
 			handleServiceRegistering(event.getServiceReference());
 			break;
+		case ServiceEvent.UNREGISTERING:
+			handleServiceUnregistering(event.getServiceReference());
+			break;
 		default:
 			break;
 		}
