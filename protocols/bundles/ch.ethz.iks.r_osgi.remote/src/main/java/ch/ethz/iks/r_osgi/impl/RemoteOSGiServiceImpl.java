@@ -44,6 +44,7 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -488,11 +489,12 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 							final ServiceDiscoveryHandler handler = (ServiceDiscoveryHandler) context
 									.getService(reference);
 
-							final RemoteServiceRegistration[] regs = (RemoteServiceRegistration[]) serviceRegistrations
-									.values()
-									.toArray(
-											new RemoteServiceRegistration[serviceRegistrations
-													.size()]);
+							RemoteServiceRegistration[] regs = null;
+
+							synchronized (serviceRegistrations) {
+								regs = (RemoteServiceRegistration[]) serviceRegistrations.values()
+										.toArray(new RemoteServiceRegistration[serviceRegistrations.size()]);
+							}
 
 							for (int i = 0; i < regs.length; i++) {
 								handler
@@ -556,7 +558,9 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 											+ " AS PROXIED SERVICES"); //$NON-NLS-1$
 								}
 
-								serviceRegistrations.put(service, reg);
+								synchronized (serviceRegistrations) {
+									serviceRegistrations.put(service, reg);
+								}
 
 								registerWithServiceDiscovery(reg);
 
@@ -722,7 +726,7 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 		final NetworkChannelFactory factory = getNetworkChannelFactory(protocol);
 		channel = new ChannelEndpointImpl(factory, endpoint);
 
-		return channel.sendLease(getServices(), getTopics());
+		return channel.sendLease(getServices(endpoint.getScheme()), getTopics());
 	}
 
 	/**
@@ -996,11 +1000,17 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 	 * 
 	 * @return return the services.
 	 */
-	static RemoteServiceRegistration[] getServices() {
-		return (RemoteServiceRegistration[]) serviceRegistrations.values()
-				.toArray(
-						new RemoteServiceRegistration[serviceRegistrations
-								.size()]);
+	static RemoteServiceRegistration[] getServices(String transport) {
+		List results = new ArrayList();
+		synchronized (serviceRegistrations) {
+			for (Iterator i = serviceRegistrations.keySet().iterator(); i.hasNext();) {
+				ServiceReference ref = (ServiceReference) i.next();
+				Object propVal = ref.getProperty(RemoteOSGiService.R_OSGi_REGISTRATION);
+				if (transport == null || propVal == null || propVal.equals(transport))
+					results.add(serviceRegistrations.get(ref));
+			}
+		}
+		return (RemoteServiceRegistration[]) results.toArray(new RemoteServiceRegistration[results.size()]);
 	}
 
 	/**
@@ -1023,8 +1033,9 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 				}
 				return null;
 			}
-			return (RemoteServiceRegistration) serviceRegistrations
-					.get(refs[0]);
+			synchronized (serviceRegistrations) {
+				return (RemoteServiceRegistration) serviceRegistrations.get(refs[0]);
+			}
 		} catch (final InvalidSyntaxException e) {
 			e.printStackTrace();
 			return null;

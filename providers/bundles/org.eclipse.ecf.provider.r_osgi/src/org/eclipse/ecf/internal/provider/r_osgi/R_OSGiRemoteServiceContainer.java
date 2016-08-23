@@ -71,6 +71,9 @@ class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerAdapter
 	// Connect context to use for connect calls
 	private IConnectContext connectContext;
 
+	// New system property to allow the per-transport exposure of remote services to be defeated.
+	private boolean exposeRemoteServicesOnAllTransports = Boolean.parseBoolean(System.getProperty("org.eclipse.ecf.internal.provider.r_osgi.exposeRemoteServicesOnAllTransports", "false")); //$NON-NLS-1$ //$NON-NLS-2$
+
 	public R_OSGiRemoteServiceContainer(RemoteOSGiService service, final ID containerID) throws IDCreateException {
 		Assert.isNotNull(service);
 		Assert.isNotNull(containerID);
@@ -444,6 +447,14 @@ class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerAdapter
 
 		final Dictionary props = properties == null ? new Hashtable() : clone(properties);
 
+		R_OSGiNamespace ns = (R_OSGiNamespace) containerID.getNamespace();
+		// add the hint property for R-OSGi that this service is intended to be
+		// accessed remotely.
+		Object rosgiRegistrationValue = Boolean.TRUE;
+		if (!exposeRemoteServicesOnAllTransports)
+			rosgiRegistrationValue = (ns instanceof R_OSGiWSSNamespace) ? "https" : (ns instanceof R_OSGiWSNamespace) ? "http" : "r-osgi"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+
+		props.put(RemoteOSGiService.R_OSGi_REGISTRATION, rosgiRegistrationValue);
 		// add the hint property for R-OSGi that this service is intended to be
 		// accessed remotely.
 		props.put(RemoteOSGiService.R_OSGi_REGISTRATION, Boolean.TRUE);
