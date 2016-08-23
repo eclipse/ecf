@@ -1006,7 +1006,7 @@ final class RemoteOSGiServiceImpl implements RemoteOSGiService, Remoting {
 			for (Iterator i = serviceRegistrations.keySet().iterator(); i.hasNext();) {
 				ServiceReference ref = (ServiceReference) i.next();
 				Object propVal = ref.getProperty(RemoteOSGiService.R_OSGi_REGISTRATION);
-				if (transport == null || propVal == null || propVal.equals(transport))
+				if (transport == null || propVal == null || propVal.equals(Boolean.TRUE) || propVal.equals(transport))
 					results.add(serviceRegistrations.get(ref));
 			}
 		}
