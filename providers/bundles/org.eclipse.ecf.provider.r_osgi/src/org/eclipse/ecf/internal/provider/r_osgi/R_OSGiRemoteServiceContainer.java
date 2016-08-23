@@ -455,9 +455,6 @@ class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerAdapter
 			rosgiRegistrationValue = (ns instanceof R_OSGiWSSNamespace) ? "https" : (ns instanceof R_OSGiWSNamespace) ? "http" : "r-osgi"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
 
 		props.put(RemoteOSGiService.R_OSGi_REGISTRATION, rosgiRegistrationValue);
-		// add the hint property for R-OSGi that this service is intended to be
-		// accessed remotely.
-		props.put(RemoteOSGiService.R_OSGi_REGISTRATION, Boolean.TRUE);
 		// remove the RFC 119 hint, if present, to avoid loops
 		props.remove("osgi.remote.interfaces"); //$NON-NLS-1$
 		props.remove("service.exported.interfaces"); //$NON-NLS-1$
