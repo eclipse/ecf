@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.8"?><target name="Luna" sequenceNumber="19">
+<locations>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.pde.feature.group" version="3.10.1.v20150204-1700"/>
+<unit id="org.eclipse.emf.edit.ui.feature.group" version="2.10.2.v20150123-0452"/>
+<unit id="org.eclipse.platform.source.feature.group" version="4.4.2.v20150204-1700"/>
+<unit id="org.eclipse.platform.feature.group" version="4.4.2.v20150204-1700"/>
+<unit id="org.eclipse.pde.source.feature.group" version="3.10.1.v20150204-1700"/>
+<unit id="org.eclipse.emf.edit.ui.source.feature.group" version="2.10.2.v20150123-0452"/>
+<repository location="http://download.eclipse.org/releases/luna"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.apache.httpcomponents.httpcore" version="4.3.3.v201411290715"/>
+<unit id="org.apache.httpcomponents.httpclient" version="4.3.6.v201411290715"/>
+<unit id="org.jdom.source" version="1.1.1.v201101151400"/>
+<unit id="org.apache.ws.commons.util" version="1.0.1.v20100518-1140"/>
+<unit id="org.apache.xmlrpc" version="3.0.0.v20100427-1100"/>
+<unit id="org.apache.commons.codec.source" version="1.6.0.v201305230611"/>
+<unit id="org.apache.httpcomponents.httpcore.source" version="4.3.3.v201411290715"/>
+<unit id="org.json" version="1.0.0.v201011060100"/>
+<unit id="com.sun.syndication.source" version="0.9.0.v200803061811"/>
+<unit id="org.jdom" version="1.1.1.v201101151400"/>
+<unit id="org.apache.httpcomponents.httpclient.source" version="4.3.6.v201411290715"/>
+<unit id="com.sun.syndication" version="0.9.0.v200803061811"/>
+<unit id="org.apache.log4j.source" version="1.2.15.v201012070815"/>
+<unit id="org.apache.commons.httpclient.source" version="3.1.0.v201012070820"/>
+<unit id="org.apache.commons.httpclient" version="3.1.0.v201012070820"/>
+<unit id="org.apache.hadoop.zookeeper.source" version="3.3.3.v201105210832"/>
+<unit id="org.apache.commons.codec" version="1.6.0.v201305230611"/>
+<unit id="org.apache.hadoop.zookeeper" version="3.3.3.v201105210832"/>
+<unit id="org.xbill.dns.source" version="2.0.8.v201112050911"/>
+<unit id="org.xbill.dns" version="2.0.8.v201112050911"/>
+<unit id="org.apache.log4j" version="1.2.15.v201012070815"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/"/>
+</location>
+</locations>
+</target>
