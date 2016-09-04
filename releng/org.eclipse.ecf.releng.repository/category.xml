@@ -18,5 +18,24 @@
    <feature id="org.eclipse.ecf.filetransfer.ssl.feature" version="0.0.0">
       <category name="core"/>
    </feature>
+   <feature id="org.eclipse.ecf.core.feature.source" version="0.0.0">
+      <category name="core sources"/>
+   </feature>
+   <feature id="org.eclipse.ecf.core.ssl.feature.source" version="0.0.0">
+      <category name="core sources"/>
+   </feature>
+   <feature id="org.eclipse.ecf.filetransfer.feature.source" version="0.0.0">
+      <category name="core sources"/>
+   </feature>
+   <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature.source" version="0.0.0">
+      <category name="core sources"/>
+   </feature>
+   <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature.source" version="0.0.0">
+      <category name="core sources"/>
+   </feature>
+   <feature id="org.eclipse.ecf.filetransfer.ssl.feature.source" version="0.0.0">
+      <category name="core sources"/>
+   </feature>
    <category-def name="core" label="ECF Core Features"/>
+   <category-def name="core sources" label="ECF Core Source Features"/>
 </site>
