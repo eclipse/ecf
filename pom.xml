@@ -18,6 +18,11 @@
   <name>Eclipse Communication Framework</name>
   <url>https://www.eclipse.org/ecf/</url>
 
+  <prerequisites>
+    <maven>3.1.1</maven>
+  </prerequisites>
+
+
   <licenses>
     <license>
       <name>Eclipse Public License v1.0</name>
@@ -40,7 +45,7 @@
   </issueManagement>
 
   <properties>
-    <tycho-version>0.25.0</tycho-version>
+    <tycho-version>0.26.0</tycho-version>
     <cbi-version>1.1.3</cbi-version>
     <target-platform>neon</target-platform>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
