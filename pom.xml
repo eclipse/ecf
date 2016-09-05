@@ -67,11 +67,16 @@
     <module>framework/bundles/org.eclipse.ecf.filetransfer</module>
     <module>framework/bundles/org.eclipse.ecf.identity</module>
     <module>framework/bundles/org.eclipse.ecf.ssl</module>
+    <module>framework/bundles/org.eclipse.ecf.discovery</module>
 
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient4</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient4.ssl</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.ssl</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.discovery</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.dnssd</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.jmdns</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.zookeeper</module>
 
     <module>releng/features/org.eclipse.ecf.core.feature</module>
     <module>releng/features/org.eclipse.ecf.core.ssl.feature</module>
@@ -79,6 +84,10 @@
     <module>releng/features/org.eclipse.ecf.filetransfer.httpclient4.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.httpclient4.ssl.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.ssl.feature</module>
+    <module>releng/features/org.eclipse.ecf.discovery.feature</module>
+    <module>releng/features/org.eclipse.ecf.discovery.dnssd.feature</module>
+    <module>releng/features/org.eclipse.ecf.discovery.jmdns.feature</module>
+    <module>releng/features/org.eclipse.ecf.discovery.zookeeper.feature</module>
 
     <module>releng/org.eclipse.ecf.releng.target</module>
     <module>releng/org.eclipse.ecf.releng.repository</module>

@@ -18,6 +18,18 @@
    <feature id="org.eclipse.ecf.filetransfer.ssl.feature" version="0.0.0">
       <category name="core"/>
    </feature>
+   <feature id="org.eclipse.ecf.discovery.feature" version="0.0.0">
+      <category name="core"/>
+   </feature>
+   <feature id="org.eclipse.ecf.discovery.dnssd.feature" version="0.0.0">
+      <category name="core"/>
+   </feature>
+   <feature id="org.eclipse.ecf.discovery.jmdns.feature" version="0.0.0">
+      <category name="core"/>
+   </feature>
+   <feature id="org.eclipse.ecf.discovery.zookeeper.feature" version="0.0.0">
+      <category name="core"/>
+   </feature>
    <feature id="org.eclipse.ecf.core.feature.source" version="0.0.0">
       <category name="core sources"/>
    </feature>
@@ -34,6 +46,18 @@
       <category name="core sources"/>
    </feature>
    <feature id="org.eclipse.ecf.filetransfer.ssl.feature.source" version="0.0.0">
+      <category name="core sources"/>
+   </feature>
+   <feature id="org.eclipse.ecf.discovery.feature.source" version="0.0.0">
+      <category name="core sources"/>
+   </feature>
+   <feature id="org.eclipse.ecf.discovery.dnssd.feature.source" version="0.0.0">
+      <category name="core sources"/>
+   </feature>
+   <feature id="org.eclipse.ecf.discovery.jmdns.feature.source" version="0.0.0">
+      <category name="core sources"/>
+   </feature>
+   <feature id="org.eclipse.ecf.discovery.zookeeper.feature.source" version="0.0.0">
       <category name="core sources"/>
    </feature>
    <category-def name="core" label="ECF Core Features"/>
