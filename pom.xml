@@ -68,6 +68,14 @@
     <module>framework/bundles/org.eclipse.ecf.identity</module>
     <module>framework/bundles/org.eclipse.ecf.ssl</module>
     <module>framework/bundles/org.eclipse.ecf.discovery</module>
+    <module>framework/bundles/org.eclipse.ecf.sharedobject</module>
+    <module>framework/bundles/org.eclipse.ecf.provider</module>
+    <module>framework/bundles/org.eclipse.ecf.datashare</module>
+    <module>framework/bundles/org.eclipse.ecf.docshare</module>
+    <module>framework/bundles/org.eclipse.ecf.sync</module>
+    <module>framework/bundles/org.eclipse.ecf.ui</module>
+    <module>framework/bundles/org.eclipse.ecf.presence</module>
+    <module>framework/bundles/org.eclipse.ecf.presence.ui</module>
 
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient4</module>
@@ -88,6 +96,11 @@
     <module>releng/features/org.eclipse.ecf.discovery.dnssd.feature</module>
     <module>releng/features/org.eclipse.ecf.discovery.jmdns.feature</module>
     <module>releng/features/org.eclipse.ecf.discovery.zookeeper.feature</module>
+    <module>releng/features/org.eclipse.ecf.sharedobject.feature</module>
+    <module>releng/features/org.eclipse.ecf.provider.generic.feature</module>
+    <module>releng/features/org.eclipse.ecf.docshare.feature</module>
+    <module>releng/features/org.eclipse.ecf.datashare.feature</module>
+    <module>releng/features/org.eclipse.ecf.presence.feature</module>
 
     <module>releng/org.eclipse.ecf.releng.target</module>
     <module>releng/org.eclipse.ecf.releng.repository</module>
