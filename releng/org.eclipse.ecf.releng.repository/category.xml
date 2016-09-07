@@ -45,6 +45,18 @@
    <feature id="org.eclipse.ecf.presence.feature" version="0.0.0">
       <category name="core"/>
    </feature>
+   <feature id="org.eclipse.ecf.console.feature" version="0.0.0">
+      <category name="core"/>
+   </feature>
+   <feature id="org.eclipse.ecf.provider.generic.datashare.feature" version="0.0.0">
+      <category name="core"/>
+   </feature>
+   <feature id="org.eclipse.ecf.remoteservice.feature" version="0.0.0">
+      <category name="core"/>
+   </feature>
+   <feature id="org.eclipse.ecf.osgi.services.feature" version="0.0.0">
+      <category name="core"/>
+   </feature>
    <feature id="org.eclipse.ecf.core.feature.source" version="0.0.0">
       <category name="core sources"/>
    </feature>
@@ -88,6 +100,18 @@
       <category name="core sources"/>
    </feature>
    <feature id="org.eclipse.ecf.presence.feature.source" version="0.0.0">
+      <category name="core sources"/>
+   </feature>
+   <feature id="org.eclipse.ecf.console.feature.source" version="0.0.0">
+      <category name="core sources"/>
+   </feature>
+   <feature id="org.eclipse.ecf.provider.generic.datashare.feature.source" version="0.0.0">
+      <category name="core sources"/>
+   </feature>
+   <feature id="org.eclipse.ecf.remoteservice.feature.source" version="0.0.0">
+      <category name="core sources"/>
+   </feature>
+   <feature id="org.eclipse.ecf.osgi.services.feature.source" version="0.0.0">
       <category name="core sources"/>
    </feature>
    <category-def name="core" label="ECF Core Features"/>
