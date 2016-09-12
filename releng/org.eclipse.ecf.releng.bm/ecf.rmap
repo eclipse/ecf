@@ -154,6 +154,11 @@
     <rm:provider componentTypes="osgi.bundle" readerType="p2" source="false" mutable="false">
       <rm:property key="buckminster.source" value="false"/>
       <rm:property key="buckminster.mutable" value="false"/>
+      <rm:uri format="http://download.eclipse.org/paho/releases/1.1.0/Java/"/>
+    </rm:provider>
+    <rm:provider componentTypes="osgi.bundle" readerType="p2" source="false" mutable="false">
+      <rm:property key="buckminster.source" value="false"/>
+      <rm:property key="buckminster.mutable" value="false"/>
       <rm:uri format="http://ftp.osuosl.org/pub/eclipse/tools/orbit/downloads/drops/R20120526062928/repository/"/>
     </rm:provider>
     <rm:provider componentTypes="osgi.bundle" readerType="p2" source="false" mutable="false">
