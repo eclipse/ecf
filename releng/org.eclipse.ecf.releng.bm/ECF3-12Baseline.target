@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target includeMode="feature" name="ECF3-12Baseline" sequenceNumber="7">
+<?pde version="3.8"?><target includeMode="feature" name="ECF3-12Baseline" sequenceNumber="8">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="false" type="InstallableUnit">
 <unit id="org.eclipse.ecf.core.feature.group" version="3.12.0.v20151130-0157"/>
 <repository location="http://download.eclipse.org/rt/ecf/3.12.0/site.p2/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="false" type="InstallableUnit">
-<unit id="org.eclipse.paho.client.mqttv3" version="1.1.0"/>
-<repository location="http://download.eclipse.org/paho/releases/1.1.0/Java/"/>
 </location>
 </locations>
 <includeBundles>
