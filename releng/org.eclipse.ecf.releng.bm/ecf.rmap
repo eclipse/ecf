@@ -10,6 +10,7 @@
   <rm:locator pattern="^org\.eclipse\.emf(\..+)?" searchPathRef="org.eclipse.emf"/>
   <rm:locator pattern="^org\.eclipse\.net4j(\..+)?" searchPathRef="org.eclipse.emf"/>
   <rm:locator pattern="^org\.eclipse\.xsd(\..+)?" searchPathRef="org.eclipse.emf"/>
+  <rm:locator pattern="^org\.eclipse\.paho(\..+)?" searchPathRef="org.eclipse.paho"/>
   <rm:locator pattern="^org\.eclipse\.swtbot(\..+)?" searchPathRef="org.eclipse.swtbot"/>
   <rm:locator pattern="^com\.mountainminds\.eclemma(\..+)?" searchPathRef="com.mountainminds.eclemma"/>
   <rm:locator pattern="^org\.eclipse(\..+)?" searchPathRef="org.eclipse"/>
@@ -115,6 +116,14 @@
       </rm:uri>
     </rm:provider>
     -->
+  </rm:searchPath>
+  
+  <rm:searchPath name="org.eclipse.paho">
+    <rm:provider componentTypes="osgi.bundle,eclipse.feature,buckminster" readerType="p2" source="false" mutable="false">
+      <rm:property key="buckminster.source" value="false"/>
+      <rm:property key="buckminster.mutable" value="false"/>
+      <rm:uri format="http://download.eclipse.org/paho/releases/1.1.0/Java/"/>
+    </rm:provider>
   </rm:searchPath>
   
   <rm:searchPath name="org.pluginbuilder">
