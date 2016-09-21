@@ -51,7 +51,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.resources.sourceEncoding>UTF-8</project.resources.sourceEncoding>
     <tycho.scmUrl>scm:git:https://git.eclipse.org/r/ecf/org.eclipse.ecf</tycho.scmUrl>
-    <!-- TODO: tests are not yet ready for tycho -->
+    <!-- Skip tests by default because they take a long time -->
     <skipTests>true</skipTests>
   </properties>
 
@@ -166,6 +166,23 @@
     <module>server-side/bundles/org.eclipse.ecf.server</module>
     <module>server-side/features/org.eclipse.ecf.server.generic.feature</module>
 
+    <module>tests/bundles/org.eclipse.ecf.tests</module>
+    <module>tests/bundles/org.eclipse.ecf.tests.datashare</module>
+    <module>tests/bundles/org.eclipse.ecf.tests.presence</module>
+    <module>tests/bundles/org.eclipse.ecf.tests.protocol.msn</module>
+    <module>tests/bundles/org.eclipse.ecf.tests.provider.datashare.nio</module>
+    <module>tests/bundles/org.eclipse.ecf.tests.provider.xmpp</module>
+    <module>tests/bundles/org.eclipse.ecf.tests.remoteservice</module>
+    <module>tests/bundles/org.eclipse.ecf.tests.sharedobject</module>
+    <module>tests/bundles/org.eclipse.ecf.tests.storage</module>
+    <module>tests/bundles/org.eclipse.ecf.tests.sync</module>
+    <module>tests/bundles/org.eclipse.ecf.tests.osgi.services.distribution</module>
+    <module>tests/bundles/org.eclipse.ecf.tests.discovery</module>
+    <module>tests/bundles/org.eclipse.ecf.tests.remoteservice.generic</module>
+    <module>tests/bundles/org.eclipse.ecf.tests.remoteservice.r-osgi</module>
+    <module>tests/bundles/org.eclipse.ecf.tests.osgi.services.distribution.generic</module>
+    <module>tests/bundles/org.eclipse.ecf.tests.osgi.services.distribution.r-osgi</module>
+
     <module>tooling/plugins/org.eclipse.ecf.remoteservices.tooling.pde</module>
 
     <module>releng/features/org.eclipse.ecf.console.feature</module>
@@ -200,6 +217,7 @@
     <module>releng/features/org.eclipse.ecf.remoteservice.servlet.feature</module>
     <module>releng/features/org.eclipse.ecf.remoteservice.soap.feature</module>
     <module>releng/features/org.eclipse.ecf.sharedobject.feature</module>
+    <module>releng/features/org.eclipse.ecf.tests.feature</module>
     <module>releng/features/org.eclipse.ecf.xmpp.feature</module>
 
     <module>releng/org.eclipse.ecf.releng.target</module>
@@ -339,6 +357,15 @@
             </sourceReferences>
             <timestampProvider>jgit</timestampProvider>
             <jgit.dirtyWorkingTree>warning</jgit.dirtyWorkingTree>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.eclipse.tycho</groupId>
+          <artifactId>tycho-surefire-plugin</artifactId>
+          <version>${tycho-version}</version>
+          <configuration>
+            <skipTests>${skipTests}</skipTests>
+            <failIfNoTests>false</failIfNoTests>
           </configuration>
         </plugin>
       </plugins>

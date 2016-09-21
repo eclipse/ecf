@@ -19,7 +19,7 @@ import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;
 import org.eclipse.ecf.core.sharedobject.SharedObjectAddException;
 import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 
-public class AbstractSharedObjectTest extends ContainerAbstractTestCase {
+public abstract class AbstractSharedObjectTest extends ContainerAbstractTestCase {
 
 	
 	public ISharedObjectContainer getClientSOContainer(int clientindex) {
