@@ -31,7 +31,10 @@ public class ECFStart implements IECFStart {
 		 * @see org.eclipse.ecf.core.IContainerListener#handleEvent(org.eclipse.ecf.core.events.IContainerEvent)
 		 */
 		public void handleEvent(IContainerEvent event) {
-			final IContainerManager containerManager = Activator.getDefault().getContainerManager();
+			Activator a = Activator.getDefault();
+			if (a == null)
+				return;
+			final IContainerManager containerManager = a.getContainerManager();
 			if (containerManager == null)
 				return;
 			IContainer container = containerManager.getContainer(event.getLocalContainerID());
