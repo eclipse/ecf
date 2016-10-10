@@ -10,6 +10,7 @@
 package org.eclipse.ecf.core.identity;
 
 import java.net.URI;
+import java.util.UUID;
 import org.eclipse.core.runtime.Assert;
 
 /**
@@ -25,6 +26,11 @@ public class URIID extends BaseID implements IResourceID {
 	public static class URIIDNamespace extends Namespace {
 
 		private static final long serialVersionUID = 115165512542491014L;
+
+		/**
+		 * @since 3.8
+		 */
+		public static final String UUID_PROTOCOL = "uuid";
 
 		public URIIDNamespace(String name, String desc) {
 			super(name, desc);
@@ -47,6 +53,13 @@ public class URIID extends BaseID implements IResourceID {
 			} catch (Exception e) {
 				throw new IDCreateException(URIIDNamespace.this.getName() + " createInstance()", e); //$NON-NLS-1$
 			}
+		}
+
+		/**
+		 * @since 3.8
+		 */
+		public ID createRandomUUID() throws IDCreateException {
+			return createInstance(new Object[] { UUID_PROTOCOL + ":" + UUID.randomUUID().toString() });
 		}
 
 		public String getScheme() {
