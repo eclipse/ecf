@@ -30,7 +30,7 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.eclipse.ecf.tests.provider.xmpp.XMPPS;
 import org.osgi.framework.InvalidSyntaxException;
 
-public class RemoteServiceRetrieval extends TestCase {
+public class RemoteServiceRetrievalTest extends TestCase {
 
 	private XMPPClient[] xmppClients;
 

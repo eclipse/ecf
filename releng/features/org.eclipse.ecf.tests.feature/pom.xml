@@ -9,7 +9,7 @@
     <relativePath>../../../</relativePath>
   </parent>
   <groupId>org.eclipse.ecf</groupId>
-  <artifactId>org.eclipse.ecf.osgi.services.remoteserviceadmin</artifactId>
-  <version>4.5.0-SNAPSHOT</version>
-  <packaging>eclipse-plugin</packaging>
+  <artifactId>org.eclipse.ecf.tests.feature</artifactId>
+  <version>3.0.0-SNAPSHOT</version>
+  <packaging>eclipse-feature</packaging>
 </project>
