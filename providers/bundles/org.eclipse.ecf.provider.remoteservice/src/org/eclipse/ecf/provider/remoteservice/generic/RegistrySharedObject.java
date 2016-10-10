@@ -532,7 +532,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 					return;
 				}
 				try {
-					registryUpdateRequests.wait(500);
+					registryUpdateRequests.wait(100);
 				} catch (InterruptedException e) {
 					return;
 				}

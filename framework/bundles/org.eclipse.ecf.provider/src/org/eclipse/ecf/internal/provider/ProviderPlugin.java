@@ -74,9 +74,9 @@ public class ProviderPlugin implements BundleActivator {
 		SafeRunner.run(new ExtensionRegistryRunnable(this.context) {
 			protected void runWithoutRegistry() throws Exception {
 				context1.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(GenericContainerInstantiator.TCPSERVER_NAME, new GenericContainerInstantiator(), "ECF Generic Server", true, false), null); //$NON-NLS-1$
-				context1.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(GenericContainerInstantiator.TCPCLIENT_NAME, new GenericContainerInstantiator(), "ECF Generic Client", false, true), null); //$NON-NLS-1$
+				context1.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(GenericContainerInstantiator.TCPCLIENT_NAME, new GenericContainerInstantiator(), "ECF Generic Client", true, true), null); //$NON-NLS-1$
 				context1.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(SSLGenericContainerInstantiator.SSLSERVER_NAME, new SSLGenericContainerInstantiator(), "ECF SSL Generic Server", true, false), null); //$NON-NLS-1$
-				context1.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(SSLGenericContainerInstantiator.SSLCLIENT_NAME, new SSLGenericContainerInstantiator(), "ECF SSL Generic Client", false, true), null); //$NON-NLS-1$
+				context1.registerService(ContainerTypeDescription.class, new ContainerTypeDescription(SSLGenericContainerInstantiator.SSLCLIENT_NAME, new SSLGenericContainerInstantiator(), "ECF SSL Generic Client", true, true), null); //$NON-NLS-1$
 			}
 		});
 		if (genericClassResolverOverride) {
