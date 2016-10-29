@@ -1741,8 +1741,10 @@ public class RemoteServiceAdmin implements
 			endpointDescriptionProperties.put(
 					RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER, rsFilter);
 
+		Map<String, Object> nonReservedProps = PropertiesUtil.copyNonReservedProperties(overridingProperties, endpointDescriptionProperties);
 		// Finally, copy all non-reserved properties
-		return PropertiesUtil.copyNonReservedProperties(overridingProperties, endpointDescriptionProperties);
+		return PropertiesUtil.removePrivateConfigProperties(remoteConfigsSupported, nonReservedProps);
+		
 	}
 
 	private Map<String, Object> copyNonReservedProperties(

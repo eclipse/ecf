@@ -42,6 +42,8 @@ public class PropertiesUtil {
 			// Don't have them
 			"service.bundleid", //$NON-NLS-1$
 			"service.scope", //$NON-NLS-1$
+			"component.id",  //$NON-NLS-1$
+			"component.name", //$NON-NLS-1$
 			org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID,
 			org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
 			org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_SERVICE_ID,
@@ -411,13 +413,15 @@ public class PropertiesUtil {
 		return prop.startsWith(config + "."); //$NON-NLS-1$
 	}
 
-	public static Map<String, Object> removeConfigProperties(String[] configs, Map<String, Object> source) {
-		Map<String, Object> results = copyNonReservedProperties(source,
+	public static Map<String, Object> removePrivateConfigProperties(String[] configs, Map<String, Object> source) {
+		Map<String, Object> results = copyProperties(source,
 				new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER));
 		for (Iterator<String> it = results.keySet().iterator(); it.hasNext();) {
-			for (int i = 0; i < configs.length; i++)
-				if (isConfigProperty(configs[i], it.next()))
+			for (int i = 0; i < configs.length; i++) {
+				String prop = it.next();
+				if (isConfigProperty(configs[i], prop) && prop.substring(configs[i].length()+1).startsWith(".")) //$NON-NLS-1$
 					it.remove();
+			}
 		}
 		return results;
 	}
