@@ -1229,8 +1229,12 @@ public class RemoteServiceAdmin implements
 		}
 		
 		public synchronized long getRemoteServiceId() {
-			EndpointDescription ed = getEndpointDescription();
-			return (ed == null)?0:ed.getRemoteServiceId();
+			if (importEndpoint == null) 
+				return 0;
+			IRemoteServiceReference ref = importEndpoint.rsReference;
+			if (ref == null) 
+				return 0;
+			return ref.getID().getContainerRelativeID();
 		}
 
 		public synchronized ServiceReference getImportedService() {
