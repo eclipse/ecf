@@ -13,4 +13,22 @@
   <packaging>eclipse-repository</packaging>
 
   <name>ECF p2 Repository</name>
+
+  <build>
+    <plugins>
+      <plugin>
+        <!-- Avoid duplicate execution of clean when generating javadocs, see ebz#399756 -->
+        <artifactId>maven-clean-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-clean-1</id>
+            <phase>initialize</phase>
+            <configuration>
+              <skip>true</skip>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
