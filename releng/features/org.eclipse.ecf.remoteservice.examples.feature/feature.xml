@@ -132,6 +132,13 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
          unpack="false"/>
 
    <plugin
+         id="com.mycorp.examples.timeservice.async"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="com.mycorp.examples.timeservice.provider.rest.consumer"
          download-size="0"
          install-size="0"
