@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.remoteservice.examples.feature"
       label="ECF Remote Services Examples"
-      version="1.3.0.qualifier"
+      version="1.4.0.qualifier"
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
@@ -46,48 +46,6 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
       <import feature="org.eclipse.ecf.discovery.slp.feature" version="1.0" match="compatible"/>
       <import feature="org.eclipse.ecf.discovery.zookeeper.feature" version="1.0" match="compatible"/>
    </requires>
-
-   <plugin
-         id="org.eclipse.ecf.examples.remoteservices.hello"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.examples.remoteservices.hello.consumer"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.examples.remoteservices.hello.ds.consumer"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.examples.remoteservices.hello.host"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.examples.remoteservices.rest.rss"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.examples.remoteservices.hello.consumer.edef"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
 
    <plugin
          id="com.mycorp.examples.timeservice"
@@ -139,14 +97,7 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
          unpack="false"/>
 
    <plugin
-         id="com.mycorp.examples.timeservice.provider.rest.consumer"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.mycorp.examples.timeservice.provider.rest.host"
+         id="com.mycorp.examples.timeservice.consumer.ds.async"
          download-size="0"
          install-size="0"
          version="0.0.0"
