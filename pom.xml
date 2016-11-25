@@ -82,6 +82,7 @@
     <module>examples/bundles/com.mycorp.examples.timeservice.async</module>
     <module>examples/bundles/com.mycorp.examples.timeservice.consumer</module>
     <module>examples/bundles/com.mycorp.examples.timeservice.consumer.ds</module>
+    <module>examples/bundles/com.mycorp.examples.timeservice.consumer.ds.async</module>
     <module>examples/bundles/com.mycorp.examples.timeservice.consumer.filediscovery</module>
     <module>examples/bundles/com.mycorp.examples.timeservice.consumer.filediscovery.rest</module>
     <module>examples/bundles/com.mycorp.examples.timeservice.host</module>
