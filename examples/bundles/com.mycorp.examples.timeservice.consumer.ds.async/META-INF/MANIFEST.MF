@@ -1,10 +1,11 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Async
+Bundle-Name: ECF TimeService Consumer Async
 Bundle-SymbolicName: com.mycorp.examples.timeservice.consumer.ds.async
-Bundle-Version: 1.0.0.qualifier
-Bundle-Vendor: MYCORP
+Bundle-Version: 1.0.100.qualifier
+Bundle-Vendor: Eclipse.org - ECF
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: com.mycorp.examples.timeservice;version="2.0.0"
-Service-Component: OSGI-INF/timeservicecomponentasync.xml
+Import-Package: com.mycorp.examples.timeservice;version="2.0.0",
+ org.osgi.service.component.annotations;resolution:=optional
+Service-Component: OSGI-INF/com.mycorp.examples.timeservice.consumer.ds.async.TimeServiceComponentAsync.xml
 Bundle-ActivationPolicy: lazy
