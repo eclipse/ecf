@@ -29,7 +29,7 @@
    </vm>
 
    <plugins>
-      <plugin id="com.mycorp.examples.timeservice"/>
+      <plugin id="com.mycorp.examples.timeservice.async"/>
       <plugin id="com.mycorp.examples.timeservice.consumer.ds"/>
       <plugin id="javax.servlet"/>
       <plugin id="org.apache.commons.logging"/>
@@ -61,7 +61,6 @@
    </plugins>
 
    <configurations>
-      <plugin id="com.mycorp.examples.timeservice" autoStart="true" startLevel="0" />
       <plugin id="com.mycorp.examples.timeservice.consumer.ds" autoStart="true" startLevel="0" />
       <plugin id="org.apache.felix.gogo.command" autoStart="true" startLevel="0" />
       <plugin id="org.apache.felix.gogo.runtime" autoStart="true" startLevel="0" />

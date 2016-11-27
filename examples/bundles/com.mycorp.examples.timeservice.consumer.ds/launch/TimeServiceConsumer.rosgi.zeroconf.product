@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="MyCorp Remote TimeService Consumer ROSGI Websockets Secure DS No Registry" uid="com.mycorp.examples.timeservice.consumer.rosgi.wss.ds.noreg.product" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="false">
+<product name="MyCorp Remote TimeService Consumer ROSGI DS No Registry" uid="com.mycorp.examples.timeservice.consumer.rosgi.ds.noreg.product" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>
@@ -12,12 +12,7 @@
       <vmArgs>-Declipse.ignoreApp=true 
 -Dosgi.noShutdown=true 
 -DverboseRemoteServiceAdmin=true
--Dservice.exported.configs=ecf.r_osgi.peer.wss
--Dch.ethz.iks.r_osgi.transport.http.listen=false
--Djavax.net.ssl.keyStore=security/server.ks
--Djavax.net.ssl.keyStorePassword=server
--Djavax.net.ssl.trustStore=security/server.ks
--Djavax.net.debug=all
+-Dservice.exported.configs=ecf.r_osgi.peer
 -Dch.ethz.iks.r_osgi.topic.filter=*
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
@@ -38,10 +33,8 @@
 
    <plugins>
       <plugin id="ch.ethz.iks.r_osgi.remote"/>
-      <plugin id="ch.ethz.iks.r_osgi.transport.http"/>
-      <plugin id="com.mycorp.examples.timeservice"/>
+      <plugin id="com.mycorp.examples.timeservice.async"/>
       <plugin id="com.mycorp.examples.timeservice.consumer.ds"/>
-      <plugin id="java_websocket"/>
       <plugin id="org.apache.felix.gogo.command"/>
       <plugin id="org.apache.felix.gogo.runtime"/>
       <plugin id="org.apache.felix.gogo.shell"/>
@@ -73,10 +66,7 @@
 
    <configurations>
       <plugin id="ch.ethz.iks.r_osgi.remote" autoStart="true" startLevel="0" />
-      <plugin id="ch.ethz.iks.r_osgi.transport.http" autoStart="true" startLevel="0" />
-      <plugin id="com.mycorp.examples.timeservice" autoStart="true" startLevel="0" />
       <plugin id="com.mycorp.examples.timeservice.consumer.ds" autoStart="true" startLevel="0" />
-      <plugin id="java_websocket" autoStart="true" startLevel="0" />
       <plugin id="org.apache.felix.gogo.command" autoStart="true" startLevel="0" />
       <plugin id="org.apache.felix.gogo.runtime" autoStart="true" startLevel="0" />
       <plugin id="org.apache.felix.gogo.shell" autoStart="true" startLevel="0" />

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="MyCorp Remote TimeService Generic Consumer DS No Registry" uid="com.mycorp.examples.timeservice.consumer.generic.ds.noreg.product" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="false">
+<product name="MyCorp Remote TimeService Generic Consumer DS EDEF No Registry" uid="com.mycorp.examples.timeservice.consumer.generic.ds.edef.noreg.product" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>
@@ -33,8 +33,10 @@
    </vm>
 
    <plugins>
-      <plugin id="com.mycorp.examples.timeservice"/>
+      <plugin id="com.mycorp.examples.timeservice.async"/>
       <plugin id="com.mycorp.examples.timeservice.consumer.ds"/>
+      <plugin id="com.mycorp.examples.timeservice.consumer.filediscovery"/>
+      <plugin id="com.mycorp.examples.timeservice.consumer.filediscovery.rest"/>
       <plugin id="org.apache.felix.gogo.command"/>
       <plugin id="org.apache.felix.gogo.runtime"/>
       <plugin id="org.apache.felix.gogo.shell"/>
@@ -47,7 +49,6 @@
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin"/>
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy"/>
       <plugin id="org.eclipse.ecf.provider"/>
-      <plugin id="org.eclipse.ecf.provider.jmdns"/>
       <plugin id="org.eclipse.ecf.provider.remoteservice"/>
       <plugin id="org.eclipse.ecf.remoteservice"/>
       <plugin id="org.eclipse.ecf.remoteservice.asyncproxy"/>
@@ -64,8 +65,9 @@
    </plugins>
 
    <configurations>
-      <plugin id="com.mycorp.examples.timeservice" autoStart="true" startLevel="0" />
       <plugin id="com.mycorp.examples.timeservice.consumer.ds" autoStart="true" startLevel="0" />
+      <plugin id="com.mycorp.examples.timeservice.consumer.filediscovery" autoStart="false" startLevel="0" />
+      <plugin id="com.mycorp.examples.timeservice.consumer.filediscovery.rest" autoStart="false" startLevel="0" />
       <plugin id="org.apache.felix.gogo.command" autoStart="true" startLevel="0" />
       <plugin id="org.apache.felix.gogo.runtime" autoStart="true" startLevel="0" />
       <plugin id="org.apache.felix.gogo.shell" autoStart="true" startLevel="0" />
@@ -78,7 +80,6 @@
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.provider" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.ecf.provider.jmdns" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.provider.remoteservice" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.remoteservice" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.remoteservice.asyncproxy" autoStart="true" startLevel="0" />

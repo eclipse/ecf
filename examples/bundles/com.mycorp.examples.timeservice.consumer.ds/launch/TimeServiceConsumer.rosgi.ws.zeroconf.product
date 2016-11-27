@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="MyCorp Remote TimeService Generic Consumer DS EDEF No Registry" uid="com.mycorp.examples.timeservice.consumer.generic.ds.edef.noreg.product" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="false">
+<product name="MyCorp Remote TimeService Consumer ROSGI Websockets DS No Registry" uid="com.mycorp.examples.timeservice.consumer.rosgi.ws.ds.noreg.product" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>
@@ -12,9 +12,9 @@
       <vmArgs>-Declipse.ignoreApp=true 
 -Dosgi.noShutdown=true 
 -DverboseRemoteServiceAdmin=true
--Dservice.exported.configs=ecf.generic.server
--Decf.generic.server.port=3288
--Decf.generic.server.hostname=localhost
+-Dservice.exported.configs=ecf.r_osgi.peer.ws
+-Dch.ethz.iks.r_osgi.transport.http.listen=false
+-Dch.ethz.iks.r_osgi.topic.filter=*
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
@@ -33,10 +33,11 @@
    </vm>
 
    <plugins>
-      <plugin id="com.mycorp.examples.timeservice"/>
+      <plugin id="ch.ethz.iks.r_osgi.remote"/>
+      <plugin id="ch.ethz.iks.r_osgi.transport.http"/>
+      <plugin id="com.mycorp.examples.timeservice.async"/>
       <plugin id="com.mycorp.examples.timeservice.consumer.ds"/>
-      <plugin id="com.mycorp.examples.timeservice.consumer.filediscovery"/>
-      <plugin id="com.mycorp.examples.timeservice.consumer.filediscovery.rest"/>
+      <plugin id="java_websocket"/>
       <plugin id="org.apache.felix.gogo.command"/>
       <plugin id="org.apache.felix.gogo.runtime"/>
       <plugin id="org.apache.felix.gogo.shell"/>
@@ -49,7 +50,8 @@
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin"/>
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy"/>
       <plugin id="org.eclipse.ecf.provider"/>
-      <plugin id="org.eclipse.ecf.provider.remoteservice"/>
+      <plugin id="org.eclipse.ecf.provider.jmdns"/>
+      <plugin id="org.eclipse.ecf.provider.r_osgi"/>
       <plugin id="org.eclipse.ecf.remoteservice"/>
       <plugin id="org.eclipse.ecf.remoteservice.asyncproxy"/>
       <plugin id="org.eclipse.ecf.sharedobject"/>
@@ -62,13 +64,14 @@
       <plugin id="org.eclipse.osgi"/>
       <plugin id="org.eclipse.osgi.services"/>
       <plugin id="org.eclipse.osgi.services.remoteserviceadmin"/>
+      <plugin id="org.objectweb.asm"/>
    </plugins>
 
    <configurations>
-      <plugin id="com.mycorp.examples.timeservice" autoStart="true" startLevel="0" />
+      <plugin id="ch.ethz.iks.r_osgi.remote" autoStart="true" startLevel="0" />
+      <plugin id="ch.ethz.iks.r_osgi.transport.http" autoStart="true" startLevel="0" />
       <plugin id="com.mycorp.examples.timeservice.consumer.ds" autoStart="true" startLevel="0" />
-      <plugin id="com.mycorp.examples.timeservice.consumer.filediscovery" autoStart="false" startLevel="0" />
-      <plugin id="com.mycorp.examples.timeservice.consumer.filediscovery.rest" autoStart="false" startLevel="0" />
+      <plugin id="java_websocket" autoStart="true" startLevel="0" />
       <plugin id="org.apache.felix.gogo.command" autoStart="true" startLevel="0" />
       <plugin id="org.apache.felix.gogo.runtime" autoStart="true" startLevel="0" />
       <plugin id="org.apache.felix.gogo.shell" autoStart="true" startLevel="0" />
@@ -81,14 +84,15 @@
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.provider" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.ecf.provider.remoteservice" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.ecf.provider.jmdns" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.ecf.provider.r_osgi" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.remoteservice" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.remoteservice.asyncproxy" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.sharedobject" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.concurrent" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.console" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="1" />
+      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.util" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.osgi" autoStart="true" startLevel="0" />
