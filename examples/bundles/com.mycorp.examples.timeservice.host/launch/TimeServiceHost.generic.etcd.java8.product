@@ -16,7 +16,8 @@
 -Decf.generic.server.port=3288
 -Decf.generic.server.hostname=localhost
 -Decf.exported.async.interfaces=*
--Decf.discovery.etcd.hostname=disco.ecf-project.org
+-Decf.discovery.etcd.hostname=localhost
+-Decf.discovery.etcd.port=2379
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
@@ -53,7 +54,7 @@
       <plugin id="org.eclipse.ecf.provider.etcd"/>
       <plugin id="org.eclipse.ecf.provider.remoteservice"/>
       <plugin id="org.eclipse.ecf.remoteservice"/>
-      <plugin id="org.eclipse.ecf.remoteservice.asyncproxy" version="2.0.0.v20140410-1838"/>
+      <plugin id="org.eclipse.ecf.remoteservice.asyncproxy"/>
       <plugin id="org.eclipse.ecf.sharedobject"/>
       <plugin id="org.eclipse.equinox.common"/>
       <plugin id="org.eclipse.equinox.concurrent"/>
@@ -83,7 +84,6 @@
       <plugin id="org.eclipse.ecf.provider.etcd" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.provider.remoteservice" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.remoteservice" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.ecf.remoteservice.asyncproxy" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.sharedobject" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.concurrent" autoStart="true" startLevel="0" />
