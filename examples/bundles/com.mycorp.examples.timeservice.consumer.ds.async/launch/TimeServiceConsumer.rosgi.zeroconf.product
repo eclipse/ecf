@@ -48,7 +48,7 @@
       <plugin id="org.eclipse.ecf.provider.jmdns"/>
       <plugin id="org.eclipse.ecf.provider.r_osgi"/>
       <plugin id="org.eclipse.ecf.remoteservice"/>
-      <plugin id="org.eclipse.ecf.remoteservice.asyncproxy" version="2.0.0"/>
+      <plugin id="org.eclipse.ecf.remoteservice.asyncproxy"/>
       <plugin id="org.eclipse.ecf.sharedobject"/>
       <plugin id="org.eclipse.equinox.common"/>
       <plugin id="org.eclipse.equinox.concurrent"/>
@@ -82,7 +82,6 @@
       <plugin id="org.eclipse.ecf.provider.jmdns" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.provider.r_osgi" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.remoteservice" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.ecf.remoteservice.asyncproxy" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.sharedobject" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.concurrent" autoStart="true" startLevel="0" />
