@@ -13,7 +13,6 @@
 -Dosgi.noShutdown=true 
 -DverboseRemoteServiceAdmin=true
 -Dservice.exported.configs=ecf.r_osgi.peer
--Dch.ethz.iks.r_osgi.port=9285
 -Decf.exported.async.interfaces=*
 -Dch.ethz.iks.r_osgi.topic.filter=*
       </vmArgs>
@@ -52,7 +51,7 @@
       <plugin id="org.eclipse.ecf.provider.jmdns"/>
       <plugin id="org.eclipse.ecf.provider.r_osgi"/>
       <plugin id="org.eclipse.ecf.remoteservice"/>
-      <plugin id="org.eclipse.ecf.remoteservice.asyncproxy" version="2.0.100.v20150702-1411"/>
+      <plugin id="org.eclipse.ecf.remoteservice.asyncproxy"/>
       <plugin id="org.eclipse.ecf.sharedobject"/>
       <plugin id="org.eclipse.equinox.common"/>
       <plugin id="org.eclipse.equinox.concurrent"/>
@@ -82,7 +81,6 @@
       <plugin id="org.eclipse.ecf.provider.jmdns" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.provider.r_osgi" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.remoteservice" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.ecf.remoteservice.asyncproxy" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.sharedobject" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.concurrent" autoStart="true" startLevel="0" />
