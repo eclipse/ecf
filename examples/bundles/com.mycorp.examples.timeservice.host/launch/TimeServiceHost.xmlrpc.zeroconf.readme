@@ -1,0 +1,5 @@
+The use of the TimeServiceHost.xmlrpc.zeroconf.product relies on the presence of the 
+org.eclipse.ecf.provider.xmlrpc distribution provider.  This bundle is available 
+as described here:  https://wiki.eclipse.org/Distribution_Providers and it's dependencies.
+
+

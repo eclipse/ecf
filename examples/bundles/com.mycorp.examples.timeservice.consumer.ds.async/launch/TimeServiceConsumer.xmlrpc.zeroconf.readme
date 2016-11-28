@@ -1,0 +1,5 @@
+The use of the TimeServiceConsumer.jgroups.zeroconf.product relies on the presence of the 
+org.eclipse.ecf.provider.jgroups distribution provider and it's dependencies.  This bundle is available 
+as described here:  https://wiki.eclipse.org/Distribution_Providers
+
+

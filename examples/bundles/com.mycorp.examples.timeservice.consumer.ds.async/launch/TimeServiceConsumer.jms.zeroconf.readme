@@ -1,0 +1,14 @@
+The use of the TimeServiceHost.xmlrpc.zeroconf.product relies on the presence of the 
+org.eclipse.ecf.provider.jms.activemq distribution provider and it's dependencies.  This 
+bundle is available as described here:  
+
+https://wiki.eclipse.org/Distribution_Providers and it's dependencies.
+
+This provider also depends upon a JMS broker running at the location specified by the following
+system properties:
+
+-Decf.jms.activemq.tcp.manager.id=tcp://localhost:61616/timeservice
+-Decf.jms.activemq.tcp.manager.username=guest
+-Decf.jms.activemq.tcp.manager.password=password
+
+
