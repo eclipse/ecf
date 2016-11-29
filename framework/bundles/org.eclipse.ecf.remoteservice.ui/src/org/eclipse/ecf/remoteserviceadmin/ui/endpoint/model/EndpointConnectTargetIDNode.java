@@ -17,12 +17,12 @@ import org.eclipse.ecf.remoteservice.Constants;
 public class EndpointConnectTargetIDNode extends EndpointECFNode {
 
 	public EndpointConnectTargetIDNode() {
-		super(Constants.SERVICE_ID);
+		super(Constants.ENDPOINT_CONNECTTARGET_ID);
 		setPropertyAlias(Messages.EndpointConnectTargetIDNode_CONNECT_TARGET_ID_PROP_NAME);
 	}
 
 	@Override
 	public Object getPropertyValue() {
-		return getEndpointDescription().getRemoteServiceId();
+		return getEndpointDescription().getConnectTargetID();
 	}
 }
