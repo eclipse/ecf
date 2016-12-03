@@ -24,6 +24,13 @@ public class ExtensionRegistryRunnable implements ISafeRunnable {
 		this.context = ctxt;
 	}
 
+	/**
+	 * @since 3.8
+	 */
+	protected BundleContext getContext() {
+		return this.context;
+	}
+
 	protected void runWithoutRegistry() throws Exception {
 		// by default do nothing
 	}
