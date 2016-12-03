@@ -131,7 +131,7 @@ public class URLFileSystemBrowser extends AbstractFileSystemBrowser {
 				} else if (code == HttpURLConnection.HTTP_PROXY_AUTH) {
 					throw new BrowseFileTransferException("Proxy auth required", code); //$NON-NLS-1$
 				} else {
-					throw new BrowseFileTransferException(NLS.bind("General connection error with response code={0}", new Integer(code)), code); //$NON-NLS-1$
+					throw new BrowseFileTransferException(NLS.bind("General connection error with response code={0} and header(0)={1}", new Integer(code), urlConnection.getHeaderField(0)), code); //$NON-NLS-1$
 				}
 			}
 			remoteFiles = new IRemoteFile[1];
