@@ -20,8 +20,6 @@ import org.eclipse.ecf.filetransfer.IRemoteFileSystemBrowserContainerAdapter;
  */
 public class MultiProtocolFileSystemBrowserAdapterFactory extends AbstractContainerAdapterFactory {
 
-	IRemoteFileSystemBrowserContainerAdapter multiProtocolAdapter = new MultiProtocolFileSystemBrowserAdapter();
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -39,7 +37,7 @@ public class MultiProtocolFileSystemBrowserAdapterFactory extends AbstractContai
 	 */
 	protected Object getContainerAdapter(IContainer container, Class adapterType) {
 		if (adapterType.equals(IRemoteFileSystemBrowserContainerAdapter.class)) {
-			return multiProtocolAdapter;
+			return new MultiProtocolFileSystemBrowserAdapter();
 		}
 		return null;
 	}

@@ -20,8 +20,6 @@ import org.eclipse.ecf.filetransfer.ISendFileTransferContainerAdapter;
  */
 public class MultiProtocolOutgoingAdapterFactory extends AbstractContainerAdapterFactory {
 
-	ISendFileTransferContainerAdapter multiProtocolAdapter = new MultiProtocolOutgoingAdapter();
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -39,7 +37,7 @@ public class MultiProtocolOutgoingAdapterFactory extends AbstractContainerAdapte
 	 */
 	protected Object getContainerAdapter(IContainer container, Class adapterType) {
 		if (adapterType.equals(ISendFileTransferContainerAdapter.class)) {
-			return multiProtocolAdapter;
+			return new MultiProtocolOutgoingAdapter();
 		}
 		return null;
 	}

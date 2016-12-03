@@ -20,8 +20,6 @@ import org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter;
  */
 public class MultiProtocolRetrieveAdapterFactory extends AbstractContainerAdapterFactory {
 
-	IRetrieveFileTransferContainerAdapter multiProtocolAdapter = new MultiProtocolRetrieveAdapter();
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -39,7 +37,7 @@ public class MultiProtocolRetrieveAdapterFactory extends AbstractContainerAdapte
 	 */
 	protected Object getContainerAdapter(IContainer container, Class adapterType) {
 		if (adapterType.equals(IRetrieveFileTransferContainerAdapter.class)) {
-			return multiProtocolAdapter;
+			return new MultiProtocolRetrieveAdapter();
 		}
 		return null;
 	}
