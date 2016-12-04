@@ -1,0 +1,58 @@
+This is the TimeService Example Remote Service Host.   To run the TimeService 
+Remote Service Host:
+
+1) Open the TimeServiceHost.generic.zeroconf.product file
+2) Go to the Overview tab
+3) Click on Launch an Eclipse Application or Launch an Eclipse Application in Debug Mode
+
+The Console should open and output similar to the below produced in the Console view.  
+This output indicates that the remote service has been exported so that it can be 
+accessed by remote TimeService consumers.   
+
+See com.mycorp.examples.timeservice.consumer.ds.async to start/run the consumer.
+
+osgi> 18:33:47.301;EXPORT_REGISTRATION;exportedSR={com.mycorp.examples.timeservice.ITimeService}={ecf.generic.server.port=3288, ecf.generic.server.hostname=localhost, ecf.exported.async.interfaces=*, service.exported.configs=ecf.generic.server, service.exported.interfaces=*, service.id=71, service.bundleid=18, service.scope=singleton};cID=StringID[ecftcp://localhost:3288/server];rsId=1
+--Endpoint Description---
+<endpoint-descriptions xmlns="http://www.osgi.org/xmlns/rsa/v1.0.0">
+  <endpoint-description>
+    <property name="ecf.endpoint.id" value-type="String" value="ecftcp://localhost:3288/server"/>
+    <property name="ecf.endpoint.id.ns" value-type="String" value="org.eclipse.ecf.core.identity.StringID"/>
+    <property name="ecf.endpoint.ts" value-type="Long" value="1480818824300"/>
+    <property name="ecf.exported.async.interfaces" value-type="String" value="*"/>
+    <property name="ecf.generic.server.hostname" value-type="String" value="localhost"/>
+    <property name="ecf.generic.server.port" value-type="String" value="3288"/>
+    <property name="ecf.rsvc.id" value-type="Long" value="1"/>
+    <property name="endpoint.framework.uuid" value-type="String" value="a0a5b20e-cab9-0016-1139-8e2a85a22b58"/>
+    <property name="endpoint.id" value-type="String" value="beab16dd-5c89-487b-9951-e4be42508598"/>
+    <property name="endpoint.package.version.com.mycorp.examples.timeservice" value-type="String" value="2.0.0"/>
+    <property name="endpoint.service.id" value-type="Long" value="71"/>
+    <property name="objectClass" value-type="String">
+      <array>
+        <value>com.mycorp.examples.timeservice.ITimeService</value>
+      </array>
+    </property>
+    <property name="remote.configs.supported" value-type="String">
+      <array>
+        <value>ecf.generic.server</value>
+      </array>
+    </property>
+    <property name="remote.intents.supported" value-type="String">
+      <array>
+        <value>passByValue</value>
+        <value>exactlyOnce</value>
+        <value>ordered</value>
+      </array>
+    </property>
+    <property name="service.imported" value-type="String" value="true"/>
+    <property name="service.imported.configs" value-type="String">
+      <array>
+        <value>ecf.generic.server</value>
+      </array>
+    </property>
+  </endpoint-description>
+</endpoint-descriptions>
+---End Endpoint Description
+TimeService host registered with registration={com.mycorp.examples.timeservice.ITimeService}={ecf.generic.server.port=3288, ecf.generic.server.hostname=localhost, ecf.exported.async.interfaces=*, service.exported.configs=ecf.generic.server, service.exported.interfaces=*, service.id=71, service.bundleid=18, service.scope=singleton}
+
+
+ 

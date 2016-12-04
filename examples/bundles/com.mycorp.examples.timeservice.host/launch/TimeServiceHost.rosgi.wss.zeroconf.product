@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="MyCorp Remote TimeService ROSGI Websockets Secure No Extension Registry" uid="com.mycorp.examples.timeservice.host.rosgi.wss.noreg.product" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="false">
+<product name="TimeServiceHost ROSGI Secure Websockets Zeroconf Discovery" uid="com.mycorp.examples.timeservice.host.rosgi.wss.noreg.product" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>

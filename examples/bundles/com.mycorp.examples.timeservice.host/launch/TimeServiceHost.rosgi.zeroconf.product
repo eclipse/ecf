@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="MyCorp Remote TimeService R-OSGi No Extension Registry Java8" uid="com.mycorp.examples.timeservice.host.rosgi.noreg.java8.product" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="false">
+<product name="TimeServiceHost R-OSGi Zeroconf Discovery" uid="com.mycorp.examples.timeservice.host.rosgi.noreg.java8.product" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>
