@@ -95,7 +95,7 @@ public final class Activator implements BundleActivator {
 		for (int i = 0; i < bundles.length; i++) {
 			Bundle b = bundles[i];
 			String bName = b.getSymbolicName();
-			if (bName.startsWith("R-OSGi Proxy Bundle generated for Endpoint")) //$NON-NLS-1$
+			if (bName.startsWith(RemoteOSGiService.R_OSGi_PROXY_PREFIX))
 				try {
 					b.uninstall();
 				} catch (Exception e) {

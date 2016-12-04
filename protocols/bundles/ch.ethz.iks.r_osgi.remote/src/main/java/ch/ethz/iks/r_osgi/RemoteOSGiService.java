@@ -78,6 +78,12 @@ public interface RemoteOSGiService {
 	// public constants for service registrations
 
 	/**
+	 * Default proxy prefix.
+	 */
+    String R_OSGi_PROXY_PREFIX = System.getProperty("ch.ethz.iks.r_osgi.proxyprefix",
+			"ch.ethz.iks.r_osgi.genproxy.endpoint.");
+
+	/**
 	 * this property has to be set in order to release a service for remote
 	 * access. Currently, the following two policies are supported.
 	 * 

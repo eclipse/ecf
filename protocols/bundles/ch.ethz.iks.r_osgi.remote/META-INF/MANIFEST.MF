@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: ch.ethz.iks.r_osgi.remote
-Bundle-Version: 1.0.8.qualifier
+Bundle-Version: 1.0.9.qualifier
 Bundle-Vendor: %plugin.provider
 Import-Package: org.objectweb.asm;version="[5.0.1,6.0.0)",
  org.osgi.framework,
@@ -10,12 +10,12 @@ Import-Package: org.objectweb.asm;version="[5.0.1,6.0.0)",
  org.osgi.service.log,
  org.osgi.service.packageadmin,
  org.osgi.util.tracker
-Export-Package: ch.ethz.iks.r_osgi;version="1.0.0.RC4",
- ch.ethz.iks.r_osgi.channels;version="1.0.0.RC4",
- ch.ethz.iks.r_osgi.messages;version="1.0.0.RC4",
- ch.ethz.iks.r_osgi.service_discovery;version="1.0.0.RC4",
- ch.ethz.iks.r_osgi.types;version="1.0.0.RC4",
- ch.ethz.iks.util;version="1.0.0.RC4"
+Export-Package: ch.ethz.iks.r_osgi;version="1.0.9",
+ ch.ethz.iks.r_osgi.channels;version="1.0.1",
+ ch.ethz.iks.r_osgi.messages;version="1.0.1",
+ ch.ethz.iks.r_osgi.service_discovery;version="1.0.1",
+ ch.ethz.iks.r_osgi.types;version="1.0.1",
+ ch.ethz.iks.util;version="1.0.1"
 DynamicImport-Package: *
 Bundle-ClassPath: .
 Bundle-Activator: ch.ethz.iks.r_osgi.impl.RemoteOSGiActivator

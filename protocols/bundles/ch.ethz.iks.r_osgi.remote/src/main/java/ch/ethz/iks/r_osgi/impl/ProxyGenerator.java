@@ -220,7 +220,7 @@ class ProxyGenerator extends ClassVisitor implements Opcodes {
 		attr.putValue("Bundle-Activator", className); //$NON-NLS-1$
 		attr.putValue("Bundle-Classpath", "."); //$NON-NLS-1$ //$NON-NLS-2$
 		attr.putValue(
-				"Bundle-SymbolicName", "R-OSGi Proxy Bundle generated for Endpoint " + uri.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+				"Bundle-SymbolicName", RemoteOSGiService.R_OSGi_PROXY_PREFIX + service.getHost()+"."+service.getPort()+"."+service.getFragment()); //$NON-NLS-1$ //$NON-NLS-2$
 		attr.putValue(
 				"Import-Package", //$NON-NLS-1$
 				"org.osgi.framework, ch.ethz.iks.r_osgi, ch.ethz.iks.r_osgi.types, ch.ethz.iks.r_osgi.channels" //$NON-NLS-1$
