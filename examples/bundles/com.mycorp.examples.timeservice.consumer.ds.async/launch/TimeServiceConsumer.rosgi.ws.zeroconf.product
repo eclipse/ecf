@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="MyCorp Remote TimeService Consumer ROSGI Websockets DS No Registry" uid="com.mycorp.examples.timeservice.consumer.rosgi.ws.ds.async.product" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="false">
+<product name="TimeServiceConsumer ROSGI Websockets Zeroconf Discovery" uid="com.mycorp.examples.timeservice.consumer.rosgi.ws.ds.async.product" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>
