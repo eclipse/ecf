@@ -12,7 +12,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf.tests,
  org.junit,
  org.eclipse.ecf.tests.filetransfer,
- org.eclipse.equinox.concurrent
+ org.eclipse.equinox.concurrent,
+ org.eclipse.ecf.provider.filetransfer.scp
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.internal.tests.provider.filetransfer.scp;x-internal:=true,
  org.eclipse.ecf.tests.provider.filetransfer.scp
