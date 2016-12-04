@@ -1,0 +1,25 @@
+This project provides a runnable example of a remote TimeService Consumer.   This consumer 
+is to be used in combination with the TimeService Remote Service Host which is in the 
+com.mycorp.examples.timeservice.host bundle project.  See the readme.txt file in that
+project for details on how to start the TimeService Host.  It's necessary to start the
+TimeServiceHost before it can be accessed by this TimeServiceConsumer.
+
+To run the TimeService Remote Service Consumer:
+
+1) Open the TimeServiceConsumer.generic.zeroconf.product file
+2) Go to the Overview tab
+3) Click on Launch an Eclipse Application or Launch an Eclipse Application in Debug Mode
+
+If the example TimeServiceHost is running on the local LAN, it should be automatically 
+discovered (via Zeroconf) and output similar to the following should appear on
+the Console after ~10 seconds:
+
+osgi> Discovered ITimeService via DS.  Instance=com.mycorp.examples.timeservice.ITimeService.proxy@org.eclipse.ecf.remoteservice.RemoteServiceID[containerID=StringID[ecftcp://localhost:3288/server];containerRelativeID=1]
+Current time on remote is: 1480819807258
+
+This is discovering the remote TimeService and then calling the ITimeService.getCurrentTime()
+remote method (implementation provided by the remote TimeService Host) and printing out 
+the results.   Note that the class TimeServiceComponent (source code in this project in /src) 
+is being injected by Declarative Services when the remote ITimeService is discovered by 
+ECF Remote Services Admin.
+

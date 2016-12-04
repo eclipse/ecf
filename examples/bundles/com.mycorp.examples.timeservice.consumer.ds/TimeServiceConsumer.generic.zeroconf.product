@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="MyCorp Remote TimeService Generic No Extension Registry Java8" uid="com.mycorp.examples.timeservice.consumer.generic.noreg.java8.product" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="false">
+<product name="TimeServiceConsumer Generic Zeroconf Discovery" uid="com.mycorp.examples.timeservice.consumer.generic.noreg.product" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>
@@ -36,7 +36,7 @@
 
    <plugins>
       <plugin id="com.mycorp.examples.timeservice.async"/>
-      <plugin id="com.mycorp.examples.timeservice.consumer.ds.async"/>
+      <plugin id="com.mycorp.examples.timeservice.consumer.ds"/>
       <plugin id="org.apache.felix.gogo.command"/>
       <plugin id="org.apache.felix.gogo.runtime"/>
       <plugin id="org.apache.felix.gogo.shell"/>
@@ -51,8 +51,8 @@
       <plugin id="org.eclipse.ecf.provider"/>
       <plugin id="org.eclipse.ecf.provider.jmdns"/>
       <plugin id="org.eclipse.ecf.provider.remoteservice"/>
-      <plugin id="org.eclipse.ecf.provider.remoteservice.java8"/>
-      <plugin id="org.eclipse.ecf.remoteservice"/> <plugin id="org.eclipse.ecf.remoteservice.asyncproxy"/>
+      <plugin id="org.eclipse.ecf.remoteservice"/>
+      <plugin id="org.eclipse.ecf.remoteservice.asyncproxy"/>
       <plugin id="org.eclipse.ecf.sharedobject"/>
       <plugin id="org.eclipse.equinox.common"/>
       <plugin id="org.eclipse.equinox.concurrent"/>
@@ -67,7 +67,6 @@
 
    <configurations>
       <plugin id="com.mycorp.examples.timeservice.async" autoStart="true" startLevel="0" />
-      <plugin id="com.mycorp.examples.timeservice.consumer.ds.async" autoStart="true" startLevel="0" />
       <plugin id="org.apache.felix.gogo.command" autoStart="true" startLevel="0" />
       <plugin id="org.apache.felix.gogo.runtime" autoStart="true" startLevel="0" />
       <plugin id="org.apache.felix.gogo.shell" autoStart="true" startLevel="0" />
@@ -82,8 +81,8 @@
       <plugin id="org.eclipse.ecf.provider" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.provider.jmdns" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.provider.remoteservice" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.ecf.provider.remoteservice.java8" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.ecf.remoteservice" autoStart="true" startLevel="0" /> <plugin id="org.eclipse.ecf.remoteservice.asyncproxy" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.ecf.remoteservice" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.ecf.remoteservice.asyncproxy" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.sharedobject" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.concurrent" autoStart="true" startLevel="0" />
