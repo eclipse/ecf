@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.sdk"
       label="ECF SDK Feature"
-      version="3.13.3.qualifier"
+      version="3.13.4.qualifier"
       provider-name="Eclipse.org">
 
    <description url="http://www.eclipse.org/ecf">
