@@ -48,27 +48,7 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
    </license>
 
    <includes
-         id="org.eclipse.ecf.eventadmin.feature"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.ecf.remoteservice.feature"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.ecf.remoteservice.rest.feature"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.ecf.remoteservice.rest.synd.feature"
-         version="0.0.0"/>
-
-   <includes
          id="org.eclipse.ecf.remoteservice.rosgi.feature"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.ecf.remoteservice.soap.feature"
          version="0.0.0"/>
 
    <includes
@@ -100,23 +80,11 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
          version="0.0.0"/>
 
    <includes
-         id="org.eclipse.ecf.datashare.feature"
-         version="0.0.0"/>
-
-   <includes
          id="org.eclipse.ecf.discovery.feature"
          version="0.0.0"/>
 
    <includes
-         id="org.eclipse.ecf.xmpp.feature"
-         version="0.0.0"/>
-
-   <includes
          id="org.eclipse.ecf.console.feature"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.ecf.provider.generic.datashare.feature"
          version="0.0.0"/>
 
    <includes
@@ -129,10 +97,6 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
 
    <includes
          id="org.eclipse.ecf.sharedobject.feature"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.ecf.presence.feature"
          version="0.0.0"/>
 
    <requires>
