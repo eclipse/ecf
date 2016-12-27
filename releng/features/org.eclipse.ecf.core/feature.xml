@@ -25,10 +25,6 @@ Contributors: Composent, Inc. - initial API and implementation
       %license
    </license>
 
-   <includes
-         id="org.eclipse.ecf.docshare.feature"
-         version="0.0.0"/>
-
    <requires>
       <import feature="org.eclipse.ecf.remoteservice.sdk.feature" version="3.8" match="compatible"/>
       <import feature="org.eclipse.ecf.remoteservice.sdk.examples.feature" version="1.0" match="compatible"/>
@@ -290,13 +286,6 @@ Contributors: Composent, Inc. - initial API and implementation
 
    <plugin
          id="org.eclipse.ecf.remoteservices.tooling.pde"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.storage"
          download-size="0"
          install-size="0"
          version="0.0.0"

@@ -68,18 +68,6 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
          version="0.0.0"/>
 
    <includes
-         id="org.eclipse.ecf.discovery.slp.feature"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.ecf.discovery.dnssd.feature"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.ecf.discovery.zookeeper.feature"
-         version="0.0.0"/>
-
-   <includes
          id="org.eclipse.ecf.discovery.feature"
          version="0.0.0"/>
 

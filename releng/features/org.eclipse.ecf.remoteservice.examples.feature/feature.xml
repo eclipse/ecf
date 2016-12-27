@@ -39,10 +39,7 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
       <import feature="org.eclipse.ecf.provider.generic.feature" version="1.0" match="compatible"/>
       <import feature="org.eclipse.ecf.provider.generic.remoteservice.feature" version="1.0" match="compatible"/>
       <import feature="org.eclipse.ecf.remoteservice.rosgi.feature" version="1.0" match="compatible"/>
-      <import feature="org.eclipse.ecf.discovery.dnssd.feature" version="1.0" match="compatible"/>
       <import feature="org.eclipse.ecf.discovery.jmdns.feature" version="1.0" match="compatible"/>
-      <import feature="org.eclipse.ecf.discovery.slp.feature" version="1.0" match="compatible"/>
-      <import feature="org.eclipse.ecf.discovery.zookeeper.feature" version="1.0" match="compatible"/>
    </requires>
 
    <plugin
