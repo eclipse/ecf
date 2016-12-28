@@ -587,7 +587,7 @@ public class JmDNSImpl extends JmDNS {
 		try {
 			synchronized (lock) {
 				if (!closed) {
-					lock.wait();
+					lock.wait(1000);
 				}
 			}
 		} catch (final InterruptedException e) {
@@ -970,7 +970,7 @@ public class JmDNSImpl extends JmDNS {
 		// This should cover the case of the IP address changing under our feet
 		if (DNSState.CANCELED != getState()) {
 			synchronized (this) { // Synchronize only if we are not already in process to prevent
-									// dead locks
+										// dead locks
 									//
 									//                logger.finer("recover() Cleanning up");
 									// Stop JmDNS
@@ -1009,7 +1009,7 @@ public class JmDNSImpl extends JmDNS {
 	public void close() {
 		if (getState() != DNSState.CANCELED) {
 			synchronized (this) { // Synchronize only if we are not already in process to prevent
-									// dead locks
+										// dead locks
 									// Stop JmDNS
 				setState(DNSState.CANCELED); // This protects against recursive
 				// calls
