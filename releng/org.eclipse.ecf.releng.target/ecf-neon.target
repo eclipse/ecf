@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Neon" sequenceNumber="8">
+<?pde version="3.8"?><target name="Neon" sequenceNumber="9">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.apache.httpcomponents.httpcore" version="4.3.3.v201411290715"/>
@@ -36,6 +36,10 @@
 <unit id="org.apache.hadoop.zookeeper" version="3.3.3.v201105210832"/>
 <unit id="org.apache.hadoop.zookeeper.source" version="3.3.3.v201105210832"/>
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.license.feature.group" version="1.0.1.v20140414-1359"/>
+<repository location="http://download.eclipse.org/cbi/updates/license/1.0.1.v20140414-1359"/>
 </location>
 </locations>
 </target>

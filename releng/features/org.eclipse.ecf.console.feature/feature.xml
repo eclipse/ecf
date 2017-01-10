@@ -3,7 +3,9 @@
       id="org.eclipse.ecf.console.feature"
       label="ECF Console Feature"
       version="1.0.0.qualifier"
-      provider-name="Eclipse.org - ECF">
+      provider-name="Eclipse.org - ECF"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
 
    <description url="http://www.eclipse.org/ecf">
       This feature provides the ECF OSGI Console extensions...allowing ECF commands to be given via

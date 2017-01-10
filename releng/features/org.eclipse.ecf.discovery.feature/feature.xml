@@ -3,7 +3,9 @@
       id="org.eclipse.ecf.discovery.feature"
       label="ECF Discovery"
       version="1.0.0.qualifier"
-      provider-name="%providerName">
+      provider-name="%providerName"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
 
    <description url="http://www.eclipse.org/ecf">
       This feature provides the ECF Discovery API.  The ECF Discovery API gives a transport-independent network discovery API.

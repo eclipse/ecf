@@ -3,7 +3,9 @@
       id="org.eclipse.ecf.discovery.jmdns.feature"
       label="ECF Discovery Zeroconf Provider"
       version="1.0.0.qualifier"
-      provider-name="%providerName">
+      provider-name="%providerName"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
 
    <description url="http://www.eclipse.org/ecf">
       This feature provides the ECF Discovery Zeroconf Provider.  This provider can be used by Remote Services Discovery to publish and discover RS EndpointDescriptions.

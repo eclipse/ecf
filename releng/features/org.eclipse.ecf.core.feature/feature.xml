@@ -3,7 +3,9 @@
       id="org.eclipse.ecf.core.feature"
       label="ECF Core Feature"
       version="1.3.0.qualifier"
-      provider-name="Eclipse.org - ECF">
+      provider-name="Eclipse.org - ECF"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
 
    <description url="http://www.eclipse.org/ecf">
       This feature provides the ECF core (org.eclipse.ecf) and ECF identity (org.eclipse.ecf.identity) bundles.  These two bundles are required for all other parts of ECF.

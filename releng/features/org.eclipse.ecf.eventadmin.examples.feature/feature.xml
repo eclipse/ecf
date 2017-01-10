@@ -3,7 +3,9 @@
       id="org.eclipse.ecf.eventadmin.examples.feature"
       label="ECF Distributed EventAdmin Examples"
       version="1.0.0.qualifier"
-      provider-name="%providerName">
+      provider-name="%providerName"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
 
    <description url="http://www.eclipse.org/ecf">
       This feature provides the ECF Distributed EventAdmin Example Application.  For more information about Distribute EventAdmin see:

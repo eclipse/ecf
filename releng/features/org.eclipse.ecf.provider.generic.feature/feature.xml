@@ -3,7 +3,9 @@
       id="org.eclipse.ecf.provider.generic.feature"
       label="ECF Generic Provider Feature"
       version="1.0.0.qualifier"
-      provider-name="Eclipse.org - ECF">
+      provider-name="Eclipse.org - ECF"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
 
    <description url="http://www.eclipse.org/ecf">
       This feature provides the ECF Generic Provider.  The ECF Generic provider can be used for Remote Services (via the ECF Generic Provider RemoteService Feature), the ECF Datashare API (along with the ECF Generic Provider Datashare Feature), and the SharedObject API.

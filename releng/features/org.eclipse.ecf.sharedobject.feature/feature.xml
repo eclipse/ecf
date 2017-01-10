@@ -3,7 +3,9 @@
       id="org.eclipse.ecf.sharedobject.feature"
       label="ECF SharedObject Feature"
       version="1.0.0.qualifier"
-      provider-name="Eclipse.org - ECF">
+      provider-name="Eclipse.org - ECF"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
 
    <description url="http://www.eclipse.org/ecf">
       This feature provides the ECF Shared Object API.   The ECF Shared Object API may be used to implement modular implementations for other APIs...e.g. Datashare, Remote Services, etc.

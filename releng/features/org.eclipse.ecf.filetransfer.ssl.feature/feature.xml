@@ -3,7 +3,9 @@
       id="org.eclipse.ecf.filetransfer.ssl.feature"
       label="ECF Filetransfer SSL Feature"
       version="1.1.0.qualifier"
-      provider-name="Eclipse.org - ECF">
+      provider-name="Eclipse.org - ECF"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
 
    <description url="http://www.eclipse.org/ecf">
       This feature provides the SSL support for the ECF FileTransfer API used by the Eclipse platform to support P2 filetransfer.
