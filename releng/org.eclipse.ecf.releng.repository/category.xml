@@ -90,8 +90,60 @@
    <iu id="org.apache.httpcomponents.httpcore" version="0.0.0">
       <category name="core"/>
    </iu>
+   <feature id="org.eclipse.ecf.console.feature" version="0.0.0">
+      <category name="other"/>
+   </feature>
+   <feature id="org.eclipse.ecf.console.feature.source" version="0.0.0">
+      <category name="other"/>
+   </feature>
+   <feature id="org.eclipse.ecf.datashare.feature" version="0.0.0">
+      <category name="other"/>
+   </feature>
+   <feature id="org.eclipse.ecf.datashare.feature.source" version="0.0.0">
+      <category name="other"/>
+   </feature>
+   <feature id="org.eclipse.ecf.discovery.dnssd.feature" version="0.0.0">
+      <category name="other"/>
+   </feature>
+   <feature id="org.eclipse.ecf.discovery.dnssd.feature.source" version="0.0.0">
+      <category name="other"/>
+   </feature>
+   <feature id="org.eclipse.ecf.discovery.slp.feature" version="0.0.0">
+      <category name="other"/>
+   </feature>
+   <feature id="org.eclipse.ecf.discovery.slp.feature.source" version="0.0.0">
+      <category name="other"/>
+   </feature>
+   <feature id="org.eclipse.ecf.discovery.zookeeper.feature" version="0.0.0">
+      <category name="other"/>
+   </feature>
+   <feature id="org.eclipse.ecf.docshare.feature" version="0.0.0">
+      <category name="other"/>
+   </feature>
+   <feature id="org.eclipse.ecf.docshare.feature.source" version="0.0.0">
+      <category name="other"/>
+   </feature>
+   <feature id="org.eclipse.ecf.remoteservice.rest.feature" version="0.0.0">
+      <category name="other"/>
+   </feature>
+   <feature id="org.eclipse.ecf.remoteservice.rest.feature.source" version="0.0.0">
+      <category name="other"/>
+   </feature>
+   <feature id="org.eclipse.ecf.remoteservice.rest.synd.feature" version="0.0.0">
+      <category name="other"/>
+   </feature>
+   <feature id="org.eclipse.ecf.remoteservice.rest.synd.feature.source" version="0.0.0">
+      <category name="other"/>
+   </feature>
+   <feature id="org.eclipse.ecf.xmpp.feature" version="0.0.0">
+      <category name="other"/>
+   </feature>
+   <feature id="org.eclipse.ecf.xmpp.feature.source" version="0.0.0">
+      <category name="other"/>
+   </feature>
    <category-def name="sdk" label="ECF SDK for Eclipse"/>
-   <category-def name="core" label="ECF Core Features"/>
-   <category-def name="core sources" label="ECF Core Source Features"/>
+   <category-def name="core" label="ECF Platform Features"/>
+   <category-def name="core sources" label="ECF Platform Source Features"/>
    <category-def name="remoteservices" label="ECF Remote Services SDK"/>
+   <category-def name="other" label="Other ECF Features"/>
 </site>
