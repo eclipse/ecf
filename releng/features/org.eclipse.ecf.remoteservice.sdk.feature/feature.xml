@@ -74,10 +74,6 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
          version="0.0.0"/>
 
    <includes
-         id="org.eclipse.ecf.console.feature"
-         version="0.0.0"/>
-
-   <includes
          id="org.eclipse.ecf.provider.generic.feature"
          version="0.0.0"/>
 
@@ -87,6 +83,10 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
 
    <includes
          id="org.eclipse.ecf.sharedobject.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.eventadmin.feature"
          version="0.0.0"/>
 
    <requires>
