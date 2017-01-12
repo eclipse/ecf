@@ -89,6 +89,10 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
          id="org.eclipse.ecf.eventadmin.feature"
          version="0.0.0"/>
 
+   <includes
+         id="org.eclipse.ecf.remoteservice.feature"
+         version="0.0.0"/>
+
    <requires>
       <import plugin="org.eclipse.ecf"/>
       <import plugin="org.eclipse.ecf.identity"/>
