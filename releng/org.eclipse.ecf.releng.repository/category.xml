@@ -142,8 +142,8 @@
       <category name="other"/>
    </feature>
    <category-def name="sdk" label="ECF SDK for Eclipse"/>
-   <category-def name="core" label="ECF Platform Features"/>
-   <category-def name="core sources" label="ECF Platform Source Features"/>
+   <category-def name="core" label="ECF Core Features"/>
+   <category-def name="core sources" label="ECF Core Source Features"/>
    <category-def name="remoteservices" label="ECF Remote Services SDK"/>
    <category-def name="other" label="Other ECF Features"/>
 </site>
