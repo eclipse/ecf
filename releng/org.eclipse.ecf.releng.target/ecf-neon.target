@@ -6,22 +6,22 @@
 <unit id="org.jdom.source" version="1.1.1.v201101151400"/>
 <unit id="org.apache.ws.commons.util" version="1.0.1.v20100518-1140"/>
 <unit id="org.apache.xmlrpc" version="3.0.0.v20100427-1100"/>
-<unit id="org.apache.commons.codec.source" version="1.6.0.v201305230611"/>
+<unit id="org.apache.commons.codec.source" version="1.9.0.v20170208-1614"/>
 <unit id="org.apache.httpcomponents.httpcore.source" version="4.4.4.v20161115-1643"/>
 <unit id="org.json" version="1.0.0.v201011060100"/>
 <unit id="com.sun.syndication.source" version="0.9.0.v200803061811"/>
 <unit id="org.jdom" version="1.1.1.v201101151400"/>
-<unit id="org.apache.httpcomponents.httpclient" version="4.5.2.v20161115-1643"/>
-<unit id="org.apache.httpcomponents.httpclient.source" version="4.5.2.v20161115-1643"/>
+<unit id="org.apache.httpcomponents.httpclient" version="4.5.2.v20170208-1614"/>
+<unit id="org.apache.httpcomponents.httpclient.source" version="4.5.2.v20170208-1614"/>
 <unit id="com.sun.syndication" version="0.9.0.v200803061811"/>
 <unit id="org.apache.log4j.source" version="1.2.15.v201012070815"/>
 <unit id="org.apache.commons.httpclient.source" version="3.1.0.v201012070820"/>
 <unit id="org.apache.commons.httpclient" version="3.1.0.v201012070820"/>
-<unit id="org.apache.commons.codec" version="1.6.0.v201305230611"/>
+<unit id="org.apache.commons.codec" version="1.9.0.v20170208-1614"/>
 <unit id="org.xbill.dns.source" version="2.0.8.v201112050911"/>
 <unit id="org.xbill.dns" version="2.0.8.v201112050911"/>
 <unit id="org.apache.log4j" version="1.2.15.v201012070815"/>
-<repository location="http://download.eclipse.org/tools/orbit/S-builds/S20161205183421/repository"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/I20170209194730/repository"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.pde.feature.group" version="3.12.0.v20160606-1100"/>
