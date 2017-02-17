@@ -60,7 +60,7 @@
 </feature>
 
 <feature name="ecf-remoteservices-rest" version="3.13.2" description="ECF Discovery SLP Provider.  See https://wiki.eclipse.org/R-OSGi_Properties">
-    <bundle>mvn:org.apache.commons/org.apache.commons.codec/1.6.0.v201305230611</bundle>
+    <bundle>mvn:org.apache.commons/org.apache.commons.codec/1.9.0.v20170208-1614</bundle>
     <bundle>mvn:org.apache.httpcomponents/org.apache.httpcomponents.httpclient/4.3.6.v201511171540</bundle>
     <bundle>mvn:org.apache.httpcomponents/org.apache.httpcomponents.httpcore/4.3.3.v201411290715</bundle>
     <bundle>mvn:org.json/org.json/1.0.0.v201011060100</bundle>
