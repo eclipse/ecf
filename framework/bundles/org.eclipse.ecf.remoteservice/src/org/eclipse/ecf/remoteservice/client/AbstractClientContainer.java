@@ -54,6 +54,18 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 	private List referencesInUse = new ArrayList();
 
 	/**
+	 * @since 8.12
+	 */
+	protected IRemoteServiceFactory remoteServiceFactory;
+
+	/**
+	 * @since 8.12
+	 */
+	public void setRemoteServiceFactory(IRemoteServiceFactory factory) {
+		this.remoteServiceFactory = factory;
+	}
+
+	/**
 	 * @since 4.1
 	 */
 	protected boolean alwaysSendDefaultParameters;
@@ -520,12 +532,18 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 	}
 
 	/**
-	 * Create an implementer of {@link IRemoteService} for the given registration.
+	 * Create a remote service for a given remote service registration.   This method will be 
+	 * called as part of the RemoteServiceAdmin.importService.   
 	 * 
-	 * @param registration registration from which to create the associated IRemoteService.  Will not be <code>null</code>.
-	 * @return IRemoteService the remote service associated with this client container.  Should not return <code>null</code>.
+	 * @param registration the remote service client registration associated with the service
+	 * being imported.   Will not be <code>null</code>.
 	 */
-	protected abstract IRemoteService createRemoteService(RemoteServiceClientRegistration registration);
+	protected IRemoteService createRemoteService(RemoteServiceClientRegistration registration) {
+		IRemoteServiceFactory f = this.remoteServiceFactory;
+		if (f == null)
+			throw new NullPointerException("Cannot create remote service as remoteServiceFactory is null"); //$NON-NLS-1$
+		return f.createRemoteService(registration);
+	}
 
 	/**
 	 * Prepare an endpoint address for the given call and callable.
