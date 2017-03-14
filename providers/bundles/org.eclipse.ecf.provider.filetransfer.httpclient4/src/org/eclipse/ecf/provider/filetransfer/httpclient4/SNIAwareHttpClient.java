@@ -58,6 +58,7 @@ final class SNIAwareHttpClient extends DefaultHttpClient {
 					} catch (NoSuchMethodException ex) {
 					} catch (IllegalAccessException ex) {
 					} catch (InvocationTargetException ex) {
+					} catch (RuntimeException ex) {
 					}
 				}
 				return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
