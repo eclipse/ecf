@@ -493,6 +493,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		}
 		synchronized (localRegistry) {
 			localRegistry.unpublishServices();
+		}
+		synchronized (localRegistryUnregistrationTargets) {
 			localRegistryUnregistrationTargets.clear();
 		}
 		super.dispose(containerID);
@@ -711,6 +713,23 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		}
 	}
 
+	private void removeUnregistrationTarget(ID targetID) {
+		// reg -> List<ID>
+		synchronized (localRegistryUnregistrationTargets) {
+			for (Iterator i = this.localRegistryUnregistrationTargets.keySet().iterator(); i.hasNext();) {
+				RemoteServiceRegistrationImpl reg = (RemoteServiceRegistrationImpl) i.next();
+				List targets = (List) this.localRegistryUnregistrationTargets.get(reg);
+				for (Iterator t = targets.iterator(); t.hasNext();) {
+					ID unregTarget = (ID) t.next();
+					if (targetID.equals(unregTarget))
+						t.remove();
+				}
+				if (targets.isEmpty())
+					i.remove();
+			}
+		}
+	}
+
 	private void handleTargetGoneEvent(ID targetID) {
 		RemoteServiceRegistrationImpl registrations[] = null;
 		synchronized (remoteRegistrys) {
@@ -725,6 +744,9 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 				}
 			}
 		}
+
+		// remove from localRegistryUnregistrationTargets
+		removeUnregistrationTarget(targetID);
 		// Remove from pending updates
 		removePendingContainers(targetID);
 
@@ -1624,13 +1646,15 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	@SuppressWarnings("unchecked")
 	private void addTargetForUnregister(RemoteServiceRegistrationImpl serviceRegistration, ID targetContainerID) {
-		List existingTargets = (List) localRegistryUnregistrationTargets.get(serviceRegistration);
-		if (existingTargets == null) {
-			existingTargets = new ArrayList();
+		synchronized (localRegistryUnregistrationTargets) {
+			List existingTargets = (List) localRegistryUnregistrationTargets.get(serviceRegistration);
+			if (existingTargets == null) {
+				existingTargets = new ArrayList();
+			}
+			existingTargets.add(targetContainerID);
+			Trace.trace(Activator.PLUGIN_ID, "addTargetForUnregister localContainerID=" + getLocalContainerID() + ",targetContainerID=" + targetContainerID + ",serviceRegistration=" + serviceRegistration); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			localRegistryUnregistrationTargets.put(serviceRegistration, existingTargets);
 		}
-		existingTargets.add(targetContainerID);
-		Trace.trace(Activator.PLUGIN_ID, "addTargetForUnregister localContainerID=" + getLocalContainerID() + ",targetContainerID=" + targetContainerID + ",serviceRegistration=" + serviceRegistration); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		localRegistryUnregistrationTargets.put(serviceRegistration, existingTargets);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1641,7 +1665,10 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			allTargets.addAll(Arrays.asList(otherTargets));
 		}
 		// Then add any explicitly registered targets
-		List registeredTargets = (List) localRegistryUnregistrationTargets.remove(serviceRegistration);
+		List registeredTargets = null;
+		synchronized (localRegistryUnregistrationTargets) {
+			registeredTargets = (List) localRegistryUnregistrationTargets.remove(serviceRegistration);
+		}
 		if (registeredTargets != null) {
 			allTargets.addAll(registeredTargets);
 		}
