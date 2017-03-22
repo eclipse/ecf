@@ -117,6 +117,9 @@
    <feature id="org.eclipse.ecf.discovery.zookeeper.feature" version="0.0.0">
       <category name="other"/>
    </feature>
+   <feature id="org.eclipse.ecf.discovery.zookeeper.feature.source" version="0.0.0">
+      <category name="other"/>
+   </feature>
    <feature id="org.eclipse.ecf.docshare.feature" version="0.0.0">
       <category name="other"/>
    </feature>
