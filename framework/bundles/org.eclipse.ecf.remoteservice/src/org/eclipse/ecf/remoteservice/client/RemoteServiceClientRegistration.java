@@ -36,7 +36,6 @@ public class RemoteServiceClientRegistration implements IRemoteServiceRegistrati
 		Assert.isNotNull(classNames);
 		this.clazzes = classNames;
 		Assert.isNotNull(restCalls);
-		Assert.isTrue(classNames.length == restCalls.length);
 		this.callables = restCalls;
 		this.properties = properties;
 		containerId = registry.getContainerId();
