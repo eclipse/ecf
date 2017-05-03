@@ -186,6 +186,10 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 			}
 		}
 
+		protected Properties() {
+			super();
+		}
+
 		/**
 		 * Create a properties object for the service.
 		 * 
