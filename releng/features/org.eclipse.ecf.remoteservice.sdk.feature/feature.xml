@@ -58,6 +58,10 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
          version="0.0.0"/>
 
    <includes
+         id="org.eclipse.ecf.remoteservice.rest.feature"
+         version="0.0.0"/>
+
+   <includes
          id="org.eclipse.ecf.server.generic.feature"
          version="0.0.0"/>
 
@@ -67,6 +71,14 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
 
    <includes
          id="org.eclipse.ecf.discovery.jmdns.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.discovery.slp.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ecf.discovery.zookeeper.feature"
          version="0.0.0"/>
 
    <includes
