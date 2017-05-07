@@ -89,10 +89,36 @@
     <bundle>mvn:org.eclipse.ecf/org.eclipse.ecf.server.generic/8.0.0</bundle>
 </feature>
 
+<feature name="ecf-rs-examples-timeservice-api" version="3.13.6" description="ECF RemoteService TimeService API Example.  See https://wiki.eclipse.org/Tutorial:_Building_your_first_OSGi_Remote_Service">
+    <bundle>http://download.eclipse.org/rt/ecf/3.13.6/site.p2/plugins/com.mycorp.examples.timeservice.async_2.0.0.v20161123-1113.jar</bundle>
+</feature>
+
+<feature name="ecf-rs-examples-timeservice-host" version="3.13.6" description="ECF RemoteService TimeService Host Example.  See https://wiki.eclipse.org/Tutorial:_Building_your_first_OSGi_Remote_Service">
+	<feature version="3.13.6">ecf-rs-examples-timeservice-api</feature>
+    <bundle>http://download.eclipse.org/rt/ecf/3.13.6/site.p2/plugins/com.mycorp.examples.timeservice.host_1.1.100.v20161204-0342.jar</bundle>
+</feature>
+
+<feature name="ecf-rs-examples-timeservice-consumer" version="3.13.6" description="ECF RemoteService TimeService Host Example.  See https://wiki.eclipse.org/Tutorial:_Building_your_first_OSGi_Remote_Service">
+	<feature version="3.13.6">ecf-rs-examples-timeservice-api</feature>
+    <bundle>http://download.eclipse.org/rt/ecf/3.13.6/site.p2/plugins/com.mycorp.examples.timeservice.consumer.ds_1.0.100.v20161204-0342.jar</bundle>
+</feature>
+
+<feature name="ecf-rs-examples-timeservice-consumer-async" version="3.13.6" description="ECF RemoteService TimeService Host Example.  See https://wiki.eclipse.org/Tutorial:_Building_your_first_OSGi_Remote_Service">
+	<feature version="3.13.6">ecf-rs-examples-timeservice-api</feature>
+    <bundle>http://download.eclipse.org/rt/ecf/3.13.6/site.p2/plugins/com.mycorp.examples.timeservice.consumer.ds.async_1.0.100.v20161204-0342.jar</bundle>
+</feature>
+
 <feature name="ecf-rs-sdk" version="3.13.6" description="ECF 3.13.6 RemoteServices SDK with Generic Distribution Provider and JMDNS/Zeroconf Discovery Provider">
 	<feature version="3.13.6">ecf-rs-rsa</feature>
 	<feature version="3.13.6">ecf-rs-distribution-generic</feature>
 	<feature version="3.13.6">ecf-rs-discovery-jmdns</feature>
+</feature>
+
+<feature name="ecf-rs-sdk-examples" version="3.13.6" description="ECF 3.13.6 RemoteServices SDK with Generic Distribution Provider and JMDNS/Zeroconf Discovery Provider">
+	<feature version="3.13.6">ecf-rs-rsa</feature>
+	<feature version="3.13.6">ecf-rs-distribution-generic</feature>
+	<feature version="3.13.6">ecf-rs-discovery-jmdns</feature>
+	<feature version="3.13.6">ecf-rs-examples-timeservice-host</feature>
 </feature>
 
 <feature name="ecf-rs-examples-timeservice-api" version="3.13.6" description="ECF RemoteService TimeService API Example.  See https://wiki.eclipse.org/Tutorial:_Building_your_first_OSGi_Remote_Service">
