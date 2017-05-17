@@ -112,7 +112,6 @@
     <module>examples/bundles/com.mycorp.examples.timeservice.provider.rest.consumer</module>
     <module>examples/bundles/com.mycorp.examples.timeservice.provider.rest.host</module>
     <module>examples/bundles/org.eclipse.ecf.example.clients</module>
-    <module>examples/bundles/org.eclipse.ecf.example.collab.editor</module>
     <module>examples/bundles/org.eclipse.ecf.example.collab</module>
     <module>examples/bundles/org.eclipse.ecf.examples.eventadmin.app</module>
     <module>examples/bundles/org.eclipse.ecf.examples.remoteservices.hello.consumer.edef</module>

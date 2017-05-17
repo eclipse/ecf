@@ -59,13 +59,6 @@ Contributors: Composent, Inc. - initial API and implementation
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.ecf.provider.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.ecf.presence.ui"
          download-size="0"
          install-size="0"
@@ -101,13 +94,6 @@ Contributors: Composent, Inc. - initial API and implementation
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.ecf.provider.bittorrent.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.ecf.filetransfer.ui"
          download-size="0"
          install-size="0"
@@ -116,13 +102,6 @@ Contributors: Composent, Inc. - initial API and implementation
 
    <plugin
          id="org.eclipse.ecf.provider.msn"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.provider.msn.ui"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -151,13 +130,6 @@ Contributors: Composent, Inc. - initial API and implementation
 
    <plugin
          id="org.eclipse.ecf.protocol.msn"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.presence.collab.ui"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -237,13 +209,6 @@ Contributors: Composent, Inc. - initial API and implementation
 
    <plugin
          id="org.eclipse.ecf.example.collab"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.example.collab.editor"
          download-size="0"
          install-size="0"
          version="0.0.0"
