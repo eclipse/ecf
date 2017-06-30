@@ -187,6 +187,13 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 		}
 
 		/**
+		 * @since 4.3
+		 */
+		protected Properties() {
+			super();
+		}
+
+		/**
 		 * Create a properties object for the service.
 		 * 
 		 * @param props
