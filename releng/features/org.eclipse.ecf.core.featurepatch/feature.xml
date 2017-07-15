@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.core.featurepatch"
       label="ECF Patch for Eclipse Kepler (4.3).  Not needed for Eclipse Luna (4.4)."
-      version="3.13.7.qualifier"
+      version="3.13.8.qualifier"
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
