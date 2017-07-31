@@ -240,10 +240,10 @@ public abstract class AbstractHostContainerSelector extends
 		List supportedConfigTypesList = Arrays.asList(supportedConfigTypes);
 		List requiredConfigTypesList = Arrays.asList(requiredConfigTypes);
 		// We check all of the required config types and make sure
-		// that they are present in the supportedConfigTypes
-		boolean result = true;
+		// that one or more of them are present in the supportedConfigTypes
+		boolean result = false;
 		for (Iterator i = requiredConfigTypesList.iterator(); i.hasNext();)
-			result &= supportedConfigTypesList.contains(i.next());
+			result |= supportedConfigTypesList.contains(i.next());
 		return result;
 	}
 
