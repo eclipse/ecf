@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.remoteservice.feature"
       label="ECF Remote Services"
-      version="2.3.0.qualifier"
+      version="2.4.0.qualifier"
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
