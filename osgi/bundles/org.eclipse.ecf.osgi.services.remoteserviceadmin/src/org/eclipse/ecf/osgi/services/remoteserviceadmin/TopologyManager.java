@@ -21,6 +21,8 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.SafeRunner;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceEvent;
@@ -32,16 +34,12 @@ import org.osgi.service.remoteserviceadmin.EndpointEvent;
 import org.osgi.service.remoteserviceadmin.EndpointEventListener;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @since 4.6
  */
 public class TopologyManager
 		implements EventListenerHook, RemoteServiceAdminListener, ITopologyManager {
-
-	protected static final Logger logger = LoggerFactory.getLogger(TopologyManager.class);
 
 	class EndpointEventHolder {
 		private final EndpointDescription endpointDescription;
@@ -100,9 +98,11 @@ public class TopologyManager
 		}
 
 		private void logError(String methodName, String message, Throwable e) {
-			logger.error(((methodName == null) ? "<unknown>" //$NON-NLS-1$
-					: methodName) + ":" //$NON-NLS-1$
-					+ ((message == null) ? "<empty>" //$NON-NLS-1$
+			LogUtility.logError(((methodName == null) ? "<unknown>" //$NON-NLS-1$
+					: methodName),
+					DebugOptions.TOPOLOGY_MANAGER,
+					TopologyManager.class,
+					((message == null) ? "<empty>" //$NON-NLS-1$
 							: message),
 					e);
 		}
