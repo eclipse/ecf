@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.osgi.services.distribution
-Bundle-Version: 2.1.100.qualifier
+Bundle-Version: 2.1.200.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.osgi.services.distribution.Activator
 Bundle-Vendor: %pluginProvider
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
@@ -17,6 +17,5 @@ Import-Package: org.eclipse.ecf.core.util,
 Bundle-Localization: plugin
 Export-Package: org.eclipse.ecf.osgi.services.distribution;version="2.0.0";x-internal:=true
 Require-Bundle: org.eclipse.equinox.common
-Bundle-ActivationPolicy: lazy
 Service-Component: OSGI-INF/eventhookcomponent.xml
 Provide-Capability: osgi.remoteserviceadmin.topology; policy:List<String>="promiscuous"; version:Version=1.1
