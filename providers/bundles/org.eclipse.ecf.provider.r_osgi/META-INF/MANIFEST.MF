@@ -2,7 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.provider.r_osgi;singleton:=true
-Bundle-Version: 3.5.600.qualifier
+Automatic-Module-Name: org.eclipse.ecf.provider.r_osgi
+Bundle-Version: 3.5.700.qualifier
 Import-Package: ch.ethz.iks.r_osgi;version="1.0.1",
  org.eclipse.ecf.core.util.reflection,
  org.eclipse.ecf.remoteservice.asyncproxy;version="1.0.0",
@@ -19,7 +20,6 @@ Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.provider.r_osgi.identity;version="3.2.0"
 Bundle-Vendor: %plugin.provider
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
 DynamicImport-Package: *
 Provide-Capability: osgi.remoteserviceadmin.distribution; configs:List<String>="ecf.r_osgi.peer,ecf.r_osgi.peer.ws,ecf.r_osgi.peer.wss"; version:Version=1.1 
