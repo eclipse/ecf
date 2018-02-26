@@ -2,6 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.osgi.services.distribution
+Automatic-Module-Name: org.eclipse.ecf.osgi.services.distribution
 Bundle-Version: 2.1.200.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.osgi.services.distribution.Activator
 Bundle-Vendor: %pluginProvider
