@@ -40,6 +40,7 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 		super(context);
 		if (defaultScope != null)
 			this.ecfEndpointListenerScope = defaultScope;
+		else
 		// If loopback is allowed, then for this endpoint listener we only
 		// consider those that have a namespace (only ECF endpoint descriptions)
 		if (allowLoopbackReference)
@@ -162,9 +163,8 @@ public class BasicTopologyManagerImpl extends AbstractTopologyManager implements
 	}
 
 	/**
-	 * Implementation of
-	 * org.osgi.service.remoteserviceadmin.EndpointEventListener for rfc 203/RSA
-	 * 1.1
+	 * Implementation of org.osgi.service.remoteserviceadmin.EndpointEventListener
+	 * for rfc 203/RSA 1.1
 	 * 
 	 * @see EndpointEventListener#endpointChanged(EndpointEvent, String)
 	 */
