@@ -35,7 +35,6 @@ Import-Package: javax.xml.parsers,
  org.osgi.util.tracker,
  org.xml.sax
 DynamicImport-Package: *
-Bundle-ActivationPolicy: lazy
 Provide-Capability: osgi.extender; osgi.extender=osgi.remoteserviceadmin; version:Version=1.1; uses:="org.osgi.service.remoteserviceadmin",
  osgi.remoteserviceadmin.discovery;protocols:List<String>="local";version:Version=1.1, 
  osgi.service; objectClass:List<String>="org.osgi.service.remoteserviceadmin.RemoteServiceAdmin";uses:="org.osgi.service.remoteserviceadmin"
