@@ -92,10 +92,6 @@ public class Activator implements BundleActivator {
 		return (DebugOptions) debugOptionsTracker.getService();
 	}
 
-	private void startDependents(String[] bundleNames) {
-
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -106,7 +102,7 @@ public class Activator implements BundleActivator {
 		plugin = this;
 		this.context = ctxt;
 		BundleStarter.startDependents(this.context, new String[] { "org.eclipse.equinox.common",
-				"org.eclipse.core.jobs", "org.eclipse.equinox.concurrent" }, Bundle.STARTING);
+				"org.eclipse.core.jobs", "org.eclipse.equinox.concurrent" }, Bundle.STARTING | Bundle.RESOLVED);
 
 		// Register IIDFactory service
 		idFactoryServiceRegistration = context.registerService(IIDFactory.class.getName(), IDFactory.getDefault(),
