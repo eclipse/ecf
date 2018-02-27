@@ -48,6 +48,7 @@ import org.osgi.resource.Capability;
 import org.osgi.service.log.LogService;
 import org.osgi.service.remoteserviceadmin.ExportRegistration;
 import org.osgi.service.remoteserviceadmin.ImportRegistration;
+import org.osgi.service.remoteserviceadmin.namespace.DiscoveryNamespace;
 import org.osgi.service.remoteserviceadmin.namespace.DistributionNamespace;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
@@ -111,20 +112,21 @@ public class Activator implements BundleActivator {
 					+ RSA_PROXY_BUNDLE_SYMBOLIC_ID + "') cannot be found, so RSA cannot be started"); //$NON-NLS-1$
 	}
 
-	private void initializeDistributionProviders() {
+	private void initializeProviders(Bundle hostBundle, String namespace, String startErrorMessage) {
 		for (final Bundle b : context.getBundles()) {
 			BundleRevision rb = AccessController.doPrivileged(new PrivilegedAction<BundleRevision>() {
 				public BundleRevision run() {
 					return b.adapt(BundleRevision.class);
 				}
 			});
-			List<Capability> capabilities = rb.getCapabilities(DistributionNamespace.DISTRIBUTION_NAMESPACE);
-			if (capabilities != null && capabilities.size() > 0)
+			List<Capability> capabilities = rb.getCapabilities(namespace);
+			if (capabilities != null && capabilities.size() > 0
+					&& !b.getSymbolicName().equals(hostBundle.getSymbolicName()))
 				try {
 					b.start();
 				} catch (BundleException e) {
-					LogUtility.logError("RemoteServiceAdmin.initializeDistributionProviders", DebugOptions.REMOTE_SERVICE_ADMIN, //$NON-NLS-1$
-							Activator.class, "Cannot start distribution provider bundle=" + b.getSymbolicName(), e); //$NON-NLS-1$
+					LogUtility.logError("RemoteServiceAdmin.initializeProviders", DebugOptions.REMOTE_SERVICE_ADMIN, //$NON-NLS-1$
+							Activator.class, startErrorMessage + " bundle=" + b.getSymbolicName(), e); //$NON-NLS-1$
 				}
 		}
 	}
@@ -221,8 +223,8 @@ public class Activator implements BundleActivator {
 		try {
 			BundleStarter.startDependents(context, DEPENDENT_BUNDLES, Bundle.RESOLVED | Bundle.STARTING);
 		} catch (BundleException e) {
-			LogUtility.logError("RemoteServiceAdmin.initializeDependents", DebugOptions.REMOTE_SERVICE_ADMIN, this.getClass(), //$NON-NLS-1$
-					"Cannot start RSA dependent bundle", e); //$NON-NLS-1$
+			LogUtility.logError("RemoteServiceAdmin.initializeDependents", DebugOptions.REMOTE_SERVICE_ADMIN, //$NON-NLS-1$
+					this.getClass(), "Cannot start RSA dependent bundle", e); //$NON-NLS-1$
 		}
 	}
 
@@ -230,8 +232,7 @@ public class Activator implements BundleActivator {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext
-	 * )
+	 * org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext )
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
@@ -248,7 +249,11 @@ public class Activator implements BundleActivator {
 		// https://mail.osgi.org/pipermail/osgi-dev/2011-February/003000.html
 		initializeProxyServiceFactoryBundle();
 		// Start distribution providers if not already started
-		initializeDistributionProviders();
+		initializeProviders(context.getBundle(), DistributionNamespace.DISTRIBUTION_NAMESPACE,
+				"Could not start distribution provider. "); //$NON-NLS-1$
+		// Start distribution providers if not already started
+		initializeProviders(context.getBundle(), DiscoveryNamespace.DISCOVERY_NAMESPACE,
+				"Could not start discovery provider. "); //$NON-NLS-1$
 		// make remote service admin available
 		rsaProps = new Properties();
 		rsaProps.put(RemoteServiceAdmin.SERVICE_PROP, new Boolean(true));
@@ -362,7 +367,7 @@ public class Activator implements BundleActivator {
 			}
 		}
 		stopProxyServiceFactoryBundle();
-		
+
 		synchronized (importedRegistrations) {
 			if (importedRegistrations != null) {
 				importedRegistrations.clear();
