@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainerManager;
+import org.eclipse.ecf.core.util.BundleStarter;
 import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.core.util.SystemLogService;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
@@ -59,6 +60,9 @@ public class Activator implements BundleActivator {
 
 	private static BundleContext context;
 	private static Activator instance;
+
+	private static final String[] DEPENDENT_BUNDLES = new String[] { "org.eclipse.ecf.identity", "org.eclipse.ecf", //$NON-NLS-1$ //$NON-NLS-2$
+			"org.eclipse.ecf.discovery", "org.eclipse.ecf.remoteservice", "org.eclipse.ecf.remoteservice.asyncproxy" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 	public static BundleContext getContext() {
 		return context;
@@ -213,6 +217,15 @@ public class Activator implements BundleActivator {
 				ris.toArray(new String[ris.size()]));
 	}
 
+	private void initializeDependents() {
+		try {
+			BundleStarter.startDependents(context, DEPENDENT_BUNDLES, Bundle.RESOLVED | Bundle.STARTING);
+		} catch (BundleException e) {
+			LogUtility.logError("RemoteServiceAdmin.initializeDependents", DebugOptions.REMOTE_SERVICE_ADMIN, this.getClass(), //$NON-NLS-1$
+					"Cannot start RSA dependent bundle", e); //$NON-NLS-1$
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -225,6 +238,8 @@ public class Activator implements BundleActivator {
 		Activator.instance = this;
 		this.exportedRegistrations = new ArrayList<ExportRegistration>();
 		this.importedRegistrations = new ArrayList<ImportRegistration>();
+		// start dependent bundles first
+		initializeDependents();
 		// initialize the RSA proxy service factory bundle...so that we
 		// can get/use *that bundle's BundleContext for registering the
 		// proxy ServiceFactory.
