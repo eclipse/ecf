@@ -6,6 +6,7 @@ Bundle-SymbolicName: org.eclipse.ecf.remoteservice.rest;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.remoteservice.rest
 Bundle-Version: 2.7.200.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.remoteservice.rest.Activator
+Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global
 DynamicImport-Package: *
 Bundle-RequiredExecutionEnvironment: J2SE-1.4

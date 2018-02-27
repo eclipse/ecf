@@ -9,6 +9,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.osgi.services.remoteserviceadmin;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Dictionary;
@@ -20,7 +22,6 @@ import java.util.UUID;
 
 import javax.xml.parsers.SAXParserFactory;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ContainerTypeDescription;
@@ -32,18 +33,21 @@ import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionLocat
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IServiceInfoFactory;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.ServiceInfoFactory;
-import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
+import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.resource.Capability;
 import org.osgi.service.log.LogService;
 import org.osgi.service.remoteserviceadmin.ExportRegistration;
 import org.osgi.service.remoteserviceadmin.ImportRegistration;
+import org.osgi.service.remoteserviceadmin.namespace.DistributionNamespace;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
@@ -103,6 +107,24 @@ public class Activator implements BundleActivator {
 					+ RSA_PROXY_BUNDLE_SYMBOLIC_ID + "') cannot be found, so RSA cannot be started"); //$NON-NLS-1$
 	}
 
+	private void initializeDistributionProviders() {
+		for (final Bundle b : context.getBundles()) {
+			BundleRevision rb = AccessController.doPrivileged(new PrivilegedAction<BundleRevision>() {
+				public BundleRevision run() {
+					return b.adapt(BundleRevision.class);
+				}
+			});
+			List<Capability> capabilities = rb.getCapabilities(DistributionNamespace.DISTRIBUTION_NAMESPACE);
+			if (capabilities != null && capabilities.size() > 0)
+				try {
+					b.start();
+				} catch (BundleException e) {
+					LogUtility.logError("RemoteServiceAdmin.initializeDistributionProviders", DebugOptions.REMOTE_SERVICE_ADMIN, //$NON-NLS-1$
+							Activator.class, "Cannot start distribution provider bundle=" + b.getSymbolicName(), e); //$NON-NLS-1$
+				}
+		}
+	}
+
 	private void stopProxyServiceFactoryBundle() {
 		if (proxyServiceFactoryBundleContext != null) {
 			// stop it
@@ -141,7 +163,7 @@ public class Activator implements BundleActivator {
 				rcs.remove(descSupportedConfigs[j]);
 			String[] descSupportedIntents = ctd.getSupportedIntents();
 			for (int j = 0; j < descSupportedIntents.length; j++)
-				ris.remove(descSupportedIntents);
+				ris.remove(descSupportedIntents[j]);
 		}
 		// set rsaProps to new values
 		rsaProps.put(org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_CONFIGS_SUPPORTED,
@@ -210,35 +232,22 @@ public class Activator implements BundleActivator {
 		// approach/using the ServiceFactory extender approach for this purpose:
 		// https://mail.osgi.org/pipermail/osgi-dev/2011-February/003000.html
 		initializeProxyServiceFactoryBundle();
-
+		// Start distribution providers if not already started
+		initializeDistributionProviders();
 		// make remote service admin available
 		rsaProps = new Properties();
 		rsaProps.put(RemoteServiceAdmin.SERVICE_PROP, new Boolean(true));
-
-		IContainerManager containerManager = getContainerManager();
-		Assert.isNotNull(containerManager,
-				"Container manager service must be present to start ECF Remote Service Admin"); //$NON-NLS-1$
-
-		ContainerTypeDescription[] remoteServiceDescriptions = containerManager.getContainerFactory()
-				.getDescriptionsForContainerAdapter(IRemoteServiceContainerAdapter.class);
-		// The following adds the standard supported configs and supported
-		// intents
-		// values for all remote service descriptions to rsaProps
-		for (int i = 0; i < remoteServiceDescriptions.length; i++)
-			addSupportedConfigsAndIntents(remoteServiceDescriptions[i]);
-
 		// Register Remote Service Admin factory, with rsaProps
 		remoteServiceAdminRegistration = context.registerService(
 				org.osgi.service.remoteserviceadmin.RemoteServiceAdmin.class.getName(), new ServiceFactory() {
 					public Object getService(Bundle bundle, ServiceRegistration registration) {
 						RemoteServiceAdmin result = null;
 						synchronized (remoteServiceAdmins) {
-							RemoteServiceAdmin rsa = remoteServiceAdmins.get(bundle);
-							if (rsa == null) {
-								rsa = new RemoteServiceAdmin(bundle, exportedRegistrations, importedRegistrations);
-								remoteServiceAdmins.put(bundle, rsa);
+							result = remoteServiceAdmins.get(bundle);
+							if (result == null) {
+								result = new RemoteServiceAdmin(bundle, exportedRegistrations, importedRegistrations);
+								remoteServiceAdmins.put(bundle, result);
 							}
-							result = rsa;
 						}
 						return result;
 					}
