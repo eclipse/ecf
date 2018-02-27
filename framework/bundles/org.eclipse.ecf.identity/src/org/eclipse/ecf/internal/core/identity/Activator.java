@@ -92,16 +92,22 @@ public class Activator implements BundleActivator {
 		return (DebugOptions) debugOptionsTracker.getService();
 	}
 
+	private void startDependents(String[] bundleNames) {
+
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
+	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void start(BundleContext ctxt) throws Exception {
 		plugin = this;
 		this.context = ctxt;
+		BundleStarter.startDependents(this.context, new String[] { "org.eclipse.equinox.common",
+				"org.eclipse.core.jobs", "org.eclipse.equinox.concurrent" }, Bundle.STARTING);
+
 		// Register IIDFactory service
 		idFactoryServiceRegistration = context.registerService(IIDFactory.class.getName(), IDFactory.getDefault(),
 				null);
@@ -237,11 +243,9 @@ public class Activator implements BundleActivator {
 			} catch (final CoreException e) {
 				getDefault().log(e.getStatus());
 			} catch (final Exception e) {
-				getDefault().log(new Status(IStatus.ERROR, bundleName, FACTORY_NAME_COLLISION_ERRORCODE,
-						"name=" //$NON-NLS-1$
-								+ nsName + ";extension point id=" //$NON-NLS-1$
-								+ extension.getExtensionPointUniqueIdentifier(),
-						null));
+				getDefault().log(new Status(IStatus.ERROR, bundleName, FACTORY_NAME_COLLISION_ERRORCODE, "name=" //$NON-NLS-1$
+						+ nsName + ";extension point id=" //$NON-NLS-1$
+						+ extension.getExtensionPointUniqueIdentifier(), null));
 			}
 		}
 	}
@@ -266,8 +270,7 @@ public class Activator implements BundleActivator {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
+	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext ctxt) throws Exception {
 		SafeRunner.run(new ExtensionRegistryRunnable(ctxt) {
