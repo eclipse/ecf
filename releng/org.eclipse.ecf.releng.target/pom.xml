@@ -45,6 +45,11 @@
                   <type>target</type>
                   <classifier>ecf-neon</classifier>
                 </artifact>
+                <artifact>
+                  <file>ecf-oxygen.target</file>
+                  <type>target</type>
+                  <classifier>ecf-oxygen</classifier>
+                </artifact>
               </artifacts>
             </configuration>
           </execution>
