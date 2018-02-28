@@ -32,6 +32,11 @@ public interface ITopologyManager {
 
 	public static final String ONLY_ECF_SCOPE = "(" + RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE + "=*)"; //$NON-NLS-1$ //$NON-NLS-2$
 
+	public static final String EXPORT_REGISTERED_SERVICES_FILTER_PROP = "exportRegisteredServicesFilter"; //$NON-NLS-1$
+	public static final String EXPORT_REGISTERED_SERVICES_FILTER = System.getProperty(
+			ITopologyManager.class.getName() + "." + EXPORT_REGISTERED_SERVICES_FILTER_PROP, //$NON-NLS-1$
+			"(service.exported.interfaces=*)"); //$NON-NLS-1$
+	
 	public String[] getEndpointFilters();
 	public String[] setEndpointFilters(String[] newFilters);
 

@@ -15,7 +15,9 @@ import org.eclipse.ecf.osgi.services.remoteserviceadmin.AbstractTopologyManager;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.remoteserviceadmin.EndpointEvent;
 import org.osgi.service.remoteserviceadmin.EndpointEventListener;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent;
@@ -118,4 +120,39 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements Endp
 			String matchedFilter) {
 		handleECFEndpointModified((EndpointDescription) endpoint);
 	}
+	
+	protected void exportRegisteredServices(String exportRegisteredSvcsFilter) {
+		try {
+			final ServiceReference[] existingServiceRefs = getContext()
+					.getAllServiceReferences(null, exportRegisteredSvcsFilter);
+			// Now export as if the service was registering right now...i.e.
+			// perform
+			// export
+			if (existingServiceRefs != null && existingServiceRefs.length > 0) {
+				// After having collected all pre-registered services (with
+				// marker prop) we are going to asynchronously remote them.
+				// Registering potentially is a long-running operation (due to
+				// discovery I/O...) and thus should no be carried out in the
+				// OSGi FW thread. (https://bugs.eclipse.org/405027)
+				new Thread(new Runnable() {
+					public void run() {
+						for (int i = 0; i < existingServiceRefs.length; i++) {
+							// This method will check the service properties for
+							// remote service props. If previously registered as
+							// a
+							// remote service, it will export the remote
+							// service if not it will simply return/skip
+							handleServiceRegistering(existingServiceRefs[i]);
+						}
+					}
+				}, "BasicTopologyManagerPreRegSrvExporter").start(); //$NON-NLS-1$
+			}
+		} catch (InvalidSyntaxException e) {
+			logError("exportRegisteredServices", //$NON-NLS-1$
+					"Could not retrieve existing service references for exportRegisteredSvcsFilter=" //$NON-NLS-1$
+							+ exportRegisteredSvcsFilter,
+					e);
+		}
+	}
+
 }

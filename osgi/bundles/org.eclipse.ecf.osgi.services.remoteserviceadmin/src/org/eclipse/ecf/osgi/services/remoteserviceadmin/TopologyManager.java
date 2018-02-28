@@ -203,6 +203,11 @@ public class TopologyManager
 						}
 					}
 				}, (Dictionary<String, Object>) props);
+		String exportRegisteredSvcsFilter = (String) properties.get(EXPORT_REGISTERED_SERVICES_FILTER_PROP);
+		if (exportRegisteredSvcsFilter == null)
+			exportRegisteredSvcsFilter = EXPORT_REGISTERED_SERVICES_FILTER;
+		
+		this.topologyManagerImpl.exportRegisteredServices(exportRegisteredSvcsFilter);
 	}
 
 	protected Dictionary<String, Object> createEndpointListenerProps(List<String> filters) {

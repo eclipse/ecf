@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="deactivate" immediate="true" name="org.eclipse.ecf.internal.osgi.services.distribution.BasicTopologyManager">
+   <service>
+      <provide interface="org.osgi.framework.hooks.service.EventListenerHook"/>
+      <provide interface="org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener"/>
+      <provide interface="org.eclipse.ecf.osgi.services.remoteserviceadmin.ITopologyManager"/>
+   </service>
+   <implementation class="org.eclipse.ecf.internal.osgi.services.distribution.BasicTopologyManager"/>
+</scr:component>
