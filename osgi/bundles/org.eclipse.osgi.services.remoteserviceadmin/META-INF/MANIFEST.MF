@@ -2,7 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %bundle.name
 Bundle-SymbolicName: org.eclipse.osgi.services.remoteserviceadmin
-Bundle-Version: 1.6.100.qualifier
+Automatic-Module-Name: org.eclipse.osgi.services.remoteserviceadmin
+Bundle-Version: 1.6.200.qualifier
 Bundle-Vendor: %bundle.provider
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-Localization: bundle
