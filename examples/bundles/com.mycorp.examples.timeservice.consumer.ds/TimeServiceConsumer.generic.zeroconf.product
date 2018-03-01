@@ -24,7 +24,6 @@
    <windowImages/>
 
    <launcher>
-      <solaris/>
       <win useIco="false">
          <bmp/>
       </win>
@@ -40,6 +39,7 @@
       <plugin id="org.apache.felix.gogo.command"/>
       <plugin id="org.apache.felix.gogo.runtime"/>
       <plugin id="org.apache.felix.gogo.shell"/>
+      <plugin id="org.apache.felix.scr"/>
       <plugin id="org.eclipse.core.jobs"/>
       <plugin id="org.eclipse.ecf"/>
       <plugin id="org.eclipse.ecf.console"/>
@@ -63,6 +63,7 @@
       <plugin id="org.eclipse.osgi"/>
       <plugin id="org.eclipse.osgi.services"/>
       <plugin id="org.eclipse.osgi.services.remoteserviceadmin"/>
+      <plugin id="org.eclipse.osgi.util"/>
    </plugins>
 
    <configurations>

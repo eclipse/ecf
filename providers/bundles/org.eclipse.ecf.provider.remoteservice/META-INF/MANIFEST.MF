@@ -17,7 +17,7 @@ Require-Bundle: org.eclipse.equinox.common;bundle-version="[3.0.0,4.0.0)",
  org.eclipse.ecf.provider;bundle-version="[4.0.0,5.0.0)",
  org.eclipse.ecf.remoteservice;bundle-version="6.0.0"
 Import-Package: org.eclipse.core.runtime.jobs,
- org.eclipse.ecf.remoteservice.asyncproxy;version="[1.0.0,2.0.0)",
+ org.eclipse.ecf.remoteservice.asyncproxy;version="[1.0.0,3.0.0)",
  org.eclipse.equinox.concurrent.future;version="[1.0.0,2.0.0)",
  org.eclipse.osgi.framework.eventmgr;version="[1.0.0,2.0.0)",
  org.osgi.framework;version="[1.0.0,2.0.0)",

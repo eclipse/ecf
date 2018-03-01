@@ -23,7 +23,6 @@
    <windowImages/>
 
    <launcher>
-      <solaris/>
       <win useIco="false">
          <bmp/>
       </win>
@@ -36,7 +35,6 @@
       <plugin id="com.mycorp.examples.timeservice.async"/>
       <plugin id="com.mycorp.examples.timeservice.consumer.ds"/>
       <plugin id="com.mycorp.examples.timeservice.consumer.filediscovery"/>
-      <plugin id="com.mycorp.examples.timeservice.consumer.filediscovery.rest"/>
       <plugin id="org.apache.felix.gogo.command"/>
       <plugin id="org.apache.felix.gogo.runtime"/>
       <plugin id="org.apache.felix.gogo.shell"/>
@@ -67,7 +65,6 @@
    <configurations>
       <plugin id="com.mycorp.examples.timeservice.consumer.ds" autoStart="true" startLevel="0" />
       <plugin id="com.mycorp.examples.timeservice.consumer.filediscovery" autoStart="false" startLevel="0" />
-      <plugin id="com.mycorp.examples.timeservice.consumer.filediscovery.rest" autoStart="false" startLevel="0" />
       <plugin id="org.apache.felix.gogo.command" autoStart="true" startLevel="0" />
       <plugin id="org.apache.felix.gogo.runtime" autoStart="true" startLevel="0" />
       <plugin id="org.apache.felix.gogo.shell" autoStart="true" startLevel="0" />
