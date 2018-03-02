@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="TimeServiceHost Generic Etcd Discovery" uid="com.mycorp.examples.timeservice.host.generic.etcd.java8.product" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="false">
+<product name="TimeServiceHost Generic Etcd Discovery" uid="com.mycorp.examples.timeservice.host.generic.etcd.java8.product" version="1.1.0.qualifier" useFeatures="false" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>
@@ -16,7 +16,7 @@
 -Decf.generic.server.port=3288
 -Decf.generic.server.hostname=localhost
 -Decf.exported.async.interfaces=*
--Decf.discovery.etcd.hostname=localhost
+-Decf.discovery.etcd.hostname=disco.ecf-project.org
 -Decf.discovery.etcd.port=2379
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
