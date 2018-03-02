@@ -2,8 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %bundleName
 Bundle-SymbolicName: org.eclipse.ecf.examples.remoteservices.hello.host.rs
+Automatic-Module-Name: org.eclipse.ecf.examples.remoteservices.hello.host.rs
 Bundle-Vendor: %bundleProvider
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.0.100.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.examples.remoteservices.hello.host.rs.Activator
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
