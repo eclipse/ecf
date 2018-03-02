@@ -2,7 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %bundleName
 Bundle-SymbolicName: org.eclipse.ecf.examples.loadbalancing.server;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: org.eclipse.ecf.examples.loadbalancing.server
+Bundle-Version: 1.0.100.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.examples.loadbalancing.server.Activator
 Bundle-Vendor: %bundleProvider
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
