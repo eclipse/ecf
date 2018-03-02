@@ -2,7 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.tests.provider.jmdns
-Bundle-Version: 3.0.0.qualifier
+Automatic-Module-Name: org.eclipse.ecf.tests.provider.jmdns
+Bundle-Version: 3.0.100.qualifier
 Require-Bundle: org.eclipse.equinox.common;bundle-version="3.5.0",
  org.eclipse.ecf;bundle-version="3.0.0",
  org.eclipse.ecf.discovery;bundle-version="3.0.0",

@@ -2,7 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF Httpclient4 Provider Tests
 Bundle-SymbolicName: org.eclipse.ecf.tests.filetransfer.httpclient4
-Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: org.eclipse.ecf.tests.filetransfer.httpclient4
+Bundle-Version: 1.0.100.qualifier
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Require-Bundle: org.eclipse.equinox.common;bundle-version="3.6.100",
  org.eclipse.ecf;bundle-version="3.1.300",

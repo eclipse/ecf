@@ -2,7 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.tests.provider.discovery
-Bundle-Version: 2.1.0.qualifier
+Automatic-Module-Name: org.eclipse.ecf.tests.provider.discovery
+Bundle-Version: 2.1.100.qualifier
 Import-Package: org.eclipse.equinox.concurrent.future;version="1.0.0",
  org.osgi.framework;version="1.4.0",
  org.osgi.framework.hooks.service;version="1.0.0",

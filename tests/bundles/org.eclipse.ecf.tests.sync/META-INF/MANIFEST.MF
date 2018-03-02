@@ -2,7 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.tests.sync
-Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: org.eclipse.ecf.tests.sync
+Bundle-Version: 1.0.100.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.tests.sync.Activator
 Bundle-Vendor: %plugin.provider
 Bundle-RequiredExecutionEnvironment: J2SE-1.4

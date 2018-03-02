@@ -2,7 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.ui.capabilities;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: org.eclipse.ecf.ui.capabilities
+Bundle-Version: 1.0.100.qualifier
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui

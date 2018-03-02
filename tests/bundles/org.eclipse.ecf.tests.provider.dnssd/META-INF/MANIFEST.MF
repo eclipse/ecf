@@ -2,7 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Tests for ECF DNS-SD discovery provider
 Bundle-SymbolicName: org.eclipse.ecf.tests.provider.dnssd
-Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: org.eclipse.ecf.tests.provider.dnssd
+Bundle-Version: 1.0.100.qualifier
 Bundle-Vendor: Eclipse.org
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Require-Bundle: org.eclipse.equinox.common;bundle-version="3.4.0",

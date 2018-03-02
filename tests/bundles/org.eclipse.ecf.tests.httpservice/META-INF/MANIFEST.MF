@@ -3,7 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-Vendor: %plugin.provider
 Bundle-SymbolicName: org.eclipse.ecf.tests.httpservice.util
-Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: org.eclipse.ecf.tests.httpservice.util
+Bundle-Version: 1.0.100.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.tests.httpservice.Activator
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

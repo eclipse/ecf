@@ -2,7 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF Core Tests
 Bundle-SymbolicName: org.eclipse.ecf.tests.core
-Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: org.eclipse.ecf.tests.core
+Bundle-Version: 1.0.100.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.tests.core.Activator
 Bundle-Vendor: Eclipse.org - ECF
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

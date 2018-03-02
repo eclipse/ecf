@@ -2,7 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: NIO Datashare Implementation Tests
 Bundle-SymbolicName: org.eclipse.ecf.tests.provider.datashare.nio
-Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: org.eclipse.ecf.tests.provider.datashare.nio
+Bundle-Version: 1.0.100.qualifier
 Fragment-Host: org.eclipse.ecf.provider.datashare.nio
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Require-Bundle: org.junit
