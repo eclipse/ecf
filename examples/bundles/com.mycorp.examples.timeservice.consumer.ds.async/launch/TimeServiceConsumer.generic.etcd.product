@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="TimeServiceConsumer Generic Etcd Discovery" uid="com.mycorp.examples.timeservice.consumer.generic.etcd.product" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="false">
+<product name="TimeServiceConsumer Generic Etcd Discovery" uid="com.mycorp.examples.timeservice.consumer.generic.etcd.java8.product" version="1.1.0.qualifier" useFeatures="false" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>
@@ -10,10 +10,13 @@
       <programArgs>-consoleLog -console
       </programArgs>
       <vmArgs>-Declipse.ignoreApp=true 
--Dosgi.noShutdown=true
+-Dosgi.noShutdown=true 
 -DverboseRemoteServiceAdmin=true
--Decf.discovery.etcd.hostname=localhost
--Decf.discovery.etcd.port=2379
+-Dservice.exported.configs=ecf.generic.server.java8
+-Decf.generic.server.java8.port=3288
+-Decf.generic.server.java8.hostname=localhost
+-Decf.exported.async.interfaces=*
+-Decf.discovery.etcd.hostname=127.0.0.1
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
@@ -22,7 +25,6 @@
    <windowImages/>
 
    <launcher>
-      <solaris/>
       <win useIco="false">
          <bmp/>
       </win>
@@ -38,9 +40,9 @@
       <plugin id="org.apache.felix.gogo.command"/>
       <plugin id="org.apache.felix.gogo.runtime"/>
       <plugin id="org.apache.felix.gogo.shell"/>
+      <plugin id="org.apache.felix.scr"/>
       <plugin id="org.eclipse.core.jobs"/>
       <plugin id="org.eclipse.ecf"/>
-      <plugin id="org.eclipse.ecf.console"/>
       <plugin id="org.eclipse.ecf.discovery"/>
       <plugin id="org.eclipse.ecf.identity"/>
       <plugin id="org.eclipse.ecf.osgi.services.distribution"/>
@@ -52,7 +54,6 @@
       <plugin id="org.eclipse.ecf.remoteservice"/>
       <plugin id="org.eclipse.ecf.remoteservice.asyncproxy"/>
       <plugin id="org.eclipse.ecf.sharedobject"/>
-      <plugin id="org.eclipse.ecf.ssl" fragment="true"/>
       <plugin id="org.eclipse.equinox.common"/>
       <plugin id="org.eclipse.equinox.concurrent"/>
       <plugin id="org.eclipse.equinox.console"/>
@@ -74,16 +75,15 @@
       <plugin id="org.apache.felix.gogo.shell" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.core.jobs" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.ecf.console" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.discovery" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.identity" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.ecf.osgi.services.distribution" autoStart="true" startLevel="5" />
+      <plugin id="org.eclipse.ecf.osgi.services.distribution" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.provider" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.ecf.provider.etcd" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.provider.remoteservice" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.remoteservice" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.ecf.remoteservice.asyncproxy" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.ecf.sharedobject" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.concurrent" autoStart="true" startLevel="0" />
@@ -94,7 +94,6 @@
       <plugin id="org.eclipse.osgi" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.osgi.services" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.osgi.services.remoteserviceadmin" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.osgi.util" autoStart="true" startLevel="0" />
    </configurations>
 
 </product>
