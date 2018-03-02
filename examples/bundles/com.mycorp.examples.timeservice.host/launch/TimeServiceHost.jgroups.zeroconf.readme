@@ -2,12 +2,3 @@ The use of the TimeServiceHost.jgroups.zeroconf.product relies on the presence o
 org.eclipse.ecf.provider.jgroups distribution provider.  This bundle is available 
 as described here:  https://wiki.eclipse.org/Distribution_Providers
 
-It also assumes that an etcd server is running on localhost at port 2379.  The system properties
-in the product config are currently set to localhost and port 2379 via:
-
--Decf.discovery.etcd.hostname=localhost
--Decf.discovery.etcd.port=2379
-
-These can be changed in the product config or the generated launch config if desired to
-point at some other etcd server.
-

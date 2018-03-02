@@ -40,6 +40,7 @@ above would refer to a file location of (e.g.):
 
 c:\eclipsehome\security\server.ks
 
+Note that localhost port 433 must be available to allow the service to be exported via this provider
 
 
 

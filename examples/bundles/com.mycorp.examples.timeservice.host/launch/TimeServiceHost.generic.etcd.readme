@@ -2,10 +2,10 @@ The use of the TimeServiceHost.generic.etc.product relies on the presence of the
 org.eclipse.ecf.provider.etcd discovery provider.  This bundle is available 
 here:  https://github.com/ECF/etcd-provider/tree/master/bundles/org.eclipse.ecf.provider.etcd
 
-It also assumes that an etcd server is running on localhost at port 2379.  The system properties
-in the product config are currently set to localhost and port 2379 via:
+It also assumes that an etcd server is running on 127.0.0.1 at port 2379.  The system properties
+in the product config are currently set to 127.0.0.1 (localhost) and port 2379 via:
 
--Decf.discovery.etcd.hostname=localhost
+-Decf.discovery.etcd.hostname=127.0.0.1
 -Decf.discovery.etcd.port=2379
 
 These can be changed in the product config or the generated launch config if desired to

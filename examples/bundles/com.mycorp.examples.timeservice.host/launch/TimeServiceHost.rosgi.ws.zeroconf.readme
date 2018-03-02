@@ -16,3 +16,5 @@ Note that there is also a feature for building these two bundles via
 eclipse via the feature project located in 
 features/org.eclipse.ecf.remoteservices.rosgi.ws.feature
 
+Note that localhost port 433 must be open to allow the service to be exported via this provider
+

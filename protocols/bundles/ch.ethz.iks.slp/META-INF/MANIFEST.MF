@@ -2,11 +2,13 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Service Location Protocol (RFC 2608) Implementation
 Bundle-SymbolicName: ch.ethz.iks.slp
-Bundle-Version: 1.1.100.qualifier
+Automatic-Module-Name: ch.ethz.iks.slp
+Bundle-Version: 1.1.200.qualifier
 Export-Package: ch.ethz.iks.slp;version="1.0.0"
 Bundle-Activator: ch.ethz.iks.slp.impl.Activator
 Bundle-Vendor: Eclipse.org - ECF
-Import-Package: org.osgi.framework, org.osgi.service.log
+Import-Package: org.osgi.framework;version="[1.0.0,2.0.0)",
+ org.osgi.service.log;version="[1.0.0,2.0.0)"
 Bundle-Description: jSLP, the pure Java Service Location Protocol implementation
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
