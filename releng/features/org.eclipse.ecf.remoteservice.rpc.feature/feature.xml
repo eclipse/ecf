@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.remoteservice.rpc.feature"
       label="%featureName"
-      version="1.0.0.qualifier"
+      version="1.0.100.qualifier"
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
@@ -12,7 +12,7 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
    </description>
 
    <copyright>
-     ############################################################################
+      ############################################################################
 # Copyright (c) 2010-2011 Naumen, IBM Corp, and others.
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License v1.0

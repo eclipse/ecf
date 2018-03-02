@@ -2,7 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name 
 Bundle-SymbolicName: org.eclipse.ecf.server
-Bundle-Version: 2.1.100.qualifier
+Automatic-Module-Name: org.eclipse.ecf.server
+Bundle-Version: 2.1.200.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.server.Activator
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin

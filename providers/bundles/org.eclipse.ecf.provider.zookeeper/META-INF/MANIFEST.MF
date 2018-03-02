@@ -2,7 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %bundle.name
 Bundle-SymbolicName: org.eclipse.ecf.provider.zookeeper;singleton:=true
-Bundle-Version: 1.2.100.qualifier
+Automatic-Module-Name: org.eclipse.ecf.provider.zookeeper
+Bundle-Version: 1.2.200.qualifier
 Bundle-Activator: org.eclipse.ecf.provider.zookeeper.DiscoveryActivator
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

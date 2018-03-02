@@ -2,7 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.remoteservice.ui;singleton:=true
-Bundle-Version: 3.4.100.qualifier
+Automatic-Module-Name: org.eclipse.ecf.remoteservice.ui
+Bundle-Version: 3.4.200.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,

@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.remoteservice.soa.feature"
       label="ECF Service-Oriented Architecture"
-      version="2.0.0.qualifier">
+      version="2.0.100.qualifier">
 
    <description url="http://www.eclipse.org/ecf">
       This feature provides the ECF SOA Target Components.
