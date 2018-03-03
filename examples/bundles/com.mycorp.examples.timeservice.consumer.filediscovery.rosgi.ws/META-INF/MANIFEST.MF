@@ -2,7 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF TimeService Example EDEF Filediscovery for Consumer
 Bundle-SymbolicName: com.mycorp.examples.timeservice.consumer.filediscovery.rosgi.ws
-Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: com.mycorp.examples.timeservice.consumer.filediscovery.rosgi.ws
+Bundle-Version: 1.0.100.qualifier
 Bundle-Vendor: MYCORP
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Remote-Service: timeserviceendpointdescription.xml
