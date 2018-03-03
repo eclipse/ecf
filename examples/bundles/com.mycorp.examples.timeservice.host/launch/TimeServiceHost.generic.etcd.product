@@ -16,7 +16,7 @@
 -Decf.generic.server.port=3288
 -Decf.generic.server.hostname=localhost
 -Decf.exported.async.interfaces=*
--Decf.discovery.etcd.hostname=localhost
+-Decf.discovery.etcd.hostname=127.0.0.1
 -Decf.discovery.etcd.port=2379
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
