@@ -24,7 +24,7 @@ public class GUID extends StringID {
 		private static final long serialVersionUID = -8546568877571886386L;
 
 		public GUIDNamespace() {
-			super(GUID.class.getName(), "GUID Namespace"); //$NON-NLS-1$
+			super(GUID.class.getName(), "GUID Namespace. Default based upon 20-byte SecureRandom in Base64 format"); //$NON-NLS-1$
 		}
 
 		public ID createInstance(Object[] args) throws IDCreateException {
@@ -56,7 +56,7 @@ public class GUID extends StringID {
 		 * getSupportedParameterTypesForCreateInstance()
 		 */
 		public Class<?>[][] getSupportedParameterTypes() {
-			return new Class[][] { {}, { Integer.class } };
+			return new Class[][] { {}, { Integer.class }, { String.class } };
 		}
 
 	}
@@ -80,15 +80,13 @@ public class GUID extends StringID {
 	 * @param byteLength
 	 *            the length of the target number (in bytes)
 	 */
-	protected GUID(Namespace n, String algo, String provider, int byteLength)
-			throws IDCreateException {
+	protected GUID(Namespace n, String algo, String provider, int byteLength) throws IDCreateException {
 		super(n, ""); //$NON-NLS-1$
 		// Get SecureRandom instance for class
 		try {
 			getRandom(algo, provider);
 		} catch (Exception e) {
-			throw new IDCreateException(
-					"GUID creation failure: " + e.getMessage()); //$NON-NLS-1$
+			throw new IDCreateException("GUID creation failure: " + e.getMessage()); //$NON-NLS-1$
 		}
 		// make sure we have reasonable byteLength
 		if (byteLength <= 0)
@@ -116,17 +114,16 @@ public class GUID extends StringID {
 	 * Get SecureRandom instance for creation of random number.
 	 * 
 	 * @param algo
-	 *            the String algorithm specification (e.g. "SHA1PRNG") for
-	 *            creation of the SecureRandom instance
+	 *            the String algorithm specification (e.g. "SHA1PRNG") for creation
+	 *            of the SecureRandom instance
 	 * @param provider
-	 *            the provider of the implementation of the given algorighm
-	 *            (e.g. "SUN")
+	 *            the provider of the implementation of the given algorighm (e.g.
+	 *            "SUN")
 	 * @return SecureRandom
 	 * @exception Exception
 	 *                thrown if SecureRandom instance cannot be created/accessed
 	 */
-	protected static synchronized SecureRandom getRandom(String algo,
-			String provider) throws Exception {
+	protected static synchronized SecureRandom getRandom(String algo, String provider) throws Exception {
 		// Given algo and provider, get SecureRandom instance
 		if (random == null) {
 			initializeRandom(algo, provider);
@@ -134,8 +131,7 @@ public class GUID extends StringID {
 		return random;
 	}
 
-	protected static synchronized void initializeRandom(String algo,
-			String provider) throws Exception {
+	protected static synchronized void initializeRandom(String algo, String provider) throws Exception {
 		if (provider == null) {
 			if (algo == null) {
 				try {

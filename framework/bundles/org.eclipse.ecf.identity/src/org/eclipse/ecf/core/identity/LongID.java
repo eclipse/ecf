@@ -53,7 +53,7 @@ public class LongID extends BaseID {
 		 * getSupportedParameterTypesForCreateInstance()
 		 */
 		public Class<?>[][] getSupportedParameterTypes() {
-			return new Class[][] { { Long.class } };
+			return new Class[][] { { Long.class }, { String.class } };
 		}
 	}
 
