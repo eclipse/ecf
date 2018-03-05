@@ -112,8 +112,7 @@ public abstract class AbstractCommand {
 						"ID=%s\n" + "\tScheme=%s\n" + "\tImplClass=%s\n" + "\tDescription=%s\n"
 								+ "\tFactoryConstructors=%s\n" + "\tSupportedSchemes=%s",
 						ns.getName(), ns.getScheme(), ns.getClass().getName(), ns.getDescription(),
-						printClassArrays(ns.getSupportedParameterTypes()),
-						printStringArray(ns.getSupportedSchemes()));
+						printClassArrays(ns.getSupportedParameterTypes()), printStringArray(ns.getSupportedSchemes()));
 				return f.toString();
 			}
 		default:
@@ -132,14 +131,11 @@ public abstract class AbstractCommand {
 			}
 		case Converter.INSPECT:
 			try (Formatter f = new Formatter();) {
-				f.format(
-						"ID=%s\n" + "\tDescription=%s\n" + "\tSupportedConfigs=%s\n" + "\tSupportedIntents=%s\n"
-								+ "\tFactoryConstructors=%s\n" + "\tAdapterTypes=%s\n" + "\tHidden=%b\n" + "\tServer=%b",
+				f.format("ID=%s\n" + "\tDescription=%s\n" + "\tSupportedConfigs=%s\n" + "\tSupportedIntents=%s\n"
+						+ "\tFactoryConstructors=%s\n" + "\tAdapterTypes=%s\n" + "\tHidden=%b\n" + "\tServer=%b",
 						ctd.getName(), ctd.getDescription(), printStringArray(ctd.getSupportedConfigs()),
-						printStringArray(ctd.getSupportedIntents()),
-						printClassArrays(ctd.getSupportedParameterTypes()),
-						printStringArray(ctd.getSupportedAdapterTypes()),
-						ctd.isHidden(), ctd.isServer());
+						printStringArray(ctd.getSupportedIntents()), printClassArrays(ctd.getSupportedParameterTypes()),
+						printStringArray(ctd.getSupportedAdapterTypes()), ctd.isHidden(), ctd.isServer());
 				return f.toString();
 			}
 		default:
