@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0" immediate="true" name="org.eclipse.ecf.internal.console.ContainerCommand">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.eclipse.ecf.internal.console.ContainerCommand">
    <property name="osgi.command.scope" value="ecf"/>
    <property name="osgi.command.function">listcontainers
 lcs
@@ -14,7 +14,7 @@ lcfgs
       <provide interface="org.eclipse.ecf.internal.console.ContainerCommand"/>
       <provide interface="org.apache.felix.service.command.Converter"/>
    </service>
-   <reference cardinality="1..1" field="containerManager" interface="org.eclipse.ecf.core.IContainerManager" name="containerManager"/>
-   <reference cardinality="1..1" field="idFactory" interface="org.eclipse.ecf.core.identity.IIDFactory" name="idFactory"/>
+   <reference bind="bindContainerManager" interface="org.eclipse.ecf.core.IContainerManager" name="ContainerManager" unbind="unbindContainerManager"/>
+   <reference bind="bindIdentityFactory" interface="org.eclipse.ecf.core.identity.IIDFactory" name="IdentityFactory" unbind="unbindIdentityFactory"/>
    <implementation class="org.eclipse.ecf.internal.console.ContainerCommand"/>
 </scr:component>

@@ -28,11 +28,26 @@ import org.osgi.service.component.annotations.Reference;
 		"osgi.command.function=lcfgs" }, service = { ContainerCommand.class, Converter.class })
 public class ContainerCommand extends AbstractCommand implements Converter {
 
-	@Reference
 	private IContainerManager containerManager;
-	@Reference
 	private IIDFactory idFactory;
 
+	@Reference
+	void bindContainerManager(IContainerManager cm) {
+		this.containerManager = cm;
+	}
+	
+	void unbindContainerManager(IContainerManager cm) {
+		this.containerManager = null;
+	}
+	
+	@Reference
+	void bindIdentityFactory(IIDFactory idf) {
+		this.idFactory = idf;
+	}
+	
+	void unbindIdentityFactory(IIDFactory idf) {
+		this.idFactory = null;
+	}
 	protected IContainerManager getContainerManager() {
 		return this.containerManager;
 	}
