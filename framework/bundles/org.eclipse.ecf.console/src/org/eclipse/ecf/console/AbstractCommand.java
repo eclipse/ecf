@@ -54,20 +54,20 @@ public abstract class AbstractCommand {
 
 	protected String printClassArrays(Class<?>[][] types) {
 		if (types == null)
-			return "";
+			return ""; //$NON-NLS-1$
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < types.length; i++) {
 			Class<?>[] paramTypes = types[i];
-			sb.append("<init>").append("(");
+			sb.append("<init>").append("("); //$NON-NLS-1$ //$NON-NLS-2$
 			for (int j = 0; j < paramTypes.length; j++) {
 				Class<?> pType = paramTypes[j];
 				sb.append(pType.getName());
 				if (j + 1 < paramTypes.length)
-					sb.append(",");
+					sb.append(","); //$NON-NLS-1$
 			}
-			sb.append(")");
+			sb.append(")"); //$NON-NLS-1$
 			if (i + 1 < types.length)
-				sb.append(";");
+				sb.append(";"); //$NON-NLS-1$
 		}
 		return sb.toString();
 	}
@@ -75,19 +75,18 @@ public abstract class AbstractCommand {
 	protected String formatContainer(IContainer c, int level, Converter escape) {
 		ID cID = c.getID();
 		ID conID = c.getConnectedID();
-		String conIDStr = (conID == null) ? "" : conID.getName();
+		String conIDStr = (conID == null) ? "" : conID.getName(); //$NON-NLS-1$
 		Class<?> cClass = c.getClass();
 		switch (level) {
 		case Converter.LINE:
 			try (Formatter f = new Formatter();) {
-				f.format("%s        %s        %s", cID.getName(), cClass.getName(), conIDStr);
+				f.format("%s        %s        %s", cID.getName(), cClass.getName(), conIDStr); //$NON-NLS-1$
 				return f.toString();
 			}
 		case Converter.INSPECT:
 			try (Formatter f = new Formatter();) {
-				f.format(
-						"ID%s\n" + "\tIDNamespace=%s\n" + "\tImplClass=%s\n" + "\tConnectedTo=%s\n"
-								+ "\tConnectNamespace=%s\n" + "\tConfig=%s",
+				f.format("ID%s\n" + "\tIDNamespace=%s\n" + "\tImplClass=%s\n" + "\tConnectedTo=%s\n" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+						+ "\tConnectNamespace=%s\n" + "\tConfig=%s", //$NON-NLS-1$ //$NON-NLS-2$
 						cID.getName(), cID.getNamespace().getName(), cClass.getName(), conIDStr,
 						c.getConnectNamespace().getName(), getContainerTypeDescription(cID).getName());
 				return f.toString();
@@ -103,14 +102,13 @@ public abstract class AbstractCommand {
 			return null;
 		case Converter.LINE:
 			try (Formatter f = new Formatter();) {
-				f.format("%s", ns.getName());
+				f.format("%s", ns.getName()); //$NON-NLS-1$
 				return f.toString();
 			}
 		case Converter.INSPECT:
 			try (Formatter f = new Formatter();) {
-				f.format(
-						"ID=%s\n" + "\tScheme=%s\n" + "\tImplClass=%s\n" + "\tDescription=%s\n"
-								+ "\tFactoryConstructors=%s\n" + "\tSupportedSchemes=%s",
+				f.format("ID=%s\n" + "\tScheme=%s\n" + "\tImplClass=%s\n" + "\tDescription=%s\n" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+						+ "\tFactoryConstructors=%s\n" + "\tSupportedSchemes=%s", //$NON-NLS-1$ //$NON-NLS-2$
 						ns.getName(), ns.getScheme(), ns.getClass().getName(), ns.getDescription(),
 						printClassArrays(ns.getSupportedParameterTypes()), printStringArray(ns.getSupportedSchemes()));
 				return f.toString();
@@ -126,13 +124,13 @@ public abstract class AbstractCommand {
 			return null;
 		case Converter.LINE:
 			try (Formatter f = new Formatter();) {
-				f.format("%s", ctd.getName());
+				f.format("%s", ctd.getName()); //$NON-NLS-1$
 				return f.toString();
 			}
 		case Converter.INSPECT:
 			try (Formatter f = new Formatter();) {
-				f.format("ID=%s\n" + "\tDescription=%s\n" + "\tSupportedConfigs=%s\n" + "\tSupportedIntents=%s\n"
-						+ "\tFactoryConstructors=%s\n" + "\tAdapterTypes=%s\n" + "\tHidden=%b\n" + "\tServer=%b",
+				f.format("ID=%s\n" + "\tDescription=%s\n" + "\tSupportedConfigs=%s\n" + "\tSupportedIntents=%s\n" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+						+ "\tFactoryConstructors=%s\n" + "\tAdapterTypes=%s\n" + "\tHidden=%b\n" + "\tServer=%b", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 						ctd.getName(), ctd.getDescription(), printStringArray(ctd.getSupportedConfigs()),
 						printStringArray(ctd.getSupportedIntents()), printClassArrays(ctd.getSupportedParameterTypes()),
 						printStringArray(ctd.getSupportedAdapterTypes()), ctd.isHidden(), ctd.isServer());
@@ -144,7 +142,7 @@ public abstract class AbstractCommand {
 	}
 
 	protected String printStringArray(String[] strarr) {
-		return (strarr == null) ? "" : Arrays.asList(strarr).toString();
+		return (strarr == null) ? "" : Arrays.asList(strarr).toString(); //$NON-NLS-1$
 	}
 
 	public Object convert(Class<?> desiredType, Object in) throws Exception {

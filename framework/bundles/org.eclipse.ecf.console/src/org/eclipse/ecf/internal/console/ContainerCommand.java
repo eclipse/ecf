@@ -23,25 +23,24 @@ import org.osgi.service.component.annotations.Reference;
 
 @Component(immediate = true, property = { "osgi.command.scope=ecf", "osgi.command.function=listcontainers",
 		"osgi.command.function=lcs", "osgi.command.function=listnamespaces", "osgi.command.function=lns",
-		"osgi.command.function=listtypedescriptions",
-		"osgi.command.function=lctds",
+		"osgi.command.function=listtypedescriptions", "osgi.command.function=lctds",
 		"osgi.command.function=listconfigs",
-		"osgi.command.function=lcfgs"}, service = { ContainerCommand.class, Converter.class })
+		"osgi.command.function=lcfgs" }, service = { ContainerCommand.class, Converter.class })
 public class ContainerCommand extends AbstractCommand implements Converter {
 
 	@Reference
 	private IContainerManager containerManager;
 	@Reference
 	private IIDFactory idFactory;
-	
+
 	protected IContainerManager getContainerManager() {
 		return this.containerManager;
 	}
-	
+
 	protected IIDFactory getIDFactory() {
 		return this.idFactory;
 	}
-	
+
 	@Descriptor("List ECF container instances")
 	public List<IContainer> listcontainers() {
 		return getContainers();
@@ -52,11 +51,11 @@ public class ContainerCommand extends AbstractCommand implements Converter {
 		return listcontainers();
 	}
 
-	public IContainer listcontainers(@Descriptor("Container ID to list (String)")IContainer container) {
+	public IContainer listcontainers(@Descriptor("Container ID to list (String)") IContainer container) {
 		return container;
 	}
 
-	public IContainer lc(@Descriptor("Container ID to list (String)")IContainer container) {
+	public IContainer lc(@Descriptor("Container ID to list (String)") IContainer container) {
 		return container;
 	}
 
@@ -87,7 +86,7 @@ public class ContainerCommand extends AbstractCommand implements Converter {
 	public List<ContainerTypeDescription> lctd() {
 		return listtypedescriptions();
 	}
-	
+
 	@Descriptor("List ECF container configs")
 	public List<ContainerTypeDescription> listconfigs() {
 		return getConfigs();
@@ -96,8 +95,9 @@ public class ContainerCommand extends AbstractCommand implements Converter {
 	public List<ContainerTypeDescription> lcfgs() {
 		return listconfigs();
 	}
-	
-	public ContainerTypeDescription listtypedescriptions(@Descriptor("Config name to list (String)") ContainerTypeDescription ctd) {
+
+	public ContainerTypeDescription listtypedescriptions(
+			@Descriptor("Config name to list (String)") ContainerTypeDescription ctd) {
 		return ctd;
 	}
 
@@ -105,12 +105,13 @@ public class ContainerCommand extends AbstractCommand implements Converter {
 		return ctd;
 	}
 
-	public ContainerTypeDescription listconfigs(@Descriptor("Config name to list (String)") ContainerTypeDescription ctd) {
+	public ContainerTypeDescription listconfigs(
+			@Descriptor("Config name to list (String)") ContainerTypeDescription ctd) {
 		return ctd;
 	}
 
 	public ContainerTypeDescription lcfgs(@Descriptor("Config name to list (String)") ContainerTypeDescription ctd) {
 		return ctd;
 	}
-	
+
 }
