@@ -35,19 +35,20 @@ public class ContainerCommand extends AbstractCommand implements Converter {
 	void bindContainerManager(IContainerManager cm) {
 		this.containerManager = cm;
 	}
-	
+
 	void unbindContainerManager(IContainerManager cm) {
 		this.containerManager = null;
 	}
-	
+
 	@Reference
 	void bindIdentityFactory(IIDFactory idf) {
 		this.idFactory = idf;
 	}
-	
+
 	void unbindIdentityFactory(IIDFactory idf) {
 		this.idFactory = null;
 	}
+
 	protected IContainerManager getContainerManager() {
 		return this.containerManager;
 	}

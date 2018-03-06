@@ -85,7 +85,7 @@ public abstract class AbstractCommand {
 			}
 		case Converter.INSPECT:
 			try (Formatter f = new Formatter();) {
-				f.format("ID%s\n" + "\tIDNamespace=%s\n" + "\tImplClass=%s\n" + "\tConnectedTo=%s\n" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+				f.format("ID%s\n" + "\tNamespace=%s\n" + "\tClass=%s\n" + "\tConnectedTo=%s\n" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 						+ "\tConnectNamespace=%s\n" + "\tConfig=%s", //$NON-NLS-1$ //$NON-NLS-2$
 						cID.getName(), cID.getNamespace().getName(), cClass.getName(), conIDStr,
 						c.getConnectNamespace().getName(), getContainerTypeDescription(cID).getName());
@@ -107,10 +107,10 @@ public abstract class AbstractCommand {
 			}
 		case Converter.INSPECT:
 			try (Formatter f = new Formatter();) {
-				f.format("ID=%s\n" + "\tScheme=%s\n" + "\tImplClass=%s\n" + "\tDescription=%s\n" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-						+ "\tFactoryConstructors=%s\n" + "\tSupportedSchemes=%s", //$NON-NLS-1$ //$NON-NLS-2$
+				f.format("ID=%s\n" + "\tUri Scheme=%s\n" + "\tClass=%s\n" + "\tDescription=%s\n" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+						+ "\tFactoryConstructors=%s", //$NON-NLS-1$ //$NON-NLS-2$
 						ns.getName(), ns.getScheme(), ns.getClass().getName(), ns.getDescription(),
-						printClassArrays(ns.getSupportedParameterTypes()), printStringArray(ns.getSupportedSchemes()));
+						printClassArrays(ns.getSupportedParameterTypes()));
 				return f.toString();
 			}
 		default:
@@ -130,7 +130,7 @@ public abstract class AbstractCommand {
 		case Converter.INSPECT:
 			try (Formatter f = new Formatter();) {
 				f.format("ID=%s\n" + "\tDescription=%s\n" + "\tSupportedConfigs=%s\n" + "\tSupportedIntents=%s\n" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-						+ "\tFactoryConstructors=%s\n" + "\tAdapterTypes=%s\n" + "\tHidden=%b\n" + "\tServer=%b", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+						+ "\tFactoryConstructors=%s\n" + "\tAdapters=%s\n" + "\tHidden=%b\n" + "\tServer=%b", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 						ctd.getName(), ctd.getDescription(), printStringArray(ctd.getSupportedConfigs()),
 						printStringArray(ctd.getSupportedIntents()), printClassArrays(ctd.getSupportedParameterTypes()),
 						printStringArray(ctd.getSupportedAdapterTypes()), ctd.isHidden(), ctd.isServer());

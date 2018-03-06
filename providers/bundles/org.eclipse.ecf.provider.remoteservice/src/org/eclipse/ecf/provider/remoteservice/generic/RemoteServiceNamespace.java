@@ -44,4 +44,8 @@ public class RemoteServiceNamespace extends Namespace {
 		return REMOTE_SERVICE_SCHEME;
 	}
 
+	@Override
+	public Class<?>[][] getSupportedParameterTypes() {
+		return new Class<?>[][] {{String.class, Long.class}};
+	}
 }
