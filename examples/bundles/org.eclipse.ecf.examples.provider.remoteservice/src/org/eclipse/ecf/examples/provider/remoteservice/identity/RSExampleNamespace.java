@@ -33,6 +33,10 @@ public class RSExampleNamespace extends Namespace {
 		return new RSExampleID(this, (String) parameters[0]);
 	}
 
+	@Override
+	public Class<?>[][] getSupportedParameterTypes() {
+		return new Class<?>[][] { { String.class } };
+	}
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.identity.Namespace#getScheme()
 	 */

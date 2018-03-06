@@ -49,4 +49,7 @@ public class LocalNamespace extends Namespace {
 		return SCHEME;
 	}
 
+	public Class[][] getSupportedParameterTypes() {
+		return new Class[][] {{}, {URI.class}, {String.class}, {URL.class}};
+	}
 }

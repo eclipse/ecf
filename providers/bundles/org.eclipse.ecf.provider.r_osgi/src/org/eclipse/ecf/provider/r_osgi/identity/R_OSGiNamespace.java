@@ -122,4 +122,8 @@ public class R_OSGiNamespace extends Namespace {
 		return new String[] {NAMESPACE_SCHEME};
 	}
 
+	@Override
+	public Class<?>[][] getSupportedParameterTypes() {
+		return new Class<?>[][] {{String.class}};
+	}
 }

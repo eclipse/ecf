@@ -45,4 +45,7 @@ public class TrivialNamespace extends Namespace {
 		return SCHEME;
 	}
 
+	public Class[][] getSupportedParameterTypes() {
+		return new Class[][] { { String.class } };
+	}
 }

@@ -49,4 +49,8 @@ public class CompositeNamespace extends Namespace {
 		return "composite"; //$NON-NLS-1$
 	}
 
+	@Override
+	public Class<?>[][] getSupportedParameterTypes() {
+		return new Class<?>[][] {{String.class, URI.class}, {IServiceTypeID.class, URI.class}, {IServiceTypeID.class}};
+	}
 }

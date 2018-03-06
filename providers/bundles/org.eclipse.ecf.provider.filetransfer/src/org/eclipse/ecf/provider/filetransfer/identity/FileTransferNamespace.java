@@ -93,7 +93,7 @@ public class FileTransferNamespace extends Namespace {
 	 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedParameterTypesForCreateInstance()
 	 */
 	public Class[][] getSupportedParameterTypes() {
-		return new Class[][] { {URL.class}, {String.class}};
+		return new Class[][] {{URL.class}, {String.class}, {URI.class}};
 	}
 
 }
