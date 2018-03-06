@@ -31,16 +31,13 @@ public class DiscoveryNamespace extends Namespace {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.ecf.core.identity.Namespace#createInstance(java.lang.Object
+	 * @see org.eclipse.ecf.core.identity.Namespace#createInstance(java.lang.Object
 	 * [])
 	 */
 	public ID createInstance(Object[] parameters) throws IDCreateException {
-		if (parameters != null && parameters.length == 1
-				&& parameters[0] instanceof IServiceTypeID) {
+		if (parameters != null && parameters.length == 1 && parameters[0] instanceof IServiceTypeID) {
 			return (ID) parameters[0];
-		} else if (parameters != null && parameters.length == 2
-				&& parameters[0] instanceof IServiceTypeID
+		} else if (parameters != null && parameters.length == 2 && parameters[0] instanceof IServiceTypeID
 				&& parameters[1] instanceof URI) {
 			final IServiceTypeID type = (IServiceTypeID) parameters[0];
 			final URI uri = (URI) parameters[1];
@@ -49,13 +46,16 @@ public class DiscoveryNamespace extends Namespace {
 		throw new IDCreateException("Parameters must be of type IServiceTypeID"); //$NON-NLS-1$
 	}
 
+	public Class[][] getSupportedParameterTypes() {
+		return new Class[][] { { IServiceTypeID.class }, { IServiceTypeID.class, URI.class } };
+	}
+
 	private static class DiscoveryServiceID extends ServiceID {
 
 		private static final long serialVersionUID = -9017925060137305026L;
 
 		// Need public constructor
-		public DiscoveryServiceID(Namespace namespace, IServiceTypeID type,
-				URI uri) {
+		public DiscoveryServiceID(Namespace namespace, IServiceTypeID type, URI uri) {
 			super(namespace, type, uri);
 		}
 	}
