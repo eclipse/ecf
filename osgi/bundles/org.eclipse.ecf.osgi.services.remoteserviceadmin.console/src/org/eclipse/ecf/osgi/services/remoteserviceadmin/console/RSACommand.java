@@ -529,7 +529,7 @@ public class RSACommand extends AbstractCommand implements Converter {
 
 	@Descriptor("Update the properties of a remote service via Remote Service Admin")
 	public RemoteServiceAdmin.ExportReference updateservice(CommandSession cs,
-			@Descriptor("Endpoint Id of remote service to update") String endpointid,
+			@Descriptor("endpoint.id of remote service to update") String endpointid,
 			@Descriptor("Map of properties for update") Map<String, ?> map) {
 		RemoteServiceAdmin.ExportRegistration ereg = getExportRegistrationForId(endpointid);
 		if (ereg == null) {
@@ -549,7 +549,7 @@ public class RSACommand extends AbstractCommand implements Converter {
 
 	@Descriptor("Update the properties of a remote service via Remote Service Admin")
 	public RemoteServiceAdmin.ExportReference updsvc(CommandSession cs,
-			@Descriptor("Endpoint Id of remote service to update") String endpointid,
+			@Descriptor("endpoint.id of remote service to update") String endpointid,
 			@Descriptor("Map of properties for update") Map<String, ?> map) {
 		return updateservice(cs, endpointid, map);
 	}
