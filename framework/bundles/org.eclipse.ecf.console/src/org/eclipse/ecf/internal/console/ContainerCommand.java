@@ -60,7 +60,7 @@ public class ContainerCommand extends AbstractCommand implements Converter {
 
 	@Descriptor("List ECF container instances")
 	public List<IContainer> listcontainers(CommandSession cs) {
-		consoleLine(cs,CONTAINER_LINE_FORMAT, "ID", "ImplClass", "Connected\n");
+		consoleLine(cs, CONTAINER_LINE_FORMAT, "ID", "ImplClass", "Connected\n");
 		return getContainers();
 	}
 
@@ -118,11 +118,12 @@ public class ContainerCommand extends AbstractCommand implements Converter {
 	}
 
 	public ContainerTypeDescription listtypedescriptions(
-			@Descriptor("Config name to list (String)") ContainerTypeDescription ctd) {
+			@Descriptor("Container type description name to list (String)") ContainerTypeDescription ctd) {
 		return ctd;
 	}
 
-	public ContainerTypeDescription lctds(@Descriptor("Config name to list (String)") ContainerTypeDescription ctd) {
+	public ContainerTypeDescription lctds(
+			@Descriptor("Container type description name to list (String)") ContainerTypeDescription ctd) {
 		return ctd;
 	}
 

@@ -283,7 +283,7 @@ public class RSACommand extends AbstractCommand implements Converter {
 
 	@Descriptor("List RSA exported services")
 	public List<RemoteServiceAdmin.ExportReference> listexports(CommandSession cs) {
-		consoleLine(cs, EXPORT_LINE_FORMAT, "Endpoint Id", "Exporting Container ID", "Exported Service Id\n");
+		consoleLine(cs, EXPORT_LINE_FORMAT, "endpoint.id", "Exporting Container ID", "Exported Service Id\n");
 		return getExports();
 	}
 
@@ -294,19 +294,19 @@ public class RSACommand extends AbstractCommand implements Converter {
 
 	@Descriptor("Details about a single RSA exported service")
 	public RemoteServiceAdmin.ExportReference listexports(
-			@Descriptor("The Endpoint Id of the exported service") RemoteServiceAdmin.ExportReference r) {
+			@Descriptor("The endpoint.id of the exported service") RemoteServiceAdmin.ExportReference r) {
 		return r;
 	}
 
 	@Descriptor("Details about a single RSA exported service")
 	public RemoteServiceAdmin.ExportReference lexps(
-			@Descriptor("The Endpoint Id of the exported service") RemoteServiceAdmin.ExportReference r) {
+			@Descriptor("The endpoint.id of the exported service") RemoteServiceAdmin.ExportReference r) {
 		return r;
 	}
 
 	@Descriptor("List RSA imported services")
 	public List<RemoteServiceAdmin.ImportReference> listimports(CommandSession cs) {
-		consoleLine(cs, IMPORT_LINE_FORMAT, "Endpoint Id", "Importing Container ID", "Imported Service Id\n");
+		consoleLine(cs, IMPORT_LINE_FORMAT, "endpoint.id", "Importing Container ID", "Imported Service Id\n");
 		return getImports();
 	}
 
@@ -317,18 +317,18 @@ public class RSACommand extends AbstractCommand implements Converter {
 
 	@Descriptor("Details about a single RSA imported service")
 	public RemoteServiceAdmin.ImportReference listimports(
-			@Descriptor("The Endpoint Id of the exported service") RemoteServiceAdmin.ImportReference r) {
+			@Descriptor("The endpoint.id of the exported service") RemoteServiceAdmin.ImportReference r) {
 		return r;
 	}
 
 	@Descriptor("Details about a single RSA imported service")
 	public RemoteServiceAdmin.ImportReference limps(
-			@Descriptor("The Endpoint Id of the exported service") RemoteServiceAdmin.ImportReference r) {
+			@Descriptor("The endpoint.id of the exported service") RemoteServiceAdmin.ImportReference r) {
 		return r;
 	}
 
 	@Descriptor("Unexport an RSA exported service")
-	public String unexportservice(@Descriptor("The Endpoint Id of the exported service") String endpointId) {
+	public String unexportservice(@Descriptor("The endpoint.id of the exported service") String endpointId) {
 		RemoteServiceAdmin.ExportRegistration reg = getExportRegistrationForId(endpointId);
 		if (reg != null) {
 			reg.close();
@@ -338,12 +338,12 @@ public class RSACommand extends AbstractCommand implements Converter {
 	}
 
 	@Descriptor("Unexport an RSA exported service")
-	public String unexpsvc(@Descriptor("The Endpoint Id of the exported service") String endpointId) {
+	public String unexpsvc(@Descriptor("The endpoint.id of the exported service") String endpointId) {
 		return unexportservice(endpointId);
 	}
 
 	@Descriptor("Unimport an RSA imported service")
-	public String unimportservice(@Descriptor("The Endpoint Id of the imported service") String endpointId) {
+	public String unimportservice(@Descriptor("The endpoint.id of the imported service") String endpointId) {
 		RemoteServiceAdmin.ImportRegistration reg = getImportRegistrationForId(endpointId);
 		if (reg != null) {
 			reg.close();
@@ -353,7 +353,7 @@ public class RSACommand extends AbstractCommand implements Converter {
 	}
 
 	@Descriptor("Unimport an RSA imported service")
-	public String unimpsvc(@Descriptor("The Endpoint Id of the imported service") String endpointId) {
+	public String unimpsvc(@Descriptor("The endpoint.id of the imported service") String endpointId) {
 		return unimportservice(endpointId);
 	}
 
@@ -374,9 +374,9 @@ public class RSACommand extends AbstractCommand implements Converter {
 				} else
 					return "RSA debugging already off";
 			} else {
-				if (on) {
+				if (on)
 					return "RSA debugging already on";
-				} else {
+				else {
 					debugOff();
 					return "RSA debugging OFF";
 				}
@@ -417,7 +417,7 @@ public class RSACommand extends AbstractCommand implements Converter {
 					RemoteServiceAdmin.ExportReference er = (RemoteServiceAdmin.ExportReference) reg
 							.getExportReference();
 					if (er != null) {
-						cs.getConsole().println("Service.id=" + String.valueOf(serviceid)
+						cs.getConsole().println("service.id=" + String.valueOf(serviceid)
 								+ " successfully exported with endpoint description:");
 						return er;
 					}
@@ -448,7 +448,7 @@ public class RSACommand extends AbstractCommand implements Converter {
 	@Descriptor("Import a remote service via Remote Service Admin.  If -e is used, the given endpoint URL is read to read the EndpointDescription.  If not used, an EndpointDescription is expected from the console input (e.g. copy and paste)")
 	public RemoteServiceAdmin.ImportReference importservice(CommandSession cs,
 			@Descriptor("Optional URL indicating location of an Endpoint Description (EDEF format)") @Parameter(names = {
-					"-e", "--endpointdescriptionurl" }, absentValue = "") String endpointurl) {
+					"-e", "--edefurl" }, absentValue = "") String endpointurl) {
 		InputStream ins = null;
 		URL url = null;
 		if ("".equals(endpointurl)) {
@@ -511,7 +511,7 @@ public class RSACommand extends AbstractCommand implements Converter {
 						cs.getConsole().println("Cannot get endpoint description for imported endpoint");
 						return null;
 					}
-					cs.getConsole().println("Endpoint id=" + ed.getId() + " with service.id="
+					cs.getConsole().println("endpoint.id=" + ed.getId() + " with service.id="
 							+ ir.getImportedService().getProperty(Constants.SERVICE_ID) + " successfully imported:");
 					return ir;
 				} else
@@ -520,10 +520,10 @@ public class RSACommand extends AbstractCommand implements Converter {
 		}
 	}
 
-	@Descriptor("Import a remote service via Remote Service Admin.  If -e is used, the given endpoint URL is read to read the EndpointDescription.  If not used, an EndpointDescription is expected from the console input (e.g. copy and paste)")
+	@Descriptor("Import a remote service via Remote Service Admin.  If -e|-edefurl is used, the given endpoint URL is read to read the EndpointDescription.  If not used, an EndpointDescription is expected from the console input (e.g. copy and paste)")
 	public RemoteServiceAdmin.ImportReference impsvc(CommandSession cs,
 			@Descriptor("Optional URL indicating location of an Endpoint Description (EDEF format)") @Parameter(names = {
-					"-e", "--endpointdescriptionurl" }, absentValue = "") String endpointurl) {
+					"-e", "--edefurl" }, absentValue = "") String endpointurl) {
 		return importservice(cs, endpointurl);
 	}
 
@@ -533,15 +533,17 @@ public class RSACommand extends AbstractCommand implements Converter {
 			@Descriptor("Map of properties for update") Map<String, ?> map) {
 		RemoteServiceAdmin.ExportRegistration ereg = getExportRegistrationForId(endpointid);
 		if (ereg == null) {
-			cs.getConsole().println("Cannot find export with endpointid=" + endpointid);
+			cs.getConsole().println("Cannot find export with endpoint.id=" + endpointid);
 			return null;
 		}
 		RemoteServiceAdmin.ExportReference eref = (RemoteServiceAdmin.ExportReference) ereg.getExportReference();
 		if (eref == null) {
-			cs.getConsole().println("The remote service with endpointid=" + endpointid + " has been closed");
+			cs.getConsole().println("The remote service with endpoint.id=" + endpointid + " has been closed");
 			return null;
 		}
+		// Do the update
 		ereg.update(map);
+		cs.getConsole().println("The endpoint.id=" + endpointid + " has been updated");
 		return eref;
 	}
 
