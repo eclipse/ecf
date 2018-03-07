@@ -2,16 +2,20 @@
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="deactivate" immediate="true" name="org.eclipse.ecf.osgi.services.remoteserviceadmin.console.RSACommand">
    <property name="osgi.command.scope" value="ecf"/>
    <property name="osgi.command.function">listexports
-lex
+lexps
 listimports
-lim
-unexport
-une
-unimport
-uni
+limps
+unexportservice
+unexpsvc
+unimportservice
+unimpsvc
 rsadebug
-rsexport
-rsimport
+exportservice
+expsvc
+importservice
+impsvc
+updateservice
+updsvc
    </property>
    <service>
       <provide interface="org.eclipse.ecf.osgi.services.remoteserviceadmin.console.RSACommand"/>

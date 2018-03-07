@@ -10,12 +10,7 @@
       <programArgs>-consoleLog -console
       </programArgs>
       <vmArgs>-Declipse.ignoreApp=true 
--Dosgi.noShutdown=true 
--DverboseRemoteServiceAdmin=true
--Dservice.exported.configs=ecf.generic.server.java8
--Decf.generic.server.java8.port=3288
--Decf.generic.server.java8.hostname=localhost
--Decf.exported.async.interfaces=*
+-Dosgi.noShutdown=true
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
@@ -47,6 +42,7 @@
       <plugin id="org.eclipse.ecf.identity"/>
       <plugin id="org.eclipse.ecf.osgi.services.distribution"/>
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin"/>
+      <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin.console"/>
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy"/>
       <plugin id="org.eclipse.ecf.provider"/>
       <plugin id="org.eclipse.ecf.provider.jmdns"/>

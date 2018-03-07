@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="R-OSGi Hello Consumer Zeroconf Discovery" uid="org.eclipse.ecf.examples.remoteservices.hello.consumer.zeroconf.rosgi" application="org.eclipse.ecf.examples.remoteservices.hello.consumer.HelloConsumer" version="1.0.1.qualifier" useFeatures="false" includeLaunchers="false">
+<product name="R-OSGi Hello Consumer Zeroconf Discovery" uid="org.eclipse.ecf.examples.remoteservices.hello.consumer.zeroconf.rosgi" application="org.eclipse.ecf.examples.remoteservices.hello.consumer.HelloConsumer" version="1.1.0.qualifier" useFeatures="false" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>
 
    <launcherArgs>
-      <programArgs>-console -consoleLog</programArgs>
-      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
+      <programArgs>-console -consoleLog
+      </programArgs>
+      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
+      </vmArgsMac>
    </launcherArgs>
 
    <windowImages/>
 
    <launcher>
-      <solaris/>
       <win useIco="false">
          <bmp/>
       </win>
@@ -26,7 +27,6 @@
    <plugins>
       <plugin id="ch.ethz.iks.r_osgi.remote"/>
       <plugin id="ch.ethz.iks.slp"/>
-      <plugin id="javax.xml"/>
       <plugin id="org.apache.felix.gogo.command"/>
       <plugin id="org.apache.felix.gogo.runtime"/>
       <plugin id="org.apache.felix.gogo.shell"/>
@@ -34,17 +34,20 @@
       <plugin id="org.eclipse.core.jobs"/>
       <plugin id="org.eclipse.core.runtime"/>
       <plugin id="org.eclipse.ecf"/>
+      <plugin id="org.eclipse.ecf.console"/>
       <plugin id="org.eclipse.ecf.discovery"/>
       <plugin id="org.eclipse.ecf.examples.remoteservices.hello"/>
       <plugin id="org.eclipse.ecf.examples.remoteservices.hello.consumer"/>
       <plugin id="org.eclipse.ecf.identity"/>
       <plugin id="org.eclipse.ecf.osgi.services.distribution"/>
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin"/>
+      <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin.console"/>
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy"/>
       <plugin id="org.eclipse.ecf.provider"/>
       <plugin id="org.eclipse.ecf.provider.jmdns"/>
       <plugin id="org.eclipse.ecf.provider.r_osgi"/>
-      <plugin id="org.eclipse.ecf.remoteservice"/> <plugin id="org.eclipse.ecf.remoteservice.asyncproxy"/>
+      <plugin id="org.eclipse.ecf.remoteservice"/>
+      <plugin id="org.eclipse.ecf.remoteservice.asyncproxy"/>
       <plugin id="org.eclipse.ecf.sharedobject"/>
       <plugin id="org.eclipse.equinox.app"/>
       <plugin id="org.eclipse.equinox.common"/>

@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.felix.service.command.CommandSession;
 import org.apache.felix.service.command.Converter;
+import org.apache.felix.service.command.Descriptor;
 import org.apache.felix.service.command.Parameter;
 import org.eclipse.ecf.console.AbstractCommand;
 import org.eclipse.ecf.core.IContainerManager;
@@ -46,20 +47,30 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.remoteserviceadmin.RemoteConstants;
 
 @Component(immediate = true, property = { "osgi.command.scope=ecf", "osgi.command.function=listexports",
-		"osgi.command.function=lex", "osgi.command.function=listimports", "osgi.command.function=lim",
-		"osgi.command.function=unexport", "osgi.command.function=une", "osgi.command.function=unimport",
-		"osgi.command.function=uni",
-		"osgi.command.function=rsadebug",
-		"osgi.command.function=rsexport",
-		"osgi.command.function=rsimport" }, service = { RSACommand.class, Converter.class })
+		"osgi.command.function=lexps", "osgi.command.function=listimports", "osgi.command.function=limps",
+		"osgi.command.function=unexportservice", "osgi.command.function=unexpsvc",
+		"osgi.command.function=unimportservice", "osgi.command.function=unimpsvc", "osgi.command.function=rsadebug",
+		"osgi.command.function=exportservice", "osgi.command.function=expsvc", "osgi.command.function=importservice",
+		"osgi.command.function=impsvc", "osgi.command.function=updateservice",
+		"osgi.command.function=updsvc" }, service = { RSACommand.class, Converter.class })
 public class RSACommand extends AbstractCommand implements Converter {
 
-	private static final boolean DEBUGON = Boolean
-			.parseBoolean(System.getProperty("org.eclipse.ecf.osgi.services.remoteserviceadmin.debug", "true"));
+	private static final String DEFAULT_EXPORT_CONFIG = System.getProperty(
+			"org.eclipse.ecf.osgi.services.remoteserviceadmin.console.defaultconfig", "ecf.generic.server");
+
+	private static final boolean DEBUGON = Boolean.parseBoolean(
+			System.getProperty("org.eclipse.ecf.osgi.services.remoteserviceadmin.console.rsadebug", "true"));
+
+	private static final String EXPORT_LINE_FORMAT = System.getProperty(
+			"org.eclipse.ecf.osgi.services.remoteserviceadmin.console.exportlineformat", "%1$-37s|%2$-45s|%3$s");
+	private static final String IMPORT_LINE_FORMAT = System.getProperty(
+			"org.eclipse.ecf.osgi.services.remoteserviceadmin.console.importlineformat", "%1$-37s|%2$-45s|%3$s");
 
 	private IContainerManager containerManager;
 	private IIDFactory idFactory;
 	private RemoteServiceAdmin rsa;
+	private BundleContext context;
+	private ServiceRegistration<?> debugReg;
 
 	@Reference
 	void bindContainerManager(IContainerManager cm) {
@@ -102,129 +113,6 @@ public class RSACommand extends AbstractCommand implements Converter {
 		return this.rsa;
 	}
 
-	private RemoteServiceAdmin.ExportReference getExportReferenceForIdOrContainerId(String exportRefId) {
-		for (RemoteServiceAdmin.ExportReference r : getExports()) {
-			EndpointDescription ed = (EndpointDescription) r.getExportedEndpoint();
-			if (ed != null && (ed.getId().equals(exportRefId) || ed.getContainerID().getName().equals(exportRefId)))
-				return r;
-		}
-		return null;
-	}
-
-	private RemoteServiceAdmin.ExportRegistration getExportRegistrationForId(String id) {
-		for (RemoteServiceAdmin.ExportRegistration r : getRSA().getExportedRegistrations()) {
-			RemoteServiceAdmin.ExportReference er = (RemoteServiceAdmin.ExportReference) r.getExportReference();
-			if (er != null) {
-				EndpointDescription ed = (EndpointDescription) er.getExportedEndpoint();
-				if (ed != null && ed.getId().equals(id))
-					return r;
-			}
-		}
-		return null;
-	}
-
-	private RemoteServiceAdmin.ImportRegistration getImportRegistrationForId(String id) {
-		for (RemoteServiceAdmin.ImportRegistration r : getRSA().getImportedRegistrations()) {
-			RemoteServiceAdmin.ImportReference er = (RemoteServiceAdmin.ImportReference) r.getImportReference();
-			if (er != null) {
-				EndpointDescription ed = (EndpointDescription) er.getImportedEndpoint();
-				if (ed != null && ed.getId().equals(id))
-					return r;
-			}
-		}
-		return null;
-	}
-
-	private RemoteServiceAdmin.ExportReference getExportReferenceForServiceId(Long serviceId) {
-		for (RemoteServiceAdmin.ExportReference r : getExports()) {
-			EndpointDescription ed = (EndpointDescription) r.getExportedEndpoint();
-			if (ed != null && ed.getServiceId() == (long) serviceId)
-				return r;
-		}
-		return null;
-	}
-
-	private RemoteServiceAdmin.ImportReference getImportReferenceForServiceId(Long serviceId) {
-		for (RemoteServiceAdmin.ImportReference r : getImports()) {
-			EndpointDescription ed = (EndpointDescription) r.getImportedEndpoint();
-			if (ed != null && ed.getServiceId() == (long) serviceId)
-				return r;
-		}
-		return null;
-	}
-
-	private RemoteServiceAdmin.ImportReference getImportReferenceForIdOrContainerId(String importRefId) {
-		for (RemoteServiceAdmin.ImportReference r : getImports()) {
-			EndpointDescription ed = (EndpointDescription) r.getImportedEndpoint();
-			if (ed != null && (ed.getId().equals(importRefId) || ed.getContainerID().getName().equals(importRefId)))
-				return r;
-		}
-		return null;
-	}
-
-	public static final String EXPORT_LINE_FORMAT = "%1$-37s|%2$-45s|%3$s";
-	public static final String IMPORT_LINE_FORMAT = "%1$-37s|%2$-45s|%3$s";
-
-	public List<RemoteServiceAdmin.ExportReference> listexports(CommandSession cs) {
-		consoleLine(cs, EXPORT_LINE_FORMAT, "Endpoint Id", "Exporting Container ID", "Exported Service Id\n");
-		return getExports();
-	}
-
-	public List<RemoteServiceAdmin.ExportReference> lex(CommandSession cs) {
-		return listexports(cs);
-	}
-
-	public RemoteServiceAdmin.ExportReference listexports(RemoteServiceAdmin.ExportReference r) {
-		return r;
-	}
-
-	public RemoteServiceAdmin.ExportReference lex(RemoteServiceAdmin.ExportReference r) {
-		return r;
-	}
-
-	public List<RemoteServiceAdmin.ImportReference> listimports(CommandSession cs) {
-		consoleLine(cs, IMPORT_LINE_FORMAT, "Endpoint Id", "Importing Container ID", "Imported Service Id\n");
-		return getImports();
-	}
-
-	public List<RemoteServiceAdmin.ImportReference> lim(CommandSession cs) {
-		return listimports(cs);
-	}
-
-	public RemoteServiceAdmin.ImportReference listimports(RemoteServiceAdmin.ImportReference r) {
-		return r;
-	}
-
-	public RemoteServiceAdmin.ImportReference lim(RemoteServiceAdmin.ImportReference r) {
-		return r;
-	}
-
-	public String unexport(String endpointId) {
-		RemoteServiceAdmin.ExportRegistration reg = getExportRegistrationForId(endpointId);
-		if (reg != null) {
-			reg.close();
-			return endpointId + " unexported";
-		}
-		return endpointId + " not found";
-	}
-
-	public String une(String endpointId) {
-		return unexport(endpointId);
-	}
-
-	public String unimport(String endpointId) {
-		RemoteServiceAdmin.ImportRegistration reg = getImportRegistrationForId(endpointId);
-		if (reg != null) {
-			reg.close();
-			return endpointId + " unimported";
-		}
-		return endpointId + " not found";
-	}
-
-	public String uni(String endpointId) {
-		return unimport(endpointId);
-	}
-
 	private List<RemoteServiceAdmin.ExportReference> getExports() {
 		List<RemoteServiceAdmin.ExportReference> results = new ArrayList<RemoteServiceAdmin.ExportReference>();
 		for (org.osgi.service.remoteserviceadmin.ExportReference er : getRSA().getExportedServices())
@@ -232,7 +120,7 @@ public class RSACommand extends AbstractCommand implements Converter {
 		return results;
 	}
 
-	public List<RemoteServiceAdmin.ImportReference> getImports() {
+	private List<RemoteServiceAdmin.ImportReference> getImports() {
 		List<RemoteServiceAdmin.ImportReference> results = new ArrayList<RemoteServiceAdmin.ImportReference>();
 		for (org.osgi.service.remoteserviceadmin.ImportReference er : getRSA().getImportedEndpoints())
 			results.add((RemoteServiceAdmin.ImportReference) er);
@@ -307,9 +195,6 @@ public class RSACommand extends AbstractCommand implements Converter {
 		return null;
 	}
 
-	private BundleContext context;
-	private ServiceRegistration<?> debugReg;
-
 	@Activate
 	void activate(BundleContext context) {
 		this.context = context;
@@ -336,58 +221,222 @@ public class RSACommand extends AbstractCommand implements Converter {
 					new DebugRemoteServiceAdminListener(), null);
 	}
 
-	public String rsadebug(boolean on) {
+	private RemoteServiceAdmin.ExportReference getExportReferenceForIdOrContainerId(String exportRefId) {
+		for (RemoteServiceAdmin.ExportReference r : getExports()) {
+			EndpointDescription ed = (EndpointDescription) r.getExportedEndpoint();
+			if (ed != null && (ed.getId().equals(exportRefId) || ed.getContainerID().getName().equals(exportRefId)))
+				return r;
+		}
+		return null;
+	}
+
+	private RemoteServiceAdmin.ExportRegistration getExportRegistrationForId(String id) {
+		for (RemoteServiceAdmin.ExportRegistration r : getRSA().getExportedRegistrations()) {
+			RemoteServiceAdmin.ExportReference er = (RemoteServiceAdmin.ExportReference) r.getExportReference();
+			if (er != null) {
+				EndpointDescription ed = (EndpointDescription) er.getExportedEndpoint();
+				if (ed != null && ed.getId().equals(id))
+					return r;
+			}
+		}
+		return null;
+	}
+
+	private RemoteServiceAdmin.ImportRegistration getImportRegistrationForId(String id) {
+		for (RemoteServiceAdmin.ImportRegistration r : getRSA().getImportedRegistrations()) {
+			RemoteServiceAdmin.ImportReference er = (RemoteServiceAdmin.ImportReference) r.getImportReference();
+			if (er != null) {
+				EndpointDescription ed = (EndpointDescription) er.getImportedEndpoint();
+				if (ed != null && ed.getId().equals(id))
+					return r;
+			}
+		}
+		return null;
+	}
+
+	private RemoteServiceAdmin.ExportReference getExportReferenceForServiceId(Long serviceId) {
+		for (RemoteServiceAdmin.ExportReference r : getExports()) {
+			EndpointDescription ed = (EndpointDescription) r.getExportedEndpoint();
+			if (ed != null && ed.getServiceId() == (long) serviceId)
+				return r;
+		}
+		return null;
+	}
+
+	private RemoteServiceAdmin.ImportReference getImportReferenceForServiceId(Long serviceId) {
+		for (RemoteServiceAdmin.ImportReference r : getImports()) {
+			EndpointDescription ed = (EndpointDescription) r.getImportedEndpoint();
+			if (ed != null && ed.getServiceId() == (long) serviceId)
+				return r;
+		}
+		return null;
+	}
+
+	private RemoteServiceAdmin.ImportReference getImportReferenceForIdOrContainerId(String importRefId) {
+		for (RemoteServiceAdmin.ImportReference r : getImports()) {
+			EndpointDescription ed = (EndpointDescription) r.getImportedEndpoint();
+			if (ed != null && (ed.getId().equals(importRefId) || ed.getContainerID().getName().equals(importRefId)))
+				return r;
+		}
+		return null;
+	}
+
+	@Descriptor("List RSA exported services")
+	public List<RemoteServiceAdmin.ExportReference> listexports(CommandSession cs) {
+		consoleLine(cs, EXPORT_LINE_FORMAT, "Endpoint Id", "Exporting Container ID", "Exported Service Id\n");
+		return getExports();
+	}
+
+	@Descriptor("List RSA exported services")
+	public List<RemoteServiceAdmin.ExportReference> lexps(CommandSession cs) {
+		return listexports(cs);
+	}
+
+	@Descriptor("Details about a single RSA exported service")
+	public RemoteServiceAdmin.ExportReference listexports(
+			@Descriptor("The Endpoint Id of the exported service") RemoteServiceAdmin.ExportReference r) {
+		return r;
+	}
+
+	@Descriptor("Details about a single RSA exported service")
+	public RemoteServiceAdmin.ExportReference lexps(
+			@Descriptor("The Endpoint Id of the exported service") RemoteServiceAdmin.ExportReference r) {
+		return r;
+	}
+
+	@Descriptor("List RSA imported services")
+	public List<RemoteServiceAdmin.ImportReference> listimports(CommandSession cs) {
+		consoleLine(cs, IMPORT_LINE_FORMAT, "Endpoint Id", "Importing Container ID", "Imported Service Id\n");
+		return getImports();
+	}
+
+	@Descriptor("List RSA imported services")
+	public List<RemoteServiceAdmin.ImportReference> limps(CommandSession cs) {
+		return listimports(cs);
+	}
+
+	@Descriptor("Details about a single RSA imported service")
+	public RemoteServiceAdmin.ImportReference listimports(
+			@Descriptor("The Endpoint Id of the exported service") RemoteServiceAdmin.ImportReference r) {
+		return r;
+	}
+
+	@Descriptor("Details about a single RSA imported service")
+	public RemoteServiceAdmin.ImportReference limps(
+			@Descriptor("The Endpoint Id of the exported service") RemoteServiceAdmin.ImportReference r) {
+		return r;
+	}
+
+	@Descriptor("Unexport an RSA exported service")
+	public String unexportservice(@Descriptor("The Endpoint Id of the exported service") String endpointId) {
+		RemoteServiceAdmin.ExportRegistration reg = getExportRegistrationForId(endpointId);
+		if (reg != null) {
+			reg.close();
+			return endpointId + " unexported";
+		}
+		return endpointId + " not found";
+	}
+
+	@Descriptor("Unexport an RSA exported service")
+	public String unexpsvc(@Descriptor("The Endpoint Id of the exported service") String endpointId) {
+		return unexportservice(endpointId);
+	}
+
+	@Descriptor("Unimport an RSA imported service")
+	public String unimportservice(@Descriptor("The Endpoint Id of the imported service") String endpointId) {
+		RemoteServiceAdmin.ImportRegistration reg = getImportRegistrationForId(endpointId);
+		if (reg != null) {
+			reg.close();
+			return endpointId + " unimported";
+		}
+		return endpointId + " not found";
+	}
+
+	@Descriptor("Unimport an RSA imported service")
+	public String unimpsvc(@Descriptor("The Endpoint Id of the imported service") String endpointId) {
+		return unimportservice(endpointId);
+	}
+
+	@Descriptor("Toggle whether RSA debug output is output to console")
+	public String rsadebug() {
+		synchronized (this) {
+			return rsadebug(debugReg == null);
+		}
+	}
+
+	@Descriptor("Set whether RSA debug output is output to console")
+	public String rsadebug(@Descriptor("Whether to turn debug on or off") boolean on) {
 		String msg = null;
 		synchronized (this) {
 			if (debugReg == null) {
 				if (on) {
 					debugOn();
 					msg = "RSA debugging ON";
-				} else 
-					msg = "RSA debugging already on";
+				} else
+					msg = "RSA debugging already off";
 			} else {
 				if (debugReg != null) {
 					debugOff();
 					msg = "RSA debugging OFF";
 				} else
-					msg = "RSA debugging already off";
+					msg = "RSA debugging already on";
 			}
 		}
 		return msg;
 	}
 
-	public RemoteServiceAdmin.ExportReference rsexport(CommandSession cs, @Parameter(names = { "-s", "--serviceid" }, absentValue = "") long serviceid,
-			@Parameter(names = { "--properties", "-p" }, absentValue = "") Map<String,?> map) {
+	@Descriptor("Export a service via Remote Service Admin")
+	public RemoteServiceAdmin.ExportReference exportservice(CommandSession cs,
+			@Descriptor("service.id of service to export") long serviceid, @Parameter(names = {
+					"-props" }, absentValue = "") @Descriptor("Map of service properties for exporting the service") Map<String, ?> map) {
 		ServiceReference<?> ref = null;
 		try {
-			ServiceReference<?>[] refs = context.getAllServiceReferences(null, "("+Constants.SERVICE_ID+"="+String.valueOf(serviceid)+")");
+			ServiceReference<?>[] refs = context.getAllServiceReferences(null,
+					"(" + Constants.SERVICE_ID + "=" + String.valueOf(serviceid) + ")");
 			if (refs == null || refs.length < 1)
-				cs.getConsole().println("Cannot find service with id="+String.valueOf(serviceid));
+				cs.getConsole().println("Cannot find registered service with service.id=" + String.valueOf(serviceid));
 			ref = refs[0];
 		} catch (InvalidSyntaxException e) {
 			e.printStackTrace(cs.getConsole());
 			return null;
 		}
-		Map<String,Object> op = new HashMap<String,Object>(map);
+		// Create map given map from console
+		Map<String, Object> op = (map == null) ? new HashMap<String, Object>() : new HashMap<String, Object>(map);
 		if (!op.containsKey(RemoteConstants.SERVICE_EXPORTED_INTERFACES))
 			op.put(RemoteConstants.SERVICE_EXPORTED_INTERFACES, "*");
 		if (!op.containsKey(RemoteConstants.SERVICE_EXPORTED_CONFIGS))
-			op.put(RemoteConstants.SERVICE_EXPORTED_CONFIGS, "ecf.generic.server");
+			op.put(RemoteConstants.SERVICE_EXPORTED_CONFIGS, DEFAULT_EXPORT_CONFIG);
+		// Now export service with reference and overriding properties
 		Collection<org.osgi.service.remoteserviceadmin.ExportRegistration> regs = getRSA().exportService(ref, op);
-		for(org.osgi.service.remoteserviceadmin.ExportRegistration reg: regs) {
-			Throwable t = reg.getException();
-			if (t != null) 
-				t.printStackTrace(cs.getConsole());
-			else {
-				RemoteServiceAdmin.ExportReference er = (RemoteServiceAdmin.ExportReference) reg.getExportReference();
-				if (er != null)
-					return er;
+		// Should always return >= 1 registration
+		if (regs != null)
+			for (org.osgi.service.remoteserviceadmin.ExportRegistration reg : regs) {
+				Throwable t = reg.getException();
+				if (t != null)
+					t.printStackTrace(cs.getConsole());
+				else {
+					RemoteServiceAdmin.ExportReference er = (RemoteServiceAdmin.ExportReference) reg
+							.getExportReference();
+					if (er != null) {
+						cs.getConsole().println("Service.id=" + String.valueOf(serviceid)
+								+ " successfully exported with endpoint description:");
+						return er;
+					}
+				}
 			}
-		}
 		return null;
 	}
-	
-	public RemoteServiceAdmin.ImportReference rsimport(CommandSession cs, @Parameter(names = { "-e", "--endpointdescriptionurl" }, absentValue="") String endpointurl) {
+
+	@Descriptor("Export a service via Remote Service Admin")
+	public RemoteServiceAdmin.ExportReference expsvc(CommandSession cs,
+			@Descriptor("service.id of service to export") long serviceid) {
+		return exportservice(cs, serviceid, null);
+	}
+
+	@Descriptor("Import a remote service via Remote Service Admin.  If -e is used, the given endpoint URL is read to read the EndpointDescription.  If not used, an EndpointDescription is expected from the console input (e.g. copy and paste)")
+	public RemoteServiceAdmin.ImportReference importservice(CommandSession cs,
+			@Descriptor("Optional URL indicating location of an Endpoint Description (EDEF format)") @Parameter(names = {
+					"-e", "--endpointdescriptionurl" }, absentValue = "") String endpointurl) {
 		InputStream ins = null;
 		URL url = null;
 		if ("".equals(endpointurl)) {
@@ -417,18 +466,18 @@ public class RSACommand extends AbstractCommand implements Converter {
 			}
 		}
 		// Close the input stream if this was from a url
-		if (url != null) 
+		if (url != null)
 			try {
 				ins.close();
 			} catch (IOException e) {
 				e.printStackTrace(cs.getConsole());
 			}
-		
+
 		ByteArrayInputStream bins = new ByteArrayInputStream(buf.toString().getBytes());
 		EndpointDescriptionReader r = new EndpointDescriptionReader();
 		org.osgi.service.remoteserviceadmin.EndpointDescription[] eds = null;
 		try {
-			 eds = r.readEndpointDescriptions(bins);
+			eds = r.readEndpointDescriptions(bins);
 		} catch (IOException e) {
 			e.printStackTrace(cs.getConsole());
 			return null;
@@ -444,11 +493,51 @@ public class RSACommand extends AbstractCommand implements Converter {
 				return null;
 			} else {
 				RemoteServiceAdmin.ImportReference ir = (RemoteServiceAdmin.ImportReference) reg.getImportReference();
-				if (ir != null)
+				if (ir != null) {
+					EndpointDescription ed = (EndpointDescription) ir.getImportedEndpoint();
+					if (ed == null) {
+						cs.getConsole().println("Cannot get endpoint description for imported endpoint");
+						return null;
+					}
+					cs.getConsole().println("Endpoint id=" + ed.getId() + " with service.id="
+							+ ir.getImportedService().getProperty(Constants.SERVICE_ID) + " successfully imported:");
 					return ir;
-				else
+				} else
 					return null;
 			}
 		}
 	}
+
+	@Descriptor("Import a remote service via Remote Service Admin.  If -e is used, the given endpoint URL is read to read the EndpointDescription.  If not used, an EndpointDescription is expected from the console input (e.g. copy and paste)")
+	public RemoteServiceAdmin.ImportReference impsvc(CommandSession cs,
+			@Descriptor("Optional URL indicating location of an Endpoint Description (EDEF format)") @Parameter(names = {
+					"-e", "--endpointdescriptionurl" }, absentValue = "") String endpointurl) {
+		return importservice(cs, endpointurl);
+	}
+
+	@Descriptor("Update the properties of a remote service via Remote Service Admin")
+	public RemoteServiceAdmin.ExportReference updateservice(CommandSession cs,
+			@Descriptor("Endpoint Id of remote service to update") String endpointid,
+			@Descriptor("Map of properties for update") Map<String, ?> map) {
+		RemoteServiceAdmin.ExportRegistration ereg = getExportRegistrationForId(endpointid);
+		if (ereg == null) {
+			cs.getConsole().println("Cannot find export with endpointid=" + endpointid);
+			return null;
+		}
+		RemoteServiceAdmin.ExportReference eref = (RemoteServiceAdmin.ExportReference) ereg.getExportReference();
+		if (eref == null) {
+			cs.getConsole().println("The remote service with endpointid=" + endpointid + " has been closed");
+			return null;
+		}
+		ereg.update(map);
+		return eref;
+	}
+
+	@Descriptor("Update the properties of a remote service via Remote Service Admin")
+	public RemoteServiceAdmin.ExportReference updsvc(CommandSession cs,
+			@Descriptor("Endpoint Id of remote service to update") String endpointid,
+			@Descriptor("Map of properties for update") Map<String, ?> map) {
+		return updateservice(cs, endpointid, map);
+	}
+
 }

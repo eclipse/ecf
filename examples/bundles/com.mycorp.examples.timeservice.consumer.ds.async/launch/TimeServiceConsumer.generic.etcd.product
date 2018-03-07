@@ -11,11 +11,6 @@
       </programArgs>
       <vmArgs>-Declipse.ignoreApp=true 
 -Dosgi.noShutdown=true 
--DverboseRemoteServiceAdmin=true
--Dservice.exported.configs=ecf.generic.server.java8
--Decf.generic.server.java8.port=3288
--Decf.generic.server.java8.hostname=localhost
--Decf.exported.async.interfaces=*
 -Decf.discovery.etcd.hostname=127.0.0.1
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
@@ -43,10 +38,12 @@
       <plugin id="org.apache.felix.scr"/>
       <plugin id="org.eclipse.core.jobs"/>
       <plugin id="org.eclipse.ecf"/>
+      <plugin id="org.eclipse.ecf.console"/>
       <plugin id="org.eclipse.ecf.discovery"/>
       <plugin id="org.eclipse.ecf.identity"/>
       <plugin id="org.eclipse.ecf.osgi.services.distribution"/>
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin"/>
+      <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin.console"/>
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy"/>
       <plugin id="org.eclipse.ecf.provider"/>
       <plugin id="org.eclipse.ecf.provider.etcd"/>

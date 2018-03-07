@@ -11,7 +11,6 @@
       </programArgs>
       <vmArgs>-Declipse.ignoreApp=true 
 -Dosgi.noShutdown=true 
--DverboseRemoteServiceAdmin=true
 -Dservice.exported.configs=ecf.r_osgi.peer.wss
 -Dch.ethz.iks.r_osgi.transport.http.listen=false
 -Djavax.net.ssl.keyStore=security/server.ks
@@ -51,6 +50,7 @@
       <plugin id="org.eclipse.ecf.identity"/>
       <plugin id="org.eclipse.ecf.osgi.services.distribution"/>
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin"/>
+      <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin.console"/>
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy"/>
       <plugin id="org.eclipse.ecf.provider"/>
       <plugin id="org.eclipse.ecf.provider.jmdns"/>

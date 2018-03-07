@@ -12,27 +12,17 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Properties;
 
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.DebugRemoteServiceAdminListener;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener;
 
 import com.mycorp.examples.timeservice.ITimeService;
 
 public class Activator implements BundleActivator {
 
-	private static final boolean verbose = Boolean.valueOf(System.getProperty(
-			"verboseRemoteServiceAdmin", "true"));
-
 	private ServiceRegistration<ITimeService> timeServiceRegistration;
 
 	public void start(BundleContext context) throws Exception {
-		// If verbose is not turned off then register debug listener
-		if (verbose)
-			context.registerService(RemoteServiceAdminListener.class,
-					new DebugRemoteServiceAdminListener(), null);
-
 		// Create remote service properties
 		Dictionary<String, Object> props = createRemoteServiceProperties();
 

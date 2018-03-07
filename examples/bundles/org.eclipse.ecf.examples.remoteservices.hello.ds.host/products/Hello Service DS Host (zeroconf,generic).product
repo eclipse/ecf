@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="ECF Remote Service Example DS Host" uid="org.eclipse.ecf.examples.remoteservices.hello.ds.host.product" application="org.eclipse.ecf.examples.remoteservices.hello.ds.host.HelloHostDS" version="2.1.0.qualifier" useFeatures="false" includeLaunchers="false">
+<product name="ECF Remote Service Example DS Host" uid="org.eclipse.ecf.examples.remoteservices.hello.ds.host.product" application="org.eclipse.ecf.examples.remoteservices.hello.ds.host.HelloHostDS" version="2.2.0.qualifier" useFeatures="false" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>
@@ -16,7 +16,6 @@
    <windowImages/>
 
    <launcher>
-      <solaris/>
       <win useIco="false">
          <bmp/>
       </win>
@@ -26,7 +25,6 @@
    </vm>
 
    <plugins>
-      <plugin id="javax.xml"/>
       <plugin id="org.apache.felix.gogo.command"/>
       <plugin id="org.apache.felix.gogo.runtime"/>
       <plugin id="org.apache.felix.gogo.shell"/>
@@ -34,12 +32,14 @@
       <plugin id="org.eclipse.core.jobs"/>
       <plugin id="org.eclipse.core.runtime"/>
       <plugin id="org.eclipse.ecf"/>
+      <plugin id="org.eclipse.ecf.console"/>
       <plugin id="org.eclipse.ecf.discovery"/>
       <plugin id="org.eclipse.ecf.examples.remoteservices.hello"/>
       <plugin id="org.eclipse.ecf.examples.remoteservices.hello.ds.host"/>
       <plugin id="org.eclipse.ecf.identity"/>
       <plugin id="org.eclipse.ecf.osgi.services.distribution"/>
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin"/>
+      <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin.console"/>
       <plugin id="org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy"/>
       <plugin id="org.eclipse.ecf.provider"/>
       <plugin id="org.eclipse.ecf.provider.jmdns"/>
