@@ -366,29 +366,28 @@ public class RSACommand extends AbstractCommand implements Converter {
 
 	@Descriptor("Set whether RSA debug output is output to console")
 	public String rsadebug(@Descriptor("Whether to turn debug on or off") boolean on) {
-		String msg = null;
 		synchronized (this) {
 			if (debugReg == null) {
 				if (on) {
 					debugOn();
-					msg = "RSA debugging ON";
+					return "RSA debugging ON";
 				} else
-					msg = "RSA debugging already off";
+					return "RSA debugging already off";
 			} else {
-				if (debugReg != null) {
+				if (on) {
+					return "RSA debugging already on";
+				} else {
 					debugOff();
-					msg = "RSA debugging OFF";
-				} else
-					msg = "RSA debugging already on";
+					return "RSA debugging OFF";
+				}
 			}
 		}
-		return msg;
 	}
 
 	@Descriptor("Export a service via Remote Service Admin")
 	public RemoteServiceAdmin.ExportReference exportservice(CommandSession cs,
-			@Descriptor("service.id of service to export") long serviceid, @Parameter(names = {
-					"-props" }, absentValue = "") @Descriptor("Map of service properties for exporting the service") Map<String, ?> map) {
+			@Descriptor("service.id of service to export") long serviceid,
+			@Descriptor("Map of service properties for exporting the service") Map<String, ?> map) {
 		ServiceReference<?> ref = null;
 		try {
 			ServiceReference<?>[] refs = context.getAllServiceReferences(null,
@@ -425,6 +424,19 @@ public class RSACommand extends AbstractCommand implements Converter {
 				}
 			}
 		return null;
+	}
+
+	@Descriptor("Export a service via Remote Service Admin")
+	public RemoteServiceAdmin.ExportReference exportservice(CommandSession cs,
+			@Descriptor("service.id of service to export") long serviceid) {
+		return exportservice(cs, serviceid, null);
+	}
+
+	@Descriptor("Export a service via Remote Service Admin")
+	public RemoteServiceAdmin.ExportReference expsvc(CommandSession cs,
+			@Descriptor("service.id of service to export") long serviceid,
+			@Descriptor("Map of service properties for exporting the service") Map<String, ?> map) {
+		return exportservice(cs, serviceid, map);
 	}
 
 	@Descriptor("Export a service via Remote Service Admin")
