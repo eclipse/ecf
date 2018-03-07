@@ -161,6 +161,7 @@
     <module>framework/bundles/org.eclipse.team.ecf.ui</module>
 
     <module>osgi/bundles/org.eclipse.ecf.osgi.services.remoteserviceadmin</module>
+    <module>osgi/bundles/org.eclipse.ecf.osgi.services.remoteserviceadmin.console</module>
     <module>osgi/bundles/org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy</module>
     <module>osgi/bundles/org.eclipse.osgi.services.remoteserviceadmin</module>
     <module>compendium/bundles/org.eclipse.ecf.osgi.services.distribution</module>

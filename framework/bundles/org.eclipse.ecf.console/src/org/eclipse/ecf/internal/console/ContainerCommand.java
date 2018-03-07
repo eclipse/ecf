@@ -10,6 +10,7 @@ package org.eclipse.ecf.internal.console;
 
 import java.util.List;
 
+import org.apache.felix.service.command.CommandSession;
 import org.apache.felix.service.command.Converter;
 import org.apache.felix.service.command.Descriptor;
 import org.eclipse.ecf.console.AbstractCommand;
@@ -58,31 +59,33 @@ public class ContainerCommand extends AbstractCommand implements Converter {
 	}
 
 	@Descriptor("List ECF container instances")
-	public List<IContainer> listcontainers() {
+	public List<IContainer> listcontainers(CommandSession cs) {
+		consoleLine(cs,CONTAINER_LINE_FORMAT, "ID", "ImplClass", "Connected\n");
 		return getContainers();
 	}
 
 	@Descriptor("List ECF container instances")
-	public List<IContainer> lc() {
-		return listcontainers();
+	public List<IContainer> lcs(CommandSession cs) {
+		return listcontainers(cs);
 	}
 
 	public IContainer listcontainers(@Descriptor("Container ID to list (String)") IContainer container) {
 		return container;
 	}
 
-	public IContainer lc(@Descriptor("Container ID to list (String)") IContainer container) {
+	public IContainer lcs(@Descriptor("Container ID to list (String)") IContainer container) {
 		return container;
 	}
 
 	@Descriptor("List ECF ID namespaces")
-	public List<Namespace> listnamespaces() {
+	public List<Namespace> listnamespaces(CommandSession cs) {
+		consoleLine(cs, NAMESPACE_LINE_FORMAT, "Namespace Name\n");
 		return getNamespaces();
 	}
 
 	@Descriptor("List ECF ID namespaces")
-	public List<Namespace> lns() {
-		return listnamespaces();
+	public List<Namespace> lns(CommandSession cs) {
+		return listnamespaces(cs);
 	}
 
 	public Namespace listnamespaces(@Descriptor("Namespace name to list (String)") Namespace ns) {
@@ -94,22 +97,24 @@ public class ContainerCommand extends AbstractCommand implements Converter {
 	}
 
 	@Descriptor("List ECF container configs")
-	public List<ContainerTypeDescription> listtypedescriptions() {
+	public List<ContainerTypeDescription> listtypedescriptions(CommandSession cs) {
+		consoleLine(cs, CTD_LINE_FORMAT, "ContainerTypeDescription Name\n");
 		return getConfigs();
 	}
 
 	@Descriptor("List ECF container configs")
-	public List<ContainerTypeDescription> lctd() {
-		return listtypedescriptions();
+	public List<ContainerTypeDescription> lctds(CommandSession cs) {
+		return listtypedescriptions(cs);
 	}
 
 	@Descriptor("List ECF container configs")
-	public List<ContainerTypeDescription> listconfigs() {
+	public List<ContainerTypeDescription> listconfigs(CommandSession cs) {
+		cs.getConsole().format(CTD_LINE_FORMAT, "Config Name\n");
 		return getConfigs();
 	}
 
-	public List<ContainerTypeDescription> lcfgs() {
-		return listconfigs();
+	public List<ContainerTypeDescription> lcfgs(CommandSession cs) {
+		return listconfigs(cs);
 	}
 
 	public ContainerTypeDescription listtypedescriptions(
@@ -128,6 +133,26 @@ public class ContainerCommand extends AbstractCommand implements Converter {
 
 	public ContainerTypeDescription lcfgs(@Descriptor("Config name to list (String)") ContainerTypeDescription ctd) {
 		return ctd;
+	}
+
+	public Object convert(Class<?> desiredType, Object in) throws Exception {
+		if (desiredType == IContainer.class && in instanceof String)
+			return getContainerForId((String) in);
+		else if (desiredType == Namespace.class && in instanceof String)
+			return getIDFactory().getNamespaceByName((String) in);
+		else if (desiredType == ContainerTypeDescription.class)
+			return getContainerManager().getContainerFactory().getDescriptionByName((String) in);
+		return null;
+	}
+
+	public String format(Object target, int level, Converter escape) {
+		if (target instanceof IContainer)
+			return formatContainer((IContainer) target, level, escape);
+		else if (target instanceof Namespace)
+			return formatNamespace((Namespace) target, level, escape);
+		else if (target instanceof ContainerTypeDescription)
+			return formatConfig((ContainerTypeDescription) target, level, escape);
+		return null;
 	}
 
 }

@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Formatter;
 import java.util.List;
 
+import org.apache.felix.service.command.CommandSession;
 import org.apache.felix.service.command.Converter;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
@@ -22,6 +23,13 @@ import org.eclipse.ecf.core.identity.IIDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 
 public abstract class AbstractCommand {
+
+	protected static final String CONTAINER_LINE_FORMAT = "%1$-45s|%2$-40s|%3$s"; //$NON-NLS-1$
+	protected static final String CONTAINER_INSPECT_FORMAT = "ID=%s\n\tNamespace=%s\n\tClass=%s\n\tConnectedTo=%s\n\tConnectNamespace=%s\n\tConfig=%s"; //$NON-NLS-1$
+	protected static final String NAMESPACE_LINE_FORMAT = "%s"; //$NON-NLS-1$
+	protected static final String NAMESPACE_INSPECT_FORMAT = "ID=%s\n\tUriScheme=%s\n\tClass=%s\n\tDescription=%s\n\tInstanceArgTypes=%s"; //$NON-NLS-1$
+	protected static final String CTD_LINE_FORMAT = "%s"; //$NON-NLS-1$
+	protected static final String CTD_INSPECT_FORMAT = "ID=%s\n\tDescription=%s\n\tSupportedConfigs=%s\n\tSupportedIntents=%s\n\tInstanceArgTypes=%s\n\tAdapters=%s\n\tHidden=%b\n\tServer=%b"; //$NON-NLS-1$
 
 	protected abstract IContainerManager getContainerManager();
 
@@ -41,6 +49,10 @@ public abstract class AbstractCommand {
 
 	}
 
+	protected void consoleLine(CommandSession cs, String format, Object... args) {
+		cs.getConsole().format(format, args);
+	}
+
 	protected ContainerTypeDescription getContainerTypeDescription(ID containerID) {
 		return getContainerManager().getContainerTypeDescription(containerID);
 	}
@@ -58,18 +70,25 @@ public abstract class AbstractCommand {
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < types.length; i++) {
 			Class<?>[] paramTypes = types[i];
-			sb.append("<init>").append("("); //$NON-NLS-1$ //$NON-NLS-2$
+			sb.append("("); //$NON-NLS-1$
 			for (int j = 0; j < paramTypes.length; j++) {
 				Class<?> pType = paramTypes[j];
 				sb.append(pType.getName());
 				if (j + 1 < paramTypes.length)
 					sb.append(","); //$NON-NLS-1$
 			}
-			sb.append(")"); //$NON-NLS-1$
-			if (i + 1 < types.length)
-				sb.append(";"); //$NON-NLS-1$
+  		    sb.append(")"); //$NON-NLS-1$
+  		    if (i + 1 < types.length)
+  		    	sb.append(";");
 		}
 		return sb.toString();
+	}
+
+	protected String formatLine(String format, Object... args) {
+		try (Formatter f = new Formatter();) {
+			f.format(format, args); // $NON-NLS-1$
+			return f.toString();
+		}
 	}
 
 	protected String formatContainer(IContainer c, int level, Converter escape) {
@@ -79,18 +98,10 @@ public abstract class AbstractCommand {
 		Class<?> cClass = c.getClass();
 		switch (level) {
 		case Converter.LINE:
-			try (Formatter f = new Formatter();) {
-				f.format("%s        %s        %s", cID.getName(), cClass.getName(), conIDStr); //$NON-NLS-1$
-				return f.toString();
-			}
+			return formatLine(CONTAINER_LINE_FORMAT, cID.getName(), cClass.getSimpleName(), conIDStr);
 		case Converter.INSPECT:
-			try (Formatter f = new Formatter();) {
-				f.format("ID%s\n" + "\tNamespace=%s\n" + "\tClass=%s\n" + "\tConnectedTo=%s\n" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-						+ "\tConnectNamespace=%s\n" + "\tConfig=%s", //$NON-NLS-1$ //$NON-NLS-2$
-						cID.getName(), cID.getNamespace().getName(), cClass.getName(), conIDStr,
-						c.getConnectNamespace().getName(), getContainerTypeDescription(cID).getName());
-				return f.toString();
-			}
+			return formatLine(CONTAINER_INSPECT_FORMAT, cID.getName(), cID.getNamespace().getName(), cClass.getName(),
+					conIDStr, c.getConnectNamespace().getName(), getContainerTypeDescription(cID).getName());
 		default:
 			return null;
 		}
@@ -101,18 +112,10 @@ public abstract class AbstractCommand {
 		case Converter.PART:
 			return null;
 		case Converter.LINE:
-			try (Formatter f = new Formatter();) {
-				f.format("%s", ns.getName()); //$NON-NLS-1$
-				return f.toString();
-			}
+			return formatLine(NAMESPACE_LINE_FORMAT, ns.getName());
 		case Converter.INSPECT:
-			try (Formatter f = new Formatter();) {
-				f.format("ID=%s\n" + "\tUri Scheme=%s\n" + "\tClass=%s\n" + "\tDescription=%s\n" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-						+ "\tFactoryConstructors=%s", //$NON-NLS-1$ //$NON-NLS-2$
-						ns.getName(), ns.getScheme(), ns.getClass().getName(), ns.getDescription(),
-						printClassArrays(ns.getSupportedParameterTypes()));
-				return f.toString();
-			}
+			return formatLine(NAMESPACE_INSPECT_FORMAT, ns.getName(), ns.getScheme(), ns.getClass().getName(),
+					ns.getDescription(), printClassArrays(ns.getSupportedParameterTypes()));
 		default:
 			return null;
 		}
@@ -123,19 +126,12 @@ public abstract class AbstractCommand {
 		case Converter.PART:
 			return null;
 		case Converter.LINE:
-			try (Formatter f = new Formatter();) {
-				f.format("%s", ctd.getName()); //$NON-NLS-1$
-				return f.toString();
-			}
+			return formatLine(CTD_LINE_FORMAT, ctd.getName());
 		case Converter.INSPECT:
-			try (Formatter f = new Formatter();) {
-				f.format("ID=%s\n" + "\tDescription=%s\n" + "\tSupportedConfigs=%s\n" + "\tSupportedIntents=%s\n" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-						+ "\tFactoryConstructors=%s\n" + "\tAdapters=%s\n" + "\tHidden=%b\n" + "\tServer=%b", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-						ctd.getName(), ctd.getDescription(), printStringArray(ctd.getSupportedConfigs()),
-						printStringArray(ctd.getSupportedIntents()), printClassArrays(ctd.getSupportedParameterTypes()),
-						printStringArray(ctd.getSupportedAdapterTypes()), ctd.isHidden(), ctd.isServer());
-				return f.toString();
-			}
+			return formatLine(CTD_INSPECT_FORMAT, ctd.getName(), ctd.getDescription(),
+					printStringArray(ctd.getSupportedConfigs()), printStringArray(ctd.getSupportedIntents()),
+					printClassArrays(ctd.getSupportedParameterTypes()),
+					printStringArray(ctd.getSupportedAdapterTypes()), ctd.isHidden(), ctd.isServer());
 		default:
 			return null;
 		}
@@ -143,26 +139,6 @@ public abstract class AbstractCommand {
 
 	protected String printStringArray(String[] strarr) {
 		return (strarr == null) ? "" : Arrays.asList(strarr).toString(); //$NON-NLS-1$
-	}
-
-	public Object convert(Class<?> desiredType, Object in) throws Exception {
-		if (desiredType == IContainer.class && in instanceof String)
-			return getContainerForId((String) in);
-		else if (desiredType == Namespace.class && in instanceof String)
-			return getIDFactory().getNamespaceByName((String) in);
-		else if (desiredType == ContainerTypeDescription.class)
-			return getContainerManager().getContainerFactory().getDescriptionByName((String) in);
-		return null;
-	}
-
-	public String format(Object target, int level, Converter escape) {
-		if (target instanceof IContainer)
-			return formatContainer((IContainer) target, level, escape);
-		else if (target instanceof Namespace)
-			return formatNamespace((Namespace) target, level, escape);
-		else if (target instanceof ContainerTypeDescription)
-			return formatConfig((ContainerTypeDescription) target, level, escape);
-		return null;
 	}
 
 }
