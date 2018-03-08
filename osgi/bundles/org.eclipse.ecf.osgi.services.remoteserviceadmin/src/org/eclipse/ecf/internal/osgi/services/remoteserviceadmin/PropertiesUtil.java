@@ -14,6 +14,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -42,7 +43,7 @@ public class PropertiesUtil {
 			// Don't have them
 			"service.bundleid", //$NON-NLS-1$
 			"service.scope", //$NON-NLS-1$
-			"component.id",  //$NON-NLS-1$
+			"component.id", //$NON-NLS-1$
 			"component.name", //$NON-NLS-1$
 			org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID,
 			org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_ID,
@@ -59,16 +60,16 @@ public class PropertiesUtil {
 
 	protected static final List ecfProperties = Arrays.asList(new String[] {
 			// ECF properties
-			org.eclipse.ecf.remoteservice.Constants.OBJECTCLASS, org.eclipse.ecf.remoteservice.Constants.SERVICE_ID, 
-			RemoteConstants.ENDPOINT_CONNECTTARGET_ID,
-			RemoteConstants.ENDPOINT_ID, RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE,
-			RemoteConstants.ENDPOINT_TIMESTAMP, RemoteConstants.ENDPOINT_IDFILTER_IDS,
-			RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER, RemoteConstants.SERVICE_IMPORTED_VALUETYPE });
+			org.eclipse.ecf.remoteservice.Constants.OBJECTCLASS, org.eclipse.ecf.remoteservice.Constants.SERVICE_ID,
+			RemoteConstants.ENDPOINT_CONNECTTARGET_ID, RemoteConstants.ENDPOINT_ID,
+			RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE, RemoteConstants.ENDPOINT_TIMESTAMP,
+			RemoteConstants.ENDPOINT_IDFILTER_IDS, RemoteConstants.ENDPOINT_REMOTESERVICE_FILTER,
+			RemoteConstants.SERVICE_IMPORTED_VALUETYPE });
 
 	public static void testSerializable(Object value) throws Exception {
 		new ObjectOutputStream(new ByteArrayOutputStream()).writeObject(value);
 	}
-	
+
 	public static String verifyStringProperty(Map properties, String propName) {
 		Object r = properties.get(propName);
 		try {
@@ -182,7 +183,8 @@ public class PropertiesUtil {
 	}
 
 	public static List getStringPlusProperty(Map properties, String key) {
-		return org.eclipse.ecf.remoteservice.util.EndpointDescriptionPropertiesUtil.getStringPlusProperty(properties, key);
+		return org.eclipse.ecf.remoteservice.util.EndpointDescriptionPropertiesUtil.getStringPlusProperty(properties,
+				key);
 	}
 
 	public static Object getPropertyValue(ServiceReference serviceReference, String key) {
@@ -253,7 +255,8 @@ public class PropertiesUtil {
 					result.put(key, val);
 				} catch (Exception e) {
 					LogUtility.logWarning("createSerializableDictionaryFromMap", DebugOptions.EXCEPTIONS_CATCHING, //$NON-NLS-1$
-							PropertiesUtil.class, "Cannot serialize value for " + key+ ".  Removing from properties", e); //$NON-NLS-1$ //$NON-NLS-2$
+							PropertiesUtil.class, "Cannot serialize value for " + key + ".  Removing from properties", //$NON-NLS-1$ //$NON-NLS-2$
+							e);
 				}
 			}
 		}
@@ -277,7 +280,7 @@ public class PropertiesUtil {
 			return Integer.valueOf((String) o);
 		return def;
 	}
-	
+
 	public static String[] getStringArrayWithDefault(Map<String, Object> properties, String key, String[] def) {
 		Object o = properties.get(key);
 		if (o instanceof String) {
@@ -312,9 +315,9 @@ public class PropertiesUtil {
 		return target;
 	}
 
-	public static Map<String, Object> copySerializableProperties(Map<String, ?> source,
-			Map<String, Object> target) {
-		if (source == null) return target;
+	public static Map<String, Object> copySerializableProperties(Map<String, ?> source, Map<String, Object> target) {
+		if (source == null)
+			return target;
 		for (String key : source.keySet()) {
 			Object value = source.get(key);
 			try {
@@ -322,7 +325,8 @@ public class PropertiesUtil {
 				target.put(key, value);
 			} catch (Exception e) {
 				LogUtility.logWarning("copySerializableProperties", DebugOptions.EXCEPTIONS_CATCHING, //$NON-NLS-1$
-						PropertiesUtil.class, "Cannot serialize value for property=" + key+". Removing from properties", e); //$NON-NLS-1$ //$NON-NLS-2$
+						PropertiesUtil.class,
+						"Cannot serialize value for property=" + key + ". Removing from properties", e); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 		return target;
@@ -419,7 +423,7 @@ public class PropertiesUtil {
 		for (Iterator<String> it = results.keySet().iterator(); it.hasNext();) {
 			for (int i = 0; i < configs.length; i++) {
 				String prop = it.next();
-				if (isConfigProperty(configs[i], prop) && prop.substring(configs[i].length()+1).startsWith(".")) //$NON-NLS-1$
+				if (isConfigProperty(configs[i], prop) && prop.substring(configs[i].length() + 1).startsWith(".")) //$NON-NLS-1$
 					it.remove();
 			}
 		}
@@ -437,4 +441,30 @@ public class PropertiesUtil {
 		}
 		return results;
 	}
+
+	public static Map<String, Object> copyIntentProperties(Map<String, Object> source, String[] intents, Map<String, Object> target) {
+		// Copy everything from existing target
+		Map<String, Object> results = copyProperties(target,
+				new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER));
+		for (String intent : intents) {
+			// put intent with empty string into results
+			results.put(intent, "intent"); //$NON-NLS-1$
+			// for each property, if intent or intent config in source then copy to results
+			for (String sourceKey : source.keySet())
+				if (sourceKey.equals(intent) || isConfigProperty(intent, sourceKey))
+					results.put(sourceKey, source.get(sourceKey));
+		}
+		return results;
+	}
+
+	public static Map<String, Object> copyNonIntentsProperties(IRemoteServiceReference rsReference, String[] intents,
+			Map<String, Object> target) {
+		List intentsList = (intents == null) ? Collections.EMPTY_LIST : Arrays.asList(intents);
+		String[] keys = rsReference.getPropertyKeys();
+		for (int i = 0; i < keys.length; i++)
+			if (!isReservedProperty(keys[i]) && !intentsList.contains(keys[i]))
+				target.put(keys[i], rsReference.getProperty(keys[i]));
+		return target;
+	}
+
 }

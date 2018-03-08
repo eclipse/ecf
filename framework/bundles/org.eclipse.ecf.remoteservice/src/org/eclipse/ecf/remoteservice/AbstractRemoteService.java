@@ -117,8 +117,24 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 		return this;
 	}
 
+	private Long defaultTimeout;
+
 	protected long getDefaultTimeout() {
-		return IRemoteCall.DEFAULT_TIMEOUT;
+		synchronized (this) {
+			if (defaultTimeout == null) {
+				Object o = getRemoteServiceReference().getProperty(Constants.OSGI_BASIC_TIMEOUT_INTENT);
+				if (o != null) {
+					if (o instanceof Long)
+						defaultTimeout = (Long) o;
+					else if (o instanceof Integer)
+						defaultTimeout = ((Integer) o).longValue();
+					else if (o instanceof String)
+						defaultTimeout = Long.valueOf((String) o);
+				} else
+					defaultTimeout = IRemoteCall.DEFAULT_TIMEOUT;
+			}
+		}
+		return defaultTimeout;
 	}
 
 	@Override
@@ -339,7 +355,7 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 	}
 
 	protected long getCallTimeoutForProxyInvoke(String callMethod, Method proxyMethod, Object[] args) {
-		return IRemoteCall.DEFAULT_TIMEOUT;
+		return getDefaultTimeout();
 	}
 
 	protected String getCallMethodNameForProxyInvoke(Method method, Object[] args) {
@@ -520,7 +536,7 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 	 * @return RemoteCall remote call created.  Should not be <code>null</code>
 	 */
 	protected RemoteCall getAsyncRemoteCall(String invokeMethodName, Object[] asyncArgs) {
-		return new RemoteCall(invokeMethodName, asyncArgs, IRemoteCall.DEFAULT_TIMEOUT);
+		return new RemoteCall(invokeMethodName, asyncArgs, getDefaultTimeout());
 	}
 
 	/**

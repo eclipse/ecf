@@ -90,7 +90,7 @@ public abstract class AbstractRSAClientService extends AbstractClientService {
 			if (resultObject != null)
 				return resultObject;
 			if (isAsync(proxy, method, args))
-				return invokeAsync(createRemoteCall(proxy, method, getAsyncInvokeMethodName(method), args, IRemoteCall.DEFAULT_TIMEOUT));
+				return invokeAsync(createRemoteCall(proxy, method, getAsyncInvokeMethodName(method), args, getDefaultTimeout()));
 			final String callMethod = getCallMethodNameForProxyInvoke(method, args);
 			final Object[] callParameters = getCallParametersForProxyInvoke(callMethod, method, args);
 			final long callTimeout = getCallTimeoutForProxyInvoke(callMethod, method, args);

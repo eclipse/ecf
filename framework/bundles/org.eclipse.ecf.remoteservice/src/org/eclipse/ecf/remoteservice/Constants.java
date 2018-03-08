@@ -420,4 +420,25 @@ public interface Constants {
 	 */
 	public static final String OSGI_CONTAINER_ID_NS = "ecf.osgi.ns"; //$NON-NLS-1$
 
+	/**
+	 * @since 8.13
+	 */
+	public static final String OSGI_BASIC_INTENT = "osgi.basic"; //$NON-NLS-1$
+	/**
+	 * @since 8.13
+	 */
+	public static final String OSGI_BASIC_TIMEOUT_INTENT = "osgi.basic.timeout"; //$NON-NLS-1$
+	/**
+	 * @since 8.13
+	 */
+	public static final String OSGI_ASYNC_INTENT = "osgi.async"; //$NON-NLS-1$
+	/**
+	 * @since 8.13
+	 */
+	public static final String OSGI_CONFIDENTIAL_INTENT = "osgi.confidential"; //$NON-NLS-1$
+	/**
+	 * @since 8.13
+	 */
+	public static final String OSGI_PRIVATE_INTENT = "osgi.private"; //$NON-NLS-1$
+
 }

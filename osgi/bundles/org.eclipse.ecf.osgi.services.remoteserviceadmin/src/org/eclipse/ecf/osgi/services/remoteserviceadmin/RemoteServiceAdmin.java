@@ -546,7 +546,7 @@ public class RemoteServiceAdmin implements org.osgi.service.remoteserviceadmin.R
 
 	private boolean removeImportRegistration(ImportRegistration importRegistration) {
 		synchronized (importedRegistrations) {
-			localExportedRegistrations.remove(importRegistration);
+			localImportedRegistrations.remove(importRegistration);
 			return importedRegistrations.remove(importRegistration);
 		}
 	}
@@ -2079,7 +2079,11 @@ public class RemoteServiceAdmin implements org.osgi.service.remoteserviceadmin.R
 			IRemoteServiceReference rsReference, IRemoteService remoteService) {
 
 		Map resultProperties = new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER);
-		PropertiesUtil.copyNonReservedProperties(rsReference, resultProperties);
+		Map<String, Object> edProps = endpointDescription.getProperties();
+		String[] supportedIntents = PropertiesUtil.getStringArrayWithDefault(edProps,
+				org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_INTENTS_SUPPORTED, null);
+		PropertiesUtil.copyNonIntentsProperties(rsReference, supportedIntents, resultProperties);
+
 		PropertiesUtil.copyNonReservedProperties(endpointDescription.getProperties(), resultProperties);
 		// remove OBJECTCLASS
 		resultProperties.remove(org.eclipse.ecf.remoteservice.Constants.OBJECTCLASS);
@@ -2121,8 +2125,16 @@ public class RemoteServiceAdmin implements org.osgi.service.remoteserviceadmin.R
 			Map<String, Object> endpointDescriptionProperties) throws Exception {
 
 		// Create remote service properties
-		Map remoteServiceProperties = copyNonReservedProperties(serviceReference,
+		Map<String, Object> remoteServiceProperties = copyNonReservedProperties(serviceReference,
 				(Map<String, Object>) overridingProperties, new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER));
+
+		// Added for R7 support. Copy intents and intent options to remote service
+		// properties
+		String[] intents = PropertiesUtil.getStringArrayWithDefault(remoteServiceProperties,
+				org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_INTENTS_SUPPORTED, new String[] {});
+
+		remoteServiceProperties = PropertiesUtil.copyIntentProperties(endpointDescriptionProperties, intents,
+				remoteServiceProperties);
 
 		IRemoteServiceContainerAdapter containerAdapter = rsContainer.getContainerAdapter();
 

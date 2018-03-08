@@ -35,10 +35,6 @@ public class RemoteServiceImpl extends AbstractRemoteService {
 		return registration.getClasses();
 	}
 
-	protected long getDefaultTimeout() {
-		return DEFAULT_TIMEOUT;
-	}
-
 	/**
 	 * @since 3.0
 	 * @see org.eclipse.ecf.remoteservice.IRemoteService#callAsync(org.eclipse.ecf.remoteservice.IRemoteCall, org.eclipse.ecf.remoteservice.IRemoteCallListener)
