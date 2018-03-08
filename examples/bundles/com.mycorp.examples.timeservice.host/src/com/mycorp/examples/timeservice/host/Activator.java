@@ -67,7 +67,7 @@ public class Activator implements BundleActivator {
 			result.put(DEFAULT_CONFIG + ".hostname", "localhost");
 		}
 		
-		result.put("exactlyOnce.timeout", "30");
+		result.put("osgi.basic.timeout", "30001");
 		
 		result.put(SERVICE_EXPORTED_CONFIGS, config);
 		// add any config properties. config properties start with

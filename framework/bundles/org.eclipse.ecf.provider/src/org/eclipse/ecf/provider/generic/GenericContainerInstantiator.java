@@ -27,7 +27,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 	/**
 	 * @since 2.0
 	 */
-	protected static final String[] genericProviderIntents = {"passByValue", "exactlyOnce", "ordered",}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	protected static final String[] genericProviderIntents = {"osgi.basic", "passByValue", "exactlyOnce", "ordered"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 	public static final String TCPCLIENT_NAME = "ecf.generic.client"; //$NON-NLS-1$
 
