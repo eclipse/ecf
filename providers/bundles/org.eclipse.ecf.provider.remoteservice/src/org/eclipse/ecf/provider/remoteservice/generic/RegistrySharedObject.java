@@ -11,8 +11,11 @@ package org.eclipse.ecf.provider.remoteservice.generic;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.security.*;
 import java.util.*;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.*;
@@ -23,6 +26,7 @@ import org.eclipse.ecf.core.sharedobject.*;
 import org.eclipse.ecf.core.sharedobject.events.ISharedObjectActivatedEvent;
 import org.eclipse.ecf.core.status.SerializableStatus;
 import org.eclipse.ecf.core.util.*;
+import org.eclipse.ecf.core.util.reflection.ClassUtil;
 import org.eclipse.ecf.internal.provider.remoteservice.Activator;
 import org.eclipse.ecf.internal.provider.remoteservice.IRemoteServiceProviderDebugOptions;
 import org.eclipse.ecf.remoteservice.*;
@@ -1444,6 +1448,39 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
+	 * @since 4.4
+	 */
+	@SuppressWarnings("unchecked")
+	protected Object invokeLocal(RemoteServiceRegistrationImpl reg, RemoteCallImpl call) throws InvocationTargetException, Exception, NoClassDefFoundError {
+		Object[] callArgs = call.getParameters();
+		Object[] args = (callArgs == null) ? SharedObjectMsg.nullArgs : callArgs;
+		Object service = reg.getService();
+		// Find appropriate method on service
+		final Method method = ClassUtil.getMethod(service.getClass(), call.getMethod(), SharedObjectMsg.getTypesForParameters(args));
+		AccessController.doPrivileged(new PrivilegedExceptionAction() {
+			public Object run() throws Exception {
+				if (!method.isAccessible())
+					method.setAccessible(true);
+				return null;
+			}
+		});
+		// Actually invoke method on service object
+		Object result = method.invoke(service, args);
+		if (result != null) {
+			// provider must expose osgi.async property
+			if (reg.getProperty(Constants.OSGI_ASYNC_INTENT) != null) {
+				Class returnType = method.getReturnType();
+				if (returnType.isAssignableFrom(Future.class))
+					result = ((Future) result).get(call.getTimeout(), TimeUnit.MILLISECONDS);
+				else if (returnType.isAssignableFrom(IFuture.class))
+					result = ((IFuture) result).get();
+				// XXX test for Promise here
+			}
+		}
+		return result;
+	}
+
+	/**
 	 * @param executor executor to use to execute request
 	 * @param request the request to execute
 	 * @param responseTarget response target
@@ -1465,7 +1502,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 					if (callPolicy != null)
 						callPolicy.checkRemoteCall(responseTarget, localRegistration, call);
 
-					result = localRegistration.callService(call);
+					result = invokeLocal(localRegistration, call);
 
 					response = new Response(request.getRequestId(), result);
 					// Invocation target exception happens if the local method being invoked throws (cause)

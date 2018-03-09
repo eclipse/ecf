@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.remoteservice.feature"
       label="ECF Remote Services"
-      version="2.4.200.qualifier"
+      version="2.5.0.qualifier"
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">
@@ -57,7 +57,7 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
          id="org.eclipse.ecf.remoteservice.asyncproxy"
          download-size="0"
          install-size="0"
-         version="2.0.200.qualifier"
+         version="2.1.0.qualifier"
          unpack="false"/>
 
 </feature>

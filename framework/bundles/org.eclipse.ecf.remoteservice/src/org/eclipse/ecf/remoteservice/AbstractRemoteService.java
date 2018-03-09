@@ -458,6 +458,30 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 		throw new ServiceException("Unexpected exception for method=" + methodName + " on remote service proxy=" + getRemoteServiceID(), ServiceException.REMOTE, e); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
+	/**
+	 * @since 8.13
+	 */
+	protected Object invokeReturnAsync(Object proxy, Method method, Object[] args) throws Throwable {
+		final String invokeMethodName = method.getName();
+		final AsyncArgs asyncArgs = new AsyncArgs(args, method.getReturnType());
+		RemoteCall remoteCall = getAsyncRemoteCall(invokeMethodName, asyncArgs.getArgs());
+		return callFuture(remoteCall, asyncArgs.getReturnType());
+	}
+
+	/**
+	 * @since 8.13
+	 */
+	protected boolean isOSGIAsync() {
+		return getRemoteServiceReference().getProperty(Constants.OSGI_ASYNC_INTENT) != null;
+	}
+
+	/**
+	 * @since 8.13
+	 */
+	protected boolean isInterfaceAsync(Class interfaceClass) {
+		return interfaceClass.getName().endsWith(IAsyncRemoteServiceProxy.ASYNC_INTERFACE_SUFFIX);
+	}
+
 	public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
 		Object resultObject = null;
 		try {
@@ -471,11 +495,18 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 			return resultObject;
 
 		try {
-			if (isAsync(proxy, method, args))
-				return invokeAsync(method, args);
+			// If return is async type (Future, IFuture, CompletableFuture, CompletionStage)
+			if (isReturnAsync(proxy, method, args)) {
+				if (isInterfaceAsync(method.getDeclaringClass()))
+					return invokeAsync(method, args);
+				// If OSGI Async
+				if (isOSGIAsync())
+					return invokeReturnAsync(proxy, method, args);
+			}
 		} catch (Throwable t) {
 			handleProxyException("Exception invoking async method on remote service proxy=" + getRemoteServiceID(), t); //$NON-NLS-1$
 		}
+
 		// Get the callMethod, callParameters, and callTimeout
 		final String callMethod = getCallMethodNameForProxyInvoke(method, args);
 		final Object[] callParameters = getCallParametersForProxyInvoke(callMethod, method, args);
