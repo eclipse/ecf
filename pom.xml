@@ -83,7 +83,7 @@
   <properties>
     <tycho-version>1.0.0</tycho-version>
     <cbi-version>1.1.4</cbi-version>
-    <target-platform>neon</target-platform>
+    <target-platform>oxygen</target-platform>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
     <project.resources.sourceEncoding>ISO-8859-1</project.resources.sourceEncoding>
     <tycho.scmUrl>${project.scm.connection}</tycho.scmUrl>
