@@ -33,7 +33,7 @@ public abstract class AbstractAsyncProxyRemoteService {
 		@SuppressWarnings("rawtypes")
 		Class returnType = method.getReturnType();
 		return (CompletableFuture.class.isAssignableFrom(returnType) || CompletionStage.class.isAssignableFrom(returnType) ||
-				Future.class.isAssignableFrom(returnType) || IFuture.class.isAssignableFrom(returnType));
+				Future.class.isAssignableFrom(returnType) || IFuture.class.isAssignableFrom(returnType) || Promise.class.isAssignableFrom(returnType));
 	}
 	
 	@SuppressWarnings("unchecked")

@@ -482,6 +482,13 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 		return interfaceClass.getName().endsWith(IAsyncRemoteServiceProxy.ASYNC_INTERFACE_SUFFIX);
 	}
 
+	/**
+	 * @since 8.13
+	 */
+	protected boolean isMethodAsync(String methodName) {
+		return methodName.endsWith(IAsyncRemoteServiceProxy.ASYNC_METHOD_SUFFIX);
+	}
+
 	public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
 		Object resultObject = null;
 		try {
@@ -497,11 +504,12 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 		try {
 			// If return is async type (Future, IFuture, CompletableFuture, CompletionStage)
 			if (isReturnAsync(proxy, method, args)) {
-				if (isInterfaceAsync(method.getDeclaringClass()))
+				if (isInterfaceAsync(method.getDeclaringClass()) && isMethodAsync(method.getName()))
 					return invokeAsync(method, args);
-				// If OSGI Async
+				// If OSGI Async then invoke method directly
 				if (isOSGIAsync())
 					return invokeReturnAsync(proxy, method, args);
+
 			}
 		} catch (Throwable t) {
 			handleProxyException("Exception invoking async method on remote service proxy=" + getRemoteServiceID(), t); //$NON-NLS-1$

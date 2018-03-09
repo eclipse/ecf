@@ -6,16 +6,16 @@ Bundle-SymbolicName: org.eclipse.ecf.remoteservice.soap;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.remoteservice.soap
 Bundle-Version: 1.1.100.qualifier
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
-Import-Package: org.eclipse.ecf.core;version="3.0.0",
- org.eclipse.ecf.core.identity;version="3.0.0",
- org.eclipse.ecf.core.util,
- org.eclipse.ecf.remoteservice,
+Import-Package: org.eclipse.ecf.remoteservice,
  org.eclipse.ecf.remoteservice.asyncproxy;version="1.0.0",
- org.eclipse.ecf.remoteservice.client
+ org.eclipse.ecf.remoteservice.client,
+ org.eclipse.equinox.concurrent.future;version="1.1.0",
+ org.osgi.framework
 Bundle-ClassPath: .
 Export-Package: org.eclipse.ecf.remoteservice.soap.client;version="1.0.0",
  org.eclipse.ecf.remoteservice.soap.identity;version="1.0.0"
 DynamicImport-Package: *
 Eclipse-BuddyPolicy: global
-Require-Bundle: org.eclipse.equinox.common
+Require-Bundle: org.eclipse.equinox.common;bundle-version="[3.0.0,4.0.0)",
+ org.eclipse.ecf;bundle-version="[3.0.0,4.0.0)"
 Bundle-Localization: plugin

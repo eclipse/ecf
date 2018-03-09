@@ -14,8 +14,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.*;
 import java.util.*;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.*;
@@ -30,6 +28,7 @@ import org.eclipse.ecf.core.util.reflection.ClassUtil;
 import org.eclipse.ecf.internal.provider.remoteservice.Activator;
 import org.eclipse.ecf.internal.provider.remoteservice.IRemoteServiceProviderDebugOptions;
 import org.eclipse.ecf.remoteservice.*;
+import org.eclipse.ecf.remoteservice.asyncproxy.AsyncReturnUtil;
 import org.eclipse.ecf.remoteservice.events.*;
 import org.eclipse.equinox.concurrent.future.*;
 import org.eclipse.osgi.framework.eventmgr.*;
@@ -1467,15 +1466,10 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		// Actually invoke method on service object
 		Object result = method.invoke(service, args);
 		if (result != null) {
-			// provider must expose osgi.async property
-			if (reg.getProperty(Constants.OSGI_ASYNC_INTENT) != null) {
-				Class returnType = method.getReturnType();
-				if (returnType.isAssignableFrom(Future.class))
-					result = ((Future) result).get(call.getTimeout(), TimeUnit.MILLISECONDS);
-				else if (returnType.isAssignableFrom(IFuture.class))
-					result = ((IFuture) result).get();
-				// XXX test for Promise here
-			}
+			Class returnType = method.getReturnType();
+			// provider must expose osgi.async property and must be async return type
+			if (reg.getProperty(Constants.OSGI_ASYNC_INTENT) != null && AsyncReturnUtil.isAsyncType(returnType))
+				return AsyncReturnUtil.asyncReturn(result, returnType, call.getTimeout());
 		}
 		return result;
 	}

@@ -2130,7 +2130,7 @@ public class RemoteServiceAdmin implements org.osgi.service.remoteserviceadmin.R
 
 		// Added for R7 support. Copy intents and intent options to remote service
 		// properties
-		String[] intents = PropertiesUtil.getStringArrayWithDefault(remoteServiceProperties,
+		String[] intents = PropertiesUtil.getStringArrayWithDefault(endpointDescriptionProperties,
 				org.osgi.service.remoteserviceadmin.RemoteConstants.REMOTE_INTENTS_SUPPORTED, new String[] {});
 
 		remoteServiceProperties = PropertiesUtil.copyIntentProperties(endpointDescriptionProperties, intents,
