@@ -11,12 +11,9 @@
 package org.eclipse.ecf.remoteservice.asyncproxy;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Future;
 
 import org.eclipse.equinox.concurrent.future.IFuture;
-import org.osgi.util.promise.Deferred;
-import org.osgi.util.promise.Promise;
 
 public abstract class AbstractAsyncProxyRemoteService {
 
@@ -32,29 +29,15 @@ public abstract class AbstractAsyncProxyRemoteService {
 	protected Object callFuture(AbstractAsyncProxyRemoteCall call, @SuppressWarnings("rawtypes") Class returnType) {
 		// If the result value is a CompletableFuture then
 		// we callCompletableAsync
-		if (CompletableFuture.class.isAssignableFrom(returnType)
-				|| CompletionStage.class.isAssignableFrom(returnType)) {
+		if (CompletableFuture.class.isAssignableFrom(returnType)) {
 			@SuppressWarnings("rawtypes")
-			CompletableFuture result = new CompletableFuture();
-			callCompletableAsync(call, (r, hadException, exception) -> {
-				if (hadException)
-					result.completeExceptionally(exception);
-				else
-					result.complete(r);
+		    CompletableFuture result = new CompletableFuture();
+			callCompletableAsync(call, (r,hadException,exception) -> {
+				if (hadException) result.completeExceptionally(exception);
+				else result.complete(r);
 			});
 			// And return the CompletableFuture
 			return result;
-		}
-		if (Promise.class.isAssignableFrom(returnType)) {
-			@SuppressWarnings("rawtypes")
-			Deferred d = new Deferred();
-			callCompletableAsync(call, (r, hadException, exception) -> {
-				if (hadException)
-					d.fail(exception);
-				else
-					d.resolve(r);
-			});
-			return d.getPromise();
 		}
 		// Else if it's an IFuture then return
 		// IFuture result of callAsync
