@@ -48,6 +48,9 @@ import ch.ethz.iks.r_osgi.messages.DeliverServiceMessage;
  */
 final class RemoteServiceRegistration {
 
+	public static final String OSGI_ASYNC = "osgi.async";
+	public static final String OSGI_BASIC_TIMEOUT = "osgi.basic.timeout";
+	
 	/**
 	 * the local service reference.
 	 */
@@ -155,6 +158,25 @@ final class RemoteServiceRegistration {
 		return reference;
 	}
 
+	boolean isOSGiAsync() {
+		return reference.getProperty(OSGI_ASYNC) != null;
+	}
+	
+	long getOSGiTimeout() {
+		long timeout = 30000;
+		Object timeoutval = reference.getProperty(OSGI_BASIC_TIMEOUT);
+		if (timeoutval != null) {
+			if (timeoutval instanceof Long) {
+				timeout = ((Long) timeoutval).longValue();
+			} else if (timeoutval instanceof Integer) {
+				timeout = ((Integer) timeoutval).longValue();
+			} else if (timeoutval instanceof String) {
+				timeout = Long.valueOf((String) timeoutval).longValue();
+			}
+		} 
+		return timeout;
+	}
+	
 	/**
 	 * get the service properties.
 	 * 

@@ -3,9 +3,11 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: ch.ethz.iks.r_osgi.remote
 Automatic-Module-Name: ch.ethz.iks.r_osgi.remote
-Bundle-Version: 1.0.100.qualifier
+Bundle-Version: 1.1.0.qualifier
 Bundle-Vendor: %plugin.provider
-Import-Package: org.objectweb.asm;version="[5.0.1,6.0.0)",
+Import-Package: org.eclipse.ecf.remoteservice;version="7.3.0",
+ org.eclipse.ecf.remoteservice.asyncproxy;version="[1.0.0,3.0.0)",
+ org.objectweb.asm;version="[5.0.1,6.0.0)",
  org.osgi.framework;version="[1.0.0,2.0.0)",
  org.osgi.service.event;version="[1.0.0,2.0.0)",
  org.osgi.service.log;version="[1.0.0,2.0.0)",
@@ -20,8 +22,9 @@ Export-Package: ch.ethz.iks.r_osgi;version="1.0.9",
 DynamicImport-Package: *
 Bundle-ClassPath: .
 Bundle-Activator: ch.ethz.iks.r_osgi.impl.RemoteOSGiActivator
-Bundle-RequiredExecutionEnvironment: OSGi/Minimum-1.0,
- CDC-1.0/Foundation-1.0
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Eclipse-LazyStart: true
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ecf;bundle-version="[3.0.0,4.0.0)",
+ org.eclipse.equinox.common;bundle-version="[3.0.0,4.0.0)"

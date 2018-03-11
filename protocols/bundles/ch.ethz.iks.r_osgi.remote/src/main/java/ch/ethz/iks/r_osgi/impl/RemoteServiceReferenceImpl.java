@@ -170,6 +170,10 @@ final class RemoteServiceReferenceImpl implements RemoteServiceReference {
 		return channel.isConnected() && channel.isActive(uri.toString());
 	}
 
+	boolean isOSGiAsync() {
+		return getProperty(RemoteServiceRegistration.OSGI_ASYNC) != null;
+	}
+	
 	/**
 	 * get a string representation.
 	 * 

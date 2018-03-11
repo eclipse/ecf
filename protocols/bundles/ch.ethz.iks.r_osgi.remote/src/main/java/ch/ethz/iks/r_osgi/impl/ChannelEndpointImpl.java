@@ -47,6 +47,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.ecf.remoteservice.asyncproxy.AsyncReturnUtil;
+import org.objectweb.asm.Type;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
@@ -57,7 +59,6 @@ import org.osgi.service.event.EventAdmin;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 import org.osgi.service.log.LogService;
-
 import ch.ethz.iks.r_osgi.AsyncRemoteCallCallback;
 import ch.ethz.iks.r_osgi.RemoteOSGiException;
 import ch.ethz.iks.r_osgi.RemoteOSGiService;
@@ -385,6 +386,12 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 			} else if (result instanceof OutputStreamHandle) {
 				return getOutputStreamProxy((OutputStreamHandle) result);
 			} else {
+				if (result != null) {
+					String returnType = Type.getReturnType(methodSignature).getClassName();
+					RemoteServiceReferenceImpl refImpl = getRemoteReference(URI.create(service).toString());
+					if (refImpl != null && refImpl.isOSGiAsync() && AsyncReturnUtil.isAsyncType(returnType))
+						return AsyncReturnUtil.convertReturnToAsync(result, returnType);
+				}
 				return result;
 			}
 		} catch (final RemoteOSGiException e) {
@@ -1266,15 +1273,17 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 							arguments);
 					final RemoteCallResultMessage m = new RemoteCallResultMessage();
 					m.setXID(invMsg.getXID());
+					Class returnType = method.getReturnType();
 					if (result instanceof InputStream) {
 						m
 								.setResult(getInputStreamPlaceholder((InputStream) result));
 					} else if (result instanceof OutputStream) {
 						m
 								.setResult(getOutputStreamPlaceholder((OutputStream) result));
-					} else {
-						m.setResult(result);
-					}
+					} else if (serv.isOSGiAsync() && AsyncReturnUtil.isAsyncType(returnType)) {
+							m.setResult(AsyncReturnUtil.convertAsyncToReturn(result, returnType, serv.getOSGiTimeout()));
+					} else
+							m.setResult(result);
 					return m;
 				} catch (final InvocationTargetException t) {
 					t.printStackTrace();

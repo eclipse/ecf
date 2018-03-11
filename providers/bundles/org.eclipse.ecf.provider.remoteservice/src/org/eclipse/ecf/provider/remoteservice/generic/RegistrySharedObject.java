@@ -1469,7 +1469,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			Class returnType = method.getReturnType();
 			// provider must expose osgi.async property and must be async return type
 			if (reg.getProperty(Constants.OSGI_ASYNC_INTENT) != null && AsyncReturnUtil.isAsyncType(returnType))
-				return AsyncReturnUtil.asyncReturn(result, returnType, call.getTimeout());
+				return AsyncReturnUtil.convertAsyncToReturn(result, returnType, call.getTimeout());
 		}
 		return result;
 	}

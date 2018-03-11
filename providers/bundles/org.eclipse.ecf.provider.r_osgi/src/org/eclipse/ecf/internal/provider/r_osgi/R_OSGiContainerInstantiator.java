@@ -31,7 +31,7 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
  */
 public final class R_OSGiContainerInstantiator implements IContainerInstantiator, IRemoteServiceContainerInstantiator {
 
-	public static final String[] r_OSGiIntents = {"passByValue", "exactlyOnce", "ordered",}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	public static final String[] r_OSGiIntents = {"osgi.basic", "osgi.async", "passByValue", "exactlyOnce", "ordered",}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 
 	public static R_OSGiID createR_OSGiID(Namespace namespace, String uriStr) {
 		return (R_OSGiID) IDFactory.getDefault().createID(namespace, uriStr);
