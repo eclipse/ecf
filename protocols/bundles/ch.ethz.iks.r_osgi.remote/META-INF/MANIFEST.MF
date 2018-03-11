@@ -22,7 +22,7 @@ Export-Package: ch.ethz.iks.r_osgi;version="1.0.9",
 DynamicImport-Package: *
 Bundle-ClassPath: .
 Bundle-Activator: ch.ethz.iks.r_osgi.impl.RemoteOSGiActivator
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Eclipse-LazyStart: true
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
