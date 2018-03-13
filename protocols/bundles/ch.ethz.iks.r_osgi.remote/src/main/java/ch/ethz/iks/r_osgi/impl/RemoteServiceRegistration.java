@@ -51,6 +51,7 @@ final class RemoteServiceRegistration {
 	public static final String OSGI_ASYNC = "osgi.async";
 	public static final String OSGI_BASIC_TIMEOUT = "osgi.basic.timeout";
 	
+	public static final long DEFAULT_TIMEOUT = Long.valueOf(System.getProperty("ch.ethz.iks.r_osgi.remoteservice.timeout","30000"));
 	/**
 	 * the local service reference.
 	 */
@@ -163,16 +164,13 @@ final class RemoteServiceRegistration {
 	}
 	
 	long getOSGiTimeout() {
-		long timeout = 30000;
+		long timeout = DEFAULT_TIMEOUT;
 		Object timeoutval = reference.getProperty(OSGI_BASIC_TIMEOUT);
 		if (timeoutval != null) {
-			if (timeoutval instanceof Long) {
-				timeout = ((Long) timeoutval).longValue();
-			} else if (timeoutval instanceof Integer) {
-				timeout = ((Integer) timeoutval).longValue();
-			} else if (timeoutval instanceof String) {
+			if (timeoutval instanceof Number) 
+				timeout = ((Number) timeoutval).longValue();
+			else if (timeoutval instanceof String) 
 				timeout = Long.valueOf((String) timeoutval).longValue();
-			}
 		} 
 		return timeout;
 	}

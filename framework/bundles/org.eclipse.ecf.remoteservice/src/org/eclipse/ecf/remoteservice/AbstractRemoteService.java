@@ -124,10 +124,8 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 			if (defaultTimeout == null) {
 				Object o = getRemoteServiceReference().getProperty(Constants.OSGI_BASIC_TIMEOUT_INTENT);
 				if (o != null) {
-					if (o instanceof Long)
-						defaultTimeout = (Long) o;
-					else if (o instanceof Integer)
-						defaultTimeout = ((Integer) o).longValue();
+					if (o instanceof Number)
+						defaultTimeout = ((Number) o).longValue();
 					else if (o instanceof String)
 						defaultTimeout = Long.valueOf((String) o);
 				} else
