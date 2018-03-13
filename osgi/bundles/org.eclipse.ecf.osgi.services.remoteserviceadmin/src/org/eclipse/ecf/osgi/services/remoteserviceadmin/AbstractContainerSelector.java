@@ -12,6 +12,7 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -23,6 +24,7 @@ import org.eclipse.ecf.core.IContainerFactory;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.provider.ContainerIntentException;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
@@ -32,6 +34,7 @@ import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.PropertiesUtil;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.RemoteServiceContainer;
+import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 
 /**
@@ -129,11 +132,28 @@ public abstract class AbstractContainerSelector {
 			Map<String, Object> properties,
 			ContainerTypeDescription containerTypeDescription)
 			throws SelectContainerException {
+		
+		return createContainer(serviceReference, properties, containerTypeDescription, null);
+	}
+	
+	/**
+	 * @param serviceReference serviceReference
+	 * @param properties overriding properties
+	 * @param containerTypeDescription containerTypeDescription
+	 * @param intents intents
+	 * @return IContainer created container.  May be null if instance cannot be created (e.g. because of intent requirements)
+	 * @throws SelectContainerException thrown if some create or configure failure
+	 * @since 4.6
+	 */
+	protected IContainer createContainer(ServiceReference serviceReference,
+			Map<String, Object> properties,
+			ContainerTypeDescription containerTypeDescription, String[] intents)
+			throws SelectContainerException {
 
 		IContainerFactory containerFactory = getContainerFactory();
 
 		final Object containerFactoryArguments = getContainerFactoryArguments(
-				serviceReference, properties, containerTypeDescription);
+				serviceReference, properties, containerTypeDescription, intents);
 
 		try {
 			if (containerFactoryArguments instanceof String) {
@@ -155,11 +175,16 @@ public abstract class AbstractContainerSelector {
 			}
 			return containerFactory.createContainer(containerTypeDescription);
 		} catch (ContainerCreateException e) {
-			throw new SelectContainerException(
+			if (e instanceof ContainerIntentException) {
+				LogUtility.logWarning("createContainer", DebugOptions.CONTAINER_SELECTOR, this.getClass(), "Container does not satisfy required intent="+((ContainerIntentException) e).getIntentName(),e); //$NON-NLS-1$ //$NON-NLS-2$
+				return null;
+			} else
+				throw new SelectContainerException(
 					"Exception creating or configuring container", e, //$NON-NLS-1$
 					containerTypeDescription);
 		}
 	}
+
 
 	/**
 	 * @param serviceReference serviceReference
@@ -171,19 +196,67 @@ public abstract class AbstractContainerSelector {
 	protected Object getContainerFactoryArguments(
 			ServiceReference serviceReference, Map<String, Object> properties,
 			ContainerTypeDescription containerTypeDescription) {
+		return getContainerFactoryArguments(serviceReference, properties, containerTypeDescription, null);
+	}
+
+	/**
+	 * @param serviceReference serviceReference
+	 * @param properties overriding properties
+	 * @param containerTypeDescription containerTypeDescription
+	 * @param intents intents
+	 * @return Object container factory arguments to use
+	 * @since 4.6
+	 */
+	protected Object getContainerFactoryArguments(
+			ServiceReference serviceReference, Map<String, Object> properties,
+			ContainerTypeDescription containerTypeDescription, String[] intents) {
 		// If the RemoteConstants.SERVICE_EXPORTED_CONTAINER_FACTORY_ARGS is set
 		// than use it.
 		final Object containerFactoryArguments = properties
 				.get(RemoteConstants.SERVICE_EXPORTED_CONTAINER_FACTORY_ARGS);
 		if (containerFactoryArguments != null)
 			return containerFactoryArguments;
-
+		// Else we return Map as is required for RSA container creation
+		Map<String, Object> results = new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER);
+		// Put the service intents (e.g. osgi.private) into the results map
+		if (intents != null)
+			results.put(Constants.SERVICE_INTENTS, intents);
+		// This iterates through the service Reference properties...if the property starts with
+		// any of the service intent names (e.g. osgi.basic.timeout) then the property is
+		// added to the results map
+		if (intents != null)
+			for (String propName : serviceReference.getPropertyKeys()) {
+				Object value = null;
+				for (String intent : intents) {
+					if (propName.startsWith(intent + ".")) //$NON-NLS-1$
+						value = serviceReference.getProperty(propName);
+				}
+				if (value != null)
+					results.put(propName, value);
+			}
+		// This iterates through the properties map...if the property starts with
+		// any of the service intent names (e.g. osgi.basic.timeout) then the property is
+		// added to the results map
+		if (intents != null)
+			for (String propName : properties.keySet()) {
+				Object value = null;
+				for (String intent : intents) {
+					if (propName.startsWith(intent + ".")) //$NON-NLS-1$
+						value = properties.get(propName);
+				}
+				if (value != null)
+					results.put(propName, value);
+			}
+		// Add any config properties
 		String exportedConfig = containerTypeDescription.getName();
 		// If not, then we look through the properties that start with
 		// <containerTypeDescription.name>.
-		Map<String, Object> results = PropertiesUtil.getConfigProperties(exportedConfig, properties);
+		Map<String, Object> configProperties = PropertiesUtil.getConfigProperties(exportedConfig, properties);
+		results = PropertiesUtil.mergeProperties(results, configProperties);
+		
 		if (results.size() == 0)
 			return null;
+		
 		return results;
 	}
 

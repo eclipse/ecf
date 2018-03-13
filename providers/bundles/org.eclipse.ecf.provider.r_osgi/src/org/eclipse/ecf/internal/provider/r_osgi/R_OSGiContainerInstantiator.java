@@ -12,14 +12,13 @@
 package org.eclipse.ecf.internal.provider.r_osgi;
 
 import ch.ethz.iks.r_osgi.RemoteOSGiService;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.*;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.*;
-import org.eclipse.ecf.core.provider.IContainerInstantiator;
-import org.eclipse.ecf.core.provider.IRemoteServiceContainerInstantiator;
+import org.eclipse.ecf.core.provider.*;
 import org.eclipse.ecf.provider.r_osgi.identity.*;
+import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 
 /**
@@ -31,7 +30,7 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
  */
 public final class R_OSGiContainerInstantiator implements IContainerInstantiator, IRemoteServiceContainerInstantiator {
 
-	public static final String[] r_OSGiIntents = {"osgi.basic", "osgi.async", "passByValue", "exactlyOnce", "ordered",}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+	public static final String[] r_OSGiIntents = {"osgi.basic", "osgi.async", "osgi.private", "passByValue", "exactlyOnce", "ordered"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 
 	public static R_OSGiID createR_OSGiID(Namespace namespace, String uriStr) {
 		return (R_OSGiID) IDFactory.getDefault().createID(namespace, uriStr);
@@ -46,6 +45,70 @@ public final class R_OSGiContainerInstantiator implements IContainerInstantiator
 
 	final boolean useHostname = Boolean.valueOf(System.getProperty("org.eclipse.ecf.provider.r_osgi.useHostName", "true")).booleanValue(); //$NON-NLS-1$ //$NON-NLS-2$
 
+	private R_OSGiID createROSGiID(ContainerTypeDescription description, Map properties) throws ContainerCreateException {
+		String idStr = (String) properties.get(ID_PROP);
+		String hostname = null;
+		if (idStr != null) {
+			try {
+				URI uri = new URI(idStr);
+				hostname = uri.getHost();
+			} catch (URISyntaxException e) {
+				throw new ContainerCreateException("Invalid syntax for R_OSGI id=" + idStr, e); //$NON-NLS-1$
+			}
+		}
+		// See if private intent is set in properties
+		boolean privateIntent = ContainerInstantiatorUtils.containsPrivateIntent(properties);
+
+		InetAddress hostAddress = null;
+		if (hostname == null || "".equals(hostname) || "localhost".equals(hostname)) { //$NON-NLS-1$ //$NON-NLS-2$
+			hostname = "localhost"; //$NON-NLS-1$
+			try {
+				hostAddress = InetAddress.getLocalHost();
+				if (useHostname)
+					hostname = hostAddress.getCanonicalHostName();
+			} catch (UnknownHostException e) {
+				// If address can't be found for hostname, then if private, we throw
+				// If not private we ignore
+				if (privateIntent)
+					throw new ContainerIntentException(Constants.OSGI_PRIVATE_INTENT, "Cannot get localhost address for private ROSGI container", e); //$NON-NLS-1$ 
+			}
+		} else if ("127.0.0.1".equals(hostname)) { //$NON-NLS-1$
+			if (privateIntent)
+				try {
+					hostAddress = InetAddress.getLocalHost();
+				} catch (UnknownHostException e) {
+					// If address can't be found for hostname, then if private, we throw
+					// If not private we ignore
+					throw new ContainerIntentException(Constants.OSGI_PRIVATE_INTENT, "Cannot get localhost address for private ROSGI container", e); //$NON-NLS-1$ 
+				}
+		}
+		if (privateIntent) {
+			if (hostAddress == null)
+				try {
+					hostAddress = InetAddress.getByName(hostname);
+				} catch (UnknownHostException e) {
+					throw new ContainerIntentException(Constants.OSGI_PRIVATE_INTENT, "Cannot get inetaddress for ROSGI container with hostname '" + hostname + "'", e); //$NON-NLS-1$ //$NON-NLS-2$ 
+				}
+			ContainerInstantiatorUtils.checkPrivate(hostAddress);
+		}
+		String descriptionName = description.getName();
+		boolean wss = descriptionName.equals(ROSGI_WEBSOCKETSS_CONFIG);
+		boolean ws = (descriptionName.equals(ROSGI_WEBSOCKETS_CONFIG) || wss);
+		Namespace ns = (wss ? R_OSGiWSSNamespace.getDefault() : ((ws) ? R_OSGiWSNamespace.getDefault() : R_OSGiNamespace.getDefault()));
+
+		final String nsScheme = ns.getScheme();
+		final String wsProtocol = (wss ? WSS_PROTOCOL : (ws ? WS_PROTOCOL : null));
+		final RemoteOSGiService remoteOSGiService = Activator.getDefault().getRemoteOSGiService();
+		int listeningPort = remoteOSGiService.getListeningPort((wsProtocol != null) ? wsProtocol : nsScheme);
+		int idPort = -1;
+		if (WSS_PROTOCOL.equals(wsProtocol) && listeningPort != WSS_DEFAULT_PORT)
+			idPort = listeningPort;
+		else if (WS_PROTOCOL.equals(wsProtocol) && listeningPort != WS_DEFAULT_PORT)
+			idPort = listeningPort;
+		String portStr = (idPort > 0 ? (":" + idPort) : ""); //$NON-NLS-1$ //$NON-NLS-2$
+		return createR_OSGiID(ns, new String(nsScheme + "://" + hostname + portStr)); //$NON-NLS-1$ 
+	}
+
 	/**
 	 * creates a new container instance.
 	 * 
@@ -59,55 +122,37 @@ public final class R_OSGiContainerInstantiator implements IContainerInstantiator
 	 */
 	public IContainer createInstance(final ContainerTypeDescription description, final Object[] parameters) throws ContainerCreateException {
 		try {
-			final RemoteOSGiService remoteOSGiService = Activator.getDefault().getRemoteOSGiService();
 			String descriptionName = description.getName();
 			boolean wss = descriptionName.equals(ROSGI_WEBSOCKETSS_CONFIG);
 			boolean ws = (descriptionName.equals(ROSGI_WEBSOCKETS_CONFIG) || wss);
 			Namespace ns = (wss ? R_OSGiWSSNamespace.getDefault() : ((ws) ? R_OSGiWSNamespace.getDefault() : R_OSGiNamespace.getDefault()));
+
 			ID containerID = null;
-			if (parameters == null) {
-				String localHost = "localhost"; //$NON-NLS-1$
-				if (useHostname) {
-					try {
-						localHost = InetAddress.getLocalHost().getCanonicalHostName();
-					} catch (UnknownHostException e) {
-						// Ignore
-					}
-				}
-				final String nsScheme = ns.getScheme();
-				final String wsProtocol = (wss ? WSS_PROTOCOL : (ws ? WS_PROTOCOL : null));
-				int listeningPort = remoteOSGiService.getListeningPort((wsProtocol != null) ? wsProtocol : nsScheme);
-				int idPort = -1;
-				if (WSS_PROTOCOL.equals(wsProtocol) && listeningPort != WSS_DEFAULT_PORT)
-					idPort = listeningPort;
-				else if (WS_PROTOCOL.equals(wsProtocol) && listeningPort != WS_DEFAULT_PORT)
-					idPort = listeningPort;
-				String portStr = (idPort > 0 ? (":" + idPort) : ""); //$NON-NLS-1$ //$NON-NLS-2$
-				containerID = createR_OSGiID(ns, new String(nsScheme + "://" + localHost + portStr)); //$NON-NLS-1$ 
-			} else if (parameters.length > 0) {
-				if (parameters[0] instanceof ID)
+			if (parameters == null)
+				containerID = createROSGiID(description, null);
+			else if (parameters.length >= 1) {
+				if (parameters[0] instanceof Map)
+					containerID = createROSGiID(description, (Map) parameters[0]);
+				else if (parameters[0] instanceof ID)
 					containerID = (ID) parameters[0];
 				else if (parameters[0] instanceof String)
 					containerID = createR_OSGiID(ns, (String) parameters[0]);
-				else if (parameters[0] instanceof Map) {
-					Map params = (Map) parameters[0];
-					String idStr = (String) params.get(ID_PROP);
-					if (idStr == null)
-						throw new NullPointerException("No ID prop found in parameters map"); //$NON-NLS-1$
-					containerID = createR_OSGiID(ns, idStr);
-				}
 			}
 			if (containerID == null)
 				throw new ContainerCreateException("Unsupported arguments " //$NON-NLS-1$
 						+ Arrays.asList(parameters));
+			final RemoteOSGiService remoteOSGiService = Activator.getDefault().getRemoteOSGiService();
+
 			if (wss)
 				return new R_OSGiWSSRemoteServiceContainer(remoteOSGiService, containerID);
 			else if (ws)
 				return new R_OSGiWSRemoteServiceContainer(remoteOSGiService, containerID);
 			else
 				return new R_OSGiRemoteServiceContainer(remoteOSGiService, containerID);
+		} catch (ContainerCreateException e) {
+			throw e;
 		} catch (Exception e) {
-			throw new ContainerCreateException("Could not create R_OSGI ID", e); //$NON-NLS-1$
+			throw new ContainerCreateException("Could not create ROSGI Container instance", e); //$NON-NLS-1$
 		}
 	}
 
@@ -139,7 +184,10 @@ public final class R_OSGiContainerInstantiator implements IContainerInstantiator
 	}
 
 	public String[] getSupportedIntents(ContainerTypeDescription description) {
-		return r_OSGiIntents;
+		List<String> intents = new ArrayList<String>(Arrays.asList(r_OSGiIntents));
+		if (description.getName().equals(ROSGI_WEBSOCKETSS_CONFIG))
+			intents.add(Constants.OSGI_CONFIDENTIAL_INTENT);
+		return intents.toArray(new String[intents.size()]);
 	}
 
 	private static final String ROSGI_CONFIG = "ecf.r_osgi.peer"; //$NON-NLS-1$

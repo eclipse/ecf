@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf
-Bundle-Version: 3.8.0.qualifier
+Bundle-Version: 3.9.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.core.ECFPlugin
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
@@ -12,7 +12,7 @@ Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.eclipse.ecf.core;version="3.0.0",
  org.eclipse.ecf.core.events;version="3.1.0",
  org.eclipse.ecf.core.jobs;version="1.1.0",
- org.eclipse.ecf.core.provider;version="3.1.0",
+ org.eclipse.ecf.core.provider;version="3.2.0",
  org.eclipse.ecf.core.security;version="3.1.0",
  org.eclipse.ecf.core.start;version="3.1.0",
  org.eclipse.ecf.core.status;version="1.1.0",

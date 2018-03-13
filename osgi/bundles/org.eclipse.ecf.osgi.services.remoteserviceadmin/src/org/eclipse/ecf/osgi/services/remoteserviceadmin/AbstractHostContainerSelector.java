@@ -23,6 +23,8 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.provider.ContainerInstantiatorUtils;
+import org.eclipse.ecf.core.provider.ContainerIntentException;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.IDUtil;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
@@ -168,7 +170,7 @@ public abstract class AbstractHostContainerSelector extends
 
 		return matchHostSupportedConfigTypes(requiredConfigTypes, description)
 				&& matchHostSupportedIntents(requiredServiceIntents,
-						description)
+						description, container)
 				&& matchHostContainerID(serviceReference, properties, container)
 				&& matchHostContainerToConnectTarget(serviceReference,
 						properties, container);
@@ -260,7 +262,7 @@ public abstract class AbstractHostContainerSelector extends
 	protected Collection createAndConfigureHostContainers(
 			ServiceReference serviceReference, Map<String, Object> properties,
 			String[] serviceExportedInterfaces, String[] requiredConfigs,
-			String[] requiredIntents) throws SelectContainerException {
+			String[] serviceIntents) throws SelectContainerException {
 
 		List results = new ArrayList();
 		ContainerTypeDescription[] descriptions = getContainerTypeDescriptions();
@@ -269,7 +271,7 @@ public abstract class AbstractHostContainerSelector extends
 		// If there are no required configs specified, then create any defaults
 		if (requiredConfigs == null || requiredConfigs.length == 0) {
 			createAndAddDefaultContainers(serviceReference, properties,
-					serviceExportedInterfaces, requiredIntents, descriptions,
+					serviceExportedInterfaces, serviceIntents, descriptions,
 					results);
 		} else {
 			// See if we have a match
@@ -277,7 +279,7 @@ public abstract class AbstractHostContainerSelector extends
 				IRemoteServiceContainer matchingContainer = createMatchingContainer(
 						descriptions[i], serviceReference, properties,
 						serviceExportedInterfaces, requiredConfigs,
-						requiredIntents);
+						serviceIntents);
 				if (matchingContainer != null)
 					results.add(matchingContainer);
 			}
@@ -350,14 +352,14 @@ public abstract class AbstractHostContainerSelector extends
 			ContainerTypeDescription containerTypeDescription,
 			ServiceReference serviceReference, Map<String, Object> properties,
 			String[] serviceExportedInterfaces, String[] requiredConfigs,
-			String[] requiredIntents) throws SelectContainerException {
+			String[] serviceIntents) throws SelectContainerException {
 
 		if (matchHostSupportedConfigTypes(requiredConfigs,
 				containerTypeDescription)
-				&& matchHostSupportedIntents(requiredIntents,
+				&& matchHostSupportedIntents(serviceIntents,
 						containerTypeDescription)) {
 			return createRSContainer(serviceReference, properties,
-					containerTypeDescription);
+					containerTypeDescription, serviceIntents);
 		}
 		return null;
 	}
@@ -374,8 +376,25 @@ public abstract class AbstractHostContainerSelector extends
 			ServiceReference serviceReference, Map<String, Object> properties,
 			ContainerTypeDescription containerTypeDescription)
 			throws SelectContainerException {
+		return createRSContainer(serviceReference, properties, containerTypeDescription, null);
+	}
+
+	/**
+	 * @param serviceReference serviceReference
+	 * @param properties properties
+	 * @param containerTypeDescription container type description
+	 * @return IRemoteServiceContainer created remote service container
+	 * @throws SelectContainerException if could not be created
+	 * @since 4.6
+	 */
+	protected IRemoteServiceContainer createRSContainer(
+			ServiceReference serviceReference, Map<String, Object> properties,
+			ContainerTypeDescription containerTypeDescription, String[] intents)
+			throws SelectContainerException {
 		IContainer container = createContainer(serviceReference, properties,
-				containerTypeDescription);
+				containerTypeDescription, intents);
+		if (container == null) 
+			return null;
 		IRemoteServiceContainerAdapter adapter = (IRemoteServiceContainerAdapter) container
 				.getAdapter(IRemoteServiceContainerAdapter.class);
 		if (adapter == null)
@@ -383,6 +402,7 @@ public abstract class AbstractHostContainerSelector extends
 					"Container does not implement IRemoteServiceContainerAdapter", null, containerTypeDescription); //$NON-NLS-1$
 		return new RemoteServiceContainer(container, adapter);
 	}
+
 
 	/**
 	 * @param serviceReference service reference
@@ -414,6 +434,15 @@ public abstract class AbstractHostContainerSelector extends
 	protected boolean matchHostSupportedIntents(
 			String[] serviceRequiredIntents,
 			ContainerTypeDescription containerTypeDescription) {
+		return matchHostSupportedIntents(serviceRequiredIntents, containerTypeDescription, null);
+	}
+
+	/**
+	 * @since 4.6
+	 */
+	protected boolean matchHostSupportedIntents(
+			String[] serviceRequiredIntents,
+			ContainerTypeDescription containerTypeDescription, IContainer container) {
 		// If there are no required intents then we have a match
 		if (serviceRequiredIntents == null)
 			return true;
@@ -422,14 +451,32 @@ public abstract class AbstractHostContainerSelector extends
 
 		if (supportedIntents == null)
 			return false;
-
-		List supportedIntentsList = Arrays.asList(supportedIntents);
-
+		// checks to see that containerTypeDescription supports requiredIntents
 		boolean result = true;
-		for (int i = 0; i < serviceRequiredIntents.length; i++)
-			result = result
-					&& supportedIntentsList.contains(serviceRequiredIntents[i]);
+		for (int i = 0; i < serviceRequiredIntents.length; i++) {
+			boolean found = false;
+			for(String supportedIntent: supportedIntents) 
+				if (serviceRequiredIntents[i].equals(supportedIntent) || serviceRequiredIntents[i].startsWith(supportedIntent+"."))  {//$NON-NLS-1$
+					found = true;
+					break;
+				}
+			result &= found;
+		}
 
+		if (!result)
+			return false;
+		
+		// If container is non-null,
+		// check to see that it's ID is private.  If it's not private, return null
+		if (container != null) {
+			try {
+				if (ContainerInstantiatorUtils.containsPrivateIntent(serviceRequiredIntents))
+					ContainerInstantiatorUtils.checkPrivate(container.getID());
+			} catch (ContainerIntentException e) {
+				return false;
+			}
+		}
+		
 		return result;
 	}
 

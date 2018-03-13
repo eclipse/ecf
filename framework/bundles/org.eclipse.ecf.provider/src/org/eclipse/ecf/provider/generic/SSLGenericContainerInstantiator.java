@@ -18,8 +18,7 @@ import javax.net.ssl.SSLServerSocketFactory;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.*;
-import org.eclipse.ecf.core.provider.IContainerInstantiator;
-import org.eclipse.ecf.core.provider.IRemoteServiceContainerInstantiator;
+import org.eclipse.ecf.core.provider.*;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
 import org.eclipse.ecf.internal.provider.ProviderPlugin;
@@ -29,7 +28,7 @@ import org.eclipse.ecf.internal.provider.ProviderPlugin;
  */
 public class SSLGenericContainerInstantiator implements IContainerInstantiator, IRemoteServiceContainerInstantiator {
 
-	protected static final String[] genericProviderIntents = {"passByValue", "exactlyOnce", "ordered",}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	protected static final String[] genericProviderIntents = {"osgi.basic", "osgi.async", "osgi.private", "passByValue", "exactlyOnce", "ordered"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 
 	public static final String SSLCLIENT_NAME = "ecf.generic.ssl.client"; //$NON-NLS-1$
 
@@ -197,17 +196,20 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 	 * @param args arguments
 	 * @return GenericContainerArgs the client args created
 	 * @throws IDCreateException if the client args cannot be retrieved from given args
+	 * @throws ContainerIntentException 
 	 * @since 3.0
 	 */
-	protected GenericContainerArgs getServerArgs(Object[] args) throws IDCreateException {
+	protected GenericContainerArgs getServerArgs(Object[] args) throws IDCreateException, ContainerIntentException {
 		ID newID = null;
 		Integer ka = null;
 		InetAddress bindAddress = null;
 		boolean wantClientAuth = false;
 		boolean needClientAuth = false;
+		boolean privateIntent = false;
 		if (args != null && args.length > 0) {
 			if (args[0] instanceof Map) {
-				Map map = (Map) args[0];
+				@SuppressWarnings("unchecked")
+				Map<String, Object> map = (Map<String, Object>) args[0];
 				Object idVal = map.get(ID_PROP);
 				if (idVal != null) {
 					newID = getIDFromArg(idVal);
@@ -251,6 +253,10 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 				Object wantClientAuthVal = map.get(WANTCLIENTAUTH_PROP);
 				if (wantClientAuthVal instanceof Boolean)
 					wantClientAuth = ((Boolean) wantClientAuthVal).booleanValue();
+
+				// Get private intent if present
+				privateIntent = ContainerInstantiatorUtils.containsPrivateIntent(map);
+
 			} else if (args.length > 1) {
 				if (args[0] instanceof String || args[0] instanceof ID)
 					newID = getIDFromArg(args[0]);
@@ -272,6 +278,11 @@ public class SSLGenericContainerInstantiator implements IContainerInstantiator, 
 		}
 		if (ka == null)
 			ka = new Integer(SSLServerSOContainer.DEFAULT_KEEPALIVE);
+
+		// Check for private intent
+		if (privateIntent)
+			ContainerInstantiatorUtils.checkPrivate(newID);
+
 		return new GenericContainerArgs(newID, ka, bindAddress, wantClientAuth, needClientAuth);
 	}
 

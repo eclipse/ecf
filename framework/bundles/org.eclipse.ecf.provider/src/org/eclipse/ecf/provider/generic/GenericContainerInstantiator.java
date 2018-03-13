@@ -16,8 +16,7 @@ import java.util.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.*;
-import org.eclipse.ecf.core.provider.IContainerInstantiator;
-import org.eclipse.ecf.core.provider.IRemoteServiceContainerInstantiator;
+import org.eclipse.ecf.core.provider.*;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
 import org.eclipse.ecf.internal.provider.ProviderPlugin;
@@ -27,7 +26,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 	/**
 	 * @since 2.0
 	 */
-	protected static final String[] genericProviderIntents = {"osgi.basic", "osgi.async", "passByValue", "exactlyOnce", "ordered"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	protected static final String[] genericProviderIntents = {"osgi.basic", "osgi.async", "osgi.private", "passByValue", "exactlyOnce", "ordered"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 
 	public static final String TCPCLIENT_NAME = "ecf.generic.client"; //$NON-NLS-1$
 
@@ -162,16 +161,18 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 	 * @param args arguments
 	 * @return GenericContainerArgs the server args created
 	 * @throws IDCreateException if the server args cannot be retrieved from given args
+	 * @throws ContainerIntentException 
 	 * @since 3.0
 	 */
-	protected GenericContainerArgs getServerArgs(Object[] args) throws IDCreateException {
+	protected GenericContainerArgs getServerArgs(Object[] args) throws IDCreateException, ContainerIntentException {
 		ID newID = null;
 		Integer ka = null;
 		InetAddress bindAddress = null;
-
+		boolean privateIntent = false;
 		if (args != null && args.length > 0) {
 			if (args[0] instanceof Map) {
-				Map map = (Map) args[0];
+				@SuppressWarnings("unchecked")
+				Map<String, Object> map = (Map<String, Object>) args[0];
 				Object idVal = map.get(ID_PROP);
 				if (idVal != null) {
 					newID = getIDFromArg(idVal);
@@ -209,6 +210,9 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 				if (o == null)
 					o = map.get(KEEPALIVE_PROP.toLowerCase());
 				ka = getIntegerFromArg(o);
+				// Get private intent if present
+				privateIntent = ContainerInstantiatorUtils.containsPrivateIntent(map);
+
 			} else if (args.length > 1) {
 				if (args[0] instanceof String || args[0] instanceof ID)
 					newID = getIDFromArg(args[0]);
@@ -223,6 +227,11 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 		}
 		if (ka == null)
 			ka = new Integer(TCPServerSOContainer.DEFAULT_KEEPALIVE);
+		
+		// Check private intent
+		if (privateIntent)
+			ContainerInstantiatorUtils.checkPrivate(newID);
+
 		return new GenericContainerArgs(newID, ka, bindAddress);
 	}
 
