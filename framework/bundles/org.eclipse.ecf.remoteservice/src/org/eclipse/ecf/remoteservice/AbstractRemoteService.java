@@ -12,6 +12,7 @@ package org.eclipse.ecf.remoteservice;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.TimeoutException;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.jobs.JobsExecutor;
 import org.eclipse.ecf.core.util.ECFException;
@@ -697,6 +698,22 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 		Activator a = Activator.getDefault();
 		if (a != null)
 			a.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, string, e));
+	}
+
+	/**
+	 * @since 8.13
+	 */
+	public Object submitCallable(Callable<Object> callable, long timeout) throws ECFException {
+		Future<Object> f = getFutureExecutorService(null).submit(callable);
+		try {
+			return f.get(timeout, TimeUnit.MILLISECONDS);
+		} catch (InterruptedException e) {
+			throw new ECFException("submitCallable interrupted", e); //$NON-NLS-1$ 
+		} catch (ExecutionException e) {
+			throw new ECFException("submitCallable interrupted", e.getCause()); //$NON-NLS-1$ 
+		} catch (TimeoutException e) {
+			throw new ECFException("submitCallable timed out", e); //$NON-NLS-1$ 
+		}
 	}
 
 	/**

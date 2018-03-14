@@ -26,7 +26,12 @@ public class TimeServiceComponentAsync {
 		// Get the CompletableFuture...no blocking here
 		CompletableFuture<Long> cf = timeService.getCurrentTimeAsync();
 		// print out time when done...no blocking anywhere!
-		cf.thenAccept((time) -> System.out.println("Remote time is: " + time));
+		cf.whenComplete((time, exception) -> {
+			if (exception != null)
+				exception.printStackTrace();
+			else
+				System.out.println("Remote time is: " + time);
+		});
 	}
 	
 	void unbindTimeService(ITimeServiceAsync timeService) {

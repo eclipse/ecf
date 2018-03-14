@@ -10,8 +10,6 @@ package com.mycorp.examples.timeservice.consumer.ds;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 
 import com.mycorp.examples.timeservice.ITimeService;
 
@@ -19,7 +17,7 @@ import com.mycorp.examples.timeservice.ITimeService;
 public class TimeServiceComponent {
 
 	// Called by DS upon ITimeService discovery
-	@Reference(policy=ReferencePolicy.DYNAMIC, cardinality=ReferenceCardinality.AT_LEAST_ONE)
+	@Reference
 	void bindTimeService(ITimeService timeService) {
 		System.out.println("Discovered ITimeService via DS.  Instance="+timeService);
 		// Call the service and print out result!

@@ -46,7 +46,9 @@ public final class R_OSGiContainerInstantiator implements IContainerInstantiator
 	final boolean useHostname = Boolean.valueOf(System.getProperty("org.eclipse.ecf.provider.r_osgi.useHostName", "true")).booleanValue(); //$NON-NLS-1$ //$NON-NLS-2$
 
 	private R_OSGiID createROSGiID(ContainerTypeDescription description, Map properties) throws ContainerCreateException {
-		String idStr = (String) properties.get(ID_PROP);
+		String idStr = null;
+		if (properties != null)
+			idStr = (String) properties.get(ID_PROP);
 		String hostname = null;
 		if (idStr != null) {
 			try {

@@ -141,8 +141,7 @@ final class RemoteServiceImpl extends AbstractRemoteService {
 		} catch (OperationCanceledException e) {
 			throw new ECFException("callSync cancelled", e); //$NON-NLS-1$
 		} catch (InterruptedException e) {
-			// If thread interrupted, then just return null
-			return null;
+			throw new ECFException("callSync interrupted ", e); //$NON-NLS-1$
 		} catch (TimeoutException e) {
 			throw new ECFException("callSync timed out after " + Long.toString(call.getTimeout()) + "ms", new TimeoutException(call.getTimeout())); //$NON-NLS-1$ //$NON-NLS-2$
 		}

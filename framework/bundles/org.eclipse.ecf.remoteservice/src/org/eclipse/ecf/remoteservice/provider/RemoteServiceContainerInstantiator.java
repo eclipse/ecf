@@ -12,6 +12,7 @@ import java.util.*;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.provider.BaseContainerInstantiator;
 import org.eclipse.ecf.core.provider.IRemoteServiceContainerInstantiator;
+import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 
 /**
@@ -22,7 +23,7 @@ public abstract class RemoteServiceContainerInstantiator extends BaseContainerIn
 	protected static final String[] defaultSupportedAdapterTypes = new String[] {IContainer.class.getName(), IRemoteServiceContainerAdapter.class.getName()};
 	protected static final Class[][] defaultSupportedParameterTypes = new Class[][] {{Map.class}};
 
-	protected static final String[] defaultSupportedIntents = new String[] {"passByValue", "exactlyOnce", "ordered"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	protected static final String[] defaultSupportedIntents = new String[] {Constants.OSGI_BASIC_INTENT, "passByValue", "exactlyOnce", "ordered"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
 	public String[] getSupportedAdapterTypes(ContainerTypeDescription description) {
 		return defaultSupportedAdapterTypes;

@@ -89,8 +89,19 @@ public abstract class AbstractRSAClientService extends AbstractClientService {
 			Object resultObject = invokeObject(proxy, method, args);
 			if (resultObject != null)
 				return resultObject;
-			if (isAsync(proxy, method, args))
-				return invokeAsync(createRemoteCall(proxy, method, getAsyncInvokeMethodName(method), args, getDefaultTimeout()));
+			try {
+				// If return is async type (Future, IFuture, CompletableFuture, CompletionStage)
+				if (isReturnAsync(proxy, method, args)) {
+					if (isInterfaceAsync(method.getDeclaringClass()) && isMethodAsync(method.getName()))
+						return invokeAsync(createRemoteCall(proxy, method, getAsyncInvokeMethodName(method), args, getDefaultTimeout()));
+					// If OSGI Async then invoke method directly
+					if (isOSGIAsync())
+						return invokeReturnAsync(proxy, method, args);
+				}
+			} catch (Throwable t) {
+				handleProxyException("Exception invoking async method on remote service proxy=" + getRemoteServiceID(), t); //$NON-NLS-1$
+			}
+
 			final String callMethod = getCallMethodNameForProxyInvoke(method, args);
 			final Object[] callParameters = getCallParametersForProxyInvoke(callMethod, method, args);
 			final long callTimeout = getCallTimeoutForProxyInvoke(callMethod, method, args);
