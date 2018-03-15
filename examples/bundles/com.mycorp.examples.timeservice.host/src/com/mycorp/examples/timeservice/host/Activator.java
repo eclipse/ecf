@@ -73,7 +73,9 @@ public class Activator implements BundleActivator {
 		for (Object k : props.keySet()) {
 			if (k instanceof String) {
 				String key = (String) k;
-				if (key.startsWith(config) || key.startsWith("osgi.") || key.startsWith("service."))
+				if (key.startsWith(config) || key.startsWith("osgi.basic") || key.startsWith("osgi.private")
+						|| key.startsWith("osgi.confidential") || key.startsWith("osgi.async")
+						|| key.startsWith("service."))
 					result.put(key, props.get(key));
 			}
 		}
