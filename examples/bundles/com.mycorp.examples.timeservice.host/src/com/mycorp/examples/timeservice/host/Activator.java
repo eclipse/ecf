@@ -67,15 +67,13 @@ public class Activator implements BundleActivator {
 			result.put(DEFAULT_CONFIG + ".hostname", "localhost");
 		}
 		
-		result.put("osgi.basic.timeout", "30001");
-		
 		result.put(SERVICE_EXPORTED_CONFIGS, config);
 		// add any config properties. config properties start with
 		// the config name '.' property
 		for (Object k : props.keySet()) {
 			if (k instanceof String) {
 				String key = (String) k;
-				if (key.startsWith(config))
+				if (key.startsWith(config) || key.startsWith("osgi.") || key.startsWith("service."))
 					result.put(key, props.get(key));
 			}
 		}

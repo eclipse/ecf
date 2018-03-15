@@ -703,17 +703,18 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 	/**
 	 * @since 8.13
 	 */
-	public Object submitCallable(Callable<Object> callable, long timeout) throws ECFException {
-		Future<Object> f = getFutureExecutorService(null).submit(callable);
-		try {
-			return f.get(timeout, TimeUnit.MILLISECONDS);
-		} catch (InterruptedException e) {
-			throw new ECFException("submitCallable interrupted", e); //$NON-NLS-1$ 
-		} catch (ExecutionException e) {
-			throw new ECFException("submitCallable interrupted", e.getCause()); //$NON-NLS-1$ 
-		} catch (TimeoutException e) {
-			throw new ECFException("submitCallable timed out", e); //$NON-NLS-1$ 
-		}
+	public Future<Object> callAsync(IRemoteCall call, Callable<Object> callable) {
+		return getFutureExecutorService(call).submit(callable);
+	}
+
+	/**
+	 * @throws TimeoutException 
+	 * @throws ExecutionException 
+	 * @throws InterruptedException 
+	 * @since 8.13
+	 */
+	public Object callSync(IRemoteCall call, Callable<Object> callable) throws InterruptedException, ExecutionException, TimeoutException {
+		return callAsync(call, callable).get(call.getTimeout(), TimeUnit.MILLISECONDS);
 	}
 
 	/**
@@ -728,4 +729,80 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 			iFutureExecutor = null;
 		}
 	}
+
+	/**
+	 * @since 8.13
+	 */
+	protected Future<Object> callAsyncWithTimeout(final IRemoteCall call, final Callable<Object> callable) {
+		return getFutureExecutorService(call).submit(new Callable<Object>() {
+			public Object call() throws Exception {
+				try {
+					return getFutureExecutorService(call).submit(callable).get(call.getTimeout(), TimeUnit.MILLISECONDS);
+				} catch (InterruptedException e) {
+					throw new InterruptedException("Interrupted calling remote service method=" + call.getMethod()); //$NON-NLS-1$
+				} catch (ExecutionException e) {
+					throw new InvocationTargetException(e.getCause(), "Exception calling remote service method=" + call.getMethod()); //$NON-NLS-1$
+				} catch (TimeoutException e) {
+					throw new TimeoutException("Timeout calling remote service method=" + call.getMethod() + " timeout=" + call.getTimeout()); //$NON-NLS-1$ //$NON-NLS-2$
+				}
+			}
+		});
+	}
+
+	/**
+	 * @since 8.13
+	 */
+	protected IRemoteCallCompleteEvent createRCCESuccess(final Object result) {
+		return createRCCE(result, null);
+	}
+
+	/**
+	 * @since 8.13
+	 */
+	protected IRemoteCallCompleteEvent createRCCEFailure(final Throwable e) {
+		return createRCCE(null, e);
+	}
+
+	/**
+	 * @since 8.13
+	 */
+	protected IRemoteCallCompleteEvent createRCCE(final Object result, final Throwable e) {
+		return new IRemoteCallCompleteEvent() {
+			public long getRequestId() {
+				return 0;
+			}
+
+			public Object getResponse() {
+				return result;
+			}
+
+			public boolean hadException() {
+				return (e != null);
+			}
+
+			public Throwable getException() {
+				return e;
+			}
+		};
+	}
+
+	/**
+	 * @since 8.13
+	 */
+	protected void callAsyncWithTimeout(final IRemoteCall call, final Callable<IRemoteCallCompleteEvent> callable, final IRemoteCallListener callback) {
+		getFutureExecutorService(call).submit(new Runnable() {
+			public void run() {
+				try {
+					callback.handleEvent(getFutureExecutorService(call).submit(callable).get(call.getTimeout(), TimeUnit.MILLISECONDS));
+				} catch (InterruptedException e) {
+					callback.handleEvent(createRCCE(null, new InterruptedException("Interrupted calling remote service method=" + call.getMethod()))); //$NON-NLS-1$
+				} catch (ExecutionException e) {
+					callback.handleEvent(createRCCE(null, new InvocationTargetException(e.getCause(), "Exception calling remote service method=" + call.getMethod()))); //$NON-NLS-1$
+				} catch (TimeoutException e) {
+					callback.handleEvent(createRCCE(null, new TimeoutException("Timeout calling remote service method=" + call.getMethod() + " timeout=" + call.getTimeout()))); //$NON-NLS-1$ //$NON-NLS-2$
+				}
+			}
+		});
+	}
+
 }

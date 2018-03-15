@@ -8,7 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.remoteservice.generic;
 
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.remoteservice.*;
@@ -44,59 +44,28 @@ public class RemoteServiceImpl extends AbstractRemoteService {
 	 * @see org.eclipse.ecf.remoteservice.IRemoteService#callAsync(org.eclipse.ecf.remoteservice.IRemoteCall, org.eclipse.ecf.remoteservice.IRemoteCallListener)
 	 */
 	public void callAsync(final IRemoteCall call, final IRemoteCallListener listener) {
-		getFutureExecutorService(call).submit(new Runnable() {
-			public void run() {
-				final AtomicReference<IRemoteCallEvent> l = new AtomicReference<IRemoteCallEvent>();
+		callAsyncWithTimeout(call, new Callable<IRemoteCallCompleteEvent>() {
+			public IRemoteCallCompleteEvent call() throws Exception {
+				final AtomicReference<IRemoteCallCompleteEvent> ar = new AtomicReference<IRemoteCallCompleteEvent>();
 				sharedObject.sendCallRequestWithListener(registration, call, new IRemoteCallListener() {
 					public void handleEvent(IRemoteCallEvent event) {
-						if (event instanceof IRemoteCallCompleteEvent) {
-							synchronized (l) {
-								l.set(event);
-								l.notify();
+						if (event instanceof IRemoteCallCompleteEvent)
+							synchronized (ar) {
+								ar.set((IRemoteCallCompleteEvent) event);
+								ar.notify();
 							}
-						}
 					}
 				});
-				long timeout = call.getTimeout();
-				Exception exception = null;
-				IRemoteCallEvent rce = null;
-				long sysTimeout = System.currentTimeMillis() + timeout;
-				synchronized (l) {
-					try {
-						while (rce == null && System.currentTimeMillis() < sysTimeout) {
-							l.wait(timeout / 10);
-							rce = l.get();
-						}
-					} catch (InterruptedException e) {
-						exception = e;
+				synchronized (ar) {
+					while (true) {
+						IRemoteCallCompleteEvent result = ar.get();
+						if (result != null)
+							return result;
+						ar.wait(call.getTimeout());
 					}
 				}
-				if (rce != null)
-					listener.handleEvent(rce);
-				else {
-					if (exception == null)
-						exception = new TimeoutException("remote call method=" + call.getMethod() + " timed out after " + timeout + "ms"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					final Exception except = exception;
-					listener.handleEvent(new IRemoteCallCompleteEvent() {
-						public long getRequestId() {
-							return 0;
-						}
-
-						public Object getResponse() {
-							return null;
-						}
-
-						public boolean hadException() {
-							return true;
-						}
-
-						public Throwable getException() {
-							return except;
-						}
-					});
-				}
 			}
-		});
+		}, listener);
 	}
 
 	/**

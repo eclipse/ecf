@@ -10,9 +10,10 @@
 package org.eclipse.ecf.remoteservice.client;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.*;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.remoteservice.IRemoteCall;
-import org.eclipse.ecf.remoteservice.RemoteCall;
+import org.eclipse.ecf.remoteservice.*;
+import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
 import org.osgi.framework.ServiceException;
 
 /**
@@ -67,7 +68,9 @@ public abstract class AbstractRSAClientService extends AbstractClientService {
 	 * @return Object.   Should return a non-null instance of {@link org.eclipse.equinox.concurrent.future.IFuture}, {@link java.util.concurrent.Future}, or {@link java.util.concurrent.CompletableFuture}
 	 * @throws ECFException if async cannot be invoked
 	 */
-	protected abstract Object invokeAsync(RSARemoteCall remoteCall) throws ECFException;
+	protected Object invokeAsync(RSARemoteCall remoteCall) throws ECFException {
+		return callFuture(remoteCall, remoteCall.getReflectMethod().getReturnType());
+	}
 
 	/**
 	 * Invoke a remote call synchronously.  This method should block until a value may be returned, or the remote
@@ -77,7 +80,23 @@ public abstract class AbstractRSAClientService extends AbstractClientService {
 	 * @return the result (of appropriate type)
 	 * @throws ECFException if some exception occurred during invocation
 	 */
-	protected abstract Object invokeSync(RSARemoteCall remoteCall) throws ECFException;
+	protected Object invokeSync(RSARemoteCall remoteCall) throws ECFException {
+		if (remoteCall.getClass().isAssignableFrom(RSARemoteCall.class)) {
+			Callable<Object> c = createSyncCallable(remoteCall);
+			if (c == null)
+				throw new ECFException("invokeSync failed on method=" + remoteCall.getMethod(), new NullPointerException("createSyncCallable() must not return null.  It's necessary for distribution provider to override createSyncCallable.")); //$NON-NLS-1$ //$NON-NLS-2$
+			try {
+				return callSync(remoteCall, c);
+			} catch (InterruptedException e) {
+				throw new ECFException("invokeSync interrupted on method=" + remoteCall.getMethod(), e); //$NON-NLS-1$
+			} catch (ExecutionException e) {
+				throw new ECFException("invokeSync exception on method=" + remoteCall.getMethod(), e.getCause()); //$NON-NLS-1$
+			} catch (TimeoutException e) {
+				throw new ECFException("invokeSync timeout on method=" + remoteCall.getMethod(), e); //$NON-NLS-1$
+			}
+		}
+		return super.invokeSync(remoteCall);
+	}
 
 	protected RSARemoteCall createRemoteCall(Object proxy, Method method, String methodName, Object[] parameters, long timeout) {
 		return new RSARemoteCall(proxy, method, methodName, parameters, timeout);
@@ -113,4 +132,35 @@ public abstract class AbstractRSAClientService extends AbstractClientService {
 			throw new ServiceException("Service exception on remote service proxy rsid=" + getRemoteServiceID(), ServiceException.REMOTE, t); //$NON-NLS-1$
 		}
 	}
+
+	@Override
+	protected ExecutorService getFutureExecutorService(IRemoteCall call) {
+		return super.getFutureExecutorService(call);
+	}
+
+	@Override
+	protected void callAsync(IRemoteCall call, IRemoteCallable callable, IRemoteCallListener listener) {
+		if (call.getClass().isAssignableFrom(RSARemoteCall.class)) {
+			Callable<IRemoteCallCompleteEvent> c = createAsyncCallable((RSARemoteCall) call);
+			if (c == null)
+				throw new NullPointerException("createAsyncCallable returns null.  Distribution provider must override createAsyncCallable"); //$NON-NLS-1$
+			callAsyncWithTimeout(call, c, listener);
+		}
+		super.callAsync(call, callable, listener);
+	}
+
+	/**
+	 * @since 8.13
+	 */
+	protected Callable<IRemoteCallCompleteEvent> createAsyncCallable(final RSARemoteCall call) {
+		return null;
+	}
+
+	/**
+	 * @since 8.13
+	 */
+	protected Callable<Object> createSyncCallable(final RSARemoteCall call) {
+		return null;
+	}
+
 }
