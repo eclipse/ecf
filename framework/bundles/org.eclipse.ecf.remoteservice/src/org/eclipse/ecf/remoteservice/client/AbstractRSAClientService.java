@@ -139,14 +139,14 @@ public abstract class AbstractRSAClientService extends AbstractClientService {
 	}
 
 	@Override
-	protected void callAsync(IRemoteCall call, IRemoteCallable callable, IRemoteCallListener listener) {
-		if (call.getClass().isAssignableFrom(RSARemoteCall.class)) {
+	public void callAsync(IRemoteCall call, IRemoteCallListener listener) {
+		if (call instanceof RSARemoteCall) {
 			Callable<IRemoteCallCompleteEvent> c = createAsyncCallable((RSARemoteCall) call);
 			if (c == null)
 				throw new NullPointerException("createAsyncCallable returns null.  Distribution provider must override createAsyncCallable"); //$NON-NLS-1$
 			callAsyncWithTimeout(call, c, listener);
-		}
-		super.callAsync(call, callable, listener);
+		} else
+			super.callAsync(call, listener);
 	}
 
 	/**

@@ -1449,20 +1449,12 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	/**
 	 * @since 4.4
 	 */
-	@SuppressWarnings("unchecked")
 	protected Object invokeLocal(RemoteServiceRegistrationImpl reg, RemoteCallImpl call) throws InvocationTargetException, Exception, NoClassDefFoundError {
 		Object[] callArgs = call.getParameters();
 		Object[] args = (callArgs == null) ? SharedObjectMsg.nullArgs : callArgs;
 		Object service = reg.getService();
 		// Find appropriate method on service
 		final Method method = ClassUtil.getMethod(service.getClass(), call.getMethod(), SharedObjectMsg.getTypesForParameters(args));
-		AccessController.doPrivileged(new PrivilegedExceptionAction() {
-			public Object run() throws Exception {
-				if (!method.isAccessible())
-					method.setAccessible(true);
-				return null;
-			}
-		});
 		// Actually invoke method on service object
 		Object result = method.invoke(service, args);
 		if (result != null) {

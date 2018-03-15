@@ -461,10 +461,7 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 	 * @since 8.13
 	 */
 	protected Object invokeReturnAsync(Object proxy, Method method, Object[] args) throws Throwable {
-		final String invokeMethodName = method.getName();
-		final AsyncArgs asyncArgs = new AsyncArgs(args, method.getReturnType());
-		RemoteCall remoteCall = getAsyncRemoteCall(invokeMethodName, asyncArgs.getArgs());
-		return callFuture(remoteCall, asyncArgs.getReturnType());
+		return callFuture(getAsyncRemoteCall(method.getName(), args), method.getReturnType());
 	}
 
 	/**
