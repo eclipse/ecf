@@ -82,7 +82,7 @@ public abstract class AbstractRSAClientService extends AbstractClientService {
 	 */
 	protected Object invokeSync(RSARemoteCall remoteCall) throws ECFException {
 		if (remoteCall.getClass().isAssignableFrom(RSARemoteCall.class)) {
-			Callable<Object> c = createSyncCallable(remoteCall);
+			Callable<Object> c = getSyncCallable(remoteCall);
 			if (c == null)
 				throw new ECFException("invokeSync failed on method=" + remoteCall.getMethod(), new NullPointerException("createSyncCallable() must not return null.  It's necessary for distribution provider to override createSyncCallable.")); //$NON-NLS-1$ //$NON-NLS-2$
 			try {
@@ -140,36 +140,41 @@ public abstract class AbstractRSAClientService extends AbstractClientService {
 
 	@Override
 	public void callAsync(IRemoteCall call, IRemoteCallListener listener) {
-		if (call instanceof RSARemoteCall) 
-			callAsyncWithTimeout(call, createAsyncCallable((RSARemoteCall) call), listener);
+		if (call instanceof RSARemoteCall)
+			callAsyncWithTimeout(call, getAsyncCallable((RSARemoteCall) call), listener);
 		else
 			super.callAsync(call, listener);
 	}
 
 	@Override
 	public Object callSync(IRemoteCall call) throws ECFException {
-		if (call instanceof RSARemoteCall) {
-			Callable<Object> c = createSyncCallable((RSARemoteCall) call);
+		if (call instanceof RSARemoteCall)
 			try {
-				return c.call();
+				return getSyncCallable((RSARemoteCall) call).call();
 			} catch (Exception e) {
 				throw new ECFException("Exception calling callable for method=" + call.getMethod(), e); //$NON-NLS-1$
 			}
-		}
 		return super.callSync(call);
 	}
 
 	/**
 	 * @since 8.13
 	 */
-	protected Callable<IRemoteCallCompleteEvent> createAsyncCallable(final RSARemoteCall call) {
+	protected ExecutorService getExecutorService() {
+		return getFutureExecutorService(null);
+	}
+
+	/**
+	 * @since 8.13
+	 */
+	protected Callable<IRemoteCallCompleteEvent> getAsyncCallable(final RSARemoteCall call) {
 		throw new UnsupportedOperationException("distribution provider must override createAsyncCallable for service method=" + call.getMethod() + " class=" + call.getReflectMethod().getDeclaringClass()); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**
 	 * @since 8.13
 	 */
-	protected Callable<Object> createSyncCallable(final RSARemoteCall call) {
+	protected Callable<Object> getSyncCallable(final RSARemoteCall call) {
 		throw new UnsupportedOperationException("distribution provider must override createAsyncCallable for service method=" + call.getMethod() + " class=" + call.getReflectMethod().getDeclaringClass()); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
