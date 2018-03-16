@@ -441,4 +441,9 @@ public interface Constants {
 	 */
 	public static final String OSGI_PRIVATE_INTENT = "osgi.private"; //$NON-NLS-1$
 
+	/**
+	 * @since 8.13
+	 */
+	public static final String OSGI_SERVICE_INTENTS = "service.intents"; //$NON-NLS-1$
+
 }

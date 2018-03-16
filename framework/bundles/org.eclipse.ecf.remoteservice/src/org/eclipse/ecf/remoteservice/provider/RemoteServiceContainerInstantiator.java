@@ -10,10 +10,10 @@ package org.eclipse.ecf.remoteservice.provider;
 
 import java.util.*;
 import org.eclipse.ecf.core.*;
-import org.eclipse.ecf.core.provider.BaseContainerInstantiator;
-import org.eclipse.ecf.core.provider.IRemoteServiceContainerInstantiator;
+import org.eclipse.ecf.core.provider.*;
 import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
+import org.eclipse.ecf.remoteservice.util.EndpointDescriptionPropertiesUtil;
 
 /**
  * @since 8.7
@@ -23,7 +23,7 @@ public abstract class RemoteServiceContainerInstantiator extends BaseContainerIn
 	protected static final String[] defaultSupportedAdapterTypes = new String[] {IContainer.class.getName(), IRemoteServiceContainerAdapter.class.getName()};
 	protected static final Class[][] defaultSupportedParameterTypes = new Class[][] {{Map.class}};
 
-	protected static final String[] defaultSupportedIntents = new String[] {Constants.OSGI_BASIC_INTENT, "passByValue", "exactlyOnce", "ordered"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+	protected static final String[] defaultSupportedIntents = new String[] {Constants.OSGI_BASIC_INTENT, "passByValue", "exactlyOnce", "ordered"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 	public String[] getSupportedAdapterTypes(ContainerTypeDescription description) {
 		return defaultSupportedAdapterTypes;
@@ -31,10 +31,6 @@ public abstract class RemoteServiceContainerInstantiator extends BaseContainerIn
 
 	public Class[][] getSupportedParameterTypes(ContainerTypeDescription description) {
 		return defaultSupportedParameterTypes;
-	}
-
-	public String[] getSupportedIntents(ContainerTypeDescription description) {
-		return defaultSupportedIntents;
 	}
 
 	protected List<String> exporterConfigs;
@@ -98,5 +94,122 @@ public abstract class RemoteServiceContainerInstantiator extends BaseContainerIn
 		ContainerCreateException cce = new ContainerCreateException(message, cause);
 		cce.setStackTrace(cause.getStackTrace());
 		throw cce;
+	}
+
+	/**
+	 * @since 8.13
+	 */
+	protected boolean supportsOSGIConfidentialIntent(ContainerTypeDescription description) {
+		return false;
+	}
+
+	/**
+	 * @since 8.13
+	 */
+	protected boolean supportsOSGIPrivateIntent(ContainerTypeDescription description) {
+		return false;
+	}
+
+	/**
+	 * @since 8.13
+	 */
+	protected boolean supportsOSGIAsyncIntent(ContainerTypeDescription description) {
+		return false;
+	}
+
+	public String[] getSupportedIntents(ContainerTypeDescription description) {
+		String[] s = defaultSupportedIntents;
+		if (supportsOSGIAsyncIntent(description))
+			s = addSupportedIntent(Constants.OSGI_ASYNC_INTENT, s);
+		if (supportsOSGIPrivateIntent(description))
+			s = addSupportedIntent(Constants.OSGI_PRIVATE_INTENT, s);
+		if (supportsOSGIConfidentialIntent(description))
+			s = addSupportedIntent(Constants.OSGI_CONFIDENTIAL_INTENT, s);
+		return s;
+	}
+
+	/**
+	 * @since 8.13
+	 */
+	public static String[] addSupportedIntent(String intent, String[] currentSupportedIntents) {
+		if (intent == null)
+			return currentSupportedIntents;
+		List<String> results = (currentSupportedIntents == null) ? new ArrayList<String>() : new ArrayList<String>(Arrays.asList(currentSupportedIntents));
+		results.add(intent);
+		return results.toArray(new String[results.size()]);
+	}
+
+	/**
+	 * @since 8.13
+	 */
+	public static String[] removeSupportedIntent(String intent, String[] currentSupportedIntents) {
+		if (intent == null)
+			return currentSupportedIntents;
+		List<String> results = (currentSupportedIntents == null) ? new ArrayList<String>() : new ArrayList<String>(Arrays.asList(currentSupportedIntents));
+		results.remove(intent);
+		return results.toArray(new String[results.size()]);
+	}
+
+	/**
+	 * @since 8.13
+	 */
+	public void checkPrivateHostname(ContainerTypeDescription description, String hostname) throws ContainerIntentException {
+		ContainerInstantiatorUtils.checkPrivate(hostname);
+	}
+
+	/**
+	 * @since 8.13
+	 */
+	protected List<String> getServiceIntents(ContainerTypeDescription description, Map<String, ?> properties) {
+		if (description != null) {
+			String[] supportedIntents = getSupportedIntents(description);
+			if (supportedIntents != null && properties != null)
+				return EndpointDescriptionPropertiesUtil.getStringPlusProperty(properties, Constants.OSGI_SERVICE_INTENTS);
+		}
+		return null;
+	}
+
+	/**
+	 * @since 8.13
+	 */
+	@SuppressWarnings("unused")
+	public boolean checkAsyncIntent(ContainerTypeDescription description, String hostname, Map<String, ?> properties) throws ContainerIntentException {
+		List<String> serviceIntents = getServiceIntents(description, properties);
+		if (serviceIntents != null && serviceIntents.contains(Constants.OSGI_PRIVATE_INTENT))
+			return true;
+		return false;
+	}
+
+	/**
+	 * @since 8.13
+	 */
+	public boolean checkPrivateIntent(ContainerTypeDescription description, String hostname, Map<String, ?> properties) throws ContainerIntentException {
+		List<String> serviceIntents = getServiceIntents(description, properties);
+		if (serviceIntents != null && serviceIntents.contains(Constants.OSGI_PRIVATE_INTENT)) {
+			checkPrivateHostname(description, hostname);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * @since 8.13
+	 */
+	public boolean checkConfidentialIntent(ContainerTypeDescription description, String uri, Map<String, ?> properties) throws ContainerIntentException {
+		List<String> serviceIntents = getServiceIntents(description, properties);
+		if (serviceIntents != null && serviceIntents.contains(Constants.OSGI_CONFIDENTIAL_INTENT)) {
+			checkConfidentialURI(description, uri);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * @since 8.13
+	 */
+	public void checkConfidentialURI(ContainerTypeDescription description, String uri) throws ContainerIntentException {
+		if (uri != null && uri.startsWith("https")) //$NON-NLS-1$
+			return;
+		throw new ContainerIntentException(Constants.OSGI_CONFIDENTIAL_INTENT, "provider=" + description.getName() + " failed confientiality check for uri=" + uri); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 }

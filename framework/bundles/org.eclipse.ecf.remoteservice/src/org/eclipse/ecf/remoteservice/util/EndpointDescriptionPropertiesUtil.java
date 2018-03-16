@@ -55,8 +55,7 @@ public class EndpointDescriptionPropertiesUtil {
 		}
 	}
 
-	@SuppressWarnings("cast")
-	public static List getStringPlusProperty(Map properties, String key) {
+	public static List<String> getStringPlusProperty(Map<String, ?> properties, String key) {
 		Object value = properties.get(key);
 		if (value == null) {
 			return Collections.EMPTY_LIST;
@@ -83,7 +82,7 @@ public class EndpointDescriptionPropertiesUtil {
 			for (Iterator iter = values.iterator(); iter.hasNext();) {
 				Object v = iter.next();
 				if (v instanceof String) {
-					result.add((String) v);
+					result.add(v);
 				}
 			}
 			return Collections.unmodifiableList(result);
