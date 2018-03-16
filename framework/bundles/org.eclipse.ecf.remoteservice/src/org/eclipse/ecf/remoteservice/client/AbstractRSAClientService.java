@@ -140,11 +140,9 @@ public abstract class AbstractRSAClientService extends AbstractClientService {
 
 	@Override
 	public void callAsync(IRemoteCall call, IRemoteCallListener listener) {
-		if (call instanceof RSARemoteCall) {
-			Callable<IRemoteCallCompleteEvent> c = createAsyncCallable((RSARemoteCall) call);
-			if (c != null)
-				callAsyncWithTimeout(call, c, listener);
-		} else
+		if (call instanceof RSARemoteCall) 
+			callAsyncWithTimeout(call, createAsyncCallable((RSARemoteCall) call), listener);
+		else
 			super.callAsync(call, listener);
 	}
 
