@@ -8,6 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.remoteservice.provider;
 
+import java.net.URI;
 import java.util.*;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.provider.*;
@@ -131,7 +132,7 @@ public abstract class RemoteServiceContainerInstantiator extends BaseContainerIn
 	/**
 	 * @since 8.13
 	 */
-	public static String[] addSupportedIntent(String intent, String[] currentSupportedIntents) {
+	protected static String[] addSupportedIntent(String intent, String[] currentSupportedIntents) {
 		if (intent == null)
 			return currentSupportedIntents;
 		List<String> results = (currentSupportedIntents == null) ? new ArrayList<String>() : new ArrayList<String>(Arrays.asList(currentSupportedIntents));
@@ -142,7 +143,7 @@ public abstract class RemoteServiceContainerInstantiator extends BaseContainerIn
 	/**
 	 * @since 8.13
 	 */
-	public static String[] removeSupportedIntent(String intent, String[] currentSupportedIntents) {
+	protected static String[] removeSupportedIntent(String intent, String[] currentSupportedIntents) {
 		if (intent == null)
 			return currentSupportedIntents;
 		List<String> results = (currentSupportedIntents == null) ? new ArrayList<String>() : new ArrayList<String>(Arrays.asList(currentSupportedIntents));
@@ -153,40 +154,35 @@ public abstract class RemoteServiceContainerInstantiator extends BaseContainerIn
 	/**
 	 * @since 8.13
 	 */
-	public void checkPrivateHostname(ContainerTypeDescription description, String hostname) throws ContainerIntentException {
+	protected void checkPrivate(ContainerTypeDescription description, String hostname) throws ContainerIntentException {
 		ContainerInstantiatorUtils.checkPrivate(hostname);
 	}
 
 	/**
 	 * @since 8.13
 	 */
-	protected List<String> getServiceIntents(ContainerTypeDescription description, Map<String, ?> properties) {
-		if (description != null) {
-			String[] supportedIntents = getSupportedIntents(description);
-			if (supportedIntents != null && properties != null)
-				return EndpointDescriptionPropertiesUtil.getStringPlusProperty(properties, Constants.OSGI_SERVICE_INTENTS);
-		}
-		return null;
+	protected List<String> getServiceIntents(Map<String, ?> properties) {
+		return EndpointDescriptionPropertiesUtil.getStringPlusProperty(properties, Constants.OSGI_SERVICE_INTENTS);
 	}
 
 	/**
 	 * @since 8.13
 	 */
-	@SuppressWarnings("unused")
-	public boolean checkAsyncIntent(ContainerTypeDescription description, String hostname, Map<String, ?> properties) throws ContainerIntentException {
-		List<String> serviceIntents = getServiceIntents(description, properties);
-		if (serviceIntents != null && serviceIntents.contains(Constants.OSGI_PRIVATE_INTENT))
-			return true;
+	protected boolean checkIntentSupported(ContainerTypeDescription description, String intent) {
+		String[] supportedIntents = getSupportedIntents(description);
+		if (supportedIntents != null)
+			return Arrays.asList(supportedIntents).contains(intent);
 		return false;
 	}
 
 	/**
 	 * @since 8.13
 	 */
-	public boolean checkPrivateIntent(ContainerTypeDescription description, String hostname, Map<String, ?> properties) throws ContainerIntentException {
-		List<String> serviceIntents = getServiceIntents(description, properties);
-		if (serviceIntents != null && serviceIntents.contains(Constants.OSGI_PRIVATE_INTENT)) {
-			checkPrivateHostname(description, hostname);
+	protected boolean checkAsyncIntent(ContainerTypeDescription description, Map<String, ?> properties) throws ContainerIntentException {
+		List<String> serviceIntents = getServiceIntents(properties);
+		if (serviceIntents.contains(Constants.OSGI_ASYNC_INTENT)) {
+			if (!checkIntentSupported(description, Constants.OSGI_ASYNC_INTENT))
+				throw new ContainerIntentException(Constants.OSGI_ASYNC_INTENT, "Intent not supported by distribution provider=" + description.getName()); //$NON-NLS-1$
 			return true;
 		}
 		return false;
@@ -195,11 +191,12 @@ public abstract class RemoteServiceContainerInstantiator extends BaseContainerIn
 	/**
 	 * @since 8.13
 	 */
-	public boolean checkConfidentialIntent(ContainerTypeDescription description, String uri, Map<String, ?> properties) throws ContainerIntentException {
-		List<String> serviceIntents = getServiceIntents(description, properties);
-		if (serviceIntents != null && serviceIntents.contains(Constants.OSGI_CONFIDENTIAL_INTENT)) {
-			checkConfidentialURI(description, uri);
-			return true;
+	protected boolean checkPrivateIntent(ContainerTypeDescription description, String hostname, Map<String, ?> properties) throws ContainerIntentException {
+		List<String> serviceIntents = getServiceIntents(properties);
+		if (serviceIntents.contains(Constants.OSGI_PRIVATE_INTENT)) {
+			if (!checkIntentSupported(description, Constants.OSGI_PRIVATE_INTENT))
+				throw new ContainerIntentException(Constants.OSGI_PRIVATE_INTENT, "Not supported by distribution provider=" + description.getName()); //$NON-NLS-1$
+			checkPrivate(description, hostname);
 		}
 		return false;
 	}
@@ -207,9 +204,31 @@ public abstract class RemoteServiceContainerInstantiator extends BaseContainerIn
 	/**
 	 * @since 8.13
 	 */
-	public void checkConfidentialURI(ContainerTypeDescription description, String uri) throws ContainerIntentException {
+	protected boolean checkConfidentialIntent(ContainerTypeDescription description, String uri, Map<String, ?> properties) throws ContainerIntentException {
+		List<String> serviceIntents = getServiceIntents(properties);
+		if (serviceIntents.contains(Constants.OSGI_CONFIDENTIAL_INTENT)) {
+			if (!checkIntentSupported(description, Constants.OSGI_CONFIDENTIAL_INTENT))
+				throw new ContainerIntentException(Constants.OSGI_CONFIDENTIAL_INTENT, "Intent not supported by distribution provider=" + description.getName()); //$NON-NLS-1$
+			checkConfidential(description, uri);
+		}
+		return false;
+	}
+
+	/**
+	 * @since 8.13
+	 */
+	protected void checkConfidential(ContainerTypeDescription description, String uri) throws ContainerIntentException {
 		if (uri != null && uri.startsWith("https")) //$NON-NLS-1$
 			return;
 		throw new ContainerIntentException(Constants.OSGI_CONFIDENTIAL_INTENT, "provider=" + description.getName() + " failed confientiality check for uri=" + uri); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+
+	/**
+	 * @since 8.13
+	 */
+	protected void checkOSGIIntents(ContainerTypeDescription description, URI uri, Map<String, ?> properties) throws ContainerIntentException {
+		checkAsyncIntent(description, properties);
+		checkPrivateIntent(description, uri.getHost(), properties);
+		checkConfidentialIntent(description, uri.toString(), properties);
 	}
 }
