@@ -176,7 +176,7 @@ public abstract class AbstractContainerSelector {
 			return containerFactory.createContainer(containerTypeDescription);
 		} catch (ContainerCreateException e) {
 			if (e instanceof ContainerIntentException) {
-				LogUtility.logWarning("createContainer", DebugOptions.CONTAINER_SELECTOR, this.getClass(), "Container does not satisfy required intent="+((ContainerIntentException) e).getIntentName(),e); //$NON-NLS-1$ //$NON-NLS-2$
+				LogUtility.logError("createContainer", DebugOptions.CONTAINER_SELECTOR, this.getClass(), "Container creation does not satisfy required intent="+((ContainerIntentException) e).getIntentName(), e); //$NON-NLS-1$ //$NON-NLS-2$
 				return null;
 			} else
 				throw new SelectContainerException(

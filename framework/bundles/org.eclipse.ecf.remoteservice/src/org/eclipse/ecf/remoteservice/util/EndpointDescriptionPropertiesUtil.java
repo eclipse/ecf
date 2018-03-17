@@ -56,14 +56,16 @@ public class EndpointDescriptionPropertiesUtil {
 	}
 
 	public static List<String> getStringPlusProperty(Map<String, ?> properties, String key) {
-		Object value = properties.get(key);
-		if (value == null) {
+		if (properties == null)
 			return Collections.EMPTY_LIST;
-		}
 
-		if (value instanceof String) {
+		Object value = properties.get(key);
+
+		if (value == null)
+			return Collections.EMPTY_LIST;
+
+		if (value instanceof String)
 			return Collections.singletonList((String) value);
-		}
 
 		if (value instanceof String[]) {
 			String[] values = (String[]) value;
