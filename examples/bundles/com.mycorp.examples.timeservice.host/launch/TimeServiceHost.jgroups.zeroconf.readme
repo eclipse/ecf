@@ -1,4 +1,9 @@
-The use of the TimeServiceHost.jgroups.zeroconf.product relies on the presence of the 
-org.eclipse.ecf.provider.jgroups distribution provider.  This bundle is available 
-as described here:  https://wiki.eclipse.org/Distribution_Providers
+The use of the TimeServiceConsumer.jgroups.zeroconf.product relies on the presence of the 
+org.eclipse.ecf.provider.jgroups distribution provider.  
 
+This distribution provider is provided separately here:
+
+https://github.com/ECF/JGroups
+
+All of the ECF distribution providers are listed here:  
+https://wiki.eclipse.org/Distribution_Providers
