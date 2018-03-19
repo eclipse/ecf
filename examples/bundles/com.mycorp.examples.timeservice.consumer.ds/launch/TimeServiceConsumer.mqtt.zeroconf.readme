@@ -1,0 +1,10 @@
+The use of the TimeServiceHost.mqtt.zeroconf.product relies on the presence of the 
+org.eclipse.ecf.provider.jms.mqtt distribution provider.  
+
+This distribution provider is provided separately here:
+
+https://github.com/ECF/Mqtt-Provider
+
+All of the ECF distribution providers are listed here:  
+https://wiki.eclipse.org/Distribution_Providers
+

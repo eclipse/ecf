@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="TimeServiceHost Hazelcast Distribution Zeroconf Discovery" uid="com.mycorp.examples.timeservice.host.hazelcast.product" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="false">
+<product name="TimeServiceConsumer MQTT Distribution Provider Zeroconf Discovery" uid="com.mycorp.examples.timeservice.consumer.mqtt.product" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>
@@ -12,8 +12,6 @@
       <vmArgs>-Declipse.ignoreApp=true 
 -Dosgi.noShutdown=true 
 -Dservice.exported.configs=ecf.jms.hazelcast.manager
--Decf.jms.hazelcast.manager.id=hazelcast://localhost/exampleTopic
--Djava.net.preferIPv4Stack=true
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
@@ -31,9 +29,8 @@
    </vm>
 
    <plugins>
-      <plugin id="com.hazelcast"/>
       <plugin id="com.mycorp.examples.timeservice.async"/>
-      <plugin id="com.mycorp.examples.timeservice.host"/>
+      <plugin id="com.mycorp.examples.timeservice.consumer.ds.async"/>
       <plugin id="javax.jms"/>
       <plugin id="org.apache.felix.gogo.command"/>
       <plugin id="org.apache.felix.gogo.runtime"/>
@@ -51,7 +48,7 @@
       <plugin id="org.eclipse.ecf.provider"/>
       <plugin id="org.eclipse.ecf.provider.jmdns"/>
       <plugin id="org.eclipse.ecf.provider.jms"/>
-      <plugin id="org.eclipse.ecf.provider.jms.hazelcast"/>
+      <plugin id="org.eclipse.ecf.provider.jms.mqtt"/>
       <plugin id="org.eclipse.ecf.provider.remoteservice"/>
       <plugin id="org.eclipse.ecf.remoteservice"/>
       <plugin id="org.eclipse.ecf.remoteservice.asyncproxy"/>
@@ -64,10 +61,10 @@
       <plugin id="org.eclipse.osgi.services"/>
       <plugin id="org.eclipse.osgi.services.remoteserviceadmin"/>
       <plugin id="org.eclipse.osgi.util"/>
+      <plugin id="org.eclipse.paho.client.mqttv3"/>
    </plugins>
 
    <configurations>
-      <plugin id="com.mycorp.examples.timeservice.host" autoStart="true" startLevel="0" />
       <plugin id="org.apache.felix.gogo.command" autoStart="true" startLevel="0" />
       <plugin id="org.apache.felix.gogo.runtime" autoStart="true" startLevel="0" />
       <plugin id="org.apache.felix.gogo.shell" autoStart="true" startLevel="0" />
