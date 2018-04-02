@@ -10,7 +10,9 @@
  *******************************************************************************/
 package org.eclipse.ecf.provider.util;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
+import org.eclipse.ecf.core.util.OSGIObjectOutputStream;
 
 /**
  * Stores Java objects in the underlying stream in an manner that allows
@@ -18,7 +20,7 @@ import java.io.*;
  * classloader (via IClassLoaderMapper).
  * 
  */
-public class IdentifiableObjectOutputStream extends ObjectOutputStream {
+public class IdentifiableObjectOutputStream extends OSGIObjectOutputStream {
 	String name = null;
 
 	public IdentifiableObjectOutputStream(String name, OutputStream outs) throws IOException {

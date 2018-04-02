@@ -41,20 +41,16 @@ public class UuID extends BaseID {
 					return new UuID(this, UUID.fromString(init));
 				if (parameters != null && parameters.length > 0) {
 					if (parameters[0] instanceof String)
-						return new UuID(this,
-								UUID.fromString((String) parameters[0]));
+						return new UuID(this, UUID.fromString((String) parameters[0]));
 					else if (parameters[0] instanceof URI)
-						return new UuID(this,
-								UUID.fromString(((URI) parameters[0])
-										.getSchemeSpecificPart()));
+						return new UuID(this, UUID.fromString(((URI) parameters[0]).getSchemeSpecificPart()));
 					else if (parameters[0] instanceof UUID)
 						return new UuID(this, (UUID) parameters[0]);
 				}
 				// If we get here, then use random
 				return new UuID(this, UUID.randomUUID());
 			} catch (Exception e) {
-				throw new IDCreateException(UuIDNamespace.this.getName()
-						+ " createInstance()", e); //$NON-NLS-1$
+				throw new IDCreateException(UuIDNamespace.this.getName() + " createInstance()", e); //$NON-NLS-1$
 			}
 		}
 
@@ -65,12 +61,18 @@ public class UuID extends BaseID {
 
 		@Override
 		public Class<?>[][] getSupportedParameterTypes() {
-			return new Class[][] { { String.class }, { UUID.class },
-					{ URI.class } };
+			return new Class[][] { { String.class }, { UUID.class }, { URI.class } };
 		}
 	}
 
-	protected final UUID uuid;
+	protected UUID uuid;
+
+	/**
+	 * @since 3.9
+	 */
+	public UuID() {
+
+	}
 
 	protected UuID(UuIDNamespace ns, UUID uuid) {
 		super(ns);

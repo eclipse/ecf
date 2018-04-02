@@ -98,6 +98,10 @@ public class ECFPlugin implements BundleActivator {
 		return plugin;
 	}
 
+	public BundleContext getContext() {
+		return context;
+	}
+
 	public ECFPlugin() {
 		// null constructor
 	}

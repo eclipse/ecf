@@ -11,9 +11,16 @@ package org.eclipse.ecf.core.sharedobject.events;
 import org.eclipse.ecf.core.identity.ID;
 
 public class SharedObjectActivatedEvent implements ISharedObjectActivatedEvent {
-	private final ID activatedID;
+	private ID activatedID;
 
-	private final ID localContainerID;
+	private ID localContainerID;
+
+	/**
+	 * @since 2.6
+	 */
+	public SharedObjectActivatedEvent() {
+
+	}
 
 	public SharedObjectActivatedEvent(ID container, ID act) {
 		super();

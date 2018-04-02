@@ -37,6 +37,8 @@ import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import org.eclipse.ecf.core.util.OSGIObjectInputStream;
+import org.eclipse.ecf.core.util.OSGIObjectOutputStream;
 import org.osgi.service.log.LogService;
 
 import ch.ethz.iks.r_osgi.Remoting;
@@ -61,6 +63,9 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 	private TCPAcceptorThread thread;
 	protected int listeningPort;
 
+	private static final String OSGI_SERIALIZATION = "osgi.basic";
+	private static final String SERIALIZATION_DEFAULT = System.getProperty("ch.ethz.iks.r_osgi.remote.serialization","rosgi.smart");
+	
 	/**
 	 * get a new connection.
 	 * 
@@ -219,11 +224,11 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 				// for 1.2 VMs that do not support the setKeepAlive
 			}
 			socket.setTcpNoDelay(true);
-			output = new SmartObjectOutputStream(new BufferedOutputStream(
-					socket.getOutputStream()));
+			BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
+			output = SERIALIZATION_DEFAULT.equals(OSGI_SERIALIZATION)?new OSGIObjectOutputStream(bos):new SmartObjectOutputStream(bos);
 			output.flush();
-			input = new SmartObjectInputStream(new BufferedInputStream(socket
-					.getInputStream()));
+			BufferedInputStream bins = new BufferedInputStream(socket.getInputStream());
+			input = SERIALIZATION_DEFAULT.equals(OSGI_SERIALIZATION)?new OSGIObjectInputStream(RemoteOSGiActivator.getActivator().getContext().getBundle(),bins):new SmartObjectInputStream(bins);
 		}
 
 		/**

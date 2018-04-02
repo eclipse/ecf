@@ -24,6 +24,13 @@ public class SharedObjectManagerConnectEvent implements ISharedObjectManagerConn
 
 	ISharedObjectConnector connector = null;
 
+	/**
+	 * @since 2.6
+	 */
+	public SharedObjectManagerConnectEvent() {
+
+	}
+
 	public SharedObjectManagerConnectEvent(ID localContainerID, ISharedObjectConnector connector) {
 		this.localContainerID = localContainerID;
 		this.connector = connector;

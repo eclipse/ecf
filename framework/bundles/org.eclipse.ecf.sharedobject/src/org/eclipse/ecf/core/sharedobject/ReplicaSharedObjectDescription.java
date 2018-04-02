@@ -30,6 +30,13 @@ public class ReplicaSharedObjectDescription extends SharedObjectDescription impl
 	protected long identifier;
 
 	/**
+	 * @since 2.6
+	 */
+	public ReplicaSharedObjectDescription() {
+
+	}
+
+	/**
 	 * @since 2.3
 	 */
 	public ReplicaSharedObjectDescription(SharedObjectTypeDescription type, ID soID, ID homeID) {

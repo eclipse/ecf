@@ -49,9 +49,9 @@ public abstract class Namespace implements Serializable, IAdaptable {
 
 	private String description;
 
-	private int hashCode;
+	private transient int hashCode;
 
-	private boolean isInitialized = false;
+	private transient boolean isInitialized = false;
 
 	public Namespace() {
 		// public null constructor
@@ -74,9 +74,9 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	}
 
 	/**
-	 * Override of Object.equals. This equals method returns true if the
-	 * provided Object is also a Namespace instance, and the names of the two
-	 * instances match.
+	 * Override of Object.equals. This equals method returns true if the provided
+	 * Object is also a Namespace instance, and the names of the two instances
+	 * match.
 	 * 
 	 * @param other
 	 *            the Object to test for equality
@@ -115,8 +115,8 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	}
 
 	/**
-	 * The default implementation of this method is to call
-	 * id.namespaceGetName(). Subclasses may override.
+	 * The default implementation of this method is to call id.namespaceGetName().
+	 * Subclasses may override.
 	 * 
 	 * @param id
 	 *            the ID to get the name for. Must not be <code>null</code>.
@@ -142,14 +142,14 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	}
 
 	/**
-	 * The default implementation of this method is to call
-	 * id.namespaceHashCode(). Subclasses may override.
+	 * The default implementation of this method is to call id.namespaceHashCode().
+	 * Subclasses may override.
 	 * 
 	 * @param id
 	 *            the id in this Namespace to get the hashcode for. Must not be
 	 *            <code>null</code>.
-	 * @return the hashcode for the given id. Returned value must be unique
-	 *         within this process.
+	 * @return the hashcode for the given id. Returned value must be unique within
+	 *         this process.
 	 */
 	protected int getHashCodeForID(BaseID id) {
 		return id.namespaceHashCode();
@@ -161,11 +161,10 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	 * 
 	 * @param id
 	 *            the id in this Namespace to convert to external form.
-	 * @return String that represents the given id in an external form. Note
-	 *         that this external form may at some later time be passed to
-	 *         {@link #createInstance(Object[])} as a single String parameter,
-	 *         and should result in a valid ID instance of the appropriate
-	 *         Namespace.
+	 * @return String that represents the given id in an external form. Note that
+	 *         this external form may at some later time be passed to
+	 *         {@link #createInstance(Object[])} as a single String parameter, and
+	 *         should result in a valid ID instance of the appropriate Namespace.
 	 */
 	protected String toExternalForm(BaseID id) {
 		return id.namespaceToExternalForm();
@@ -174,9 +173,9 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	/**
 	 * Get the name of this namespace. Must not return <code>null</code>.
 	 * 
-	 * @return String name of Namespace instance. Must not return
-	 *         <code>null</code>, and the returned value should be a globally
-	 *         unique name for this Namespace subclass.
+	 * @return String name of Namespace instance. Must not return <code>null</code>,
+	 *         and the returned value should be a globally unique name for this
+	 *         Namespace subclass.
 	 * 
 	 */
 	public String getName() {
@@ -184,8 +183,8 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	}
 
 	/**
-	 * Get the description, associated with this Namespace. The returned value
-	 * may be <code>null</code>.
+	 * Get the description, associated with this Namespace. The returned value may
+	 * be <code>null</code>.
 	 * 
 	 * @return the description associated with this Namespace. May be
 	 *         <code>null</code>.
@@ -195,9 +194,8 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	}
 
 	/**
-	 * Make an instance of this namespace. Namespace subclasses, provided by
-	 * plugins must implement this method to construct ID instances for the
-	 * given namespace.
+	 * Make an instance of this namespace. Namespace subclasses, provided by plugins
+	 * must implement this method to construct ID instances for the given namespace.
 	 * <p>
 	 * </p>
 	 * See {@link #getSupportedParameterTypes()} to get information relevant to
@@ -206,8 +204,7 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	 * </p>
 	 * 
 	 * @param parameters
-	 *            an Object[] of parameters for creating ID instances. May be
-	 *            null.
+	 *            an Object[] of parameters for creating ID instances. May be null.
 	 * 
 	 * @return a non-null ID instance. The class used may extend BaseID or may
 	 *         implement the ID interface directly
@@ -227,8 +224,8 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	public abstract String getScheme();
 
 	/**
-	 * Get an array of schemes supported by this Namespace instance. Subclasses
-	 * may override to support multiple schemes.
+	 * Get an array of schemes supported by this Namespace instance. Subclasses may
+	 * override to support multiple schemes.
 	 * 
 	 * @return String[] of schemes supported by this Namespace. Will not be
 	 *         <code>null</code>, but returned array may be of length 0.
@@ -239,20 +236,20 @@ public abstract class Namespace implements Serializable, IAdaptable {
 
 	/**
 	 * Get the supported parameter types for IDs created via subsequent calls to
-	 * {@link #createInstance(Object[])}. Callers may use this method to
-	 * determine the available parameter types, and then create and pass in
-	 * conforming Object arrays to to {@link #createInstance(Object[])}.
+	 * {@link #createInstance(Object[])}. Callers may use this method to determine
+	 * the available parameter types, and then create and pass in conforming Object
+	 * arrays to to {@link #createInstance(Object[])}.
 	 * <p>
 	 * </p>
-	 * An empty two-dimensional array (new Class[0][0]) is the default returned
-	 * by this abstract superclass. This means that the Object [] passed to
+	 * An empty two-dimensional array (new Class[0][0]) is the default returned by
+	 * this abstract superclass. This means that the Object [] passed to
 	 * {@link #createInstance(Object[])} will be ignored.
 	 * <p>
 	 * </p>
-	 * Subsclasses should override this method to specify the parameters that
-	 * they will accept in calls to {@link #createInstance(Object[])}. The rows
-	 * of the returned Class array are the acceptable types for a given
-	 * invocation of createInstance.
+	 * Subsclasses should override this method to specify the parameters that they
+	 * will accept in calls to {@link #createInstance(Object[])}. The rows of the
+	 * returned Class array are the acceptable types for a given invocation of
+	 * createInstance.
 	 * <p>
 	 * </p>
 	 * Consider the following example:
@@ -265,10 +262,9 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	 * }
 	 * </pre>
 	 * 
-	 * The above means that there are two acceptable values for the Object []
-	 * passed into {@link #createInstance(Object[])}: 1) a single String, and 2)
-	 * two Strings. These would therefore be acceptable as input to
-	 * createInstance:
+	 * The above means that there are two acceptable values for the Object [] passed
+	 * into {@link #createInstance(Object[])}: 1) a single String, and 2) two
+	 * Strings. These would therefore be acceptable as input to createInstance:
 	 * 
 	 * <pre>
 	 *        ID newID1 = namespace.createInstance(new Object[] { &quot;Hello&quot; });

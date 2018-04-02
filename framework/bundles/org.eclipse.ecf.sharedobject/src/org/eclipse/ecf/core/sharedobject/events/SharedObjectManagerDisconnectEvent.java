@@ -24,6 +24,13 @@ public class SharedObjectManagerDisconnectEvent implements ISharedObjectManagerC
 
 	ISharedObjectConnector connector = null;
 
+	/**
+	 * @since 2.6
+	 */
+	public SharedObjectManagerDisconnectEvent() {
+
+	}
+
 	public SharedObjectManagerDisconnectEvent(ID localContainerID, ISharedObjectConnector connector) {
 		this.localContainerID = localContainerID;
 		this.connector = connector;

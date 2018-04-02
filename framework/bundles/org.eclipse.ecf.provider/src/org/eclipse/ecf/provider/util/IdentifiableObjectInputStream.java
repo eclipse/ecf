@@ -11,6 +11,8 @@
 package org.eclipse.ecf.provider.util;
 
 import java.io.*;
+import org.eclipse.ecf.core.util.OSGIObjectInputStream;
+import org.osgi.framework.Bundle;
 
 /**
  * Restores Java objects from the underlying stream by using the classloader
@@ -18,12 +20,19 @@ import java.io.*;
  * specified by the associated IdentifiableObjectOutputStream.
  * 
  */
-public class IdentifiableObjectInputStream extends ObjectInputStream {
+public class IdentifiableObjectInputStream extends OSGIObjectInputStream {
 	IClassLoaderMapper mapper;
 
 	public IdentifiableObjectInputStream(IClassLoaderMapper map, InputStream ins) throws IOException {
-		super(ins);
+		super(null, ins);
 		this.mapper = map;
+	}
+
+	/**
+	 * @since 4.8
+	 */
+	public IdentifiableObjectInputStream(Bundle b, InputStream ins) throws IOException {
+		super(b, ins);
 	}
 
 	/*
@@ -31,6 +40,7 @@ public class IdentifiableObjectInputStream extends ObjectInputStream {
 	 * 
 	 * @see java.io.ObjectInputStream#resolveClass(java.io.ObjectStreamClass)
 	 */
+	@SuppressWarnings("unchecked")
 	protected Class resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
 		String name = readUTF();
 		if (name == null || mapper == null) {

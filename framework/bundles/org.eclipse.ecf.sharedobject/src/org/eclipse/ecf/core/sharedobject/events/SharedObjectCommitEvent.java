@@ -19,6 +19,13 @@ public class SharedObjectCommitEvent implements ISharedObjectCommitEvent, Serial
 
 	Event event = null;
 
+	/**
+	 * @since 2.6
+	 */
+	public SharedObjectCommitEvent() {
+
+	}
+
 	public SharedObjectCommitEvent(ID senderSharedObjectID, Event event) {
 		super();
 		this.senderSharedObjectID = senderSharedObjectID;

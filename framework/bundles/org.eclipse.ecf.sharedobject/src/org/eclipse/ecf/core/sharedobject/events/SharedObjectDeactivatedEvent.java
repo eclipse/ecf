@@ -11,9 +11,16 @@ package org.eclipse.ecf.core.sharedobject.events;
 import org.eclipse.ecf.core.identity.ID;
 
 public class SharedObjectDeactivatedEvent implements ISharedObjectDeactivatedEvent {
-	private final ID deactivatedID;
+	private ID deactivatedID;
 
-	private final ID localContainerID;
+	private ID localContainerID;
+
+	/**
+	 * @since 2.6
+	 */
+	public SharedObjectDeactivatedEvent() {
+
+	}
 
 	public SharedObjectDeactivatedEvent(ID container, ID deact) {
 		super();

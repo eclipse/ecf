@@ -12,15 +12,20 @@ import java.io.Serializable;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
 
-public class RemoteSharedObjectEvent implements ISharedObjectMessageEvent,
-		Serializable {
+public class RemoteSharedObjectEvent implements ISharedObjectMessageEvent, Serializable {
 	private static final long serialVersionUID = 3257572797621680182L;
 
-	private final ID senderSharedObjectID;
+	private ID senderSharedObjectID;
 
-	private final ID remoteContainerID;
+	private ID remoteContainerID;
 
-	private final Object data;
+	private Object data;
+
+	/**
+	 * @since 2.6
+	 */
+	public RemoteSharedObjectEvent() {
+	}
 
 	public RemoteSharedObjectEvent(ID senderObj, ID remoteCont, Object data) {
 		super();

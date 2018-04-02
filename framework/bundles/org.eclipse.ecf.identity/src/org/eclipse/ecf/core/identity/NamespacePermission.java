@@ -26,6 +26,13 @@ public class NamespacePermission extends BasicPermission {
 
 	protected String actions;
 
+	/**
+	 * @since 3.9
+	 */
+	public NamespacePermission() {
+		super("", "");
+	}
+
 	public NamespacePermission(String s) {
 		super(s);
 	}

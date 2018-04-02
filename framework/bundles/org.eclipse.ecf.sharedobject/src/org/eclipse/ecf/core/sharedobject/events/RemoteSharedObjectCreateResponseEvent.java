@@ -10,14 +10,19 @@ package org.eclipse.ecf.core.sharedobject.events;
 
 import org.eclipse.ecf.core.identity.ID;
 
-public class RemoteSharedObjectCreateResponseEvent extends
-		RemoteSharedObjectEvent implements ISharedObjectCreateResponseEvent {
+public class RemoteSharedObjectCreateResponseEvent extends RemoteSharedObjectEvent implements ISharedObjectCreateResponseEvent {
 	private static final long serialVersionUID = 3618421544527738673L;
 
 	long sequence = 0;
 
-	public RemoteSharedObjectCreateResponseEvent(ID senderObj, ID remoteCont,
-			long seq, Throwable exception) {
+	/**
+	 * @since 2.6
+	 */
+	public RemoteSharedObjectCreateResponseEvent() {
+
+	}
+
+	public RemoteSharedObjectCreateResponseEvent(ID senderObj, ID remoteCont, long seq, Throwable exception) {
 		super(senderObj, remoteCont, exception);
 		this.sequence = seq;
 	}
@@ -41,8 +46,7 @@ public class RemoteSharedObjectCreateResponseEvent extends
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer(
-				"RemoteSharedObjectCreateResponseEvent["); //$NON-NLS-1$
+		StringBuffer sb = new StringBuffer("RemoteSharedObjectCreateResponseEvent["); //$NON-NLS-1$
 		sb.append(getSenderSharedObjectID()).append(";"); //$NON-NLS-1$
 		sb.append(getRemoteContainerID()).append(";"); //$NON-NLS-1$
 		sb.append(getSequence()).append(";"); //$NON-NLS-1$

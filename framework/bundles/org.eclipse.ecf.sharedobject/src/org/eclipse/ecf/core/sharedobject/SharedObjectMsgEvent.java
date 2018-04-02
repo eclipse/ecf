@@ -22,6 +22,10 @@ public class SharedObjectMsgEvent extends RemoteSharedObjectEvent {
 
 	private static final long serialVersionUID = -8674874265514762123L;
 
+	public SharedObjectMsgEvent() {
+		super();
+	}
+
 	/**
 	 * @param senderObj
 	 * @param remoteCont

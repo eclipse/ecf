@@ -57,6 +57,13 @@ public class LongID extends BaseID {
 		}
 	}
 
+	/**
+	 * @since 3.9
+	 */
+	public LongID() {
+
+	}
+
 	protected LongID(Namespace n, Long v) {
 		super(n);
 		value = v;

@@ -30,7 +30,6 @@ import org.eclipse.ecf.internal.provider.ProviderPlugin;
 import org.eclipse.ecf.provider.comm.*;
 import org.eclipse.ecf.provider.generic.ContainerMessage.SharedObjectMessage;
 import org.eclipse.ecf.provider.generic.gmm.Member;
-import org.eclipse.ecf.provider.util.*;
 
 public abstract class SOContainer extends AbstractContainer implements ISharedObjectContainer {
 	class LoadingSharedObject implements ISharedObject {
@@ -484,6 +483,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		final ObjectOutputStream oos = new ObjectOutputStream(bos);
 		oos.writeObject(obj);
+		oos.close();
 		return bos.toByteArray();
 	}
 
@@ -991,6 +991,9 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		return getSharedObjectMessageSerializer().serializeMessage(sharedObjectID, message);
 	}
 
+	private static final String SO_SERIALIZATION_OSGI = "osgi.basic"; //$NON-NLS-1$
+	private static final String SO_SERIALIZATION_DEFAULT = System.getProperty("org.eclipse.ecf.provider.soserialization", SO_SERIALIZATION_OSGI); //$NON-NLS-1$
+
 	/**
 	 * @param sharedObjectID shared object ID
 	 * @param message message
@@ -1002,9 +1005,11 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		if (!(message instanceof Serializable))
 			throw new NotSerializableException("shared object=" + sharedObjectID + " message=" + message + " not serializable"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		final ByteArrayOutputStream bouts = new ByteArrayOutputStream();
-		final IdentifiableObjectOutputStream ioos = new IdentifiableObjectOutputStream(sharedObjectID.getName(), bouts);
-		ioos.writeObject(message);
-		ioos.close();
+		// If system property set to osgi.basic then use OSGIObjectOutputStream, if not then  
+		// use ObjectOutputStream
+		final ObjectOutputStream oos = SO_SERIALIZATION_DEFAULT.equals(SO_SERIALIZATION_OSGI) ? new OSGIObjectOutputStream(bouts) : new ObjectOutputStream(bouts);
+		oos.writeObject(message);
+		oos.close();
 		return bouts.toByteArray();
 	}
 
@@ -1017,38 +1022,12 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	 */
 	protected Object defaultDeserializeSharedObjectMessage(byte[] bytes) throws IOException, ClassNotFoundException {
 		final ByteArrayInputStream bins = new ByteArrayInputStream(bytes);
-		Object obj = null;
-		try {
-			final ObjectInputStream oins = ProviderPlugin.getDefault().createObjectInputStream(bins);
-			obj = oins.readObject();
-		} catch (final ClassNotFoundException e) {
-			// first reset stream
-			bins.reset();
-			// Now try with shared object classloader
-			final IdentifiableObjectInputStream iins = new IdentifiableObjectInputStream(new IClassLoaderMapper() {
-				public ClassLoader mapNameToClassLoader(String name) {
-					ISharedObjectManager manager = getSharedObjectManager();
-					ID[] ids = manager.getSharedObjectIDs();
-					ID found = null;
-					for (int i = 0; i < ids.length; i++) {
-						ID id = ids[i];
-						if (name.equals(id.getName())) {
-							found = id;
-							break;
-						}
-					}
-					if (found == null)
-						return null;
-					ISharedObject obj1 = manager.getSharedObject(found);
-					if (obj1 == null)
-						return null;
-					return obj1.getClass().getClassLoader();
-				}
-			}, bins);
-			obj = iins.readObject();
-			iins.close();
-		}
-		return obj;
+		// If system property set to osgi.basic then use OSGIObjectOutputStream, if not then  
+		// use ObjectOutputStream
+		final ObjectInputStream oins = SO_SERIALIZATION_DEFAULT.equals(SO_SERIALIZATION_OSGI) ? new OSGIObjectInputStream(ProviderPlugin.getDefault().getContext().getBundle(), bins) : new ObjectInputStream(bins);
+		Object result = oins.readObject();
+		oins.close();
+		return result;
 	}
 
 	protected Object deserializeSharedObjectMessage(byte[] bytes) throws IOException, ClassNotFoundException {

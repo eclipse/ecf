@@ -21,6 +21,13 @@ public class SharedObjectManagerRemoveEvent implements ISharedObjectManagerEvent
 
 	ID localContainerID = null;
 
+	/**
+	 * @since 2.6
+	 */
+	public SharedObjectManagerRemoveEvent() {
+
+	}
+
 	public SharedObjectManagerRemoveEvent(ID localContainerID, ID sharedObjectID) {
 		this.localContainerID = localContainerID;
 		this.sharedObjectID = sharedObjectID;

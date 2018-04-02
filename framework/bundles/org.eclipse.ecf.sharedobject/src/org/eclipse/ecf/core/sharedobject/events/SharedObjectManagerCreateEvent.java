@@ -21,6 +21,13 @@ public class SharedObjectManagerCreateEvent implements ISharedObjectManagerEvent
 
 	ID sharedObjectID = null;
 
+	/**
+	 * @since 2.6
+	 */
+	public SharedObjectManagerCreateEvent() {
+
+	}
+
 	public SharedObjectManagerCreateEvent(ID localContainerID, ID sharedObjectID) {
 		this.localContainerID = localContainerID;
 		this.sharedObjectID = sharedObjectID;

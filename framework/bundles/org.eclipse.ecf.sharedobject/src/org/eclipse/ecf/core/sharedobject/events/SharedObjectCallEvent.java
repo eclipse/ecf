@@ -23,6 +23,13 @@ public class SharedObjectCallEvent implements ISharedObjectCallEvent {
 	IFuture result;
 
 	/**
+	 * @since 2.6
+	 */
+	public SharedObjectCallEvent() {
+
+	}
+
+	/**
 	 * @since 2.0
 	 */
 	public SharedObjectCallEvent(ID sender, Event evt, IFuture res) {

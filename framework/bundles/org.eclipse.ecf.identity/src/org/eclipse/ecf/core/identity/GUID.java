@@ -71,6 +71,13 @@ public class GUID extends StringID {
 	protected static transient SecureRandom random;
 
 	/**
+	 * @since 3.9
+	 */
+	public GUID() {
+
+	}
+
+	/**
 	 * Protected constructor for factory-based construction
 	 * 
 	 * @param n

@@ -153,21 +153,23 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 		return (resultProps);
 	}
 
-	static class Properties extends Hashtable {
+	static class Properties extends Dictionary implements Serializable {
 
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = -3684607010228779249L;
 
+		Map storedProps;
+
 		/**
 		 * Create a properties object for the service.
 		 * 
 		 * @param props
-		 *            The properties for this service.
+		 *            Theproperties for this service.
 		 */
 		private Properties(int size, Dictionary props) {
-			super((size << 1) + 1);
+			this.storedProps = new HashMap(size);
 
 			if (props != null) {
 				synchronized (props) {
@@ -189,8 +191,8 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 		/**
 		 * @since 4.3
 		 */
-		protected Properties() {
-			super();
+		public Properties() {
+			this(null);
 		}
 
 		/**
@@ -212,7 +214,7 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 		 *         there is no property by that name.
 		 */
 		protected Object getProperty(String key) {
-			return (cloneValue(get(key)));
+			return this.storedProps.get(key);
 		}
 
 		/**
@@ -221,14 +223,14 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 		 * @return The list of property key names.
 		 */
 		protected synchronized String[] getPropertyKeys() {
-			final int size = size();
+			final int size = this.storedProps.size();
 
 			final String[] keynames = new String[size];
 
-			final Enumeration keysEnum = keys();
+			final Iterator iter = this.storedProps.keySet().iterator();
 
 			for (int i = 0; i < size; i++) {
-				keynames[i] = (String) keysEnum.nextElement();
+				keynames[i] = (String) iter.next();
 			}
 
 			return (keynames);
@@ -245,7 +247,7 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 		 */
 		@SuppressWarnings("unchecked")
 		protected synchronized Object setProperty(String key, Object value) {
-			return (put(key, cloneValue(value)));
+			return this.storedProps.put(key, value);
 		}
 
 		/**
@@ -313,7 +315,7 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 
 					sb.append(key);
 					sb.append('=');
-					final Object value = get(key);
+					final Object value = this.storedProps.get(key);
 					if (value.getClass().isArray()) {
 						sb.append('[');
 						final int length = Array.getLength(value);
@@ -335,6 +337,63 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 
 			return (sb.toString());
 		}
+
+		@Override
+		public int size() {
+			return this.storedProps.size();
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return this.storedProps.isEmpty();
+		}
+
+		@Override
+		public Enumeration keys() {
+			final Iterator i = this.storedProps.keySet().iterator();
+			return new Enumeration() {
+
+				public boolean hasMoreElements() {
+					return i.hasNext();
+				}
+
+				public Object nextElement() {
+					return i.next();
+				}
+			};
+		}
+
+		@Override
+		public Enumeration elements() {
+			final Iterator i = this.storedProps.values().iterator();
+			return new Enumeration() {
+
+				public boolean hasMoreElements() {
+					return i.hasNext();
+				}
+
+				public Object nextElement() {
+					return i.next();
+				}
+			};
+		}
+
+		@Override
+		public Object get(Object key) {
+			return this.storedProps.get(key);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public Object put(Object key, Object value) {
+			return this.storedProps.put(key, value);
+		}
+
+		@Override
+		public Object remove(Object key) {
+			return this.storedProps.remove(key);
+		}
+
 	}
 
 	public Object getProperty(String key) {

@@ -78,7 +78,14 @@ public class URIID extends BaseID implements IResourceID {
 	}
 
 	private static final long serialVersionUID = 7328962407044918278L;
-	private final URI uri;
+	private URI uri;
+
+	/**
+	 * @since 3.9
+	 */
+	public URIID() {
+
+	}
 
 	public URIID(Namespace namespace, URI uri) {
 		super(namespace);

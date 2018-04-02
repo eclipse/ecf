@@ -34,6 +34,13 @@ public class SharedObjectTypeDescription implements Serializable {
 
 	protected String className;
 
+	/**
+	 * @since 2.6
+	 */
+	public SharedObjectTypeDescription() {
+
+	}
+
 	public SharedObjectTypeDescription(String name, ISharedObjectInstantiator instantiator, String desc, Map props) {
 		this.name = name;
 		this.instantiator = instantiator;

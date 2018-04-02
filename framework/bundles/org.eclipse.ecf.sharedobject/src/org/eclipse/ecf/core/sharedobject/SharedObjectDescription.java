@@ -27,6 +27,13 @@ public class SharedObjectDescription implements Serializable {
 	protected Map<String, ?> properties = null;
 
 	/**
+	 * @since 2.6
+	 */
+	public SharedObjectDescription() {
+
+	}
+
+	/**
 	 * @since 2.3
 	 */
 	public SharedObjectDescription(SharedObjectTypeDescription typeDescription, ID id, Map<String, ?> properties) {

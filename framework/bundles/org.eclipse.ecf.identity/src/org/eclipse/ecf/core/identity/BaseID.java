@@ -26,7 +26,10 @@ public abstract class BaseID implements ID {
 
 	protected Namespace namespace;
 
-	protected BaseID() {
+	/**
+	 * @since 3.9
+	 */
+	public BaseID() {
 		//
 	}
 
@@ -125,16 +128,15 @@ public abstract class BaseID implements ID {
 	/**
 	 * Called by {@link Namespace#getHashCodeForID(BaseID)}.
 	 * 
-	 * @return int hashCode for this ID. Returned value must be unique within
-	 *         this process.
+	 * @return int hashCode for this ID. Returned value must be unique within this
+	 *         process.
 	 */
 	protected abstract int namespaceHashCode();
 
 	/**
 	 * Called by {@link Namespace#toExternalForm(BaseID)}.
 	 * 
-	 * @return String that represents this ID. Default implementation is to
-	 *         return
+	 * @return String that represents this ID. Default implementation is to return
 	 * 
 	 *         <pre>
 	 * namespace.getScheme() + Namespace.SCHEME_SEPARATOR + namespaceGetName();
