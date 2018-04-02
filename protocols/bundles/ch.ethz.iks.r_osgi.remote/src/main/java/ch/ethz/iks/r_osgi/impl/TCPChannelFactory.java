@@ -225,7 +225,7 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 			}
 			socket.setTcpNoDelay(true);
 			BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
-			output = SERIALIZATION_DEFAULT.equals(OSGI_SERIALIZATION)?new OSGIObjectOutputStream(bos):new SmartObjectOutputStream(bos);
+			output = SERIALIZATION_DEFAULT.equals(OSGI_SERIALIZATION)?new OSGIObjectOutputStream(bos,true):new SmartObjectOutputStream(bos);
 			output.flush();
 			BufferedInputStream bins = new BufferedInputStream(socket.getInputStream());
 			input = SERIALIZATION_DEFAULT.equals(OSGI_SERIALIZATION)?new OSGIObjectInputStream(RemoteOSGiActivator.getActivator().getContext().getBundle(),bins):new SmartObjectInputStream(bins);
