@@ -68,19 +68,25 @@ public abstract class AbstractHostContainerSelector extends
 			return results;
 
 		for (int i = 0; i < containers.length; i++) {
+			ID cID = containers[i].getID();
+			trace("selectExistingHostContainers","Considering existing container="+cID); //$NON-NLS-1$ //$NON-NLS-2$
 			// Check to make sure it's a rs container adapter. If it's not go
 			// onto next one
 			IRemoteServiceContainerAdapter adapter = hasRemoteServiceContainerAdapter(containers[i]);
-			if (adapter == null)
+			if (adapter == null) {
+				trace("selectExistingHostContainers","Existing container="+cID+" does not implement IRemoteServiceContainerAdapter"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				continue;
+			}
 			// Get container type description and intents
 			ContainerTypeDescription description = getContainerTypeDescription(containers[i]);
 			// If it has no description go onto next
-			if (description == null)
+			if (description == null) {
+				trace("selectExistingHostContainers","Existing container="+cID+" does not have container type description"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				continue;
-
+			}
 			// http://bugs.eclipse.org/331532
 			if (!description.isServer()) {
+				trace("selectExistingHostContainers","Existing container="+cID+" is not server"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				continue;
 			}
 
@@ -233,11 +239,14 @@ public abstract class AbstractHostContainerSelector extends
 		// endpoint (see section 122.5.1)
 		if (requiredConfigTypes == null)
 			return true;
+		trace("matchHostSupportedConfigTypes","description="+containerTypeDescription.getName()+" testing for requiredConfigTypes"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		// Get supported config types for this description
 		String[] supportedConfigTypes = getSupportedConfigTypes(containerTypeDescription);
 		// If it doesn't support anything, return false
-		if (supportedConfigTypes == null || supportedConfigTypes.length == 0)
+		if (supportedConfigTypes == null || supportedConfigTypes.length == 0) {
+			trace("matchHostSupportedConfigTypes","No supported configs found for description="+containerTypeDescription.getName()); //$NON-NLS-1$ //$NON-NLS-2$
 			return false;
+		}
 		// Turn supported config types for this description into list
 		List supportedConfigTypesList = Arrays.asList(supportedConfigTypes);
 		List requiredConfigTypesList = Arrays.asList(requiredConfigTypes);
@@ -246,6 +255,8 @@ public abstract class AbstractHostContainerSelector extends
 		boolean result = false;
 		for (Iterator i = requiredConfigTypesList.iterator(); i.hasNext();)
 			result |= supportedConfigTypesList.contains(i.next());
+		if (!result)
+			trace("matchHostSupportedConfigTypes","description="+containerTypeDescription.getName()+" does not support all required config types"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		return result;
 	}
 
@@ -276,6 +287,7 @@ public abstract class AbstractHostContainerSelector extends
 		} else {
 			// See if we have a match
 			for (int i = 0; i < descriptions.length; i++) {
+				trace("createAndConfigureHostContainers","Considering description="+descriptions[i]); //$NON-NLS-1$ //$NON-NLS-2$
 				IRemoteServiceContainer matchingContainer = createMatchingContainer(
 						descriptions[i], serviceReference, properties,
 						serviceExportedInterfaces, requiredConfigs,
@@ -391,6 +403,10 @@ public abstract class AbstractHostContainerSelector extends
 			ServiceReference serviceReference, Map<String, Object> properties,
 			ContainerTypeDescription containerTypeDescription, String[] intents)
 			throws SelectContainerException {
+		trace("createRSContainer", //$NON-NLS-1$
+				"Creating container instance for ref=" + serviceReference + ";properties=" + properties //$NON-NLS-1$ //$NON-NLS-2$
+						+ ";description=" + containerTypeDescription.getName() + ";intents=" //$NON-NLS-1$ //$NON-NLS-2$
+						+ ((intents == null) ? "" : Arrays.asList(intents).toString())); //$NON-NLS-1$
 		IContainer container = createContainer(serviceReference, properties,
 				containerTypeDescription, intents);
 		if (container == null) 
@@ -447,10 +463,14 @@ public abstract class AbstractHostContainerSelector extends
 		if (serviceRequiredIntents == null)
 			return true;
 
+		trace("matchHostSupportedIntents","description="+containerTypeDescription.getName()+" testing for serviceRequiredIntents="+Arrays.asList(serviceRequiredIntents)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		
 		String[] supportedIntents = getSupportedIntents(containerTypeDescription);
 
-		if (supportedIntents == null)
+		if (supportedIntents == null) {
+			trace("matchHostSupportedIntents","description="+containerTypeDescription.getName()+" does not have any supported intents"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			return false;
+		}
 		// checks to see that containerTypeDescription supports requiredIntents
 		boolean result = true;
 		for (int i = 0; i < serviceRequiredIntents.length; i++) {
@@ -463,8 +483,10 @@ public abstract class AbstractHostContainerSelector extends
 			result &= found;
 		}
 
-		if (!result)
+		if (!result) {
+			trace("matchHostSupportedIntents","description="+containerTypeDescription.getName()+" does not have all required intents"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			return false;
+		}
 		
 		// If container is non-null,
 		// check to see that it's ID is private.  If it's not private, return null
@@ -473,10 +495,14 @@ public abstract class AbstractHostContainerSelector extends
 				if (ContainerInstantiatorUtils.containsPrivateIntent(serviceRequiredIntents))
 					ContainerInstantiatorUtils.checkPrivate(container.getID());
 			} catch (ContainerIntentException e) {
+				trace("matchHostSupportedIntents","container="+container.getID()+" does not have osgi private intent"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				return false;
 			}
 		}
 		
+		if (!result) {
+			trace("matchHostSupportedIntents","container="+container.getID()+" does not have all required intents"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		}
 		return result;
 	}
 

@@ -468,7 +468,20 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 	 * @since 8.13
 	 */
 	protected boolean isOSGIAsync() {
-		return getRemoteServiceReference().getProperty(Constants.OSGI_ASYNC_INTENT) != null;
+		IRemoteServiceReference ref = getRemoteServiceReference();
+		// If osgi.async is set then it's yes
+		boolean osgiAsync = ref.getProperty(Constants.OSGI_ASYNC_INTENT) != null;
+		if (osgiAsync)
+			return true;
+		// If service.intents has values, and the osgi.async is present then it's also yes
+		String[] serviceIntents = (String[]) ref.getProperty(Constants.OSGI_SERVICE_INTENTS);
+		if (serviceIntents != null) {
+			List<String> il = Arrays.asList(serviceIntents);
+			if (il.contains(Constants.OSGI_ASYNC_INTENT))
+				return true;
+		}
+		// otherwise no
+		return false;
 	}
 
 	/**
