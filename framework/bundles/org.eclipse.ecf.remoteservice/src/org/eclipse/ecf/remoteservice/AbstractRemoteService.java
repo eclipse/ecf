@@ -20,6 +20,7 @@ import org.eclipse.ecf.internal.remoteservice.Activator;
 import org.eclipse.ecf.remoteservice.asyncproxy.*;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
+import org.eclipse.ecf.remoteservice.util.AsyncUtil;
 import org.eclipse.equinox.concurrent.future.*;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceException;
@@ -468,20 +469,7 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 	 * @since 8.13
 	 */
 	protected boolean isOSGIAsync() {
-		IRemoteServiceReference ref = getRemoteServiceReference();
-		// If osgi.async is set then it's yes
-		boolean osgiAsync = ref.getProperty(Constants.OSGI_ASYNC_INTENT) != null;
-		if (osgiAsync)
-			return true;
-		// If service.intents has values, and the osgi.async is present then it's also yes
-		String[] serviceIntents = (String[]) ref.getProperty(Constants.OSGI_SERVICE_INTENTS);
-		if (serviceIntents != null) {
-			List<String> il = Arrays.asList(serviceIntents);
-			if (il.contains(Constants.OSGI_ASYNC_INTENT))
-				return true;
-		}
-		// otherwise no
-		return false;
+		return AsyncUtil.isOSGIAsync(getRemoteServiceReference());
 	}
 
 	/**

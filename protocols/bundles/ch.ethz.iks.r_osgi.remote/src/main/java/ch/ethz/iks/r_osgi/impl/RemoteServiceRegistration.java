@@ -29,6 +29,7 @@
 package ch.ethz.iks.r_osgi.impl;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -160,7 +161,15 @@ final class RemoteServiceRegistration {
 	}
 
 	boolean isOSGiAsync() {
-		return reference.getProperty(OSGI_ASYNC) != null;
+		Object o = reference.getProperty(OSGI_ASYNC);
+		if (o != null)
+			return true;
+		// If service.intents has values, and the osgi.async is present then it's also yes
+		String[] serviceIntents = (String[]) reference.getProperty("service.intents");
+		if (serviceIntents != null && Arrays.asList(serviceIntents).contains("osgi.async"))
+			return true;
+		// otherwise no
+		return false;
 	}
 	
 	long getOSGiTimeout() {

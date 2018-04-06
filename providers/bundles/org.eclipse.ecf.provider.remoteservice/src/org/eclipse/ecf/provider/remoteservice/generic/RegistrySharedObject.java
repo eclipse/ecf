@@ -30,6 +30,7 @@ import org.eclipse.ecf.internal.provider.remoteservice.IRemoteServiceProviderDeb
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.asyncproxy.AsyncReturnUtil;
 import org.eclipse.ecf.remoteservice.events.*;
+import org.eclipse.ecf.remoteservice.util.AsyncUtil;
 import org.eclipse.equinox.concurrent.future.*;
 import org.eclipse.osgi.framework.eventmgr.*;
 import org.osgi.framework.InvalidSyntaxException;
@@ -1460,7 +1461,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		if (result != null) {
 			Class returnType = method.getReturnType();
 			// provider must expose osgi.async property and must be async return type
-			if (reg.getProperty(Constants.OSGI_ASYNC_INTENT) != null && AsyncReturnUtil.isAsyncType(returnType))
+			if (AsyncUtil.isOSGIAsync(reg.getReference()) && AsyncReturnUtil.isAsyncType(returnType))
 				return AsyncReturnUtil.convertAsyncToReturn(result, returnType, call.getTimeout());
 		}
 		return result;

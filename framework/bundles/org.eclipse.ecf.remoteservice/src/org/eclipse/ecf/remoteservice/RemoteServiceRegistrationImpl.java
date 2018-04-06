@@ -153,7 +153,7 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 		return (resultProps);
 	}
 
-	static class Properties extends Hashtable {
+	static class Properties extends Dictionary implements Serializable {
 
 		/**
 		 * 
