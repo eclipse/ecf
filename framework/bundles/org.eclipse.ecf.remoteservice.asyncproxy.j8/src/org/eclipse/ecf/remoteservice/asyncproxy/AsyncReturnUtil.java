@@ -67,6 +67,8 @@ public class AsyncReturnUtil {
 			return null;
 		else if (asyncReturnType.isAssignableFrom(Future.class))
 			return ((Future<?>) returnObject).get(timeout, TimeUnit.MILLISECONDS);
+		else if (asyncReturnType.isAssignableFrom(CompletableFuture.class)) 
+			return ((CompletableFuture<?>) returnObject).get(timeout, TimeUnit.MILLISECONDS);
 		else if (asyncReturnType.isAssignableFrom(CompletionStage.class))
 			return ((CompletionStage<?>) returnObject).toCompletableFuture().get(timeout, TimeUnit.MILLISECONDS);
 		else if (asyncReturnType.isAssignableFrom(IFuture.class))
