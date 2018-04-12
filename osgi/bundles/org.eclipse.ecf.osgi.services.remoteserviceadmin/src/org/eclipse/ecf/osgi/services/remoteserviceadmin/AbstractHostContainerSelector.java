@@ -37,6 +37,7 @@ import org.osgi.framework.ServiceReference;
 /**
  * Abstract superclass for host container selectors...i.e. implementers of
  * {@link IHostContainerSelector}.
+ * @since 4.6
  * 
  */
 public abstract class AbstractHostContainerSelector extends
@@ -44,16 +45,51 @@ public abstract class AbstractHostContainerSelector extends
 
 	private static final String REQUIRE_SERVER_PROP = "org.eclipse.ecf.osgi.service.remoteserviceadmin.hostcontainerselector.requireserver"; //$NON-NLS-1$
 	private static final String EXCLUDED_DESCRIPTIONS_PROP = "org.eclipse.ecf.osgi.service.remoteserviceadmin.hostcontainerselector.excludeddescriptions"; //$NON-NLS-1$
-	private boolean defaultRequireServer = new Boolean(System.getProperty(REQUIRE_SERVER_PROP,"true")); //$NON-NLS-1$
+	// Default is now to require that ContainerTypeDesription.isServer() returns true
+	// If this is set to false (via system property REQUIRE_SERVER_PROP being set to false, or at runtime via
+	// setRequireServer(false), then the description isServer() will not be considered when a 
+	// container type description is considered for export
+	private boolean requireServer = new Boolean(System.getProperty(REQUIRE_SERVER_PROP,"true")); //$NON-NLS-1$
+	// It's possible to exclude container type descriptions from comsideration for export by
+	// setting excludedDescriptions.  This can be done by setting the system property EXCLUDED_DESCRIPTIONS_PROP
+	// to a comma-separated list of container type description names...e.g. -Dorg.eclipse.ecf.osgi.service.remoteserviceadmin.hostcontainerselector.excludeddescriptions=ecf.generic.client,ecf.xmlrpc.client
 	private List<String> excludedDescriptions;
 	
 	protected String[] defaultConfigTypes;
 
+	/**
+	 * @since 4.6
+	 */
+	protected void setExcludedDescriptions(List<String> excludedDescriptions) {
+		this.excludedDescriptions = (excludedDescriptions == null)?Collections.EMPTY_LIST:excludedDescriptions;
+	}
+	
+	/**
+	 * @since 4.6
+	 */
+	protected List<String> getExcludedDescriptions() {
+		return this.excludedDescriptions;
+	}
+	
+	/**
+	 * @since 4.6
+	 */
+	protected void setRequireServer(boolean requireServerDescriptionForExport) {
+		this.requireServer = requireServerDescriptionForExport;
+	}
+	
+	/**
+	 * @since 4.6
+	 */
+	protected boolean getRequireServerDescription() {
+		return this.requireServer;
+	}
+	
 	public AbstractHostContainerSelector(String[] defaultConfigTypes) {
 		this.defaultConfigTypes = defaultConfigTypes;
 		String propValue = System.getProperty(EXCLUDED_DESCRIPTIONS_PROP);
 		String[] excludedVals = (propValue==null)?new String[0]:propValue.trim().split(","); //$NON-NLS-1$
-		this.excludedDescriptions = Arrays.asList(excludedVals);
+		setExcludedDescriptions(Arrays.asList(excludedVals));
 	}
 
 	/**
@@ -184,12 +220,11 @@ public abstract class AbstractHostContainerSelector extends
 			ContainerTypeDescription description, String[] requiredConfigTypes,
 			String[] requiredServiceIntents) {
 
-		return matchHostSupportedConfigTypes(requiredConfigTypes, description)
-				&& matchHostSupportedIntents(requiredServiceIntents,
-						description, container)
+		return matchRequireServer(description) && matchNotExcluded(description)
+				&& matchHostSupportedConfigTypes(requiredConfigTypes, description)
+				&& matchHostSupportedIntents(requiredServiceIntents, description, container)
 				&& matchHostContainerID(serviceReference, properties, container)
-				&& matchHostContainerToConnectTarget(serviceReference,
-						properties, container);
+				&& matchHostContainerToConnectTarget(serviceReference, properties, container);
 	}
 
 	/**
@@ -339,8 +374,20 @@ public abstract class AbstractHostContainerSelector extends
 	 * @since 4.6
 	 */
 	protected boolean matchRequireServer(ContainerTypeDescription description) {
-		boolean result = this.defaultRequireServer && description.isServer();
-		LogUtility.trace("matchRequireServer", DebugOptions.CONTAINER_SELECTOR, this.getClass(), "description="+description.getName()+((result)?" matched require server":" DID NOT match require server")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		boolean result = false;
+		boolean require = getRequireServerDescription();
+		if (require) {
+			result = description.isServer();
+			LogUtility.trace("matchRequireServer", DebugOptions.CONTAINER_SELECTOR, this.getClass(), //$NON-NLS-1$
+					"Server is required for export, so description=" + description.getName() //$NON-NLS-1$
+							+ ((result) ? " isServer() return true" : " IS NOT SERVER")); //$NON-NLS-1$ //$NON-NLS-2$
+		} else {
+			result = true;
+			LogUtility.trace("matchRequireServer", DebugOptions.CONTAINER_SELECTOR, this.getClass(), //$NON-NLS-1$
+					"Server is not required for export, so description=" + description.getName() //$NON-NLS-1$
+							+ " is allowed to export"); //$NON-NLS-1$
+			return true;
+		}
 		return result;
 	}
 	
@@ -348,7 +395,7 @@ public abstract class AbstractHostContainerSelector extends
 	 * @since 4.6
 	 */
 	protected boolean matchNotExcluded(ContainerTypeDescription description) {
-		boolean result = this.excludedDescriptions.contains(description.getName());
+		boolean result = getExcludedDescriptions().contains(description.getName());
 		LogUtility.trace("matchNotExcluded", DebugOptions.CONTAINER_SELECTOR, this.getClass(), "description="+description.getName()+((result)?" EXCLUDED via excludedDescriptions="+this.excludedDescriptions:" not excluded via excludedDescriptions="+this.excludedDescriptions)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		return !result;
 	}
