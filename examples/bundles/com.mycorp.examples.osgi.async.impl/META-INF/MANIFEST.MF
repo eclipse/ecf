@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ECF DescriptiveStats Service Impl
+Bundle-SymbolicName: com.mycorp.examples.osgi.async.impl
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Eclipse.org - ECF
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Import-Package: com.mycorp.examples.osgi.async;version="1.0.0",
+ org.osgi.service.component.annotations;resolution:=optional,
+ org.osgi.util.promise
+Bundle-ActivationPolicy: lazy
+Export-Package: com.mycorp.examples.osgi.async.impl;version="1.0.0"
+Service-Component: OSGI-INF/com.mycorp.examples.osgi.async.impl.DescriptiveStatsServiceImpl.xml

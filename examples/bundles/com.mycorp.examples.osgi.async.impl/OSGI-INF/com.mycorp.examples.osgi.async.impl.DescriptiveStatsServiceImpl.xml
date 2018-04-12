@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="com.mycorp.examples.osgi.async.impl.DescriptiveStatsServiceImpl">
+   <property name="service.exported.interfaces" value="*"/>
+   <property name="service.intents" value="osgi.async"/>
+   <service>
+      <provide interface="com.mycorp.examples.osgi.async.DescriptiveStatsService"/>
+   </service>
+   <implementation class="com.mycorp.examples.osgi.async.impl.DescriptiveStatsServiceImpl"/>
+</scr:component>

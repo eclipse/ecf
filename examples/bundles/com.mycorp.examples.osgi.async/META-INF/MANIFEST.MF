@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ECF Examples for OSGI R7 osgi.async intent
+Bundle-SymbolicName: com.mycorp.examples.osgi.async
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Eclipse.org - ECF
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Import-Package: org.osgi.util.promise
+Export-Package: com.mycorp.examples.osgi.async;version="1.0.0"
+Bundle-ActivationPolicy: lazy

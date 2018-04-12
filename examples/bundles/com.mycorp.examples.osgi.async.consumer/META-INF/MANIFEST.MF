@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ECF Consumer
+Bundle-SymbolicName: com.mycorp.examples.osgi.async.consumer
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Eclipse.org - ECF
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Import-Package: com.mycorp.examples.osgi.async,
+ org.osgi.service.component.annotations;resolution:=optional,
+ org.osgi.util.promise
+Bundle-ActivationPolicy: lazy
+Service-Component: OSGI-INF/com.mycorp.examples.osgi.async.consumer.DescriptiveStatsServiceConsumer.xml

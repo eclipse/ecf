@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="com.mycorp.examples.osgi.async.consumer.DescriptiveStatsServiceConsumer">
+   <reference bind="bindDescriptiveStatsService" interface="com.mycorp.examples.osgi.async.DescriptiveStatsService" name="DescriptiveStatsService"/>
+   <implementation class="com.mycorp.examples.osgi.async.consumer.DescriptiveStatsServiceConsumer"/>
+</scr:component>

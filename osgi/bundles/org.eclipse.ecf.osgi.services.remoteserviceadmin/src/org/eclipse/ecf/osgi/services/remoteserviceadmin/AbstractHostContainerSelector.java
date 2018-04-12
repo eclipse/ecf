@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010-2011 Composent, Inc. and others. All rights reserved. This
+ * Copyright (c) 2018 Composent, Inc. and others. All rights reserved. This
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -26,7 +26,9 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.provider.ContainerInstantiatorUtils;
 import org.eclipse.ecf.core.provider.ContainerIntentException;
 import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.IDUtil;
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.RemoteServiceContainer;
@@ -40,10 +42,18 @@ import org.osgi.framework.ServiceReference;
 public abstract class AbstractHostContainerSelector extends
 		AbstractContainerSelector {
 
+	private static final String REQUIRE_SERVER_PROP = "org.eclipse.ecf.osgi.service.remoteserviceadmin.hostcontainerselector.requireserver"; //$NON-NLS-1$
+	private static final String EXCLUDED_DESCRIPTIONS_PROP = "org.eclipse.ecf.osgi.service.remoteserviceadmin.hostcontainerselector.excludeddescriptions"; //$NON-NLS-1$
+	private boolean defaultRequireServer = new Boolean(System.getProperty(REQUIRE_SERVER_PROP,"true")); //$NON-NLS-1$
+	private List<String> excludedDescriptions;
+	
 	protected String[] defaultConfigTypes;
 
 	public AbstractHostContainerSelector(String[] defaultConfigTypes) {
 		this.defaultConfigTypes = defaultConfigTypes;
+		String propValue = System.getProperty(EXCLUDED_DESCRIPTIONS_PROP);
+		String[] excludedVals = (propValue==null)?new String[0]:propValue.trim().split(","); //$NON-NLS-1$
+		this.excludedDescriptions = Arrays.asList(excludedVals);
 	}
 
 	/**
@@ -279,13 +289,7 @@ public abstract class AbstractHostContainerSelector extends
 		ContainerTypeDescription[] descriptions = getContainerTypeDescriptions();
 		if (descriptions == null)
 			return Collections.EMPTY_LIST;
-		// If there are no required configs specified, then create any defaults
-		if (requiredConfigs == null || requiredConfigs.length == 0) {
-			createAndAddDefaultContainers(serviceReference, properties,
-					serviceExportedInterfaces, serviceIntents, descriptions,
-					results);
-		} else {
-			// See if we have a match
+			// Iterate through all descriptions and see if we have a match
 			for (int i = 0; i < descriptions.length; i++) {
 				trace("createAndConfigureHostContainers","Considering description="+descriptions[i]); //$NON-NLS-1$ //$NON-NLS-2$
 				IRemoteServiceContainer matchingContainer = createMatchingContainer(
@@ -295,25 +299,7 @@ public abstract class AbstractHostContainerSelector extends
 				if (matchingContainer != null)
 					results.add(matchingContainer);
 			}
-		}
 		return results;
-	}
-
-	private void createAndAddDefaultContainers(
-			ServiceReference serviceReference, Map<String, Object> properties,
-			String[] serviceExportedInterfaces, String[] requiredIntents,
-			ContainerTypeDescription[] descriptions, Collection results)
-			throws SelectContainerException {
-		ContainerTypeDescription[] ctds = getContainerTypeDescriptionsForDefaultConfigTypes(descriptions);
-		if (ctds != null) {
-			for (int i = 0; i < ctds.length; i++) {
-				IRemoteServiceContainer matchingContainer = createMatchingContainer(
-						ctds[i], serviceReference, properties,
-						serviceExportedInterfaces, null, requiredIntents);
-				if (matchingContainer != null)
-					results.add(matchingContainer);
-			}
-		}
 	}
 
 	protected ContainerTypeDescription[] getContainerTypeDescriptionsForDefaultConfigTypes(
@@ -350,6 +336,23 @@ public abstract class AbstractHostContainerSelector extends
 	}
 
 	/**
+	 * @since 4.6
+	 */
+	protected boolean matchRequireServer(ContainerTypeDescription description) {
+		boolean result = this.defaultRequireServer && description.isServer();
+		LogUtility.trace("matchRequireServer", DebugOptions.CONTAINER_SELECTOR, this.getClass(), "description="+description.getName()+((result)?" matched require server":" DID NOT match require server")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		return result;
+	}
+	
+	/**
+	 * @since 4.6
+	 */
+	protected boolean matchNotExcluded(ContainerTypeDescription description) {
+		boolean result = this.excludedDescriptions.contains(description.getName());
+		LogUtility.trace("matchNotExcluded", DebugOptions.CONTAINER_SELECTOR, this.getClass(), "description="+description.getName()+((result)?" EXCLUDED via excludedDescriptions="+this.excludedDescriptions:" not excluded via excludedDescriptions="+this.excludedDescriptions)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		return !result;
+	}
+	/**
 	 * @param containerTypeDescription containerTypeDescription
 	 * @param serviceReference reference
 	 * @param properties properties
@@ -366,12 +369,10 @@ public abstract class AbstractHostContainerSelector extends
 			String[] serviceExportedInterfaces, String[] requiredConfigs,
 			String[] serviceIntents) throws SelectContainerException {
 
-		if (matchHostSupportedConfigTypes(requiredConfigs,
-				containerTypeDescription)
-				&& matchHostSupportedIntents(serviceIntents,
-						containerTypeDescription)) {
-			return createRSContainer(serviceReference, properties,
-					containerTypeDescription, serviceIntents);
+		if (matchRequireServer(containerTypeDescription) && matchNotExcluded(containerTypeDescription)
+				&& matchHostSupportedConfigTypes(requiredConfigs, containerTypeDescription)
+				&& matchHostSupportedIntents(serviceIntents, containerTypeDescription)) {
+			return createRSContainer(serviceReference, properties, containerTypeDescription, serviceIntents);
 		}
 		return null;
 	}
@@ -413,9 +414,10 @@ public abstract class AbstractHostContainerSelector extends
 			return null;
 		IRemoteServiceContainerAdapter adapter = (IRemoteServiceContainerAdapter) container
 				.getAdapter(IRemoteServiceContainerAdapter.class);
-		if (adapter == null)
-			throw new SelectContainerException(
-					"Container does not implement IRemoteServiceContainerAdapter", null, containerTypeDescription); //$NON-NLS-1$
+		if (adapter == null) {
+			LogUtility.logError("createRSContainer", DebugOptions.CONTAINER_SELECTOR, this.getClass(), "Container="+container.getID()+" does not implement IRemoteServiceContainerAdapter"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			return null;
+		}
 		return new RemoteServiceContainer(container, adapter);
 	}
 
