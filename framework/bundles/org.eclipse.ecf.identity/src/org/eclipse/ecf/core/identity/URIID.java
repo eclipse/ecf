@@ -106,7 +106,7 @@ public class URIID extends BaseID implements IResourceID {
 			return true;
 		if (!this.getClass().equals(o.getClass()))
 			return false;
-		return this.uri.equals(((URIID) o).uri);
+		return this.uri.toString().equals((((URIID) o).uri).toString());
 	}
 
 	protected String namespaceGetName() {
@@ -114,7 +114,7 @@ public class URIID extends BaseID implements IResourceID {
 	}
 
 	protected int namespaceHashCode() {
-		return uri.hashCode();
+		return uri.toString().hashCode() ^ getClass().hashCode();
 	}
 
 	public URI toURI() {
