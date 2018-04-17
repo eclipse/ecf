@@ -10,6 +10,7 @@
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.util.Map;
+import java.util.UUID;
 
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.AbstractTopologyManager;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
@@ -32,7 +33,16 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements Endp
 	}
 
 	protected String getFrameworkUUID() {
-		return super.getFrameworkUUID();
+		synchronized ("org.osgi.framework.uuid") { //$NON-NLS-1$
+			String result = getContext().getProperty("org.osgi.framework.uuid"); //$NON-NLS-1$
+			if (result == null) {
+				UUID newUUID = UUID.randomUUID();
+				result = newUUID.toString();
+				System.setProperty("org.osgi.framework.uuid", //$NON-NLS-1$
+						newUUID.toString());
+			}
+			return result;
+		}
 	}
 
 	protected void handleEndpointAdded(org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
