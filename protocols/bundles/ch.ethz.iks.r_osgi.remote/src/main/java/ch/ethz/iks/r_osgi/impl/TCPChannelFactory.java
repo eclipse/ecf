@@ -64,7 +64,7 @@ final class TCPChannelFactory implements NetworkChannelFactory {
 	protected int listeningPort;
 
 	private static final String OSGI_SERIALIZATION = "osgi.basic";
-	private static final String SERIALIZATION_DEFAULT = System.getProperty("ch.ethz.iks.r_osgi.remote.serialization","rosgi.smart");
+	private static final String SERIALIZATION_DEFAULT = System.getProperty("ch.ethz.iks.r_osgi.remote.serialization",OSGI_SERIALIZATION);
 	
 	/**
 	 * get a new connection.
