@@ -228,6 +228,11 @@ public class Activator implements BundleActivator {
 		}
 	}
 
+	private void initializeSAXParserFactory() {
+		ServiceReference<?> ref = Activator.context.getServiceReference(SAXParserFactory.class.getName());
+		if (ref == null) 
+			Activator.context.registerService(SAXParserFactory.class.getName(), SAXParserFactory.newInstance(), null);
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -248,6 +253,8 @@ public class Activator implements BundleActivator {
 		// approach/using the ServiceFactory extender approach for this purpose:
 		// https://mail.osgi.org/pipermail/osgi-dev/2011-February/003000.html
 		initializeProxyServiceFactoryBundle();
+		// initialize sax parser factory if necessary
+		initializeSAXParserFactory();
 		// Start distribution providers if not already started
 		initializeProviders(context.getBundle(), DistributionNamespace.DISTRIBUTION_NAMESPACE,
 				"Could not start distribution provider. "); //$NON-NLS-1$
