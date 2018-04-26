@@ -14,9 +14,11 @@ import java.io.PrintStream;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;
+import org.osgi.service.log.Logger;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
@@ -98,6 +100,7 @@ public class LogTracker extends ServiceTracker implements LogService {
 	 * @param reference
 	 *            ServiceReference associated with message or null if none.
 	 */
+	@SuppressWarnings("deprecation")
 	protected void noLogService(int level, String message, Throwable throwable,
 			ServiceReference reference) {
 		if (out != null) {
@@ -179,4 +182,26 @@ public class LogTracker extends ServiceTracker implements LogService {
 		buffer.append(value);
 		return buffer;
 	}
+	
+	public Logger getLogger(String name) {
+		throw new UnsupportedOperationException();
+	}
+
+	public Logger getLogger(Class<?> clazz) {
+		throw new UnsupportedOperationException();
+	}
+
+	public <L extends Logger> L getLogger(String name, Class<L> loggerType) {
+		throw new UnsupportedOperationException();
+	}
+
+	public <L extends Logger> L getLogger(Class<?> clazz, Class<L> loggerType) {
+		throw new UnsupportedOperationException();
+	}
+
+	public <L extends Logger> L getLogger(Bundle bundle, String name, Class<L> loggerType) {
+		throw new UnsupportedOperationException();
+	}
+
+
 }
