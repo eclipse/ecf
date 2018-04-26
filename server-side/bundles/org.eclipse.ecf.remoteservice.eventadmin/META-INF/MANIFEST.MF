@@ -19,3 +19,4 @@ Require-Bundle: org.eclipse.equinox.common,
 Export-Package: org.eclipse.ecf.internal.remoteservice.eventadmin;x-internal:=true,
  org.eclipse.ecf.remoteservice.eventadmin;version="1.1.100",
  org.eclipse.ecf.remoteservice.eventadmin.serialization
+Bundle-ActivationPolicy: lazy
