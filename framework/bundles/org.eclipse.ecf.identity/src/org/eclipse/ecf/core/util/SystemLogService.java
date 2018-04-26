@@ -13,10 +13,8 @@ package org.eclipse.ecf.core.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;
-import org.osgi.service.log.Logger;
 
 /**
  *
@@ -100,26 +98,6 @@ public class SystemLogService implements LogService {
 	 */
 	public void log(@SuppressWarnings("rawtypes") ServiceReference sr, int level, String message, Throwable exception) {
 		doLog(sr, level, message, exception);
-	}
-
-	public Logger getLogger(String name) {
-		throw new UnsupportedOperationException();
-	}
-
-	public Logger getLogger(Class<?> clazz) {
-		throw new UnsupportedOperationException();
-	}
-
-	public <L extends Logger> L getLogger(String name, Class<L> loggerType) {
-		throw new UnsupportedOperationException();
-	}
-
-	public <L extends Logger> L getLogger(Class<?> clazz, Class<L> loggerType) {
-		throw new UnsupportedOperationException();
-	}
-
-	public <L extends Logger> L getLogger(Bundle bundle, String name, Class<L> loggerType) {
-		throw new UnsupportedOperationException();
 	}
 
 }
