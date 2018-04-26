@@ -15,6 +15,7 @@ package ch.ethz.iks.slp.impl;
 
 import java.util.Dictionary;
 
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
@@ -22,6 +23,7 @@ import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;
+import org.osgi.service.log.Logger;
 
 import ch.ethz.iks.slp.impl.filter.Filter;
 
@@ -214,6 +216,26 @@ public class OSGiPlatformAbstraction implements PlatformAbstraction,
 
 		public void log(ServiceReference sr, int level, String message, Throwable t) {
 			log(null, level, message, t);
+		}
+
+		public Logger getLogger(Class<?> clazz) {
+			throw new UnsupportedOperationException();
+		}
+
+		public <L extends Logger> L getLogger(String name, Class<L> loggerType) {
+			throw new UnsupportedOperationException();
+		}
+
+		public <L extends Logger> L getLogger(Class<?> clazz, Class<L> loggerType) {
+			throw new UnsupportedOperationException();
+		}
+
+		public <L extends Logger> L getLogger(Bundle bundle, String name, Class<L> loggerType) {
+			throw new UnsupportedOperationException();
+		}
+
+		public Logger getLogger(String name) {
+			throw new UnsupportedOperationException();
 		}
 
 	}
