@@ -215,5 +215,6 @@ public class OSGiPlatformAbstraction implements PlatformAbstraction,
 		public void log(ServiceReference sr, int level, String message, Throwable t) {
 			log(null, level, message, t);
 		}
+
 	}
 }
