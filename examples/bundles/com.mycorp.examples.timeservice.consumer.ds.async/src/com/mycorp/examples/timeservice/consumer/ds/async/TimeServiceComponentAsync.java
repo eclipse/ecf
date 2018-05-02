@@ -25,7 +25,7 @@ public class TimeServiceComponentAsync {
 		System.out.println("Discovered ITimeServiceAsync via DS");
 		// Get the CompletableFuture...no blocking here
 		CompletableFuture<Long> cf = timeService.getCurrentTimeAsync();
-		// print out time when done...no blocking anywhere!
+		// print out time when done...no blocking!
 		cf.whenComplete((time, exception) -> {
 			if (exception != null)
 				exception.printStackTrace();
