@@ -17,6 +17,7 @@
 -Decf.exported.async.interfaces=*
 -Decf.discovery.etcd.hostname=127.0.0.1
 -Decf.discovery.etcd.port=2379
+-Dorg.eclipse.ecf.core.util.traceBundles=org.eclipse.ecf.provider.etcd
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>

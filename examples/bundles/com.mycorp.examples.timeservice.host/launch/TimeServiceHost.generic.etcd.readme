@@ -11,3 +11,9 @@ in the product config are currently set to 127.0.0.1 (localhost) and port 2379 v
 These can be changed in the product config or the generated launch config if desired to
 point at some other etcd server.
 
+There is a public etcd server for the ECF project available inconsistently at:
+
+-Decf.discovery.etcd.hostname=disco.ecf-project.org
+-Decf.discovery.etcd.port=2379
+
+Use at your own risk.

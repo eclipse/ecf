@@ -12,6 +12,7 @@
       <vmArgs>-Declipse.ignoreApp=true 
 -Dosgi.noShutdown=true 
 -Decf.discovery.etcd.hostname=127.0.0.1
+-Dorg.eclipse.ecf.core.util.traceBundles=org.eclipse.ecf.provider.etcd
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
