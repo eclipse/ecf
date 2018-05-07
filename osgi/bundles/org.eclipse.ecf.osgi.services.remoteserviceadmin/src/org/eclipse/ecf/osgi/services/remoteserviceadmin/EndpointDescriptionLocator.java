@@ -1367,8 +1367,9 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 			}
 		}
 
+		// Fix for bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=534439
 		public boolean triggerDiscovery() {
-			return false;
+			return true;
 		}
 	}
 
