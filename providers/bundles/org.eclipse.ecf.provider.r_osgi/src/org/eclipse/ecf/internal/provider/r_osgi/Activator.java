@@ -15,6 +15,7 @@ import ch.ethz.iks.r_osgi.RemoteOSGiService;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.util.BundleStarter;
 import org.eclipse.ecf.core.util.ExtensionRegistryRunnable;
 import org.eclipse.ecf.provider.r_osgi.identity.*;
 import org.eclipse.equinox.concurrent.future.IExecutor;
@@ -55,13 +56,6 @@ public final class Activator implements BundleActivator {
 	private ServiceTracker r_osgi_tracker;
 
 	/**
-	 * The constructor.
-	 */
-	public Activator() {
-		plugin = this;
-	}
-
-	/**
 	 * Called when the OSGi framework starts the bundle.
 	 * 
 	 * @param bc
@@ -69,10 +63,13 @@ public final class Activator implements BundleActivator {
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(final BundleContext bc) throws Exception {
+		plugin = this;
 		this.context = bc;
+		// start ch.ethz.iks.r_osgi.remote bundle
+		BundleStarter.startDependents(context, new String[] {"ch.ethz.iks.r_osgi.remote"}, Bundle.RESOLVED | Bundle.STARTING); //$NON-NLS-1$
+
 		r_osgi_tracker = new ServiceTracker(context, RemoteOSGiService.class.getName(), null);
 		r_osgi_tracker.open();
-
 		// bug 495535
 		if (DELETE_PROXY_BUNDLES_ON_INIT)
 			deleteProxyBundles();
@@ -150,10 +147,7 @@ public final class Activator implements BundleActivator {
 	 * 
 	 * @return the shared instance
 	 */
-	public static synchronized Activator getDefault() {
-		if (plugin == null) {
-			plugin = new Activator();
-		}
+	public static Activator getDefault() {
 		return plugin;
 	}
 
