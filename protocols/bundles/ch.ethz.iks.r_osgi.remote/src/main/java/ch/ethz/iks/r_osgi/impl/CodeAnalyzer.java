@@ -223,7 +223,7 @@ final class CodeAnalyzer extends ClassVisitor {
 			importDeclaration.append(pi[i]);
 			final Object v = importsMap.get(pi[i]);
 			if (v != null) {
-				importDeclaration.append("; "); //$NON-NLS-1$
+				importDeclaration.append(";"); //$NON-NLS-1$
 				importDeclaration.append(v);
 			}
 			if (i < pi.length - 1) {

@@ -216,6 +216,7 @@ class ProxyGenerator extends ClassVisitor implements Opcodes {
 		final Manifest mf = new Manifest();
 		final Attributes attr = mf.getMainAttributes();
 		attr.putValue("Manifest-Version", "1.0"); //$NON-NLS-1$ //$NON-NLS-2$
+		attr.putValue("Bundle-ManifestVersion","2"); //$NON-NLS-1$ //$NON-NLS-2$
 		attr.putValue("Created-By", "R-OSGi Proxy Generator"); //$NON-NLS-1$ //$NON-NLS-2$
 		attr.putValue("Bundle-Activator", className); //$NON-NLS-1$
 		attr.putValue("Bundle-Classpath", "."); //$NON-NLS-1$ //$NON-NLS-2$

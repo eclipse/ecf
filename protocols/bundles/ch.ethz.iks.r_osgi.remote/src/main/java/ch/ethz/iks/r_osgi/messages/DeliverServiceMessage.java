@@ -154,15 +154,18 @@ public final class DeliverServiceMessage extends RemoteOSGiMessage {
 		}
 		
 		// generate option imports from injections
-		final Set set = new HashSet();
-		
 		// no need to add imports twice
-		final String[] imp = (imports != null ? StringUtils.stringToArray(imports, ",") : new String[0]);
-		for (int i = 0; i < imp.length; i++) {
-			String string = imp[i].trim();
-			set.add(string); 
-		}
-		
+		final Set set = new HashSet();
+		if (imports != null) {
+			String[] imps = StringUtils.stringToArray(imports, ",");
+			if (imps != null)
+				for(String imp: imps) {
+					// take off version
+					String[] opts = imp.split(";");
+					if (opts != null && opts.length > 1) 
+						set.add(opts[0].trim());
+				}
+		}	
 		for (final Iterator itr = injections.keySet().iterator(); itr.hasNext();) {
 			final String className = (String) itr.next();
 			final int lastIndexOf = className.lastIndexOf("/");
@@ -173,7 +176,6 @@ public final class DeliverServiceMessage extends RemoteOSGiMessage {
 								+ pkgName + ";resolution:=optional";
 			}
 		}
-
 	}
 
 	/**
