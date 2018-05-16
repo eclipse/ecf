@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.AbstractTopologyManager;
@@ -146,22 +147,25 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements Endp
 					final CountDownLatch latch = new CountDownLatch(1);
 					BundleTracker bt = new BundleTracker<Bundle>(getContext(),Bundle.INSTALLED | Bundle.RESOLVED |
 				            Bundle.STARTING | Bundle.START_TRANSIENT | Bundle.ACTIVE , new BundleTrackerCustomizer() {
-					
 						public Bundle addingBundle(Bundle bundle, BundleEvent event) {
 							if (bundle.getSymbolicName().equals(Activator.PLUGIN_ID)) 
 								return bundle;
 							return null;
 						}
-
 						public void modifiedBundle(Bundle bundle, BundleEvent event, Object object) {
 							if (event.getType() == BundleEvent.STARTED) 
 								latch.countDown();
 						}
-
 						public void removedBundle(Bundle bundle, BundleEvent event, Object object) {}
 					});
 					bt.open();
-					latch.await(STARTUP_WAIT_TIME, TimeUnit.MILLISECONDS);
+					// wait STARTUP_WAIT_TIME for latch going to zero
+					if (!latch.await(STARTUP_WAIT_TIME, TimeUnit.MILLISECONDS)) {
+						bt.close();
+						throw new TimeoutException("RemoteServiceAdmin did not become active in "+STARTUP_WAIT_TIME+"ms"); //$NON-NLS-1$ //$NON-NLS-2$
+					}
+					// Otherwise we close bundle tracker and register remote services
+					bt.close();
 					final ServiceReference[] existingServiceRefs = getContext().getAllServiceReferences(null,
 							exportRegisteredSvcsFilter);
 					// Now export as if the service was registering right now...i.e.
