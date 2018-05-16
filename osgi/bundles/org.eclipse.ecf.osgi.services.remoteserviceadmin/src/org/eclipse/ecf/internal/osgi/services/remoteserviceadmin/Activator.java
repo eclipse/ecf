@@ -248,9 +248,15 @@ public class Activator implements BundleActivator {
 		// approach/using the ServiceFactory extender approach for this purpose:
 		// https://mail.osgi.org/pipermail/osgi-dev/2011-February/003000.html
 		initializeProxyServiceFactoryBundle();
+		
+		// Start distribution providers if not already started
+		initializeProviders(context.getBundle(), DistributionNamespace.DISTRIBUTION_NAMESPACE,
+				"Could not start distribution provider. "); //$NON-NLS-1$
+
 		// make remote service admin available
 		rsaProps = new Properties();
 		rsaProps.put(RemoteServiceAdmin.SERVICE_PROP, new Boolean(true));
+
 		// Register Remote Service Admin factory, with rsaProps
 		remoteServiceAdminRegistration = context.registerService(
 				org.osgi.service.remoteserviceadmin.RemoteServiceAdmin.class.getName(), new ServiceFactory() {
@@ -274,7 +280,8 @@ public class Activator implements BundleActivator {
 						}
 					}
 				}, (Dictionary) rsaProps);
-
+		// Setup tracker for ContainerTypeDescriptions, which will modify the RSA properties when
+		// added/removed by distribution providers
 		ctdTracker = new ServiceTracker<ContainerTypeDescription, ContainerTypeDescription>(context,
 				ContainerTypeDescription.class,
 				new ServiceTrackerCustomizer<ContainerTypeDescription, ContainerTypeDescription>() {
@@ -312,9 +319,6 @@ public class Activator implements BundleActivator {
 				});
 		ctdTracker.open();
 
-		// Start distribution providers if not already started
-		initializeProviders(context.getBundle(), DistributionNamespace.DISTRIBUTION_NAMESPACE,
-				"Could not start distribution provider. "); //$NON-NLS-1$
 		// create endpoint description locator
 		endpointDescriptionLocator = new EndpointDescriptionLocator(context);
 		// create and register endpoint description advertiser
