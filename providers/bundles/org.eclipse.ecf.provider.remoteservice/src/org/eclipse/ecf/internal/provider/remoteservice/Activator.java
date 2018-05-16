@@ -54,6 +54,7 @@ public class Activator implements BundleActivator {
 
 	public void start(final BundleContext ctxt) throws Exception {
 		this.context = ctxt;
+		BundleStarter.startDependents(this.context, new String[] {"org.eclipse.ecf.provider", "org.eclipse.ecf.sharedobject"}, Bundle.RESOLVED | Bundle.STARTING); //$NON-NLS-1$ //$NON-NLS-2$
 		SafeRunner.run(new ExtensionRegistryRunnable(this.context) {
 			protected void runWithoutRegistry() throws Exception {
 				ctxt.registerService(Namespace.class, new RemoteServiceNamespace(org.eclipse.ecf.provider.remoteservice.generic.RemoteServiceNamespace.NAME, "Generic remote service namespace"), null); //$NON-NLS-1$

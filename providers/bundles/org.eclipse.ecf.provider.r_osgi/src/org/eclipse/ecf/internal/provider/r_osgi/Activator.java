@@ -66,7 +66,7 @@ public final class Activator implements BundleActivator {
 		plugin = this;
 		this.context = bc;
 		// start ch.ethz.iks.r_osgi.remote bundle
-		BundleStarter.startDependents(context, new String[] {"ch.ethz.iks.r_osgi.remote"}, Bundle.RESOLVED | Bundle.STARTING); //$NON-NLS-1$
+		BundleStarter.startDependents(context, new String[] {"ch.ethz.iks.r_osgi.remote", "org.eclipse.ecf.provider"}, Bundle.RESOLVED | Bundle.STARTING); //$NON-NLS-1$ //$NON-NLS-2$
 
 		r_osgi_tracker = new ServiceTracker(context, RemoteOSGiService.class.getName(), null);
 		r_osgi_tracker.open();

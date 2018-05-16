@@ -11,22 +11,30 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
+import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.AbstractTopologyManager;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.BundleEvent;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.remoteserviceadmin.EndpointEvent;
 import org.osgi.service.remoteserviceadmin.EndpointEventListener;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent;
+import org.osgi.util.tracker.BundleTracker;
+import org.osgi.util.tracker.BundleTrackerCustomizer;
 
 /**
  * @since 4.6
  */
 public class TopologyManagerImpl extends AbstractTopologyManager implements EndpointEventListener {
+
+	public static final int STARTUP_WAIT_TIME = Integer.getInteger("org.eclipse.ecf.osgi.services.remoteserviceadmin.startupWaitTime", 20000); //$NON-NLS-1$
 
 	public TopologyManagerImpl(BundleContext context) {
 		super(context);
@@ -56,7 +64,7 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements Endp
 	}
 
 	// EventListenerHook impl
-	protected void handleEvent(ServiceEvent event, @SuppressWarnings("rawtypes") Map listeners) {
+	protected void handleEvent(ServiceEvent event, Map listeners) {
 		super.handleEvent(event, listeners);
 	}
 
@@ -131,21 +139,41 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements Endp
 		handleECFEndpointModified((EndpointDescription) endpoint);
 	}
 	
-	protected void exportRegisteredServices(String exportRegisteredSvcsFilter) {
-		try {
-			final ServiceReference[] existingServiceRefs = getContext()
-					.getAllServiceReferences(null, exportRegisteredSvcsFilter);
-			// Now export as if the service was registering right now...i.e.
-			// perform
-			// export
-			if (existingServiceRefs != null && existingServiceRefs.length > 0) {
-				// After having collected all pre-registered services (with
-				// marker prop) we are going to asynchronously remote them.
-				// Registering potentially is a long-running operation (due to
-				// discovery I/O...) and thus should no be carried out in the
-				// OSGi FW thread. (https://bugs.eclipse.org/405027)
-				new Thread(new Runnable() {
-					public void run() {
+	protected void exportRegisteredServices(final String exportRegisteredSvcsFilter) {
+		new Thread(new Runnable() {
+			public void run() {
+				try {
+					final CountDownLatch latch = new CountDownLatch(1);
+					BundleTracker bt = new BundleTracker<Bundle>(getContext(),Bundle.INSTALLED | Bundle.RESOLVED |
+				            Bundle.STARTING | Bundle.START_TRANSIENT | Bundle.ACTIVE , new BundleTrackerCustomizer() {
+					
+						public Bundle addingBundle(Bundle bundle, BundleEvent event) {
+							if (bundle.getSymbolicName().equals(Activator.PLUGIN_ID)) 
+								return bundle;
+							return null;
+						}
+
+						public void modifiedBundle(Bundle bundle, BundleEvent event, Object object) {
+							if (event.getType() == BundleEvent.STARTED) 
+								latch.countDown();
+						}
+
+						public void removedBundle(Bundle bundle, BundleEvent event, Object object) {}
+					});
+					bt.open();
+					latch.await(STARTUP_WAIT_TIME, TimeUnit.MILLISECONDS);
+					final ServiceReference[] existingServiceRefs = getContext().getAllServiceReferences(null,
+							exportRegisteredSvcsFilter);
+					// Now export as if the service was registering right now...i.e.
+					// perform
+					// export
+					if (existingServiceRefs != null && existingServiceRefs.length > 0) {
+						// After having collected all pre-registered services (with
+						// marker prop) we are going to asynchronously remote them.
+						// Registering potentially is a long-running operation (due to
+						// discovery I/O...) and thus should no be carried out in the
+						// OSGi FW thread. (https://bugs.eclipse.org/405027)
+
 						for (int i = 0; i < existingServiceRefs.length; i++) {
 							// This method will check the service properties for
 							// remote service props. If previously registered as
@@ -155,14 +183,15 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements Endp
 							handleServiceRegistering(existingServiceRefs[i]);
 						}
 					}
-				}, "BasicTopologyManagerPreRegSrvExporter").start(); //$NON-NLS-1$
+				} catch (Exception e) {
+					logError("exportRegisteredServices", //$NON-NLS-1$
+							"Could not retrieve existing service references for exportRegisteredSvcsFilter=" //$NON-NLS-1$
+									+ exportRegisteredSvcsFilter,
+							e);
+				}
+
 			}
-		} catch (InvalidSyntaxException e) {
-			logError("exportRegisteredServices", //$NON-NLS-1$
-					"Could not retrieve existing service references for exportRegisteredSvcsFilter=" //$NON-NLS-1$
-							+ exportRegisteredSvcsFilter,
-					e);
-		}
+		}, "BasicTopologyManagerPreRegSrvExporter").start(); //$NON-NLS-1$
 	}
 
 }

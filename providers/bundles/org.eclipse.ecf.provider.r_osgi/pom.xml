@@ -10,6 +10,6 @@
   </parent>
   <groupId>org.eclipse.ecf</groupId>
   <artifactId>org.eclipse.ecf.provider.r_osgi</artifactId>
-  <version>3.6.100-SNAPSHOT</version>
+  <version>3.6.200-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>
