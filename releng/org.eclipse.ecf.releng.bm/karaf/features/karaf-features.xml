@@ -3,7 +3,7 @@
 	<feature name="ecf-rs-dependencies" version="3.14.0"
 		description="ECF 3.14.0 RemoteServices External Dependencies. https://wiki.eclipse.org/ECF#OSGi_Remote_Services">
 		<bundle>
-			mvn:org.eclipse.platform/org.eclipse.equinox.supplement/1.6.100
+			mvn:org.eclipse.platform/org.eclipse.equinox.supplement/1.7.0
 		</bundle>
 		<bundle>
 			mvn:org.eclipse.platform/org.eclipse.equinox.common/3.9.0
