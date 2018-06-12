@@ -5,7 +5,7 @@
 		<bundle>
 			mvn:org.eclipse.platform/org.eclipse.equinox.supplement/1.6.100
 		</bundle>
-		<bundle start-level="50">
+		<bundle>
 			mvn:org.eclipse.platform/org.eclipse.equinox.common/3.9.0
 		</bundle>
 		<bundle>
@@ -40,10 +40,16 @@
 	</feature>
 	<feature name="ecf-rs-console" version="3.14.0" description="ECF Console">
 		<bundle>
+		<!-- 
 			mvn:org.eclipse.ecf/org.eclipse.ecf.console/1.1.0
+			-->
+			http://download.eclipse.org/rt/ecf/3.14.0/site.p2/karaf/org.eclipse.ecf.console_1.2.0.v20180611.jar
 		</bundle>
 		<bundle>
+		<!-- 
 			mvn:org.eclipse.ecf/org.eclipse.ecf.osgi.services.remoteserviceadmin.console/1.0.0
+			-->
+			http://download.eclipse.org/rt/ecf/3.14.0/site.p2/karaf/org.eclipse.ecf.osgi.services.remoteserviceadmin.console_1.1.0.v20180611.jar
 		</bundle>
 	</feature>
 	<feature name="ecf-rs-rsa-impl" version="3.14.0"
@@ -182,12 +188,14 @@
 		<feature version="3.14.0">ecf-rs-rsa</feature>
 		<feature version="3.14.0">ecf-rs-distribution-generic</feature>
 		<feature version="3.14.0">ecf-rs-discovery-jmdns</feature>
+		<feature version="3.14.0">ecf-rs-console</feature>
 	</feature>
-	<feature name="ecf-rs-sdk-examples" version="3.14.0"
+	<feature name="ecf-rs-sdk-examples-timeservicehost" version="3.14.0"
 		description="ECF 3.14.0 RemoteServices SDK with Generic Distribution Provider and JMDNS/Zeroconf Discovery Provider">
 		<feature version="3.14.0">ecf-rs-rsa</feature>
 		<feature version="3.14.0">ecf-rs-distribution-generic</feature>
 		<feature version="3.14.0">ecf-rs-discovery-jmdns</feature>
+		<feature version="3.14.0">ecf-rs-console</feature>
 		<feature version="3.14.0">ecf-rs-examples-timeservice-host</feature>
 	</feature>
 </features>
