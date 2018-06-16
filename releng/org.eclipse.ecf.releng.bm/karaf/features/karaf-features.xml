@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <features xmlns="http://karaf.apache.org/xmlns/features/v1.2.0"
 	name="ecf-remoteservices-sdk-3.14.0">
 	<feature name="ecf-rs-dependencies" version="3.14.0"
@@ -17,7 +18,8 @@
 		<feature>scr</feature>
 		<feature>eventadmin</feature>
 	</feature>
-	<feature name="ecf-rs-core" version="3.14.0" description="ECF Core">
+	<feature name="ecf-rs-core" version="3.14.0"
+		description="ECF Core">
 		<feature version="3.14.0">ecf-rs-dependencies</feature>
 		<bundle>mvn:org.eclipse.ecf/org.eclipse.ecf.identity/3.9.0</bundle>
 		<bundle>mvn:org.eclipse.ecf/org.eclipse.ecf/3.9.0</bundle>
@@ -26,25 +28,22 @@
 		</bundle>
 		<bundle>
 			mvn:org.eclipse.ecf/org.eclipse.ecf.discovery/5.0.300
-		</bundle>	
-		<bundle>		
+		</bundle>
+		<bundle>
 			mvn:org.eclipse.ecf/org.eclipse.ecf.remoteservice.asyncproxy/2.1.0
 		</bundle>
 		<bundle>
 			mvn:org.eclipse.ecf/org.eclipse.ecf.remoteservice/8.13.0
 		</bundle>
 	</feature>
-	<feature name="ecf-rs-console" version="3.14.0" description="ECF Console">
+	<feature name="ecf-rs-console" version="3.14.0"
+		description="ECF Console">
 		<bundle>
-		<!-- 
-			mvn:org.eclipse.ecf/org.eclipse.ecf.console/1.1.0
-			-->
+			<!-- mvn:org.eclipse.ecf/org.eclipse.ecf.console/1.1.0 -->
 			http://download.eclipse.org/rt/ecf/3.14.0/site.p2/karaf/org.eclipse.ecf.console_1.2.0.v20180611.jar
 		</bundle>
 		<bundle>
-		<!-- 
-			mvn:org.eclipse.ecf/org.eclipse.ecf.osgi.services.remoteserviceadmin.console/1.0.0
-			-->
+			<!-- mvn:org.eclipse.ecf/org.eclipse.ecf.osgi.services.remoteserviceadmin.console/1.0.0 -->
 			http://download.eclipse.org/rt/ecf/3.14.0/site.p2/karaf/org.eclipse.ecf.osgi.services.remoteserviceadmin.console_1.1.0.v20180611.jar
 		</bundle>
 	</feature>
@@ -157,7 +156,8 @@
 			mvn:org.eclipse.ecf/org.eclipse.ecf.remoteservice.servlet/1.0.100
 		</bundle>
 	</feature>
-	<feature name="ecf-rs-distribution-generic-server" version="3.14.0"
+	<feature name="ecf-rs-distribution-generic-server"
+		version="3.14.0"
 		description="ECF 3.14.0 RemoteServices SDK Generic Server Support">
 		<feature version="3.14.0">ecf-rs-distribution-generic</feature>
 		<bundle>mvn:org.eclipse.ecf/org.eclipse.ecf.server/2.1.200</bundle>
@@ -165,20 +165,23 @@
 			mvn:org.eclipse.ecf/org.eclipse.ecf.server.generic/8.0.100
 		</bundle>
 	</feature>
-	<feature name="ecf-rs-examples-timeservice-api" version="3.14.0"
+	<feature name="ecf-rs-examples-timeservice-api"
+		version="3.14.0"
 		description="ECF RemoteService TimeService API Example. See https://wiki.eclipse.org/Tutorial:_Building_your_first_OSGi_Remote_Service">
 		<bundle>
 			http://download.eclipse.org/rt/ecf/3.14.0/site.p2/plugins/com.mycorp.examples.timeservice.async_2.1.0.v20180314-1732.jar
 		</bundle>
 	</feature>
-	<feature name="ecf-rs-examples-timeservice-host" version="3.14.0"
+	<feature name="ecf-rs-examples-timeservice-host"
+		version="3.14.0"
 		description="ECF RemoteService TimeService Host Example. See https://wiki.eclipse.org/Tutorial:_Building_your_first_OSGi_Remote_Service">
 		<feature version="3.14.0">ecf-rs-examples-timeservice-api</feature>
 		<bundle>
 			http://download.eclipse.org/rt/ecf/3.14.0/site.p2/plugins/com.mycorp.examples.timeservice.host_1.1.200.v20180502-2137.jar
 		</bundle>
 	</feature>
-	<feature name="ecf-rs-examples-timeservice-consumer" version="3.14.0"
+	<feature name="ecf-rs-examples-timeservice-consumer"
+		version="3.14.0"
 		description="ECF RemoteService TimeService Host Example. See https://wiki.eclipse.org/Tutorial:_Building_your_first_OSGi_Remote_Service">
 		<feature version="3.14.0">ecf-rs-examples-timeservice-api</feature>
 		<bundle>
@@ -192,7 +195,8 @@
 		<feature version="3.14.0">ecf-rs-discovery-jmdns</feature>
 		<feature version="3.14.0">ecf-rs-console</feature>
 	</feature>
-	<feature name="ecf-rs-sdk-examples-timeservicehost" version="3.14.0"
+	<feature name="ecf-rs-sdk-examples-timeservicehost"
+		version="3.14.0"
 		description="ECF 3.14.0 RemoteServices SDK with Generic Distribution Provider and JMDNS/Zeroconf Discovery Provider">
 		<feature version="3.14.0">ecf-rs-rsa</feature>
 		<feature version="3.14.0">ecf-rs-distribution-generic</feature>
@@ -201,82 +205,124 @@
 		<feature version="3.14.0">ecf-rs-examples-timeservice-host</feature>
 	</feature>
 
-        <feature name="ecf-rs-discovery-etcd" version="1.4.1" description="ECF Etcd Discovery Provider.  See https://github.com/ECF/etcd-provider">
-	        <bundle>https://raw.githubusercontent.com/ECF/etcd-provider/master/build/plugins/org.eclipse.ecf.provider.etcd_1.4.1.201806122014.jar</bundle>
+	<feature name="ecf-rs-discovery-etcd" version="1.4.1"
+		description="ECF Etcd Discovery Provider.  See https://github.com/ECF/etcd-provider">
+		<bundle>https://raw.githubusercontent.com/ECF/etcd-provider/master/build/plugins/org.eclipse.ecf.provider.etcd_1.4.1.201806122014.jar
+		</bundle>
 		<bundle>mvn:org.eclipse.ecf/org.json/1.0.0.v201011060100</bundle>
-        </feature>
+	</feature>
 
-        <feature name="ecf-rs-distribution-xmlrpc" version="1.2.1" description="ECF Xmlrpc Distribution Provider.  See https://github.com/ECF/XmlRpcProvider">
-			<feature>http</feature>
-		        <feature>ecf-rs-rsa</feature>
-		        <feature>ecf-rs-console</feature>
-	                <bundle>https://raw.githubusercontent.com/ECF/XmlRpcProvider/master/build/plugins/org.eclipse.ecf.provider.xmlrpc_1.2.1.201806122227.jar</bundle>
-		        <bundle>
-			        mvn:org.eclipse.ecf/org.apache.commons.logging/1.1.1.v201101211721
-		        </bundle>
-        </feature>
+	<feature name="ecf-rs-distribution-xmlrpc" version="1.2.1"
+		description="ECF Xmlrpc Distribution Provider.  See https://github.com/ECF/XmlRpcProvider">
+		<feature>http</feature>
+		<feature>ecf-rs-rsa</feature>
+		<feature>ecf-rs-console</feature>
+		<bundle>https://raw.githubusercontent.com/ECF/XmlRpcProvider/master/build/plugins/org.eclipse.ecf.provider.xmlrpc_1.2.1.201806122227.jar
+		</bundle>
+		<bundle>
+			mvn:org.eclipse.ecf/org.apache.commons.logging/1.1.1.v201101211721
+		</bundle>
+	</feature>
 
-    <feature name="ecf-rs-distribution-python.java" version="2.8.4" description="ECF Python.Java Core. See https://github.com/ECF/Py4j-RemoteServicesProvider">
-            <feature>ecf-rs-rsa</feature>
-            <feature>ecf-rs-console</feature>
-            <bundle>
-                http://download.eclipse.org/tools/orbit/downloads/drops/R20180525155205/repository/plugins/org.apache.log4j_1.2.15.v201012070815.jar            
-            </bundle>
-            <bundle>
-                http://download.eclipse.org/tools/orbit/downloads/drops2/R20180606145124/repository/plugins/org.slf4j.api_1.7.10.v20170428-1633.jar
-	    </bundle>
-            <bundle>
-                http://download.eclipse.org/tools/orbit/downloads/drops/R20180525155205/repository/plugins/org.slf4j.log4j_1.7.2.v20130115-1340.jar            
-            </bundle>
-	    <bundle>
-	        https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/org.apache.commons.exec_1.3.0.jar
-	    </bundle>
-            <bundle>https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/org.eclipse.ecf.provider.direct_2.3.1.201806141110.jar</bundle>
-            <bundle>https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/org.eclipse.ecf.provider.py4j_2.2.3.201806141110.jar</bundle>
-            <bundle>https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/org.py4j.osgi_1.2.0.201806141110.jar</bundle>
-            <bundle>https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/org.eclipse.ecf.python_1.0.3.201806141110.jar</bundle>
-    </feature>
-	
-    <feature name="ecf-rs-examples-python.java-hello" version="2.8.4" description="ECF Python.Java Hello Example.  See https://github.com/ECF/Py4j-RemoteServicesProvider">
-            <feature>ecf-rs-distribution-python.java</feature>
-	    <bundle>
-	        https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/org.eclipse.ecf.examples.hello.provider_1.2.3.201806141110.jar
-	    </bundle>
-	    <bundle>
-	        https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/org.eclipse.ecf.examples.hello_1.1.1.201806141110.jar
-	    </bundle>
-	    <bundle>
-	        https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/org.eclipse.ecf.examples.hello.javahost_1.1.3.201806141110.jar
-	    </bundle>
-    </feature>
-    
-    <feature name="ecf-rs-distribution-python.java-protobuf" version="2.8.4" description="ECF Python.Java Distribution Provider.  See https://github.com/ECF/Py4j-RemoteServicesProvider">
-            <feature>ecf-rs-distribution-python.java</feature>
-	    <bundle>
-	        https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/com.google.protobuf_3.5.1.jar
-	    </bundle>
-	    <bundle>
-	        https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/org.eclipse.ecf.provider.direct.protobuf_2.2.1.201806141110.jar
-	    </bundle>
-	    <bundle>
-	        https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/org.eclipse.ecf.provider.py4j.protobuf_1.4.2.201806141110.jar
-	    </bundle>
-	    <bundle>
-	        https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/org.eclipse.ecf.python.protobuf_1.1.2.201806141110.jar
-	    </bundle>
-    </feature>
+	<feature name="ecf-rs-distribution-python.java" version="2.8.4"
+		description="ECF Python.Java Core. See https://github.com/ECF/Py4j-RemoteServicesProvider">
+		<feature>ecf-rs-rsa</feature>
+		<feature>ecf-rs-console</feature>
+		<bundle>
+			http://download.eclipse.org/tools/orbit/downloads/drops/R20180525155205/repository/plugins/org.apache.log4j_1.2.15.v201012070815.jar
+		</bundle>
+		<bundle>
+			http://download.eclipse.org/tools/orbit/downloads/drops2/R20180606145124/repository/plugins/org.slf4j.api_1.7.10.v20170428-1633.jar
+		</bundle>
+		<bundle>
+			http://download.eclipse.org/tools/orbit/downloads/drops/R20180525155205/repository/plugins/org.slf4j.log4j_1.7.2.v20130115-1340.jar
+		</bundle>
+		<bundle>
+			https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/org.apache.commons.exec_1.3.0.jar
+		</bundle>
+		<bundle>https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/org.eclipse.ecf.provider.direct_2.3.1.201806141110.jar
+		</bundle>
+		<bundle>https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/org.eclipse.ecf.provider.py4j_2.2.3.201806141110.jar
+		</bundle>
+		<bundle>https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/org.py4j.osgi_1.2.0.201806141110.jar
+		</bundle>
+		<bundle>https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/org.eclipse.ecf.python_1.0.3.201806141110.jar
+		</bundle>
+	</feature>
 
-    <feature name="ecf-rs-examples-python.java-protobuf-hello" version="2.8.4" description="ECF Python.Java Protobuf Hello Example.  See https://github.com/ECF/Py4j-RemoteServicesProvider">
-            <feature>ecf-rs-distribution-python.java-protobuf</feature>
-	    <bundle>
-	        https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/org.eclipse.ecf.examples.protobuf.hello_1.2.1.201806141110.jar
-	    </bundle>
-	    <bundle>
-	        https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/org.eclipse.ecf.examples.protobuf.hello.provider_1.2.3.201806141110.jar
-	    </bundle>
-	    <bundle>
-	        https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/org.eclipse.ecf.examples.protobuf.hello.javahost_1.2.2.201806141110.jar
-	    </bundle>
-</feature>
+	<feature name="ecf-rs-examples-python.java-hello"
+		version="2.8.4"
+		description="ECF Python.Java Hello Example.  See https://github.com/ECF/Py4j-RemoteServicesProvider">
+		<feature>ecf-rs-distribution-python.java</feature>
+		<bundle>
+			https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/org.eclipse.ecf.examples.hello.provider_1.2.3.201806141110.jar
+		</bundle>
+		<bundle>
+			https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/org.eclipse.ecf.examples.hello_1.1.1.201806141110.jar
+		</bundle>
+		<bundle>
+			https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/org.eclipse.ecf.examples.hello.javahost_1.1.3.201806141110.jar
+		</bundle>
+	</feature>
+
+	<feature name="ecf-rs-distribution-python.java-protobuf"
+		version="2.8.4"
+		description="ECF Python.Java Distribution Provider.  See https://github.com/ECF/Py4j-RemoteServicesProvider">
+		<feature>ecf-rs-distribution-python.java</feature>
+		<bundle>
+			https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/com.google.protobuf_3.5.1.jar
+		</bundle>
+		<bundle>
+			https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/org.eclipse.ecf.provider.direct.protobuf_2.2.1.201806141110.jar
+		</bundle>
+		<bundle>
+			https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/org.eclipse.ecf.provider.py4j.protobuf_1.4.2.201806141110.jar
+		</bundle>
+		<bundle>
+			https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/org.eclipse.ecf.python.protobuf_1.1.2.201806141110.jar
+		</bundle>
+	</feature>
+
+	<feature name="ecf-rs-examples-python.java-protobuf-hello"
+		version="2.8.4"
+		description="ECF Python.Java Protobuf Hello Example.  See https://github.com/ECF/Py4j-RemoteServicesProvider">
+		<feature>ecf-rs-distribution-python.java-protobuf</feature>
+		<bundle>
+			https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/org.eclipse.ecf.examples.protobuf.hello_1.2.1.201806141110.jar
+		</bundle>
+		<bundle>
+			https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/org.eclipse.ecf.examples.protobuf.hello.provider_1.2.3.201806141110.jar
+		</bundle>
+		<bundle>
+			https://raw.githubusercontent.com/ECF/Py4j-RemoteServicesProvider/master/build/plugins/org.eclipse.ecf.examples.protobuf.hello.javahost_1.2.2.201806141110.jar
+		</bundle>
+	</feature>
+
+	<feature name="ecf-rs-distribution-jms-core" version="2.9.0"
+		description="ECF JMS Distribution Provider Support. See https://github.com/ECF/JMS">
+		<feature>ecf-rs-rsa</feature>
+		<feature>ecf-rs-console</feature>
+		<feature>ecf-rs-distribution-generic</feature>
+		<bundle>https://raw.githubusercontent.com/ECF/JMS/master/build/plugins/javax.jms_1.1.0.v201205091237.jar
+		</bundle>
+		<bundle>https://raw.githubusercontent.com/ECF/JMS/master/build/plugins/org.eclipse.ecf.provider.jms_1.10.100.201806152009.jar
+		</bundle>
+	</feature>
+
+	<feature name="ecf-rs-distribution-jms-activemq"
+		version="2.9.0"
+		description="ECF ActiveMQ Distribution Provider.  See https://github.com/ECF/JMS">
+		<feature>ecf-rs-distribution-jms-core</feature>
+		<bundle>https://raw.githubusercontent.com/ECF/JMS/master/build/plugins/org.eclipse.ecf.provider.jms.activemq_5.15.4.201806152009.jar
+		</bundle>
+	</feature>
+
+	<feature name="ecf-rs-distribution-jms-activemq-broker"
+		version="2.9.0"
+		description="ECF ActiveMQ Broker.  See https://github.com/ECF/JMS">
+		<feature>ecf-rs-distribution-jms-core</feature>
+		<bundle>https://raw.githubusercontent.com/ECF/JMS/master/build/plugins/org.eclipse.ecf.provider.jms.activemq.broker_5.15.4.201806152009.jar
+		</bundle>
+	</feature>
 
 </features>
