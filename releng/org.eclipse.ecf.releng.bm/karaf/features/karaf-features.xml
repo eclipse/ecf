@@ -325,4 +325,13 @@
 		</bundle>
 	</feature>
 
+	<feature name="ecf-rs-distribution-mqtt" version="1.4.0"
+		description="ECF Mqtt Distribution Provider. See https://github.com/ECF/Mqtt-Provider">
+		<feature>ecf-rs-distribution-jms-core</feature>
+		<bundle>https://raw.githubusercontent.com/ECF/Mqtt-Provider/master/build/plugins/org.eclipse.paho.client.mqttv3_1.1.1.jar
+		</bundle>
+		<bundle>https://raw.githubusercontent.com/ECF/Mqtt-Provider/master/build/plugins/org.eclipse.ecf.provider.jms.mqtt_1.3.0.201806161001.jar
+		</bundle>
+	</feature>
+
 </features>
