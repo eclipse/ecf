@@ -8,7 +8,7 @@ Bundle-Vendor: Eclipse.org - ECF
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: com.mycorp.examples.timeservice.consumer.Activator
-Import-Package: com.mycorp.examples.timeservice;version="[1.0.0,2.0.0)",
+Import-Package: com.mycorp.examples.timeservice;version="[1.0.0,3.0.0)",
  org.eclipse.ecf.osgi.services.remoteserviceadmin;version="[1.2.0,2.0.0)",
  org.osgi.framework;version="[1.0.0,2.0.0)",
  org.osgi.service.remoteserviceadmin;version="[1.0.0,2.0.0)",
