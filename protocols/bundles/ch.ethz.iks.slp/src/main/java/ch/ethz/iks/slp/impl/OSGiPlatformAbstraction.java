@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2005, 2010 Jan S. Rellermeyer, Systems Group,
+ * Copyright (c) 2005, 2018 Jan S. Rellermeyer, Systems Group,
  * Department of Computer Science, ETH Zurich and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -217,5 +217,24 @@ public class OSGiPlatformAbstraction implements PlatformAbstraction,
 			log(null, level, message, t);
 		}
 
+		public org.osgi.service.log.Logger getLogger(String name) {
+			throw new UnsupportedOperationException();
+		}
+
+		public org.osgi.service.log.Logger getLogger(Class<?> clazz) {
+			throw new UnsupportedOperationException();
+		}
+
+		public <L extends org.osgi.service.log.Logger> L getLogger(String name, Class<L> loggerType) {
+			throw new UnsupportedOperationException();
+		}
+
+		public <L extends org.osgi.service.log.Logger> L getLogger(Class<?> clazz, Class<L> loggerType) {
+			throw new UnsupportedOperationException();
+		}
+
+		public <L extends org.osgi.service.log.Logger> L getLogger(Bundle bundle, String name, Class<L> loggerType) {
+			throw new UnsupportedOperationException();
+		}
 	}
 }

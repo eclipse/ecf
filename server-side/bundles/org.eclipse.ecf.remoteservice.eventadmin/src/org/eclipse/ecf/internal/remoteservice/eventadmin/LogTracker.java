@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 IBM Corporation and others.
+ * Copyright (c) 1998, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,6 +14,7 @@ import java.io.PrintStream;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;
@@ -180,5 +181,24 @@ public class LogTracker extends ServiceTracker implements LogService {
 		buffer.append(value);
 		return buffer;
 	}
-	
+
+	public org.osgi.service.log.Logger getLogger(String name) {
+		throw new UnsupportedOperationException();
+	}
+
+	public org.osgi.service.log.Logger getLogger(Class<?> clazz) {
+		throw new UnsupportedOperationException();
+	}
+
+	public <L extends org.osgi.service.log.Logger> L getLogger(String name, Class<L> loggerType) {
+		throw new UnsupportedOperationException();
+	}
+
+	public <L extends org.osgi.service.log.Logger> L getLogger(Class<?> clazz, Class<L> loggerType) {
+		throw new UnsupportedOperationException();
+	}
+
+	public <L extends org.osgi.service.log.Logger> L getLogger(Bundle bundle, String name, Class<L> loggerType) {
+		throw new UnsupportedOperationException();
+	}
 }

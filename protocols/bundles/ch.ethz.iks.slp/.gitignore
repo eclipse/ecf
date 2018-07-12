@@ -1,1 +1,3 @@
-bin/
+/bin/
+/bin_r7stubs/
+/r7stubs.jar

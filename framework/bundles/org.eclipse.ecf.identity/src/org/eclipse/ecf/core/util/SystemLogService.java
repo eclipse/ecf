@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2007, 2009 Composent, Inc. and others.
+ * Copyright (c) 2007, 2018 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@ package org.eclipse.ecf.core.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;
 
@@ -100,4 +101,23 @@ public class SystemLogService implements LogService {
 		doLog(sr, level, message, exception);
 	}
 
+	public org.osgi.service.log.Logger getLogger(String name) {
+		throw new UnsupportedOperationException();
+	}
+
+	public org.osgi.service.log.Logger getLogger(Class<?> clazz) {
+		throw new UnsupportedOperationException();
+	}
+
+	public <L extends org.osgi.service.log.Logger> L getLogger(String name, Class<L> loggerType) {
+		throw new UnsupportedOperationException();
+	}
+
+	public <L extends org.osgi.service.log.Logger> L getLogger(Class<?> clazz, Class<L> loggerType) {
+		throw new UnsupportedOperationException();
+	}
+
+	public <L extends org.osgi.service.log.Logger> L getLogger(Bundle bundle, String name, Class<L> loggerType) {
+		throw new UnsupportedOperationException();
+	}
 }
