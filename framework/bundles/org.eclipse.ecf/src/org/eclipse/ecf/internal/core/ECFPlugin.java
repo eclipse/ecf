@@ -11,6 +11,7 @@ package org.eclipse.ecf.internal.core;
 import java.util.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.*;
+import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.core.start.ECFStartJob;
 import org.eclipse.ecf.core.start.IECFStart;
@@ -106,6 +107,30 @@ public class ECFPlugin implements BundleActivator {
 		// null constructor
 	}
 
+	void disposeContainersForDescription(ContainerTypeDescription description) {
+		String descriptionName = description.getName();
+		IContainerManager cm = (IContainerManager) ContainerFactory.getDefault();
+		List<IContainer> tbd = new ArrayList<IContainer>();
+		for (IContainer c : cm.getAllContainers()) {
+			ID cID = c.getID();
+			ContainerTypeDescription ctd = cm.getContainerTypeDescription(cID);
+			if (ctd != null && ctd.getName().equals(descriptionName)) {
+				IContainer container = cm.removeContainer(cID);
+				if (container != null)
+					tbd.add(container);
+			}
+		}
+		for (IContainer c : tbd) {
+			try {
+				c.dispose();
+			} catch (Throwable t) {
+				// Log exception
+				ECFPlugin.getDefault().log(new Status(IStatus.ERROR, ECFPlugin.getDefault().getBundle().getSymbolicName(), IStatus.ERROR, "container dispose error", t)); //$NON-NLS-1$
+				Trace.catching(ECFPlugin.PLUGIN_ID, ECFDebugOptions.EXCEPTIONS_CATCHING, ContainerFactory.class, "disposeContainers", t); //$NON-NLS-1$
+			}
+		}
+	}
+
 	public void start(BundleContext ctxt) throws Exception {
 		plugin = this;
 		this.context = ctxt;
@@ -136,6 +161,8 @@ public class ECFPlugin implements BundleActivator {
 				}
 
 				public void removedService(ServiceReference reference, Object service) {
+					ContainerTypeDescription ctd = (ContainerTypeDescription) service;
+					disposeContainersForDescription(ctd);
 					IContainerFactory cf = ContainerFactory.getDefault();
 					cf.removeDescription((ContainerTypeDescription) service);
 				}

@@ -59,7 +59,11 @@ public class RSARemoteServiceContainerAdapter extends RemoteServiceContainerAdap
 		}
 
 		public void unregister() {
-			getRSAContainer().unexportRemoteService(this);
+			RemoteServiceRegistryImpl regis = getRegistry();
+			if (regis != null) {
+				regis.unpublishService(this);
+				getRSAContainer().unexportRemoteService(this);
+			}
 		}
 
 		public Map<String, Object> getExtraProperties() {

@@ -84,6 +84,12 @@ public abstract class AbstractRSAContainer extends AbstractContainer {
 	}
 
 	@Override
+	public void dispose() {
+		this.containerAdapter.dispose();
+		super.dispose();
+	}
+
+	@Override
 	public Object getAdapter(Class serviceType) {
 		Object result = super.getAdapter(serviceType);
 		if (result == null && serviceType.isAssignableFrom(IRemoteServiceContainerAdapter.class))

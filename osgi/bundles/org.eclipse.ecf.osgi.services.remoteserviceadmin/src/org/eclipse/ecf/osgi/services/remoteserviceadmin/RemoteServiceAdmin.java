@@ -566,6 +566,9 @@ public class RemoteServiceAdmin implements org.osgi.service.remoteserviceadmin.R
 		private EndpointDescription endpointDescription;
 
 		private IRemoteServiceRegistration rsRegistration;
+		private IRemoteServiceContainerAdapter containerAdapter;
+		private IRemoteServiceListener remoteServiceListener;
+		
 		private Set<ExportRegistration> activeExportRegistrations = new HashSet<ExportRegistration>();
 
 		private Map<String, Object> originalProperties;
@@ -578,15 +581,28 @@ public class RemoteServiceAdmin implements org.osgi.service.remoteserviceadmin.R
 		}
 
 		ExportEndpoint(ServiceReference serviceReference, EndpointDescription endpointDescription,
-				IRemoteServiceRegistration reg, Map<String, Object> originalProperties) {
+				IRemoteServiceRegistration reg, IRemoteServiceContainerAdapter containerAdapter, Map<String, Object> originalProperties) {
 			Assert.isNotNull(serviceReference);
 			this.serviceReference = serviceReference;
 			Assert.isNotNull(endpointDescription);
 			this.endpointDescription = endpointDescription;
 			Assert.isNotNull(reg);
 			this.rsRegistration = reg;
+			Assert.isNotNull(containerAdapter);
+			this.containerAdapter = containerAdapter;
+			this.remoteServiceListener = new IRemoteServiceListener() {
+				public void handleServiceEvent(IRemoteServiceEvent event) {
+					Collection<ExportRegistration> regs = null;
+					synchronized (this) {
+						regs = new ArrayList(activeExportRegistrations);
+					}
+					for(ExportRegistration r: regs) 
+						r.close();
+				}};
 			Assert.isNotNull(originalProperties);
 			this.originalProperties = originalProperties;
+			// Add listener to containerAdapter
+			this.containerAdapter.addRemoteServiceListener(this.remoteServiceListener);
 		}
 
 		synchronized ID getContainerID() {
@@ -619,6 +635,7 @@ public class RemoteServiceAdmin implements org.osgi.service.remoteserviceadmin.R
 				serviceReference = null;
 				endpointDescription = null;
 				originalProperties = null;
+				containerAdapter.removeRemoteServiceListener(this.remoteServiceListener);
 			}
 			return removed;
 		}
@@ -2174,7 +2191,7 @@ public class RemoteServiceAdmin implements org.osgi.service.remoteserviceadmin.R
 		// Create ExportEndpoint/ExportRegistration
 		return new ExportRegistration(
 				new ExportEndpoint(serviceReference, new EndpointDescription(endpointDescriptionProperties),
-						remoteRegistration, endpointDescriptionProperties));
+						remoteRegistration, containerAdapter, endpointDescriptionProperties));
 	}
 
 	private ImportRegistration importService(final EndpointDescription endpointDescription,

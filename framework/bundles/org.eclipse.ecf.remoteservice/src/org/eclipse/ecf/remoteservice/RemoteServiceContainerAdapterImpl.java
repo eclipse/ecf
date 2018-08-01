@@ -46,15 +46,26 @@ public class RemoteServiceContainerAdapterImpl implements IRemoteServiceContaine
 	}
 
 	public void dispose() {
-		synchronized (refToImplMap) {
-			refToImplMap.clear();
+		if (registry != null) {
+			RemoteServiceRegistrationImpl[] registrations = registry.getRegistrations();
+			if (registrations != null)
+				for (RemoteServiceRegistrationImpl reg : registrations)
+					fireRemoteServiceListeners(createUnregisteredEvent(reg));
+
+			// Now if there are no listeners we will unregister them ourselves
+			registrations = registry.getRegistrations();
+			if (registrations != null)
+				for (RemoteServiceRegistrationImpl reg : registrations)
+					reg.unregister();
+
+			registry.unpublishServices();
+			registry = null;
 		}
 		synchronized (listeners) {
 			listeners.clear();
 		}
-		if (registry != null) {
-			registry.unpublishServices();
-			registry = null;
+		synchronized (refToImplMap) {
+			refToImplMap.clear();
 		}
 		this.connectContext = null;
 		this.remoteServiceCallPolicy = null;
