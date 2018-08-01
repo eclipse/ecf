@@ -592,12 +592,21 @@ public class RemoteServiceAdmin implements org.osgi.service.remoteserviceadmin.R
 			this.containerAdapter = containerAdapter;
 			this.remoteServiceListener = new IRemoteServiceListener() {
 				public void handleServiceEvent(IRemoteServiceEvent event) {
-					Collection<ExportRegistration> regs = null;
-					synchronized (this) {
-						regs = new ArrayList(activeExportRegistrations);
+					if (event instanceof IRemoteServiceUnregisteredEvent) {
+						IRemoteServiceReference ref = ((IRemoteServiceUnregisteredEvent) event).getReference();
+						Collection<ExportRegistration> regs = null;
+						synchronized (ExportEndpoint.this) {
+							regs = new ArrayList(activeExportRegistrations);
+						}
+						for(ExportRegistration r: regs) {
+							IRemoteServiceRegistration rsReg = r.getRemoteServiceRegistration();
+							if (rsReg != null) {
+								IRemoteServiceReference rsRef = rsReg.getReference();
+								if (rsRef != null && rsRef.equals(ref))
+									r.close();
+							}
+						}
 					}
-					for(ExportRegistration r: regs) 
-						r.close();
 				}};
 			Assert.isNotNull(originalProperties);
 			this.originalProperties = originalProperties;
