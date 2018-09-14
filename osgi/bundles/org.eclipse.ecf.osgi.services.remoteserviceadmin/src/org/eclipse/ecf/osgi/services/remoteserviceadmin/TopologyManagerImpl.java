@@ -148,7 +148,8 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements Endp
 					BundleTracker bt = new BundleTracker<Bundle>(getContext(),Bundle.INSTALLED | Bundle.RESOLVED |
 				            Bundle.STARTING | Bundle.START_TRANSIENT | Bundle.ACTIVE , new BundleTrackerCustomizer() {
 						public Bundle addingBundle(Bundle bundle, BundleEvent event) {
-							if (bundle.getSymbolicName().equals(Activator.PLUGIN_ID)) {
+							String bsn = bundle.getSymbolicName();
+							if (bsn != null && bsn.equals(Activator.PLUGIN_ID)) {
 								if (bundle.getState() == Bundle.ACTIVE) {
 									latch.countDown();
 									return null;
@@ -158,7 +159,7 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements Endp
 							return null;
 						}
 						public void modifiedBundle(Bundle bundle, BundleEvent event, Object object) {
-							if (event.getType() == BundleEvent.STARTED) 
+							if (event != null && event.getType() == BundleEvent.STARTED) 
 								latch.countDown();
 						}
 						public void removedBundle(Bundle bundle, BundleEvent event, Object object) {}
