@@ -765,8 +765,8 @@ public class RemoteServiceAdmin implements org.osgi.service.remoteserviceadmin.R
 					endpointDescription = getEndpointDescription();
 					exRef = this.exportReference;
 					publish = exportReference.close(this);
-					this.exportReference = null;
 					closed = true;
+					this.exportReference = null;
 				}
 			}
 			removeExportRegistration(this);
@@ -1088,8 +1088,8 @@ public class RemoteServiceAdmin implements org.osgi.service.remoteserviceadmin.R
 					endpointDescription = getEndpointDescription();
 					imRef = this.importReference;
 					publish = importReference.close(this);
-					this.importReference = null;
 					closed = true;
+					this.importReference = null;
 				}
 			}
 			removeImportRegistration(this);
