@@ -10,6 +10,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.remoteservice.asyncproxy;
 
+import java.lang.reflect.Method;
 import java.util.concurrent.Future;
 
 import org.eclipse.equinox.concurrent.future.IFuture;
@@ -24,6 +25,12 @@ public abstract class AbstractAsyncProxyRemoteService {
 	
 	protected abstract void callCompletableAsync(AbstractAsyncProxyRemoteCall call, IAsyncProxyCompletable completable);
 
+	protected boolean isReturnAsync(Object proxy, Method method, Object[] args) {
+		@SuppressWarnings("rawtypes")
+		Class returnType = method.getReturnType();
+		return (Future.class.isAssignableFrom(returnType) || IFuture.class.isAssignableFrom(returnType));
+	}
+	
 	protected Object callFuture(AbstractAsyncProxyRemoteCall call, @SuppressWarnings("rawtypes") Class returnType) {
 		// Iff it's an IFuture then return
 		// IFuture result of callAsync

@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %bundle.name
 Bundle-SymbolicName: org.eclipse.ecf.remoteservice.asyncproxy
 Automatic-Module-Name: org.eclipse.ecf.remoteservice.asyncproxy
-Bundle-Version: 1.1.0.qualifier
+Bundle-Version: 1.1.100.qualifier
 Bundle-Vendor: %bundle.provider
 Import-Package: org.eclipse.equinox.concurrent.future
 Bundle-Localization: bundle
