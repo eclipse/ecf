@@ -293,7 +293,13 @@ public class OSGIObjectOutputStream extends ObjectOutputStream implements OSGIOb
 			for (Object item : itr)
 				writeObjectOverride(item);
 			return;
-		} else if (obj instanceof Externalizable) {
+		} else if (obj instanceof Enum) {
+			out.writeByte(C_ENUM);
+			out.writeUTF(obj.getClass().getName());
+			out.writeUTF(((Enum) obj).name());
+			return;
+		}
+		if (obj instanceof Externalizable) {
 			out.writeByte(C_EXTER);
 			writeExternalizable((Externalizable) obj, clazz);
 		} else if (obj instanceof Serializable) {
@@ -308,10 +314,6 @@ public class OSGIObjectOutputStream extends ObjectOutputStream implements OSGIOb
 		} else if (obj instanceof DTO) {
 			out.writeByte(C_DTO);
 			writeDTO(obj, clazz);
-			return;
-		} else if (obj instanceof Enum) {
-			out.writeByte(C_ENUM);
-			out.writeObject(obj);
 			return;
 		} else {
 			if (allowNonSerializable) {

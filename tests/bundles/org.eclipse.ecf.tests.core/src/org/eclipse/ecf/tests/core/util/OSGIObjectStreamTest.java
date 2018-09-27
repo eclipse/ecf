@@ -59,6 +59,7 @@ public class OSGIObjectStreamTest extends TestCase {
 	String s;
 	MySerializable ser;
 	Bundle b;
+	TestEnumImpl testEnum;
 	
 	@Override
 	protected void setUp() throws Exception {
@@ -82,6 +83,8 @@ public class OSGIObjectStreamTest extends TestCase {
 		ser = new MySerializable("first string", 100, new byte[] { 1, 2, 3 });
 		
 		b = Activator.getContext().getBundle();
+		
+		testEnum = new TestEnumImpl();
 	}
 	
 	public void testOSGIObjectOutputStream() throws Exception {
@@ -149,5 +152,8 @@ public class OSGIObjectStreamTest extends TestCase {
 		assertTrue(Arrays.equals(r.getBytes(),ser.getBytes()));
 	}
 
-
+	public void testEnum() throws Exception {
+		ITestEnum desTestEnum = (ITestEnum) serializeDeserialize(testEnum);
+		assertEquals(desTestEnum.getColumnType().name(),testEnum.getColumnType().name());
+	}
 }

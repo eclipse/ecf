@@ -194,7 +194,7 @@ public class OSGIObjectInputStream extends ObjectInputStream implements OSGIObje
 				return in.readFloat();
 			case C_ENUM :
 				trace("readEnum"); //$NON-NLS-1$
-				return in.readObject();
+				return Enum.valueOf(loadClass(in.readUTF()), in.readUTF());
 			case C_OBJECT :
 				return readNonSerializedObject();
 			default :
@@ -227,7 +227,9 @@ public class OSGIObjectInputStream extends ObjectInputStream implements OSGIObje
 			m.setAccessible(true);
 			return m.invoke(osc, (Object[]) null);
 		} catch (Exception e) {
-			throw new IOException("Exception creating newInstance of class=" + osc.getName()); //$NON-NLS-1$
+			IOException t = new IOException("Exception creating newInstance of class=" + osc.getName()); //$NON-NLS-1$
+			t.setStackTrace(e.getStackTrace());
+			throw t;
 		}
 	}
 
@@ -261,7 +263,9 @@ public class OSGIObjectInputStream extends ObjectInputStream implements OSGIObje
 			}
 			return inst;
 		} catch (final Exception e) {
-			throw new IOException("Error while deserializing class=" + clazz.getName() + ": " + e.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+			IOException t = new IOException("Error while deserializing class=" + clazz.getName() + ": " + e.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+			t.setStackTrace(e.getStackTrace());
+			throw t;
 		}
 	}
 
