@@ -156,4 +156,13 @@ public class OSGIObjectStreamTest extends TestCase {
 		ITestEnum desTestEnum = (ITestEnum) serializeDeserialize(testEnum);
 		assertEquals(desTestEnum.getColumnType().name(),testEnum.getColumnType().name());
 	}
+	
+	public void testException() throws Exception {
+		String messageString = "test";
+		Exception except = new Exception(messageString);
+		Object deserializedExcept = serializeDeserialize(except);
+		// Same class
+		assertEquals(except.getClass(),deserializedExcept.getClass());
+		assertTrue(((Exception) deserializedExcept).getMessage().equals(messageString));
+	}
 }
