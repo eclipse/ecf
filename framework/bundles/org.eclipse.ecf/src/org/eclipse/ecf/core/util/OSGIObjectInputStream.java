@@ -39,6 +39,7 @@ public class OSGIObjectInputStream extends ObjectInputStream implements OSGIObje
 		this.logger = log;
 	}
 
+	@SuppressWarnings("deprecation")
 	protected void trace(String message) {
 		LogService ls = this.logger;
 		if (ls != null) {
@@ -156,7 +157,7 @@ public class OSGIObjectInputStream extends ObjectInputStream implements OSGIObje
 					itr.add(readObjectOverride());
 				return itr;
 			case C_EXTER : // Externalizable
-				return readExternalizable();
+				return in.readObject();
 			case C_STRING : // String
 				trace("readString"); //$NON-NLS-1$
 				return in.readUTF();
@@ -221,26 +222,8 @@ public class OSGIObjectInputStream extends ObjectInputStream implements OSGIObje
 		return result;
 	}
 
-	private Object createInstance(ObjectStreamClass osc) throws IOException {
-		try {
-			Method m = osc.getClass().getDeclaredMethod("newInstance", (Class<?>[]) null); //$NON-NLS-1$
-			m.setAccessible(true);
-			return m.invoke(osc, (Object[]) null);
-		} catch (Exception e) {
-			IOException t = new IOException("Exception creating newInstance of class=" + osc.getName()); //$NON-NLS-1$
-			t.setStackTrace(e.getStackTrace());
-			throw t;
-		}
-	}
-
 	protected Object readExternalizable() throws ClassNotFoundException, IOException {
-		final String clazzName = in.readUTF();
-		trace("readExternalizable " + clazzName); //$NON-NLS-1$
-		Class<?> clazz = loadClass(clazzName);
-		Object inst = createInstance(clazz);
-		Externalizable ex = (Externalizable) inst;
-		ex.readExternal(this);
-		return inst;
+		return in.readObject();
 	}
 
 	protected Object readFields(Class<?> clazz, Object inst) throws IOException {
@@ -288,13 +271,7 @@ public class OSGIObjectInputStream extends ObjectInputStream implements OSGIObje
 	}
 
 	protected Object readSerializedObject() throws IOException, ClassNotFoundException {
-		// read object stream class
-		ObjectStreamClass osc = (ObjectStreamClass) in.readObject();
-		trace("readSerializedObject " + osc.getName()); //$NON-NLS-1$
-		Class<?> clazz = osc.forClass();
-		// create instance
-		final Object instance = createInstance(osc);
-		return readFields(clazz, instance);
+		return in.readObject();
 	}
 
 	/**

@@ -49,9 +49,10 @@ public class OSGIObjectOutputStream extends ObjectOutputStream implements OSGIOb
 
 	protected void writeExternalizable(Externalizable obj, Class<?> clazz) throws IOException {
 		trace("writeExternalizable " + clazz.getName()); //$NON-NLS-1$
-		obj.writeExternal(this);
+		out.writeObject(obj);
 	}
 
+	@SuppressWarnings("deprecation")
 	protected void trace(String message) {
 		LogService ls = this.logger;
 		if (ls != null) {
@@ -78,10 +79,14 @@ public class OSGIObjectOutputStream extends ObjectOutputStream implements OSGIOb
 						continue;
 					else if (!Modifier.isPublic(mod))
 						allFields[i].setAccessible(true);
-					// write field name
-					out.writeUTF(allFields[i].getName());
-					// field value
-					writeObjectOverride(allFields[i].get(obj));
+					Object val = allFields[i].get(obj);
+					// Check to see it's not a circular ref
+					if (val != obj) {
+						// write field name
+						out.writeUTF(allFields[i].getName());
+						// field value
+						writeObjectOverride(val);
+					}
 				}
 			} catch (final Exception e) {
 				throw new NotSerializableException("Exception while serializing " + obj.toString() //$NON-NLS-1$
@@ -102,11 +107,7 @@ public class OSGIObjectOutputStream extends ObjectOutputStream implements OSGIOb
 	}
 
 	protected void writeSerializable(Object obj, Class<?> clazz) throws IOException {
-		// lookup object stream class
-		trace("writeSerializable " + clazz.getName()); //$NON-NLS-1$
-		// write the osc
-		out.writeObject(ObjectStreamClass.lookup(clazz));
-		writeFields(obj, clazz);
+		out.writeObject(obj);
 	}
 
 	@Override
