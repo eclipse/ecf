@@ -430,7 +430,7 @@
             </additionalDependencies>
             <additionalparam>-Xdoclint:none</additionalparam>
             <author>false</author>
-            <doctitle>${project.name} 3.14.3 API</doctitle>
+            <doctitle>${project.name} 3.14.4 API</doctitle>
             <excludePackageNames>*.ui*:*.smack.*:*.incubation.*:*.internal.*:ch.*:*.jmdns.*:*.tests.*:*.sdo.*:*.twitter.*:*.jivesoftware.*:*.collab.*:*.osgi.services.discovery.*:com.mycorp.*:org.eclipse.ecf.core.start:org.eclipse.ecf.core.user:org.eclipse.ecf.docshare.*:org.eclipse.ecf.datashare.*:org.eclipse.ecf.example.*:org.eclipse.ecf.presence.*:org.eclipse.ecf.protocol.bittorrent:org.eclipse.ecf.protocol.msn:org.eclipse.ecf.provider.irc:org.eclipse.ecf.provider.datashare.*:org.eclipse.ecf.provider.discovery.*:org.eclipse.ecf.provider.xmpp:org.eclipse.ecf.remoteservice.rpc:org.eclipse.ecf.remoteservice.soap:org.eclipse.ecf.server:org.eclipse.ecf.storage:org.eclipse.ecf.sync:org.eclipse.ecf.telephony:org.eclipse.ecf.remoteservice.asyncproxy.j8:org.eclipse.ecf.remoteservices.tooling.pde:org.eclipse.ecf.tests.*:org.eclipse.ecf.remoteservices.rest.rss:org.eclipse.ecf.examples.*</excludePackageNames>
             <links>
               <link>https://osgi.org/javadoc/r6/core/</link>
@@ -453,7 +453,7 @@
                 <name>nooverride</name><placement>a</placement><head>Restriction:</head>
               </tag>
             </tags>
-            <windowtitle>${project.name} 3.14.3 API</windowtitle>
+            <windowtitle>${project.name} 3.14.4 API</windowtitle>
           </configuration>
         </plugin>
       </plugins>
