@@ -30,7 +30,7 @@ import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 
 public class URLRetrievePauseResumeTest extends ContainerAbstractTestCase {
 
-	private static final String HTTP_RETRIEVE = "http://ftp.osuosl.org/pub/eclipse/rt/ecf/3.6.1/site.p2/artifacts.jar";
+	private static final String HTTP_RETRIEVE = "http://ftp.osuosl.org/pub/eclipse/rt/ecf/3.14.0/site.p2/artifacts.jar";
 	//private static final String HTTP_RETRIEVE = "http://ftp.osuosl.org/pub/eclipse/rt/ecf/3.5.4/site.p2/plugins/org.eclipse.ecf.doc_1.3.0.v20111230-0120.jar";
 
 	//private static final String HTTP_RETRIEVE = "http://mirror.csclub.uwaterloo.ca/eclipse/eclipse/downloads/drops/R-3.7.1-201109091335/eclipse-platform-3.7.1-win32.zip";
