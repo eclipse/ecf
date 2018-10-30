@@ -25,8 +25,7 @@
 		  mvn:org.eclipse.ecf/org.eclipse.ecf.identity/3.9.1
 		</bundle>
 		<bundle>
-		  <!-- mvn:org.eclipse.ecf/org.eclipse.ecf/3.9.3 -->
-                 http://download.eclipse.org/rt/ecf/3.14.4/site.p2/plugins/org.eclipse.ecf_3.9.3.v20181012-2016.jar
+		  mvn:org.eclipse.ecf/org.eclipse.ecf/3.9.3
 		</bundle>
 		<bundle>
 			mvn:org.eclipse.ecf/org.eclipse.ecf.sharedobject/2.6.0
