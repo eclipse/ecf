@@ -8,4 +8,7 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src_r7stubs/org/osgi/service/log/Logger.java">
+        <filter comment="Logger only for backward compatibility.  No @since needed" id="0"/>
+    </resource>
 </component>
