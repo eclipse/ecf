@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.remoteservice.sdk.feature"
       label="ECF Remote Services SDK"
-      version="3.14.4.qualifier"
+      version="3.14.5.qualifier"
       provider-name="%providerName"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">

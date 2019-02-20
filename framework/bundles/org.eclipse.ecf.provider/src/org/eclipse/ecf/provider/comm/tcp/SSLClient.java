@@ -62,6 +62,7 @@ public final class SSLClient implements ISynchAsynchConnection {
 	boolean disconnectHandled = false;
 	private final Object disconnectLock = new Object();
 	protected final Object outputStreamLock = new Object();
+	private int maxmsgs = DEFAULT_MAX_BUFFER_MSG;
 
 	private String getHostNameForAddressWithoutLookup(InetAddress inetAddress) {
 		// First get InetAddress.toString(), which returns
@@ -285,12 +286,19 @@ public final class SSLClient implements ISynchAsynchConnection {
 		}
 	}
 
+	private int resetCounter = 0;
+
 	void send(Serializable snd) throws IOException {
 		//		debug("send(" + snd + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		// need to synchronize to avoid concurrent access to outputStream
 		synchronized (outputStreamLock) {
 			outputStream.writeObject(snd);
 			outputStream.flush();
+			if (resetCounter > this.maxmsgs) {
+				outputStream.reset();
+				resetCounter = 0;
+			} else
+				resetCounter++;
 		}
 	}
 
