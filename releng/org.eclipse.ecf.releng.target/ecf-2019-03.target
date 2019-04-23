@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="Photon" sequenceNumber="25">
+<locations>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.license.feature.group" version="1.0.1.v20140414-1359"/>
+<repository location="http://download.eclipse.org/cbi/updates/license/1.0.1.v20140414-1359"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.apache.hadoop.zookeeper" version="3.3.3.v201105210832"/>
+<unit id="org.apache.hadoop.zookeeper.source" version="3.3.3.v201105210832"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="com.sun.syndication" version="0.9.0.v200803061811"/>
+<unit id="com.sun.syndication.source" version="0.9.0.v200803061811"/>
+<unit id="org.apache.commons.codec" version="1.10.0.v20180409-1845"/>
+<unit id="org.apache.commons.codec.source" version="1.10.0.v20180409-1845"/>
+<unit id="org.apache.commons.logging" version="1.2.0.v20180409-1502"/>
+<unit id="org.apache.commons.logging.source" version="1.2.0.v20180409-1502"/>
+<unit id="org.apache.log4j" version="1.2.15.v201012070815"/>
+<unit id="org.apache.log4j.source" version="1.2.15.v201012070815"/>
+<unit id="org.jdom" version="1.1.1.v201101151400"/>
+<unit id="org.jdom.source" version="1.1.1.v201101151400"/>
+<unit id="org.json" version="1.0.0.v201011060100"/>
+<unit id="org.xbill.dns" version="2.0.8.v201112050911"/>
+<unit id="org.xbill.dns.source" version="2.0.8.v201112050911"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20190226160451/repository"/>
+	<unit id="org.apache.httpcomponents.httpclient" version="4.5.6.v20190213-1430"/>
+	<unit id="org.apache.httpcomponents.httpclient.source" version="4.5.6.v20190213-1430"/>
+	<unit id="org.apache.httpcomponents.httpclient.win" version="4.5.6.v20190213-1947"/>
+	<unit id="org.apache.httpcomponents.httpclient.win.source" version="4.5.6.v20190213-1947"/>
+	<unit id="org.apache.httpcomponents.httpcore" version="4.4.10.v20190123-2214"/>
+	<unit id="org.apache.httpcomponents.httpcore.source" version="4.4.10.v20190123-2214"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.emf.edit.ui.feature.group" version="2.14.0.v20180213-0527"/>
+<unit id="org.eclipse.emf.edit.ui.source.feature.group" version="2.14.0.v20180213-0527"/>
+<unit id="org.eclipse.pde.feature.group" version="3.13.100.v20180611-0826"/>
+<unit id="org.eclipse.pde.source.feature.group" version="3.13.100.v20180611-0826"/>
+<unit id="org.eclipse.platform.feature.group" version="4.8.0.v20180611-0656"/>
+<unit id="org.eclipse.platform.source.feature.group" version="4.8.0.v20180611-0656"/>
+<repository location="http://download.eclipse.org/releases/photon"/>
+</location>
+</locations>
+</target>
