@@ -53,7 +53,7 @@ public class HttpClientDefaultSSLSocketFactoryModifier implements ISSLSocketFact
 			for (int i = 0; i < protocolNames.length; i++) {
 				try {
 					rtvContext = SSLContext.getInstance(protocolNames[i]);
-					sslContext.init(null, new TrustManager[] {new HttpClientSslTrustManager()}, null);
+					rtvContext.init(null, new TrustManager[] {new HttpClientSslTrustManager()}, null);
 					break;
 				} catch (Exception e) {
 					// just continue
