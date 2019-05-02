@@ -12,8 +12,8 @@ package org.eclipse.ecf.internal.ssl;
 
 import java.io.IOException;
 import java.net.*;
-import java.security.SecureRandom;
-import javax.net.ssl.*;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
 
 public class ECFSSLSocketFactory extends SSLSocketFactory {
 
@@ -21,8 +21,7 @@ public class ECFSSLSocketFactory extends SSLSocketFactory {
 
 	private SSLContext sslContext = null;
 
-	private String defaultProtocolNames = System
-			.getProperty(DEFAULT_SSL_PROTOCOL);
+	private String defaultProtocolNames = System.getProperty(DEFAULT_SSL_PROTOCOL);
 
 	private SSLSocketFactory getSSLSocketFactory() throws IOException {
 		if (null == sslContext) {
@@ -34,39 +33,19 @@ public class ECFSSLSocketFactory extends SSLSocketFactory {
 				throw ioe;
 			}
 		}
-		return (sslContext == null) ? (SSLSocketFactory) SSLSocketFactory
-				.getDefault() : sslContext.getSocketFactory();
+		return (sslContext == null) ? (SSLSocketFactory) SSLSocketFactory.getDefault() : sslContext.getSocketFactory();
 	}
 
 	public SSLContext getSSLContext(String protocols) {
-		SSLContext rtvContext = null;
-
-		if (protocols != null) {
-			String protocolNames[] = protocols.split(","); //$NON-NLS-1$
-			for (int i = 0; i < protocolNames.length; i++) {
-				try {
-					rtvContext = SSLContext.getInstance(protocolNames[i]);
-					rtvContext.init(null,
-							new TrustManager[] { new ECFTrustManager() },
-							new SecureRandom());
-					break;
-				} catch (Exception e) {
-					// just continue to look for SSLContexts with the next
-					// protocolName
-				}
-			}
-		}
-		return rtvContext;
+		return SSLContextHelper.getSSLContext(protocols);
 	}
 
 	public Socket createSocket() throws IOException {
 		return getSSLSocketFactory().createSocket();
 	}
 
-	public Socket createSocket(Socket socket, String host, int port,
-			boolean autoClose) throws IOException {
-		return getSSLSocketFactory()
-				.createSocket(socket, host, port, autoClose);
+	public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException {
+		return getSSLSocketFactory().createSocket(socket, host, port, autoClose);
 	}
 
 	public String[] getDefaultCipherSuites() {
@@ -85,25 +64,21 @@ public class ECFSSLSocketFactory extends SSLSocketFactory {
 		}
 	}
 
-	public Socket createSocket(String host, int port) throws IOException,
-			UnknownHostException {
+	public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
 		return getSSLSocketFactory().createSocket(host, port);
 	}
 
-	public Socket createSocket(InetAddress address, int port)
-			throws IOException {
+	public Socket createSocket(InetAddress address, int port) throws IOException {
 		return getSSLSocketFactory().createSocket(address, port);
 	}
 
-	public Socket createSocket(InetAddress address, int port, InetAddress arg2,
-			int arg3) throws IOException {
+	public Socket createSocket(InetAddress address, int port, InetAddress arg2, int arg3) throws IOException {
 		return getSSLSocketFactory().createSocket(address, port);
 	}
 
-	public Socket createSocket(String host, int port, InetAddress address,
-			int localPort) throws IOException, UnknownHostException {
-		return getSSLSocketFactory().createSocket(host, port, address,
-				localPort);
+	public Socket createSocket(String host, int port, InetAddress address, int localPort)
+			throws IOException, UnknownHostException {
+		return getSSLSocketFactory().createSocket(host, port, address, localPort);
 	}
 
 }

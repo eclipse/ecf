@@ -13,20 +13,18 @@ package org.eclipse.ecf.internal.ssl;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
-import java.security.SecureRandom;
-import javax.net.ssl.*;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLServerSocketFactory;
 
 public class ECFSSLServerSocketFactory extends SSLServerSocketFactory {
 
 	public static final String DEFAULT_SSL_PROTOCOL = "https.protocols"; //$NON-NLS-1$
 
-	private String defaultProtocolNames = System
-			.getProperty(DEFAULT_SSL_PROTOCOL);
+	private String defaultProtocolNames = System.getProperty(DEFAULT_SSL_PROTOCOL);
 
 	private SSLContext sslContext = null;
 
-	private SSLServerSocketFactory getSSLServerSocketFactory()
-			throws IOException {
+	private SSLServerSocketFactory getSSLServerSocketFactory() throws IOException {
 		if (null == sslContext) {
 			try {
 				sslContext = getSSLContext(defaultProtocolNames);
@@ -36,29 +34,12 @@ public class ECFSSLServerSocketFactory extends SSLServerSocketFactory {
 				throw ioe;
 			}
 		}
-		return (sslContext == null) ? (SSLServerSocketFactory) SSLServerSocketFactory
-				.getDefault() : sslContext.getServerSocketFactory();
+		return (sslContext == null) ? (SSLServerSocketFactory) SSLServerSocketFactory.getDefault()
+				: sslContext.getServerSocketFactory();
 	}
 
 	public SSLContext getSSLContext(String protocols) {
-		SSLContext rtvContext = null;
-
-		if (protocols != null) {
-			String protocolNames[] = protocols.split(","); //$NON-NLS-1$
-			for (int i = 0; i < protocolNames.length; i++) {
-				try {
-					rtvContext = SSLContext.getInstance(protocolNames[i]);
-					rtvContext.init(null,
-							new TrustManager[] { new ECFTrustManager() },
-							new SecureRandom());
-					break;
-				} catch (Exception e) {
-					// just continue to look for SSLContexts with the next
-					// protocolName
-				}
-			}
-		}
-		return rtvContext;
+		return SSLContextHelper.getSSLContext(protocols);
 	}
 
 	public String[] getDefaultCipherSuites() {
@@ -81,13 +62,11 @@ public class ECFSSLServerSocketFactory extends SSLServerSocketFactory {
 		return getSSLServerSocketFactory().createServerSocket(arg0);
 	}
 
-	public ServerSocket createServerSocket(int arg0, int arg1)
-			throws IOException {
+	public ServerSocket createServerSocket(int arg0, int arg1) throws IOException {
 		return getSSLServerSocketFactory().createServerSocket(arg0, arg1);
 	}
 
-	public ServerSocket createServerSocket(int arg0, int arg1, InetAddress arg2)
-			throws IOException {
+	public ServerSocket createServerSocket(int arg0, int arg1, InetAddress arg2) throws IOException {
 		return getSSLServerSocketFactory().createServerSocket(arg0, arg1, arg2);
 	}
 

@@ -14,10 +14,12 @@ package org.eclipse.ecf.provider.filetransfer.httpclient4;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
-import org.eclipse.ecf.core.util.StringUtils;
 import org.eclipse.ecf.filetransfer.events.socketfactory.INonconnectedSocketFactory;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclient4.ISSLSocketFactoryModifier;
 
@@ -46,21 +48,32 @@ public class HttpClientDefaultSSLSocketFactoryModifier implements ISSLSocketFact
 	}
 
 	public synchronized SSLContext getSSLContext(String protocols) {
-		SSLContext rtvContext = null;
-
+		SSLContext resultContext = null;
 		if (protocols != null) {
-			String protocolNames[] = StringUtils.split(protocols, ","); //$NON-NLS-1$
-			for (int i = 0; i < protocolNames.length; i++) {
+
+			String[] httpsProtocols = protocols.split(",");
+			// trim to make sure
+			for (int i = 0; i < httpsProtocols.length; i++)
+				httpsProtocols[i] = httpsProtocols[i].trim();
+			// Now put into defaultProtocolsList in order of jreProtocols
+			List<String> splitProtocolsList = Arrays.asList(httpsProtocols);
+			List<String> defaultProtocolsList = new ArrayList();
+			for (int i = 0; i < jreProtocols.length; i++)
+				if (splitProtocolsList.contains(jreProtocols[i]))
+					defaultProtocolsList.add(jreProtocols[i]);
+			// In order of jre protocols, attempt to create and init SSLContext
+			for (String protocol : defaultProtocolsList) {
 				try {
-					rtvContext = SSLContext.getInstance(protocolNames[i]);
-					rtvContext.init(null, new TrustManager[] {new HttpClientSslTrustManager()}, null);
+					resultContext = SSLContext.getInstance(protocol);
+					resultContext.init(null, new TrustManager[] {new HttpClientSslTrustManager()}, null);
 					break;
 				} catch (Exception e) {
-					// just continue
+					// just continue to look for SSLContexts with the next
+					// protocolName
 				}
 			}
 		}
-		return rtvContext;
+		return resultContext;
 	}
 
 	public Socket createSocket() throws IOException {
@@ -74,5 +87,7 @@ public class HttpClientDefaultSSLSocketFactoryModifier implements ISSLSocketFact
 	public INonconnectedSocketFactory getNonconnnectedSocketFactory() {
 		return this;
 	}
+
+	private static final String[] jreProtocols = new String[] {"TLSv1.2", "TLSv1.1", "TLSv1", "SSLv3"};
 
 }
