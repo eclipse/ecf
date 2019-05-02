@@ -1,0 +1,10 @@
+org.eclipse.ecf.provider.filetransfer.httpclient4/debug=false
+org.eclipse.ecf.provider.filetransfer.httpclient4/debug/exceptions/catching=false
+org.eclipse.ecf.provider.filetransfer.httpclient4/debug/exceptions/throwing=false
+org.eclipse.ecf.provider.filetransfer.httpclient4/debug/methods/entering=false
+org.eclipse.ecf.provider.filetransfer.httpclient4/debug/methods/exiting=false
+org.eclipse.ecf.provider.filetransfer.httpclient45/debug=false
+org.eclipse.ecf.provider.filetransfer.httpclient45/debug/exceptions/catching=false
+org.eclipse.ecf.provider.filetransfer.httpclient45/debug/exceptions/throwing=false
+org.eclipse.ecf.provider.filetransfer.httpclient45/debug/methods/entering=false
+org.eclipse.ecf.provider.filetransfer.httpclient45/debug/methods/exiting=false
