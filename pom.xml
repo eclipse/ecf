@@ -180,6 +180,7 @@
     <module>providers/bundles/org.eclipse.ecf.provider.dnssd</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.efs</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient4</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient45</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient4.ssl</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.scp</module>
@@ -238,6 +239,7 @@
     <module>releng/features/org.eclipse.ecf.eventadmin.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.httpclient4.feature</module>
+    <module>releng/features/org.eclipse.ecf.filetransfer.httpclient45.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.httpclient4.ssl.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.ssl.feature</module>
     <module>releng/features/org.eclipse.ecf.osgi.services.feature</module>
