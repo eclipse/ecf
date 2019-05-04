@@ -30,7 +30,6 @@
          version="0.0.0"
          unpack="false"/>
 
-<!--
    <plugin
          id="org.eclipse.ecf.provider.filetransfer.httpclient45.win32"
          os="win32"
@@ -38,8 +37,6 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
--->
 
    <plugin
          id="org.apache.commons.codec"
@@ -78,7 +75,7 @@
          version="0.0.0"
          unpack="false"/>
 
-<!--
+
    <plugin
          id="org.apache.httpcomponents.httpclient.win"
          os="win32"
@@ -86,7 +83,6 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
--->
 
    <plugin
          id="org.apache.httpcomponents.httpcore"

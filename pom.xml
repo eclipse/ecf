@@ -181,6 +181,7 @@
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.efs</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient4</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient45</module>
+    <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient45.win32</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient4.ssl</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.scp</module>
