@@ -26,6 +26,8 @@
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20190226160451/repository"/>
 	<unit id="org.apache.httpcomponents.httpclient" version="4.5.6.v20190213-1430"/>
 	<unit id="org.apache.httpcomponents.httpclient.source" version="4.5.6.v20190213-1430"/>
+	<unit id="org.apache.httpcomponents.httpclient.win" version="4.5.6.v20190213-1947"/>
+	<unit id="org.apache.httpcomponents.httpclient.win.source" version="4.5.6.v20190213-1947"/>
 	<unit id="org.apache.httpcomponents.httpcore" version="4.4.10.v20190123-2214"/>
 	<unit id="org.apache.httpcomponents.httpcore.source" version="4.4.10.v20190123-2214"/>
 	<unit id="com.sun.jna" version="4.5.1.v20180403-1933"/>
