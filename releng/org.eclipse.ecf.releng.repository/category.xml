@@ -15,6 +15,9 @@
    <feature id="org.eclipse.ecf.filetransfer.feature" version="0.0.0">
       <category name="core"/>
    </feature>
+   <feature id="org.eclipse.ecf.filetransfer.httpclient45.feature" version="0.0.0">
+      <category name="core"/>
+   </feature>
    <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature" version="0.0.0">
       <category name="core"/>
    </feature>
@@ -31,6 +34,9 @@
       <category name="core sources"/>
    </feature>
    <feature id="org.eclipse.ecf.filetransfer.feature.source" version="0.0.0">
+      <category name="core sources"/>
+   </feature>
+   <feature id="org.eclipse.ecf.filetransfer.httpclient45.feature.source" version="0.0.0">
       <category name="core sources"/>
    </feature>
    <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature.source" version="0.0.0">
