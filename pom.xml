@@ -24,7 +24,7 @@
   <url>https://www.eclipse.org/ecf/</url>
 
   <prerequisites>
-    <maven>3.1.1</maven>
+    <maven>3.5.4</maven>
   </prerequisites>
 
   <organization>
@@ -81,8 +81,8 @@
   </distributionManagement>
 
   <properties>
-    <tycho-version>1.0.0</tycho-version>
-    <cbi-version>1.1.4</cbi-version>
+    <tycho-version>1.4.0</tycho-version>
+    <cbi-version>1.1.5</cbi-version>
     <target-platform>photon</target-platform>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
     <project.resources.sourceEncoding>ISO-8859-1</project.resources.sourceEncoding>
@@ -402,12 +402,12 @@
 	<plugin>
 	  <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-clean-plugin</artifactId>
-	  <version>3.0.0</version>
+	  <version>3.1.0</version>
         </plugin>
 	<plugin>
 	  <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-	  <version>2.10.4</version>
+	  <version>3.1.0</version>
           <configuration>
             <additionalDependencies>
               <additionalDependency>
@@ -416,9 +416,9 @@
                 <version>6.0.0</version>
               </additionalDependency>
             </additionalDependencies>
-            <additionalparam>-Xdoclint:none</additionalparam>
+            <additionalOptions>-Xdoclint:none</additionalOptions>
             <author>false</author>
-            <doctitle>${project.name} 3.14.4 API</doctitle>
+            <doctitle>${project.name} 3.14.5 API</doctitle>
             <excludePackageNames>*.ui*:*.smack.*:*.incubation.*:*.internal.*:ch.*:*.jmdns.*:*.tests.*:*.sdo.*:*.twitter.*:*.jivesoftware.*:*.collab.*:*.osgi.services.discovery.*:com.mycorp.*:org.eclipse.ecf.core.start:org.eclipse.ecf.core.user:org.eclipse.ecf.docshare.*:org.eclipse.ecf.datashare.*:org.eclipse.ecf.example.*:org.eclipse.ecf.presence.*:org.eclipse.ecf.protocol.bittorrent:org.eclipse.ecf.protocol.msn:org.eclipse.ecf.provider.irc:org.eclipse.ecf.provider.datashare.*:org.eclipse.ecf.provider.discovery.*:org.eclipse.ecf.provider.xmpp:org.eclipse.ecf.remoteservice.rpc:org.eclipse.ecf.remoteservice.soap:org.eclipse.ecf.server:org.eclipse.ecf.storage:org.eclipse.ecf.sync:org.eclipse.ecf.telephony:org.eclipse.ecf.remoteservice.asyncproxy.j8:org.eclipse.ecf.remoteservices.tooling.pde:org.eclipse.ecf.tests.*:org.eclipse.ecf.remoteservices.rest.rss:org.eclipse.ecf.examples.*</excludePackageNames>
             <links>
               <link>https://osgi.org/javadoc/r6/core/</link>
@@ -441,7 +441,7 @@
                 <name>nooverride</name><placement>a</placement><head>Restriction:</head>
               </tag>
             </tags>
-            <windowtitle>${project.name} 3.14.4 API</windowtitle>
+            <windowtitle>${project.name} 3.14.5 API</windowtitle>
           </configuration>
         </plugin>
       </plugins>
