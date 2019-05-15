@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<psf version="2.0">
+<provider id="org.eclipse.egit.core.GitProvider">
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,protocols/bundles/ch.ethz.iks.r_osgi.remote"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,protocols/bundles/ch.ethz.iks.slp"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,examples/bundles/com.mycorp.examples.timeservice"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,examples/bundles/com.mycorp.examples.timeservice.async"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,examples/bundles/com.mycorp.examples.timeservice.consumer"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,examples/bundles/com.mycorp.examples.timeservice.consumer.ds"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,examples/bundles/com.mycorp.examples.timeservice.consumer.ds.async"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,examples/bundles/com.mycorp.examples.timeservice.consumer.ds.generic.auth"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,examples/bundles/com.mycorp.examples.timeservice.consumer.filediscovery"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,examples/bundles/com.mycorp.examples.timeservice.consumer.filediscovery.rest"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,examples/bundles/com.mycorp.examples.timeservice.consumer.filediscovery.rosgi"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,examples/bundles/com.mycorp.examples.timeservice.consumer.filediscovery.rosgi.ws"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,examples/bundles/com.mycorp.examples.timeservice.host"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.base.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.console"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.console.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.core"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.core.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.core.featurepatch"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.core.ssl.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.datashare"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.datashare.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.discovery"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.discovery.dnssd.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.discovery.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.discovery.jmdns.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.discovery.slp.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.discovery.ui"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.discovery.ui.browser"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.discovery.ui.edit"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.discovery.ui.model"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.discovery.ui.properties"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.discovery.ui.properties.tabbed"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.discovery.ui.userinput"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.discovery.zookeeper.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,doc/bundles/org.eclipse.ecf.doc"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.docshare"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.docshare.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.eventadmin.examples.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.eventadmin.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,examples/bundles/org.eclipse.ecf.example.clients"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,examples/bundles/org.eclipse.ecf.example.collab"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.examples"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,examples/bundles/org.eclipse.ecf.examples.eventadmin.app"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.filetransfer"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.filetransfer.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.filetransfer.httpclient4.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.filetransfer.httpclient4.ssl.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.filetransfer.p2.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.filetransfer.ssl.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.filetransfer.ui"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.identity"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,compendium/bundles/org.eclipse.ecf.osgi.services.distribution"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.osgi.services.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,osgi/bundles/org.eclipse.ecf.osgi.services.remoteserviceadmin"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,osgi/bundles/org.eclipse.ecf.osgi.services.remoteserviceadmin.console"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,osgi/bundles/org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.presence"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.presence.bot"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.presence.collab.ui"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.presence.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.presence.ui"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,protocols/bundles/org.eclipse.ecf.protocol.bittorrent"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,protocols/bundles/org.eclipse.ecf.protocol.msn"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.provider"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.bittorrent"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.bittorrent.ui"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.datashare"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.datashare.nio"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.dnssd"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.filetransfer"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.filetransfer.efs"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient4"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient4.ssl"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient45"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient45.win32"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.filetransfer.scp"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.filetransfer.ssl"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.provider.generic.datashare.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.provider.generic.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.provider.generic.remoteservice.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.irc"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.irc.bot"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.irc.ui"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.jmdns"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.jslp"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.local"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.msn"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.msn.ui"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.r_osgi"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.remoteservice"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.rss"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.ui"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.xmpp"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.xmpp.datashare"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.xmpp.remoteservice"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.xmpp.ui"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.zookeeper"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/org.eclipse.ecf.releng"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/org.eclipse.ecf.releng.bm"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/org.eclipse.ecf.releng.maps"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/org.eclipse.ecf.releng.repository"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/org.eclipse.ecf.releng.target"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.remoteservice"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.remoteservice.asyncproxy"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.remoteservice.asyncproxy.j8"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,server-side/bundles/org.eclipse.ecf.remoteservice.eventadmin"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.remoteservice.examples.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.remoteservice.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.remoteservice.rest"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.remoteservice.rest.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.remoteservice.rest.synd.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.remoteservice.rosgi.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.remoteservice.rpc.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.remoteservice.sdk.examples.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.remoteservice.sdk.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.remoteservice.servlet"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.remoteservice.servlet.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.remoteservice.soa.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.remoteservice.soap.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.remoteservice.ui"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.remoteservice.ui.dosgi"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,tooling/plugins/org.eclipse.ecf.remoteservices.tooling.pde"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.sdk"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,server-side/bundles/org.eclipse.ecf.server"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,server-side/features/org.eclipse.ecf.server.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,server-side/bundles/org.eclipse.ecf.server.generic"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,server-side/features/org.eclipse.ecf.server.generic.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.sharedobject"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.sharedobject.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.ssl"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.storage"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.sync"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.telephony.call"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.telephony.call.ui"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.tests.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.tests.filetransfer.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.ui"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.ecf.ui.capabilities"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.xmpp.feature"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,osgi/bundles/org.eclipse.osgi.services.remoteserviceadmin"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.team.ecf.core"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,framework/bundles/org.eclipse.team.ecf.ui"/>
+<project reference="1.0,ssh://slewis@git.eclipse.org:29418/ecf/org.eclipse.ecf.git,master,protocols/bundles/org.jivesoftware.smack"/>
+</provider>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552865285986_20" label="Alt Filetransfer Providers" name="Alt Filetransfer Providers">
+<item elementID="=org.eclipse.ecf.provider.filetransfer.efs" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.filetransfer.scp" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552871937294_56" label="Alt Providers" name="Alt Providers">
+<item elementID="=org.eclipse.ecf.protocol.msn" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.rss" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.msn" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.local" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.bittorrent" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.bittorrent.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.msn.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.protocol.bittorrent" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.remoteservice.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.remoteservice.ui.dosgi" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552861930924_4" label="Core API" name="Core API">
+<item elementID="=org.eclipse.ecf.identity" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.sharedobject" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.ssl" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552865594114_33" label="Datashare API" name="Datashare API">
+<item elementID="=org.eclipse.ecf.datashare" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.datashare.nio" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.datashare" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552864111469_12" label="Discovery API" name="Discovery API">
+<item elementID="=org.eclipse.ecf.discovery" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552865621072_34" label="Discovery UI" name="Discovery UI">
+<item elementID="=org.eclipse.ecf.discovery.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.discovery.ui.properties" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.discovery.ui.edit" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.discovery.ui.model" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.discovery.ui.browser" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.discovery.ui.userinput" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.discovery.ui.properties.tabbed" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552866186516_43" label="DNSD Discovery Provider" name="DNSD Discovery Provider">
+<item elementID="=org.eclipse.ecf.provider.dnssd" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552865639996_35" label="Docshare" name="Docshare">
+<item elementID="=org.eclipse.ecf.docshare" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552872614366_67" label="Documentation" name="Documentation">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.doc" type="4"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552872797050_70" label="Etc" name="Etc">
+<item elementID="=org.eclipse.ecf.sync" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.telephony.call" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.storage" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.telephony.call.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552872288461_63" label="EventAdmin Examples" name="EventAdmin Examples">
+<item elementID="=org.eclipse.ecf.examples.eventadmin.app" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.eventadmin.examples.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.eventadmin.feature" type="4"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552865767497_39" label="Features and Target Platform" name="Features and Target Platform">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.console.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.server.generic.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.releng.bm" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.discovery.dnssd.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.xmpp.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.remoteservice.rosgi.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.docshare.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.remoteservice.rest.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.releng.repository" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.eventadmin.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.core" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.filetransfer.httpclient4.ssl.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.tests.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.core.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.base.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.remoteservice.servlet.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.discovery.jmdns.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.presence.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.eventadmin.examples.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.filetransfer.ssl.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.provider.generic.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.releng.maps" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.remoteservice.rest.synd.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.datashare.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.sharedobject.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.filetransfer.p2.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.sdk" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.provider.generic.remoteservice.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.osgi.services.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.discovery.zookeeper.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.examples" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.remoteservice.soa.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.discovery.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.discovery.slp.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.releng" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.filetransfer.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.remoteservice.soap.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.releng.target" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.core.ssl.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.tests.filetransfer.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.filetransfer.httpclient4.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.remoteservice.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.remoteservice.sdk.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.remoteservice.rpc.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.remoteservice.examples.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.remoteservice.sdk.examples.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.provider.generic.datashare.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.core.featurepatch" type="4"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552864176170_14" label="Filetransfer API" name="Filetransfer API">
+<item elementID="=org.eclipse.ecf.filetransfer" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.filetransfer" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.filetransfer.ssl" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552865663613_36" label="Filetransfer UI" name="Filetransfer UI">
+<item elementID="=org.eclipse.ecf.filetransfer.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552863979130_11" label="Generic Provider" name="Generic Provider">
+<item elementID="=org.eclipse.ecf.provider" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552872388084_64" label="Generic Server" name="Generic Server">
+<item elementID="=org.eclipse.ecf.server" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.server.feature" type="4"/>
+<item elementID="=org.eclipse.ecf.remoteservice.servlet" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.server.generic" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552862653006_6" label="Gogo Console" name="Gogo Console">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.console.feature" type="4"/>
+<item elementID="=org.eclipse.ecf.console" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.osgi.services.remoteserviceadmin.console" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552865187486_19" label="HttpClient Filetransfer Provider" name="HttpClient Filetransfer Provider">
+<item elementID="=org.eclipse.ecf.provider.filetransfer.httpclient4" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.filetransfer.httpclient4.ssl" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.filetransfer.httpclient45" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.filetransfer.httpclient45.win32" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552866220594_44" label="IRC Presence Provider" name="IRC Presence Provider">
+<item elementID="=org.eclipse.ecf.provider.irc" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.irc.bot" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.irc.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.internal.ui.DynamicSourcesWorkingSet" id="1552860120267_0" label="Java Main Sources" name="Java Main Sources">
+<item elementID="=ch.ethz.iks.r_osgi.remote/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=ch.ethz.iks.slp/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=ch.ethz.iks.slp/src_r7stubs" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=com.mycorp.examples.timeservice/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=com.mycorp.examples.timeservice.async/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=com.mycorp.examples.timeservice.consumer/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=com.mycorp.examples.timeservice.consumer.ds/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=com.mycorp.examples.timeservice.consumer.ds.async/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=com.mycorp.examples.timeservice.consumer.ds.generic.auth/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=com.mycorp.examples.timeservice.consumer.filediscovery/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=com.mycorp.examples.timeservice.consumer.filediscovery.rest/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=com.mycorp.examples.timeservice.consumer.filediscovery.rosgi/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=com.mycorp.examples.timeservice.consumer.filediscovery.rosgi.ws/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=com.mycorp.examples.timeservice.host/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.console/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.datashare/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.discovery/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.discovery.ui/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.discovery.ui.browser/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.discovery.ui.edit/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.discovery.ui.model/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.discovery.ui.properties/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.discovery.ui.properties.tabbed/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.discovery.ui.userinput/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.docshare/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.example.clients/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.example.collab/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.examples.eventadmin.app/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.filetransfer/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.filetransfer.ui/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.identity/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.identity/src_r7stubs" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.osgi.services.distribution/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.osgi.services.remoteserviceadmin/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.osgi.services.remoteserviceadmin.console/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.presence/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.presence.bot/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.presence.collab.ui/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.presence.ui/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.protocol.bittorrent/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.protocol.msn/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.bittorrent/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.bittorrent.ui/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.datashare/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.datashare.nio/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.dnssd/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.filetransfer/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.filetransfer.efs/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.filetransfer.httpclient4/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.filetransfer.httpclient4.ssl/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.filetransfer.scp/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.filetransfer.ssl/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.irc/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.irc.bot/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.irc.ui/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.jmdns/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.jmdns/jmdns" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.jslp/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.local/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.msn/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.msn.ui/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.r_osgi/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.remoteservice/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.rss/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.ui/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.xmpp/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.xmpp.remoteservice/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.xmpp.ui/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.zookeeper/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.remoteservice/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.remoteservice.asyncproxy/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.remoteservice.asyncproxy.j8/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.remoteservice.eventadmin/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.remoteservice.eventadmin/src_r7stubs" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.remoteservice.rest/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.remoteservice.servlet/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.remoteservice.ui/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.remoteservice.ui.dosgi/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.remoteservices.tooling.pde/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.server/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.server.generic/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.sharedobject/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.ssl/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.storage/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.sync/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.telephony.call/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.telephony.call.ui/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.ui/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.osgi.services.remoteserviceadmin/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.team.ecf.core/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.team.ecf.ui/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.jivesoftware.smack/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.filetransfer.httpclient45/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.filetransfer.httpclient45.win32/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552866335337_47" label="JSLP Discovery Provider" name="JSLP Discovery Provider">
+<item elementID="=ch.ethz.iks.slp" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.jslp" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552866725312_52" label="OSGi Remote Services" name="OSGi Remote Services">
+<item elementID="=org.eclipse.ecf.osgi.services.remoteserviceadmin" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.osgi.services.remoteserviceadmin" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.osgi.services.distribution" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552865473746_28" label="Presence API" name="Presence API">
+<item elementID="=org.eclipse.ecf.presence.collab.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.presence" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.presence.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.presence.bot" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552872257587_62" label="Presence Examples" name="Presence Examples">
+<item elementID="=org.eclipse.ecf.example.collab" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.examples" type="4"/>
+<item elementID="=org.eclipse.ecf.example.clients" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552864264337_15" label="Remote Service API" name="Remote Service API">
+<item elementID="=org.eclipse.ecf.remoteservice.asyncproxy" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.remoteservice.eventadmin" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.remoteservice.asyncproxy.j8" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.remoteservice" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.remoteservice" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552872190469_60" label="Remote Service Examples" name="Remote Service Examples">
+<item elementID="=com.mycorp.examples.timeservice.consumer.ds.async" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=com.mycorp.examples.timeservice.consumer.filediscovery.rest" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=com.mycorp.examples.timeservice.consumer.ds" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=com.mycorp.examples.timeservice.consumer" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=com.mycorp.examples.timeservice.async" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=com.mycorp.examples.timeservice" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=com.mycorp.examples.timeservice.consumer.filediscovery" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=com.mycorp.examples.timeservice.host" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=com.mycorp.examples.timeservice.consumer.filediscovery.rosgi" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=com.mycorp.examples.timeservice.consumer.ds.generic.auth" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=com.mycorp.examples.timeservice.consumer.filediscovery.rosgi.ws" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552866960238_54" label="Remote Service REST API" name="Remote Service REST API">
+<item elementID="=org.eclipse.ecf.remoteservice.rest" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.datashare.nio" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.datashare" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552866307694_46" label="rOSGi Remote Service Provider" name="rOSGi Remote Service Provider">
+<item elementID="=org.eclipse.ecf.provider.r_osgi" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=ch.ethz.iks.r_osgi.remote" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552867107427_55" label="Server" name="Server">
+<item elementID="=org.eclipse.ecf.server" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.server.feature" type="4"/>
+<item elementID="=org.eclipse.ecf.remoteservice.servlet" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552872660789_68" label="Tooling" name="Tooling">
+<item elementID="=org.eclipse.ecf.remoteservices.tooling.pde" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552873248719_73" label="UI" name="UI">
+<item elementID="=org.eclipse.ecf.ui.capabilities" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.team.ecf.core" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.team.ecf.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552866267006_45" label="XMPP Presence Provider" name="XMPP Presence Provider">
+<item elementID="=org.eclipse.ecf.provider.xmpp.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.xmpp" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.xmpp.datashare" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.provider.xmpp.remoteservice" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.jivesoftware.smack" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552865142860_18" label="Zeroconf Discovery Provider" name="Zeroconf Discovery Provider">
+<item elementID="=org.eclipse.ecf.provider.jmdns" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552865700938_38" label="Zookeeper Discovery Provider" name="Zookeeper Discovery Provider">
+<item elementID="=org.eclipse.ecf.provider.zookeeper" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+</psf>
