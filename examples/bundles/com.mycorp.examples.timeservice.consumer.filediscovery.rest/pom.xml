@@ -11,27 +11,5 @@
   <artifactId>com.mycorp.examples.timeservice.consumer.filediscovery.rest</artifactId>
   <version>1.2.100-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
-
-  <build>
-    <plugins>
-      <plugin>
-        <!-- p2 cannot handle provide/require-capability yet, see ebz#313553 -->
-        <groupId>org.eclipse.tycho</groupId>
-        <artifactId>target-platform-configuration</artifactId>
-        <version>${tycho-version}</version>
-        <configuration>
-          <dependency-resolution>
-            <extraRequirements>
-              <requirement>
-                <type>eclipse-plugin</type>
-                <id>org.eclipse.ecf.osgi.services.remoteserviceadmin</id>
-                <versionRange>0.0.0</versionRange>
-              </requirement>
-            </extraRequirements>
-          </dependency-resolution>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>
 
