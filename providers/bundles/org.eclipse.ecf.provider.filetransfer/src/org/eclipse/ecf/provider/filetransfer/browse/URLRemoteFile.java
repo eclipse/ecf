@@ -121,7 +121,7 @@ public class URLRemoteFile implements IRemoteFile {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer("URLRemoteFile["); //$NON-NLS-1$
+		StringBuilder buf = new StringBuilder("URLRemoteFile["); //$NON-NLS-1$
 		buf.append("id=").append(getID()).append(";"); //$NON-NLS-1$//$NON-NLS-2$
 		buf.append("name=").append(getInfo().getName()).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
 		buf.append("isDir=").append(getInfo().isDirectory()).append(";"); //$NON-NLS-1$ //$NON-NLS-2$

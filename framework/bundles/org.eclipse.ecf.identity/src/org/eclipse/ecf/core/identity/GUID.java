@@ -154,7 +154,7 @@ public class GUID extends StringID {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer("GUID["); //$NON-NLS-1$
+		StringBuilder sb = new StringBuilder("GUID["); //$NON-NLS-1$
 		sb.append(value).append("]"); //$NON-NLS-1$
 		return sb.toString();
 	}

@@ -42,7 +42,7 @@ public class LogHelper {
 	public static String getLogMessage(IStatus status) {
 		if (status == null)
 			return ""; //$NON-NLS-1$
-		StringBuffer buf = new StringBuffer(status.getClass().getName() + '[');
+		StringBuilder buf = new StringBuilder(status.getClass().getName() + '[');
 		buf.append("plugin=").append(status.getPlugin()); //$NON-NLS-1$
 		buf.append(";code=").append(status.getCode()); //$NON-NLS-1$
 		buf.append(";message=").append(status.getMessage()); //$NON-NLS-1$

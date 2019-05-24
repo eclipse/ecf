@@ -106,7 +106,7 @@ public class LocalRemoteFile implements IRemoteFile {
 	}
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer("LocalRemoteFile["); //$NON-NLS-1$
+		StringBuilder buf = new StringBuilder("LocalRemoteFile["); //$NON-NLS-1$
 		buf.append("id=").append(getID()).append(";"); //$NON-NLS-1$//$NON-NLS-2$
 		buf.append("name=").append(getInfo().getName()).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
 		buf.append("isDir=").append(getInfo().isDirectory()).append(";"); //$NON-NLS-1$ //$NON-NLS-2$

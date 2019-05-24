@@ -73,7 +73,7 @@ public class LocalRemoteFileAttributes implements IRemoteFileAttributes {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer("LocalRemoteFileAttributes["); //$NON-NLS-1$
+		StringBuilder buf = new StringBuilder("LocalRemoteFileAttributes["); //$NON-NLS-1$
 		for (Iterator i = getAttributeKeys(); i.hasNext();) {
 			String key = (String) i.next();
 			buf.append(key).append("=").append(getAttribute(key)); //$NON-NLS-1$

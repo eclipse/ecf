@@ -223,7 +223,7 @@ public class Trace {
 	}
 
 	private static String getStringFromByteArray(byte[] bytes) {
-		StringBuffer buf = new StringBuffer("["); //$NON-NLS-1$
+		StringBuilder buf = new StringBuilder("["); //$NON-NLS-1$
 		for (int i = 0; i < bytes.length; i++) {
 			buf.append(bytes[i]);
 			if (i == (bytes.length - 1))
@@ -245,7 +245,7 @@ public class Trace {
 	public static String getArgumentsString(Object[] arguments) {
 		if (arguments == null)
 			return "[]"; //$NON-NLS-1$
-		StringBuffer buffer = new StringBuffer("["); //$NON-NLS-1$
+		StringBuilder buffer = new StringBuilder("["); //$NON-NLS-1$
 
 		for (int i = 0; i < arguments.length; i++) {
 			buffer.append(getArgumentString(arguments[i]));
@@ -265,7 +265,7 @@ public class Trace {
 	 * 
 	 */
 	protected static void trace(String message) {
-		StringBuffer buf = new StringBuffer(PARENTHESIS_OPEN);
+		StringBuilder buf = new StringBuilder(PARENTHESIS_OPEN);
 		buf.append(TRACE_STR).append(PARENTHESIS_CLOSE).append(getTimeString())
 				.append(message).append(SEPARATOR_SPACE);
 		System.out.println(buf.toString());
@@ -360,7 +360,7 @@ public class Trace {
 			String valueDescription, Object oldValue, Object newValue) {
 
 		if (shouldTrace(pluginId, option)) {
-			StringBuffer buf = new StringBuffer(PREFIX_CHANGING);
+			StringBuilder buf = new StringBuilder(PREFIX_CHANGING);
 			buf.append(valueDescription).append(SEPARATOR_SPACE)
 					.append(LABEL_OLD_VALUE)
 					.append(getArgumentString(oldValue));
@@ -391,7 +391,7 @@ public class Trace {
 			@SuppressWarnings("rawtypes") Class clazz, String methodName,
 			String valueDescription, Object oldValue, Object newValue) {
 		if (shouldTrace(pluginId, option)) {
-			StringBuffer buf = new StringBuffer(PREFIX_CHANGING);
+			StringBuilder buf = new StringBuilder(PREFIX_CHANGING);
 			buf.append(valueDescription).append(SEPARATOR_SPACE)
 					.append(LABEL_OLD_VALUE)
 					.append(getArgumentString(oldValue));
@@ -425,7 +425,7 @@ public class Trace {
 			Throwable throwable) {
 
 		if (shouldTrace(pluginId, option)) {
-			StringBuffer buf = new StringBuffer(PREFIX_CATCHING);
+			StringBuilder buf = new StringBuilder(PREFIX_CATCHING);
 			if (throwable != null) {
 				String message = throwable.getMessage();
 				if (message != null)
@@ -463,7 +463,7 @@ public class Trace {
 			Throwable throwable) {
 
 		if (shouldTrace(pluginId, option)) {
-			StringBuffer buf = new StringBuffer(PREFIX_THROWING);
+			StringBuilder buf = new StringBuilder(PREFIX_THROWING);
 			if (throwable != null) {
 				String message = throwable.getMessage();
 				if (message != null)
