@@ -221,7 +221,7 @@ public final class StringUtils {
 	 * @return true if the target is contained within the string.
 	 */
 	public static boolean contains(String string, String target) {
-		return (string.indexOf(target) != -1);
+		return (string.contains(target));
 	}
 
 	/**
