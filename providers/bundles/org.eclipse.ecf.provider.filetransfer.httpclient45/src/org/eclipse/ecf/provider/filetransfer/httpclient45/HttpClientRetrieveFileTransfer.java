@@ -481,16 +481,16 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				if (o instanceof Integer) {
 					result = ((Integer) o).intValue();
 				} else if (o instanceof String) {
-					result = new Integer(((String) o)).intValue();
+					result = Integer.parseInt((String) o);
 				}
 				return result;
 			}
-			o = localOptions.get("org.eclipse.ecf.provider.filetransfer.httpclient4.retrieve.readTimeout"); //$NON-NLS-1$
+			o = localOptions.get(HttpClientOptions.RETRIEVE_READ_TIMEOUT_PROP);
 			if (o != null) {
 				if (o instanceof Integer) {
 					result = ((Integer) o).intValue();
 				} else if (o instanceof String) {
-					result = new Integer(((String) o)).intValue();
+					result = Integer.parseInt((String) o);
 				}
 			}
 		}
@@ -511,16 +511,16 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				if (o instanceof Integer) {
 					result = ((Integer) o).intValue();
 				} else if (o instanceof String) {
-					result = new Integer(((String) o)).intValue();
+					result = Integer.parseInt((String) o);
 				}
 				return result;
 			}
-			o = localOptions.get("org.eclipse.ecf.provider.filetransfer.httpclient4.retrieve.connectTimeout"); //$NON-NLS-1$
+			o = localOptions.get(HttpClientOptions.RETRIEVE_CONNECTION_TIMEOUT_PROP);
 			if (o != null) {
 				if (o instanceof Integer) {
 					result = ((Integer) o).intValue();
 				} else if (o instanceof String) {
-					result = new Integer(((String) o)).intValue();
+					result = Integer.parseInt((String) o);
 				}
 			}
 		}
@@ -542,7 +542,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		try {
 			getMethod = new HttpGet(urlString);
 			RequestConfig.Builder rcfgBuilder = getRequestConfigBuilder();
-			rcfgBuilder.setSocketTimeout(getSocketReadTimeout()).setConnectTimeout(getConnectTimeout());
+			rcfgBuilder.setSocketTimeout(getSocketReadTimeout()).setConnectTimeout(getConnectTimeout()).setConnectionRequestTimeout(getConnectTimeout());
 
 			setupAuthentication(urlString);
 
@@ -616,7 +616,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			} else {
 				Trace.trace(Activator.PLUGIN_ID, EntityUtils.toString(httpResponse.getEntity()));
 				// EntityUtils.consume(httpResponse.getEntity());
-				throw new IncomingFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, new Integer(code)), code);
+				throw new IncomingFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, Integer.valueOf(code)), code);
 			}
 		} catch (final Exception e) {
 			Trace.throwing(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_THROWING, this.getClass(), "openStreams", e); //$NON-NLS-1$
@@ -860,7 +860,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				throw new IncomingFileTransferException(Messages.HttpClientRetrieveFileTransfer_Proxy_Auth_Required, code, responseHeaders);
 			} else {
 				EntityUtils.consume(httpResponse.getEntity());
-				throw new IncomingFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, new Integer(code)), code, responseHeaders);
+				throw new IncomingFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, Integer.valueOf(code)), code, responseHeaders);
 			}
 			Trace.exiting(Activator.PLUGIN_ID, DebugOptions.METHODS_EXITING, this.getClass(), "openStreamsForResume", Boolean.TRUE); //$NON-NLS-1$
 			return true;
