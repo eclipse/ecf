@@ -99,7 +99,7 @@ public class Activator implements BundleActivator {
 
 	public static final String USE_SHARED_CLIENT = PLUGIN_ID + ".sharedClient"; //$NON-NLS-1$
 
-	private static final String USE_SHARED_CLIENT_DEFAULT = "false"; //$NON-NLS-1$
+	private static final String USE_SHARED_CLIENT_DEFAULT = "true"; //$NON-NLS-1$
 
 	// The shared instance
 	private static Activator plugin;

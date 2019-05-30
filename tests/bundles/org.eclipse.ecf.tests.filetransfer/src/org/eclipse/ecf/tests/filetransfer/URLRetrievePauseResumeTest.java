@@ -188,7 +188,6 @@ public class URLRetrievePauseResumeTest extends ContainerAbstractTestCase {
 
 		assertTrue("Nothing received after resume", downloaded.get() > downloadedUntilPause);
 		assertEquals("File corrupted", HTTP_RETRIEVE_MD5, downloadChecksum());
-		Thread.sleep(500);//WIP
 	}
 
 	private String downloadChecksum() throws IOException, NoSuchAlgorithmException {
