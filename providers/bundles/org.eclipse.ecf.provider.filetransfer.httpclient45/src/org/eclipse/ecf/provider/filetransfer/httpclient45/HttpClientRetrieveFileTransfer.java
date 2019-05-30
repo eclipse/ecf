@@ -192,7 +192,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			getMethod = null;
 		}
 
-		if (httpResponse != null && !isDone() && isPaused()) {
+		if (httpResponse != null && isDone() && !isPaused()) {
 			try {
 				httpResponse.close();
 			} catch (final IOException e) {
