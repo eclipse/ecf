@@ -198,7 +198,6 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			} catch (final IOException e) {
 				Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "hardClose", e)); //$NON-NLS-1$
 			}
-			httpResponse = null;
 		}
 
 		// Close output stream...if we're supposed to
@@ -365,7 +364,9 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			return responseCode;
 		}
 		httpVersion = version.getMinor();
-		responseCode = httpResponse.getStatusLine().getStatusCode();
+		if (httpResponse != null) {
+			responseCode = httpResponse.getStatusLine().getStatusCode();
+		}
 		return responseCode;
 	}
 
