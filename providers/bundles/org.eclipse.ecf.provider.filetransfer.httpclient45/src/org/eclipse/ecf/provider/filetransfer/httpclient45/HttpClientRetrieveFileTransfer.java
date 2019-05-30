@@ -183,16 +183,11 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	protected void hardClose() {
 		// changed for addressing bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=389292
 		if (getMethod != null) {
-			// First, if !isDone and paused
-			if (!isDone() && isPaused())
-				getMethod.abort();
-			// release in any case
-			// getMethod.releaseConnection();
-			// and set to null
+			getMethod.abort();
 			getMethod = null;
 		}
 
-		if (httpResponse != null && isDone() && !isPaused()) {
+		if (httpResponse != null) {
 			try {
 				httpResponse.close();
 			} catch (final IOException e) {

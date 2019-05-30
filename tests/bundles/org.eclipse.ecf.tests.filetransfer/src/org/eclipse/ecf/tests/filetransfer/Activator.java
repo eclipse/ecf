@@ -16,7 +16,10 @@ import org.eclipse.ecf.provider.filetransfer.IFileTransferProtocolToFactoryMappe
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -61,6 +64,22 @@ public class Activator implements BundleActivator {
 			proxyServiceTracker.open();
 		} catch (NoClassDefFoundError e) {
 			System.out.println("Proxy API not available...continuing with testing without it");
+		}
+
+		startFiletransferProviderBundle();
+	}
+
+	private void startFiletransferProviderBundle() throws BundleException {
+		Bundle[] bundles = Activator.getDefault().getBundle().getBundleContext().getBundles();
+		Bundle filetransferProviderBundle = null;
+		for (Bundle bundle : bundles) {
+			if ("org.eclipse.ecf.provider.filetransfer".equals(bundle.getSymbolicName())) {
+				filetransferProviderBundle = bundle;
+				break;
+			}
+		}
+		if (filetransferProviderBundle.getState() != Bundle.ACTIVE) {
+			filetransferProviderBundle.start();
 		}
 	}
 
