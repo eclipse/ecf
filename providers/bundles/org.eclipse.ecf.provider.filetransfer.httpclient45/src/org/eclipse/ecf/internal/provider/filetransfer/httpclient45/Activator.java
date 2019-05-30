@@ -73,9 +73,8 @@ public class Activator implements BundleActivator {
 				return false;
 			}
 			String[] scopes = ((String) scopeProperty).split("\\s*,\\s*"); //$NON-NLS-1$
-			boolean hasScope = false;
 			for (String scope : scopes) {
-				if (neededScope.equals(scope) || (scope.endsWith("*") && neededScope.startsWith(scope.substring(0, scope.length() - 1)))) {
+				if (neededScope.equals(scope) || (scope.endsWith("*") && neededScope.startsWith(scope.substring(0, scope.length() - 1)))) { //$NON-NLS-1$
 					return true;
 				}
 			}
@@ -98,6 +97,10 @@ public class Activator implements BundleActivator {
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.filetransfer.httpclient45"; //$NON-NLS-1$
 
+	public static final String USE_SHARED_CLIENT = PLUGIN_ID + ".sharedClient"; //$NON-NLS-1$
+
+	private static final String USE_SHARED_CLIENT_DEFAULT = "false"; //$NON-NLS-1$
+
 	// The shared instance
 	private static Activator plugin;
 	private BundleContext context = null;
@@ -114,6 +117,8 @@ public class Activator implements BundleActivator {
 
 	private ServiceTracker<HttpClient, CloseableHttpClient> retrieveClientTracker;
 
+	private boolean useSharedClient;
+
 	/**
 	 * The constructor
 	 */
@@ -129,6 +134,7 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext ctxt) throws Exception {
 		plugin = this;
 		this.context = ctxt;
+		useSharedClient = Boolean.parseBoolean(System.getProperty(USE_SHARED_CLIENT, USE_SHARED_CLIENT_DEFAULT));
 		applyDebugOptions(ctxt);
 	}
 
@@ -196,6 +202,10 @@ public class Activator implements BundleActivator {
 		return logServiceTracker.getService();
 	}
 
+	public boolean isUseSharedClient() {
+		return useSharedClient;
+	}
+
 	public void log(IStatus status) {
 		LogService logService = getLogService();
 		if (logService != null) {
@@ -240,25 +250,35 @@ public class Activator implements BundleActivator {
 	}
 
 	public synchronized CloseableHttpClient getBrowseHttpClient() {
-		if (browseClientTracker == null) {
-			browseClientTracker = new ServiceTracker<HttpClient, CloseableHttpClient>(context, HttpClient.class, new ScopedHttpClientCustomizer(context, IRemoteFileSystemBrowser.class.getName()));
-			browseClientTracker.open();
-		}
-		CloseableHttpClient service = browseClientTracker.getService();
-		if (service == null) {
-			service = registerHttpClient();
+		CloseableHttpClient service;
+		if (isUseSharedClient()) {
+			if (browseClientTracker == null) {
+				browseClientTracker = new ServiceTracker<HttpClient, CloseableHttpClient>(context, HttpClient.class, new ScopedHttpClientCustomizer(context, IRemoteFileSystemBrowser.class.getName()));
+				browseClientTracker.open();
+			}
+			service = browseClientTracker.getService();
+			if (service == null) {
+				service = registerHttpClient();
+			}
+		} else {
+			service = getHttpClientFactory().newClient().build();
 		}
 		return service;
 	}
 
 	public synchronized CloseableHttpClient getRetrieveHttpClient() {
-		if (retrieveClientTracker == null) {
-			retrieveClientTracker = new ServiceTracker<HttpClient, CloseableHttpClient>(context, HttpClient.class, new ScopedHttpClientCustomizer(context, IRetrieveFileTransfer.class.getName()));
-			retrieveClientTracker.open();
-		}
-		CloseableHttpClient service = retrieveClientTracker.getService();
-		if (service == null) {
-			service = registerHttpClient();
+		CloseableHttpClient service;
+		if (isUseSharedClient()) {
+			if (retrieveClientTracker == null) {
+				retrieveClientTracker = new ServiceTracker<HttpClient, CloseableHttpClient>(context, HttpClient.class, new ScopedHttpClientCustomizer(context, IRetrieveFileTransfer.class.getName()));
+				retrieveClientTracker.open();
+			}
+			service = retrieveClientTracker.getService();
+			if (service == null) {
+				service = registerHttpClient();
+			}
+		} else {
+			service = getHttpClientFactory().newClient().build();
 		}
 		return service;
 	}
