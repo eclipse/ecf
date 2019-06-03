@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="Photon" sequenceNumber="25">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="2019-03" sequenceNumber="25">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.license.feature.group" version="1.0.1.v20140414-1359"/>
@@ -23,6 +23,8 @@
 <unit id="org.json" version="1.0.0.v201011060100"/>
 <unit id="org.xbill.dns" version="2.0.8.v201112050911"/>
 <unit id="org.xbill.dns.source" version="2.0.8.v201112050911"/>
+<unit id="org.objectweb.asm" version="6.2.1.v20181030-2244"/>
+<unit id="org.objectweb.asm.source" version="6.2.1.v20181030-2244"/>
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20190226160451/repository"/>
 	<unit id="org.apache.httpcomponents.httpclient" version="4.5.6.v20190213-1430"/>
 	<unit id="org.apache.httpcomponents.httpclient.source" version="4.5.6.v20190213-1430"/>
@@ -36,13 +38,13 @@
 	<unit id="com.sun.jna.source" version="4.5.1.v20180403-1933"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.emf.edit.ui.feature.group" version="2.14.0.v20180213-0527"/>
-<unit id="org.eclipse.emf.edit.ui.source.feature.group" version="2.14.0.v20180213-0527"/>
-<unit id="org.eclipse.pde.feature.group" version="3.13.100.v20180611-0826"/>
-<unit id="org.eclipse.pde.source.feature.group" version="3.13.100.v20180611-0826"/>
-<unit id="org.eclipse.platform.feature.group" version="4.8.0.v20180611-0656"/>
-<unit id="org.eclipse.platform.source.feature.group" version="4.8.0.v20180611-0656"/>
-<repository location="http://download.eclipse.org/releases/photon"/>
+<unit id="org.eclipse.emf.edit.ui.feature.group" version="2.16.0.v20181104-0733"/>
+<unit id="org.eclipse.emf.edit.ui.source.feature.group" version="2.16.0.v20181104-0733"/>
+<unit id="org.eclipse.pde.feature.group" version="3.13.400.v20190307-0943"/>
+<unit id="org.eclipse.pde.source.feature.group" version="3.13.400.v20190307-0943"/>
+<unit id="org.eclipse.platform.feature.group" version="4.11.0.v20190307-0500"/>
+<unit id="org.eclipse.platform.source.feature.group" version="4.11.0.v20190307-0500"/>
+<repository location="http://download.eclipse.org/releases/2019-03"/>
 </location>
 </locations>
 </target>
