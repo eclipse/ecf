@@ -10,11 +10,13 @@
   </parent>
   <groupId>org.eclipse.ecf</groupId>
   <artifactId>org.eclipse.ecf.releng.repository</artifactId>
+  <version>3.14.5-SNAPSHOT</version>
   <packaging>eclipse-repository</packaging>
 
   <name>ECF p2 Repository</name>
 
   <build>
+    <finalName>org.eclipse.ecf.sdk_${qualifiedVersion}</finalName>
     <plugins>
       <plugin>
         <!-- Avoid duplicate execution of clean when generating javadocs, see ebz#399756 -->
