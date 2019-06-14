@@ -73,8 +73,9 @@ public class FileTransferNamespace extends Namespace {
 	public String[] getSupportedSchemes() {
 		Set result = new HashSet();
 		String[] platformSchemes = Activator.getDefault().getPlatformSupportedSchemes();
-		for (int i = 0; i < platformSchemes.length; i++)
-			result.add(platformSchemes[i]);
+		for (String platformScheme : platformSchemes) {
+			result.add(platformScheme);
+		}
 		return (String[]) result.toArray(new String[] {});
 	}
 

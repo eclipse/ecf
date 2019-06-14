@@ -58,9 +58,11 @@ public class HttpClientDefaultSSLSocketFactoryModifier {
 			// Now put into defaultProtocolsList in order of jreProtocols
 			List<String> splitProtocolsList = Arrays.asList(httpsProtocols);
 			List<String> defaultProtocolsList = new ArrayList();
-			for (int i = 0; i < jreProtocols.length; i++)
-				if (splitProtocolsList.contains(jreProtocols[i]))
-					defaultProtocolsList.add(jreProtocols[i]);
+			for (String jreProtocol : jreProtocols) {
+				if (splitProtocolsList.contains(jreProtocol)) {
+					defaultProtocolsList.add(jreProtocol);
+				}
+			}
 			// In order of jre protocols, attempt to create and init SSLContext
 			for (String protocol : defaultProtocolsList) {
 				try {

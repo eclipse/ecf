@@ -41,12 +41,13 @@ public class PlatformHelper {
 				if (c != null) {
 					Bundle[] bundles = c.getBundles();
 					Bundle coreRuntime = null;
-					for (int i = 0; i < bundles.length; i++)
-						if (bundles[i].getSymbolicName().equals("org.eclipse.core.runtime")) { //$NON-NLS-1$
-							coreRuntime = bundles[i];
+					for (Bundle bundle : bundles) {
+						if (bundle.getSymbolicName().equals("org.eclipse.core.runtime")) { //$NON-NLS-1$
+							coreRuntime = bundle;
 							platformClass = coreRuntime.loadClass("org.eclipse.core.runtime.Platform"); //$NON-NLS-1$
 							break;
 						}
+					}
 				}
 			} catch (Exception e) {
 				// Platform not available...just leave platformClass == null and

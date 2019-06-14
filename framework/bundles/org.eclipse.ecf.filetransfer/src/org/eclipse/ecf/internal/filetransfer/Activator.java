@@ -91,13 +91,13 @@ public class Activator implements BundleActivator {
 			}
 			IConfigurationElement[] configurationElements = extensionPoint.getConfigurationElements();
 
-			for (int i = 0; i < configurationElements.length; i++) {
+			for (IConfigurationElement configurationElement : configurationElements) {
 				AbstractURLStreamHandlerService svc = null;
 				String protocol = null;
 				try {
-					svc = (AbstractURLStreamHandlerService) configurationElements[i].createExecutableExtension(SERVICE_CLASS_ATTRIBUTE);
-					protocol = configurationElements[i].getAttribute(PROTOCOL_ATTRIBUTE);
-				} catch (CoreException e) {
+					svc = (AbstractURLStreamHandlerService) configurationElement.createExecutableExtension(SERVICE_CLASS_ATTRIBUTE);
+					protocol = configurationElement.getAttribute(PROTOCOL_ATTRIBUTE);
+				}catch (CoreException e) {
 					log(e.getStatus());
 				}
 				if (svc != null && protocol != null) {

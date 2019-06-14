@@ -132,37 +132,35 @@ public class Activator implements BundleActivator {
 					registryManager = new IRegistryChangeListener() {
 						public void registryChanged(IRegistryChangeEvent event) {
 							final IExtensionDelta delta[] = event.getExtensionDeltas(PLUGIN_ID, NAMESPACE_NAME);
-							for (int i = 0; i < delta.length; i++) {
-								switch (delta[i].getKind()) {
-								case IExtensionDelta.ADDED:
-									addNamespaceExtensions(delta[i].getExtension().getConfigurationElements());
-									break;
-								case IExtensionDelta.REMOVED:
-									IConfigurationElement[] members = delta[i].getExtension()
-											.getConfigurationElements();
-									for (int m = 0; m < members.length; m++) {
-										final IConfigurationElement member = members[m];
-										String name = null;
-										try {
-											name = member.getAttribute(NAME_ATTRIBUTE);
-											if (name == null) {
-												name = member.getAttribute(CLASS_ATTRIBUTE);
+							for (IExtensionDelta d : delta) {
+								switch (d.getKind()) {
+									case IExtensionDelta.ADDED:
+										addNamespaceExtensions(d.getExtension().getConfigurationElements());
+										break;
+									case IExtensionDelta.REMOVED:
+										IConfigurationElement[] members = d.getExtension().getConfigurationElements();
+										for (IConfigurationElement member : members) {
+											String name = null;
+											try {
+												name = member.getAttribute(NAME_ATTRIBUTE);
+												if (name == null) {
+													name = member.getAttribute(CLASS_ATTRIBUTE);
+												}
+												if (name == null)
+													continue;
+												final IIDFactory factory = IDFactory.getDefault();
+												final Namespace n = factory.getNamespaceByName(name);
+												if (n == null || !factory.containsNamespace(n)) {
+													continue;
+												}
+												// remove
+												factory.removeNamespace(n);
+											} catch (final Exception e) {
+												getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+														IStatus.ERROR, "Exception removing namespace", e)); //$NON-NLS-1$
 											}
-											if (name == null)
-												continue;
-											final IIDFactory factory = IDFactory.getDefault();
-											final Namespace n = factory.getNamespaceByName(name);
-											if (n == null || !factory.containsNamespace(n)) {
-												continue;
-											}
-											// remove
-											factory.removeNamespace(n);
-										} catch (final Exception e) {
-											getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-													IStatus.ERROR, "Exception removing namespace", e)); //$NON-NLS-1$
 										}
-									}
-									break;
+										break;
 								}
 							}
 						}
@@ -216,8 +214,7 @@ public class Activator implements BundleActivator {
 	 */
 	void addNamespaceExtensions(IConfigurationElement[] members) {
 		final String bundleName = getDefault().getBundle().getSymbolicName();
-		for (int m = 0; m < members.length; m++) {
-			final IConfigurationElement member = members[m];
+		for (IConfigurationElement member : members) {
 			// Get the label of the extender plugin and the ID of the
 			// extension.
 			final IExtension extension = member.getDeclaringExtension();

@@ -930,14 +930,16 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 		// look for that
 		// one...if not found then use first
 		if (protocol.equalsIgnoreCase("http")) { //$NON-NLS-1$
-			for (int i = 0; i < proxies.length; i++) {
-				if (proxies[i].getType().equals(IProxyData.HTTP_PROXY_TYPE))
-					return proxies[i];
+			for (IProxyData proxie : proxies) {
+				if (proxie.getType().equals(IProxyData.HTTP_PROXY_TYPE)) {
+					return proxie;
+				}
 			}
 		} else if (protocol.equalsIgnoreCase("https")) { //$NON-NLS-1$
-			for (int i = 0; i < proxies.length; i++) {
-				if (proxies[i].getType().equals(IProxyData.HTTPS_PROXY_TYPE))
-					return proxies[i];
+			for (IProxyData proxie : proxies) {
+				if (proxie.getType().equals(IProxyData.HTTPS_PROXY_TYPE)) {
+					return proxie;
+				}
 			}
 		}
 		// If we haven't found it yet, then return the first one.

@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
@@ -330,8 +329,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			Object o = localOptions.get(IRetrieveFileTransferOptions.REQUEST_HEADERS);
 			if (o != null && o instanceof Map) {
 				Map<?, ?> requestHeaders = (Map<?, ?>) o;
-				for (Iterator<?> i = requestHeaders.keySet().iterator(); i.hasNext();) {
-					Object n = i.next();
+				for (Object n : requestHeaders.keySet()) {
 					Object v = requestHeaders.get(n);
 					if (n != null && n instanceof String && v != null && v instanceof String) {
 						getMethod.addHeader((String) n, (String) v);
@@ -636,9 +634,9 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		Map<String, String> result = null;
 		if (headers != null && headers.length > 0) {
 			result = new HashMap<String, String>();
-			for (int i = 0; i < headers.length; i++) {
-				String name = headers[i].getName();
-				String val = headers[i].getValue();
+			for (Header header : headers) {
+				String name = header.getName();
+				String val = header.getValue();
 				if (name != null && val != null)
 					result.put(name, val);
 			}
@@ -738,9 +736,11 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	 * @see org.eclipse.ecf.internal.provider.filetransfer.AbstractRetrieveFileTransfer#supportsProtocol(java.lang.String)
 	 */
 	public static boolean supportsProtocol(String protocolString) {
-		for (int i = 0; i < supportedProtocols.length; i++)
-			if (supportedProtocols[i].equalsIgnoreCase(protocolString))
+		for (String supportedProtocol : supportedProtocols) {
+			if (supportedProtocol.equalsIgnoreCase(protocolString)) {
 				return true;
+			}
+		}
 		return false;
 	}
 

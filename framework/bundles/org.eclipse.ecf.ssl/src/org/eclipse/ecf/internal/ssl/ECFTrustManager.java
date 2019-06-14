@@ -31,12 +31,12 @@ public class ECFTrustManager implements X509TrustManager, BundleActivator {
 
 		final TrustEngine[] engines = getTrustEngines();
 		Certificate foundCert = null;
-		for (int i = 0; i < engines.length; i++) {
+		for (TrustEngine engine : engines) {
 			try {
-				foundCert = engines[i].findTrustAnchor(certs);
+				foundCert = engine.findTrustAnchor(certs);
 				if (null != foundCert)
 					return; // cert chain is trust
-			} catch (final IOException e) {
+			}catch (final IOException e) {
 				final CertificateException ce = new ECFCertificateException(
 						"Error occurs when finding trust anchor in the cert chain", certs, authType); //$NON-NLS-1$
 				ce.initCause(ce);

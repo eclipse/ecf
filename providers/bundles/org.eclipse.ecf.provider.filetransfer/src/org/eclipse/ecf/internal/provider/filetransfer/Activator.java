@@ -125,35 +125,35 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 
 		public void registryChanged(IRegistryChangeEvent event) {
 			final IExtensionDelta retrieveDelta[] = event.getExtensionDeltas(PLUGIN_ID, RETRIEVE_FILETRANSFER_PROTOCOL_FACTORY_EPOINT_NAME);
-			for (int i = 0; i < retrieveDelta.length; i++) {
-				switch (retrieveDelta[i].getKind()) {
-					case IExtensionDelta.ADDED :
-						addRetrieveExtensions(retrieveDelta[i].getExtension().getConfigurationElements());
+			for (IExtensionDelta r : retrieveDelta) {
+				switch (r.getKind()) {
+					case IExtensionDelta.ADDED:
+						addRetrieveExtensions(r.getExtension().getConfigurationElements());
 						break;
-					case IExtensionDelta.REMOVED :
-						removeRetrieveExtensions(retrieveDelta[i].getExtension().getConfigurationElements());
+					case IExtensionDelta.REMOVED:
+						removeRetrieveExtensions(r.getExtension().getConfigurationElements());
 						break;
 				}
 			}
 			final IExtensionDelta sendDelta[] = event.getExtensionDeltas(PLUGIN_ID, SEND_FILETRANSFER_PROTOCOL_FACTORY_EPOINT_NAME);
-			for (int i = 0; i < sendDelta.length; i++) {
-				switch (sendDelta[i].getKind()) {
-					case IExtensionDelta.ADDED :
-						addSendExtensions(sendDelta[i].getExtension().getConfigurationElements());
+			for (IExtensionDelta s : sendDelta) {
+				switch (s.getKind()) {
+					case IExtensionDelta.ADDED:
+						addSendExtensions(s.getExtension().getConfigurationElements());
 						break;
-					case IExtensionDelta.REMOVED :
-						removeSendExtensions(sendDelta[i].getExtension().getConfigurationElements());
+					case IExtensionDelta.REMOVED:
+						removeSendExtensions(s.getExtension().getConfigurationElements());
 						break;
 				}
 			}
 			final IExtensionDelta browseDelta[] = event.getExtensionDeltas(PLUGIN_ID, BROWSE_FILETRANSFER_PROTOCOL_FACTORY_EPOINT_NAME);
-			for (int i = 0; i < browseDelta.length; i++) {
-				switch (browseDelta[i].getKind()) {
-					case IExtensionDelta.ADDED :
-						addBrowseExtensions(browseDelta[i].getExtension().getConfigurationElements());
+			for (IExtensionDelta b : browseDelta) {
+				switch (b.getKind()) {
+					case IExtensionDelta.ADDED:
+						addBrowseExtensions(b.getExtension().getConfigurationElements());
 						break;
-					case IExtensionDelta.REMOVED :
-						removeBrowseExtensions(browseDelta[i].getExtension().getConfigurationElements());
+					case IExtensionDelta.REMOVED:
+						removeBrowseExtensions(b.getExtension().getConfigurationElements());
 						break;
 				}
 			}
@@ -352,19 +352,21 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 		final ServiceReference[] refs = handlers.getServiceReferences();
 		final Set protocols = new HashSet();
 		if (refs != null)
-			for (int i = 0; i < refs.length; i++) {
-				final Object protocol = refs[i].getProperty(URL_HANDLER_PROTOCOL_NAME);
-				if (protocol instanceof String)
-					protocols.add(protocol);
-				else if (protocol instanceof String[]) {
-					final String[] ps = (String[]) protocol;
-					for (int j = 0; j < ps.length; j++)
-						protocols.add(ps[j]);
+			for (ServiceReference ref : refs) {
+			final Object protocol = ref.getProperty(URL_HANDLER_PROTOCOL_NAME);
+			if (protocol instanceof String) {
+				protocols.add(protocol);
+			} else if (protocol instanceof String[]) {
+				final String[] ps = (String[]) protocol;
+				for (String p : ps) {
+					protocols.add(p);
 				}
 			}
+		}
 		handlers.close();
-		for (int i = 0; i < jvmSchemes.length; i++)
-			protocols.add(jvmSchemes[i]);
+		for (String jvmScheme : jvmSchemes) {
+			protocols.add(jvmScheme);
+		}
 		return (String[]) protocols.toArray(new String[] {});
 	}
 
@@ -438,36 +440,36 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 	}
 
 	void addRetrieveExtensions(IConfigurationElement[] configElements) {
-		for (int i = 0; i < configElements.length; i++) {
-			final String protocol = configElements[i].getAttribute(PROTOCOL_ATTR);
+		for (IConfigurationElement configElement : configElements) {
+			final String protocol = configElement.getAttribute(PROTOCOL_ATTR);
 			if (protocol == null || "".equals(protocol)) //$NON-NLS-1$
 				return;
-			String uriStr = configElements[i].getAttribute(URI_ATTR);
+			String uriStr = configElement.getAttribute(URI_ATTR);
 			boolean uri = (uriStr == null) ? false : Boolean.valueOf(uriStr).booleanValue();
 			String CONTRIBUTION_WARNING = "File retrieve contribution"; //$NON-NLS-1$
 			try {
-				String pluginId = configElements[i].getDeclaringExtension().getContributor().getName();
+				String pluginId = configElement.getDeclaringExtension().getContributor().getName();
 				// Only add the factories if the contributor plugin has not been excluded
 				if (!pluginExcluded(pluginId)) {
-					// First create factory clazz 
-					final IRetrieveFileTransferFactory retrieveFactory = (IRetrieveFileTransferFactory) configElements[i].createExecutableExtension(CLASS_ATTR);
+					// First create factory clazz
+					final IRetrieveFileTransferFactory retrieveFactory = (IRetrieveFileTransferFactory) configElement.createExecutableExtension(CLASS_ATTR);
 					// Get priority for new entry, if optional priority attribute specified
-					int priority = getPriority(configElements[i], CONTRIBUTION_WARNING, protocol);
-					String contributorName = configElements[i].getDeclaringExtension().getContributor().getName();
+					int priority = getPriority(configElement, CONTRIBUTION_WARNING, protocol);
+					String contributorName = configElement.getDeclaringExtension().getContributor().getName();
 					// Now add new ProtocolFactory
 					setRetrieveFileTransferFactory(protocol, contributorName, retrieveFactory, priority, uri);
 				} else {
 					Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, "Plugin " + pluginId + " excluded from contributing retrieve factory", null)); //$NON-NLS-1$ //$NON-NLS-2$
 				}
-			} catch (final CoreException e) {
+			}catch (final CoreException e) {
 				Activator.getDefault().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, NLS.bind("Error loading from {0} extension point", RETRIEVE_FILETRANSFER_PROTOCOL_FACTORY_EPOINT), e)); //$NON-NLS-1$
 			}
 		}
 	}
 
 	void removeRetrieveExtensions(IConfigurationElement[] configElements) {
-		for (int i = 0; i < configElements.length; i++) {
-			final String protocol = configElements[i].getAttribute(PROTOCOL_ATTR);
+		for (IConfigurationElement configElement : configElements) {
+			final String protocol = configElement.getAttribute(PROTOCOL_ATTR);
 			if (protocol == null || "".equals(protocol)) //$NON-NLS-1$
 				return;
 			String id = getRetrieveFileTransferFactoryId(protocol);
@@ -477,34 +479,34 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 	}
 
 	void addSendExtensions(IConfigurationElement[] configElements) {
-		for (int i = 0; i < configElements.length; i++) {
-			final String protocol = configElements[i].getAttribute(PROTOCOL_ATTR);
+		for (IConfigurationElement configElement : configElements) {
+			final String protocol = configElement.getAttribute(PROTOCOL_ATTR);
 			if (protocol == null || "".equals(protocol)) //$NON-NLS-1$
 				return;
-			String uriStr = configElements[i].getAttribute(URI_ATTR);
+			String uriStr = configElement.getAttribute(URI_ATTR);
 			boolean uri = (uriStr == null) ? false : Boolean.valueOf(uriStr).booleanValue();
 			String CONTRIBUTION_WARNING = "File send contribution"; //$NON-NLS-1$
 			try {
-				String pluginId = configElements[i].getDeclaringExtension().getContributor().getName();
+				String pluginId = configElement.getDeclaringExtension().getContributor().getName();
 				// Only add the factories if the contributor plugin has not been excluded
 				if (!pluginExcluded(pluginId)) {
-					// First create factory clazz 
-					final ISendFileTransferFactory clazz = (ISendFileTransferFactory) configElements[i].createExecutableExtension(CLASS_ATTR);
+					// First create factory clazz
+					final ISendFileTransferFactory clazz = (ISendFileTransferFactory) configElement.createExecutableExtension(CLASS_ATTR);
 					// Get priority for new entry, if optional priority attribute specified
-					int priority = getPriority(configElements[i], CONTRIBUTION_WARNING, protocol);
+					int priority = getPriority(configElement, CONTRIBUTION_WARNING, protocol);
 					setSendFileTransferFactory(protocol, pluginId, clazz, priority, uri);
 				} else {
 					Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, "Plugin " + pluginId + " excluded from contributing send factory", null)); //$NON-NLS-1$ //$NON-NLS-2$
 				}
-			} catch (final CoreException e) {
+			}catch (final CoreException e) {
 				Activator.getDefault().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, NLS.bind("Error loading from {0} extension point", SEND_FILETRANSFER_PROTOCOL_FACTORY_EPOINT), e)); //$NON-NLS-1$
 			}
 		}
 	}
 
 	void removeSendExtensions(IConfigurationElement[] configElements) {
-		for (int i = 0; i < configElements.length; i++) {
-			final String protocol = configElements[i].getAttribute(PROTOCOL_ATTR);
+		for (IConfigurationElement configElement : configElements) {
+			final String protocol = configElement.getAttribute(PROTOCOL_ATTR);
 			if (protocol == null || "".equals(protocol)) //$NON-NLS-1$
 				return;
 			String id = getSendFileTransferFactoryId(protocol);
@@ -514,34 +516,34 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 	}
 
 	void addBrowseExtensions(IConfigurationElement[] configElements) {
-		for (int i = 0; i < configElements.length; i++) {
-			final String protocol = configElements[i].getAttribute(PROTOCOL_ATTR);
+		for (IConfigurationElement configElement : configElements) {
+			final String protocol = configElement.getAttribute(PROTOCOL_ATTR);
 			if (protocol == null || "".equals(protocol)) //$NON-NLS-1$
 				return;
-			String uriStr = configElements[i].getAttribute(URI_ATTR);
+			String uriStr = configElement.getAttribute(URI_ATTR);
 			boolean uri = (uriStr == null) ? false : Boolean.valueOf(uriStr).booleanValue();
 			String CONTRIBUTION_WARNING = "File browse contribution"; //$NON-NLS-1$
 			try {
-				String pluginId = configElements[i].getDeclaringExtension().getContributor().getName();
+				String pluginId = configElement.getDeclaringExtension().getContributor().getName();
 				// Only add the factories if the contributor plugin has not been excluded
 				if (!pluginExcluded(pluginId)) {
-					// First create factory clazz 
-					final IRemoteFileSystemBrowserFactory clazz = (IRemoteFileSystemBrowserFactory) configElements[i].createExecutableExtension(CLASS_ATTR);
+					// First create factory clazz
+					final IRemoteFileSystemBrowserFactory clazz = (IRemoteFileSystemBrowserFactory) configElement.createExecutableExtension(CLASS_ATTR);
 					// Get priority for new entry, if optional priority attribute specified
-					int priority = getPriority(configElements[i], CONTRIBUTION_WARNING, protocol);
+					int priority = getPriority(configElement, CONTRIBUTION_WARNING, protocol);
 					setBrowseFileTransferFactory(protocol, pluginId, clazz, priority, uri);
 				} else {
 					Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, "Plugin " + pluginId + " excluded from contributing browse factory", null)); //$NON-NLS-1$ //$NON-NLS-2$
 				}
-			} catch (final CoreException e) {
+			}catch (final CoreException e) {
 				Activator.getDefault().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, NLS.bind("Error loading from {0} extension point", BROWSE_FILETRANSFER_PROTOCOL_FACTORY_EPOINT), e)); //$NON-NLS-1$
 			}
 		}
 	}
 
 	void removeBrowseExtensions(IConfigurationElement[] configElements) {
-		for (int i = 0; i < configElements.length; i++) {
-			final String protocol = configElements[i].getAttribute(PROTOCOL_ATTR);
+		for (IConfigurationElement configElement : configElements) {
+			final String protocol = configElement.getAttribute(PROTOCOL_ATTR);
 			if (protocol == null || "".equals(protocol)) //$NON-NLS-1$
 				return;
 			String id = getBrowseFileTransferFactoryId(protocol);
@@ -568,9 +570,10 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 	}
 
 	private boolean isSchemeRegistered(String protocol, String[] schemes) {
-		for (int i = 0; i < schemes.length; i++) {
-			if (protocol.equals(schemes[i]))
+		for (String scheme : schemes) {
+			if (protocol.equals(scheme)) {
 				return true;
+			}
 		}
 		return false;
 	}
