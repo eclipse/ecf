@@ -62,6 +62,8 @@
       <plugin id="org.eclipse.osgi.services.remoteserviceadmin"/>
       <plugin id="org.eclipse.osgi.util"/>
       <plugin id="org.jgroups"/>
+      <plugin id="slf4j.api"/>
+      <plugin id="slf4j.jdk14" fragment="true"/>
    </plugins>
 
    <configurations>
