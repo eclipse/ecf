@@ -168,9 +168,7 @@ public class ContainerTypeDescription {
 			traceAndLogException(IStatus.ERROR, "getSupportedAdapterTypes", e); //$NON-NLS-1$
 		}
 		List resultList = new ArrayList();
-		for (int i = 0; i < result.length; i++) {
-			resultList.add(result[i]);
-		}
+		resultList.addAll(Arrays.asList(result));
 		if (!resultList.contains(IContainer.class.getName()))
 			resultList.add(IContainer.class.getName());
 		return (String[]) resultList.toArray(new String[] {});

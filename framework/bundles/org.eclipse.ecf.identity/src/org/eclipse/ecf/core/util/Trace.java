@@ -32,8 +32,7 @@ public class Trace {
 			if (tracePlugins != null)
 				try {
 					String[] plugins = tracePlugins.split(",");
-					for (String s : plugins)
-						TRACE_BUNDLES.add(s);
+					TRACE_BUNDLES.addAll(Arrays.asList(plugins));
 				} catch (Exception e) {
 					System.err
 							.println("Unexpected exception in Trace class static initializer");

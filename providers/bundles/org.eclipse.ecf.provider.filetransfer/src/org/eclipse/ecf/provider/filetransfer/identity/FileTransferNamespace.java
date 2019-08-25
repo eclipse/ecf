@@ -10,6 +10,7 @@ package org.eclipse.ecf.provider.filetransfer.identity;
 
 import java.net.URI;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import org.eclipse.ecf.core.identity.ID;
@@ -73,9 +74,7 @@ public class FileTransferNamespace extends Namespace {
 	public String[] getSupportedSchemes() {
 		Set result = new HashSet();
 		String[] platformSchemes = Activator.getDefault().getPlatformSupportedSchemes();
-		for (String platformScheme : platformSchemes) {
-			result.add(platformScheme);
-		}
+		result.addAll(Arrays.asList(platformSchemes));
 		return (String[]) result.toArray(new String[] {});
 	}
 

@@ -358,15 +358,11 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 				protocols.add(protocol);
 			} else if (protocol instanceof String[]) {
 				final String[] ps = (String[]) protocol;
-				for (String p : ps) {
-					protocols.add(p);
-				}
+				protocols.addAll(Arrays.asList(ps));
 			}
 		}
 		handlers.close();
-		for (String jvmScheme : jvmSchemes) {
-			protocols.add(jvmScheme);
-		}
+		protocols.addAll(Arrays.asList(jvmSchemes));
 		return (String[]) protocols.toArray(new String[] {});
 	}
 
