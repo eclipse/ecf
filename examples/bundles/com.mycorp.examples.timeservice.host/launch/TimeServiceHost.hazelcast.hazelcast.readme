@@ -1,0 +1,11 @@
+The use of the TimeServiceHost.hazelcast.hazelcast.product relies on the presence of the 
+org.eclipse.ecf.provider.hazelcast distribution provider and the org.eclipse.ecf.discovery.provider.hazelcast
+discovery provider.
+
+This distribution provider and discovery provider are provided via the repository:
+
+https://github.com/ECF/HazelcastProvider
+
+All of the ECF distribution providers are listed here:  
+https://wiki.eclipse.org/Distribution_Providers
+
