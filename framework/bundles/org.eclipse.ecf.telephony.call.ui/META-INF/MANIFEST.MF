@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.telephony.call.ui
 Automatic-Module-Name: org.eclipse.ecf.telephony.call.ui
-Bundle-Version: 1.3.100.qualifier
+Bundle-Version: 1.3.101.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.telephony.call.ui.Activator
 Bundle-Vendor: %plugin.provider
 Eclipse-LazyStart: true

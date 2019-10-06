@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.discovery.slp.feature"
       label="ECF Discovery SLP (RFC 2608) Provider"
-      version="1.0.0.qualifier"
+      version="1.0.1.qualifier"
       provider-name="%providerName">
 
    <description url="http://www.eclipse.org/ecf">

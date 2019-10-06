@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.tests.osgi.services.distribution
 Automatic-Module-Name: org.eclipse.ecf.tests.osgi.services.distribution
-Bundle-Version: 1.1.100.qualifier
+Bundle-Version: 1.1.101.qualifier
 Bundle-Activator: org.eclipse.ecf.tests.internal.osgi.services.distribution.Activator
 Bundle-Vendor: %plugin.provider
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

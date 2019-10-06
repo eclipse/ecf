@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF RS Example GitHub Service API impl
 Bundle-SymbolicName: com.mycorp.examples.githubservice.impl
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.0.1.qualifier
 Bundle-Vendor: Eclipse.org - ECF
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy

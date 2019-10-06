@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.presence.ui;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.presence.ui
-Bundle-Version: 2.4.100.qualifier
+Bundle-Version: 2.4.101.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.presence.ui.Activator
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin

@@ -10,6 +10,6 @@
   </parent>
   <groupId>org.eclipse.ecf</groupId>
   <artifactId>com.mycorp.examples.timeservice.provider.rest.host</artifactId>
-  <version>1.1.100-SNAPSHOT</version>
+  <version>1.1.101-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>

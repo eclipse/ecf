@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %bundleName
 Bundle-SymbolicName: org.eclipse.ecf.examples.eventadmin.app;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.examples.eventadmin.app
-Bundle-Version: 1.0.100.qualifier
+Bundle-Version: 1.0.101.qualifier
 Bundle-Activator: org.eclipse.ecf.examples.internal.eventadmin.app.Activator
 Bundle-Vendor: %bundleProvider
 Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,

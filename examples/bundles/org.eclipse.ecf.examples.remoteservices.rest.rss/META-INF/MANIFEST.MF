@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.examples.remoteservices.rest.rss
 Automatic-Module-Name: org.eclipse.ecf.examples.remoteservices.rest.rss
-Bundle-Version: 1.1.100.qualifier
+Bundle-Version: 1.1.101.qualifier
 Bundle-Activator: org.eclipse.ecf.remoteservices.rest.rss.Activator
 Bundle-Vendor: %plugin.provider
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

@@ -10,6 +10,6 @@
   </parent>
   <groupId>org.eclipse.ecf</groupId>
   <artifactId>org.eclipse.ecf.server.generic</artifactId>
-  <version>8.0.100-SNAPSHOT</version>
+  <version>8.0.101-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>

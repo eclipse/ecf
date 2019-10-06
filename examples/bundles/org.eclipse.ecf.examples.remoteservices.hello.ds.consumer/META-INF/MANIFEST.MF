@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %bundleName
 Bundle-SymbolicName: org.eclipse.ecf.examples.remoteservices.hello.ds.consumer;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.examples.remoteservices.hello.ds.consumer
-Bundle-Version: 2.0.100.qualifier
+Bundle-Version: 2.0.101.qualifier
 Bundle-Vendor: %bundleProvider
 Bundle-RequiredExecutionEnvironment: J2SE-1.5,
  J2SE-1.4,

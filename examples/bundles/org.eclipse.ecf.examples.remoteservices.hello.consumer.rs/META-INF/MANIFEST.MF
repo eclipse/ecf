@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %bundleName
 Bundle-SymbolicName: org.eclipse.ecf.examples.remoteservices.hello.consumer.rs
-Bundle-Version: 1.1.0.qualifier
+Bundle-Version: 1.1.1.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.examples.remoteservices.hello.consumer.rs.Activator
 Bundle-Vendor: %bundleProvider
 Require-Bundle: org.eclipse.equinox.common

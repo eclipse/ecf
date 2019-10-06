@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.docshare2.core
-Bundle-Version: 2.1.0.qualifier
+Bundle-Version: 2.1.1.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.docshare2.DocShareActivator
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin

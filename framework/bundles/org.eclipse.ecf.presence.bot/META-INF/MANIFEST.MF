@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.presence.bot;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.presence.bot
-Bundle-Version: 1.3.200.qualifier
+Bundle-Version: 1.3.201.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.presence.bot.Activator
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin

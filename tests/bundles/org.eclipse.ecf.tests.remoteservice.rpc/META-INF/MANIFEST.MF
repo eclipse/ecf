@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.tests.remoteservice.rpc
 Automatic-Module-Name: org.eclipse.ecf.tests.remoteservice.rpc
-Bundle-Version: 1.1.100.qualifier
+Bundle-Version: 1.1.101.qualifier
 Bundle-Vendor: %plugin.provider
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy

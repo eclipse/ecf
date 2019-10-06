@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.remoteservice.servlet.feature"
       label="ECF Remote Services Servlet API Feature"
-      version="1.0.100.qualifier"
+      version="1.0.101.qualifier"
       provider-name="%providerName"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">

@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.examples.remoteservices.common
 Automatic-Module-Name: org.eclipse.ecf.examples.remoteservices.common
-Bundle-Version: 1.0.200.qualifier
+Bundle-Version: 1.0.201.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.examples.remoteservices.common.Activator
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin

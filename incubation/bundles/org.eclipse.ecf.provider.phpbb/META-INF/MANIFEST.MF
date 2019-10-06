@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.provider.phpbb;singleton:=true
-Bundle-Version: 1.2.0.qualifier
+Bundle-Version: 1.2.1.qualifier
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ecf,

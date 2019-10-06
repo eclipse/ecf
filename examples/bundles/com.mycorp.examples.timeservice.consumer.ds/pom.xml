@@ -10,6 +10,6 @@
   </parent>
   <groupId>org.eclipse.ecf</groupId>
   <artifactId>com.mycorp.examples.timeservice.consumer.ds</artifactId>
-  <version>1.0.200-SNAPSHOT</version>
+  <version>1.0.201-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>

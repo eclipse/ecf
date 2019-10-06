@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: ECF Xmpp Provider Tests
 Bundle-SymbolicName: org.eclipse.ecf.tests.provider.xmpp
 Automatic-Module-Name: org.eclipse.ecf.tests.provider.xmpp
-Bundle-Version: 2.0.100.qualifier
+Bundle-Version: 2.0.101.qualifier
 Bundle-Activator: org.eclipse.ecf.tests.provider.xmpp.Activator
 Bundle-Vendor: Eclipse.org
 Require-Bundle: org.eclipse.core.runtime,

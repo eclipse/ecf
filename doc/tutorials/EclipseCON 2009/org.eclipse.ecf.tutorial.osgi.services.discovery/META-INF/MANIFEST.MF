@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.tutorial.osgi.services.discovery
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.0.1.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.osgi.services.discovery.Activator
 Bundle-Vendor: %pluginProvider
 Bundle-RequiredExecutionEnvironment: J2SE-1.4

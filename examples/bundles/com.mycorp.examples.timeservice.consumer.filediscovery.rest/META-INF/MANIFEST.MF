@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: ECF RS Example REST Timeservice Consumer FileDiscovery
 Bundle-SymbolicName: com.mycorp.examples.timeservice.consumer.filediscovery.rest
 Automatic-Module-Name: com.mycorp.examples.timeservice.consumer.filediscovery.rest
-Bundle-Version: 1.2.100.qualifier
+Bundle-Version: 1.2.101.qualifier
 Bundle-Vendor: Eclipse.org - ECF
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Remote-Service: timeservicerestendpointdescription.xml

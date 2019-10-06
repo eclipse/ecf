@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.provider.ui;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.provider.ui
-Bundle-Version: 1.4.100.qualifier
+Bundle-Version: 1.4.101.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.provider.ui.Activator
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin

@@ -4,7 +4,7 @@ Bundle-Name: %bundleName
 Bundle-Vendor: %bundleProvider
 Bundle-SymbolicName: org.eclipse.ecf.examples.loadbalancing.ds.consumer;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.examples.loadbalancing.consumer
-Bundle-Version: 1.0.100.qualifier
+Bundle-Version: 1.0.101.qualifier
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Require-Bundle: org.eclipse.equinox.common
 Import-Package: org.eclipse.ecf.examples.loadbalancing,
