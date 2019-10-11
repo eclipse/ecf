@@ -20,8 +20,7 @@ import org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener;
 
 public class Activator implements BundleActivator {
 
-	private static final String[] DEPENDENTS = new String[] { "org.eclipse.ecf", //$NON-NLS-1$
-			"org.eclipse.ecf.osgi.services.remoteserviceadmin" }; //$NON-NLS-1$
+	private static final String[] DEPENDENTS = new String[] { "org.eclipse.ecf.osgi.services.remoteserviceadmin" }; //$NON-NLS-1$
 	private BasicTopologyManager topologyManager;
 	private ServiceRegistration topologyManagerRegistration;
 
@@ -38,7 +37,7 @@ public class Activator implements BundleActivator {
 		if (topologyManagerRegistration != null) {
 			topologyManagerRegistration.unregister();
 			topologyManagerRegistration = null;
-			this.topologyManager.deactivate();
+			this.topologyManager.stop();
 			this.topologyManager = null;
 		}
 	}
