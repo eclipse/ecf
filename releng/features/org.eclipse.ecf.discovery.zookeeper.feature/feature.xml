@@ -9,7 +9,7 @@
       This feature provides the Apache Zookeeper Discovery Provider.  This provider can be used by Remote Services Discovery to publish and discover RS EndpointDescriptions.
    </description>
 
-   <copyright url="http://www.eclipse.org/legal/epl-v10.html">
+   <copyright>
       /*******************************************************************************
 *  Copyright (c)2010 REMAIN B.V. (http://www.remainsoftware.com).
 *  All rights reserved. This program and the accompanying materials
