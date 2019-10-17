@@ -99,7 +99,7 @@ public class LongID extends BaseID {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer("LongID["); //$NON-NLS-1$
+		StringBuilder sb = new StringBuilder("LongID["); //$NON-NLS-1$
 		sb.append(value).append("]"); //$NON-NLS-1$
 		return sb.toString();
 

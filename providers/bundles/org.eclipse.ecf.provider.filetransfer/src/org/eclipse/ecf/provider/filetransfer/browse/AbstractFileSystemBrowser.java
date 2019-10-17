@@ -180,7 +180,7 @@ public abstract class AbstractFileSystemBrowser {
 			}
 
 			public String toString() {
-				StringBuffer buf = new StringBuffer("RemoteFileSystemBrowseEvent["); //$NON-NLS-1$
+				StringBuilder buf = new StringBuilder("RemoteFileSystemBrowseEvent["); //$NON-NLS-1$
 				buf.append("fileID=").append(fileID).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
 				List list = (remoteFiles != null) ? Arrays.asList(remoteFiles) : null;
 				buf.append("files=").append(list).append("]"); //$NON-NLS-1$ //$NON-NLS-2$

@@ -52,7 +52,7 @@ public abstract class AbstractSocketEvent implements ISocketEvent {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer(getEventName() + "["); //$NON-NLS-1$
+		StringBuilder sb = new StringBuilder(getEventName() + "["); //$NON-NLS-1$
 		sb.append("source="); //$NON-NLS-1$
 		sb.append(source);
 		sb.append(" socket="); //$NON-NLS-1$

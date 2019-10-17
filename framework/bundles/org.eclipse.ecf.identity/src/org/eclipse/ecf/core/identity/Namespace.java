@@ -316,7 +316,7 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	}
 
 	public String toString() {
-		StringBuffer b = new StringBuffer("Namespace["); //$NON-NLS-1$
+		StringBuilder b = new StringBuilder("Namespace["); //$NON-NLS-1$
 		b.append("name=").append(name).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
 		b.append("scheme=").append(getScheme()).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
 		b.append("description=").append("]"); //$NON-NLS-1$ //$NON-NLS-2$

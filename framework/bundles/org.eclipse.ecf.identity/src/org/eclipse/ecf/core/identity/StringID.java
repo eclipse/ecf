@@ -108,7 +108,7 @@ public class StringID extends BaseID {
 	public String toString() {
 		setEmptyNamespace();
 		int strlen = value.length();
-		StringBuffer sb = new StringBuffer(strlen + 10);
+		StringBuilder sb = new StringBuilder(strlen + 10);
 		sb.insert(0, "StringID[").insert(9, value).insert(strlen + 9, ']'); //$NON-NLS-1$
 		return sb.toString();
 	}
