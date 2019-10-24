@@ -32,11 +32,11 @@ public class DiscoveryComponent implements EndpointEventListener, RemoteServiceA
 	private BundleContext context;
 	private RemoteServiceAdmin rsa;
 
-	void bindRemoteServiceAdmin(RemoteServiceAdmin r) {
-		rsa = r;
+	void bindRemoteServiceAdmin(org.osgi.service.remoteserviceadmin.RemoteServiceAdmin r) {
+		rsa = (RemoteServiceAdmin) r;
 	}
 
-	void unbindRemoteServiceAdmin(RemoteServiceAdmin rsa) {
+	void unbindRemoteServiceAdmin(org.osgi.service.remoteserviceadmin.RemoteServiceAdmin rsa) {
 		this.rsa = null;
 	}
 
