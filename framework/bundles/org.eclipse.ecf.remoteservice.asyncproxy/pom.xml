@@ -12,4 +12,18 @@
   <artifactId>org.eclipse.ecf.remoteservice.asyncproxy</artifactId>
   <version>1.1.101-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.eclipse.tycho.extras</groupId>
+        <artifactId>tycho-p2-extras-plugin</artifactId>
+	<version>${tycho-version}</version>
+	<configuration>
+          <!-- Skip this check for this bundle due to false "version goes backwards" result caused by multiple bundles with same BSN in the baseline repository -->
+          <skip>true</skip>
+	</configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

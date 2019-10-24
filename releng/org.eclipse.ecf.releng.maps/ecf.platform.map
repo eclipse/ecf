@@ -1,5 +1,0 @@
-!****************  ECF PLATFORM CONTRIBUTION  ************************************************* 
-
-feature@org.eclipse.ecf.filetransfer.feature=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/releng/features/org.eclipse.ecf.filetransfer.feature
-feature@org.eclipse.ecf.tests.filetransfer.feature=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/rt,,org.eclipse.ecf/releng/features/org.eclipse.ecf.tests.filetransfer.feature
-

@@ -1,9 +1,0 @@
-!****************  ECF JMS PROVIDER CONTRIBUTION  ************************************************** 
-
-feature@org.eclipse.ecf.provider.jms_feature=@CVSTag@,:pserver:anonymous@ecf1.osuosl.org:/ecf,,features/org.eclipse.ecf.provider.jms-feature
-
-plugin@org.eclipse.ecf.provider.jms=@CVSTag@,:pserver:anonymous@ecf1.osuosl.org:/ecf,,plugins/org.eclipse.ecf.provider.jms
-plugin@org.eclipse.ecf.provider.jms.activemq=@CVSTag@,:pserver:anonymous@ecf1.osuosl.org:/ecf,,plugins/org.eclipse.ecf.provider.jms.activemq
-plugin@org.eclipse.ecf.provider.jms.activemq.ui=@CVSTag@,:pserver:anonymous@ecf1.osuosl.org:/ecf,,plugins/org.eclipse.ecf.provider.jms.activemq.ui
-plugin@org.eclipse.ecf.provider.jms.weblogic=@CVSTag@,:pserver:anonymous@ecf1.osuosl.org:/ecf,,plugins/org.eclipse.ecf.provider.jms.weblogic
-plugin@org.eclipse.ecf.provider.jms.weblogic.ui=@CVSTag@,:pserver:anonymous@ecf1.osuosl.org:/ecf,,plugins/org.eclipse.ecf.provider.jms.weblogic.ui

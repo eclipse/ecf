@@ -1,9 +1,0 @@
-!****************  ECF Skype PROVIDER CONTRIBUTION  ************************************************* 
-
-feature@org.eclipse.ecf.provider.skype_feature=@CVSTag@,:pserver:anonymous@ecf1.osuosl.org:/ecf,,features/org.eclipse.ecf.provider.skype-feature
-
-plugin@org.eclipse.ecf.provider.skype=@CVSTag@,:pserver:anonymous@ecf1.osuosl.org:/ecf,,plugins/org.eclipse.ecf.provider.skype
-plugin@org.eclipse.ecf.provider.skype.ui=@CVSTag@,:pserver:anonymous@ecf1.osuosl.org:/ecf,,plugins/org.eclipse.ecf.provider.skype.ui
-
-plugin@com.skype=@CVSTag@,:pserver:anonymous@cvs.sourceforge.jp:/cvsroot/skype,,eclipse/plugins/com.skype
-fragment@com.skype.win32.win32.x86=@CVSTag@,:pserver:anonymous@cvs.sourceforge.jp:/cvsroot/skype,,eclipse/plugins/com.skype.win32.win32.x86

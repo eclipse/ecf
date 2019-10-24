@@ -1,6 +1,0 @@
-!****************  ECF Yahoo IM PROVIDER CONTRIBUTION  ************************************************* 
-
-feature@org.eclipse.ecf.provider.yahoo_feature=@CVSTag@,:pserver:anonymous@ecf1.osuosl.org:/ecf,,features/org.eclipse.ecf.provider.yahoo-feature
-
-plugin@org.eclipse.ecf.provider.yahoo=@CVSTag@,:pserver:anonymous@ecf1.osuosl.org:/ecf,,plugins/org.eclipse.ecf.provider.yahoo
-plugin@org.eclipse.ecf.provider.yahoo.ui=@CVSTag@,:pserver:anonymous@ecf1.osuosl.org:/ecf,,plugins/org.eclipse.ecf.provider.yahoo.ui
