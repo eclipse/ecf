@@ -84,12 +84,6 @@
    <iu id="org.xbill.dns" version="0.0.0">
       <category name="sdk"/>
    </iu>
-   <iu id="org.apache.commons.codec" version="0.0.0">
-      <category name="core"/>
-   </iu>
-   <iu id="org.apache.commons.logging" version="0.0.0">
-      <category name="core"/>
-   </iu>
    <iu id="org.apache.httpcomponents.httpclient" version="0.0.0">
       <category name="core"/>
    </iu>
