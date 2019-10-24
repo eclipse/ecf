@@ -50,6 +50,21 @@
                   <type>target</type>
                   <classifier>ecf-oxygen</classifier>
                 </artifact>
+                <artifact>
+                  <file>ecf-photon.target</file>
+                  <type>target</type>
+                  <classifier>ecf-photon</classifier>
+                </artifact>
+                <artifact>
+                  <file>ecf-2019-03.target</file>
+                  <type>target</type>
+                  <classifier>ecf-2019-03</classifier>
+                </artifact>
+                <artifact>
+                  <file>ecf-2019-09.target</file>
+                  <type>target</type>
+                  <classifier>ecf-2019-09</classifier>
+                </artifact>
               </artifacts>
             </configuration>
           </execution>
