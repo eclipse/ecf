@@ -1,7 +1,0 @@
-!****************  ECF JGroups PROVIDER CONTRIBUTION  ************************************************* 
-
-feature@org.eclipse.ecf.provider.jgroups_feature=@CVSTag@,:pserver:anonymous@ecf1.osuosl.org:/ecf,,features/org.eclipse.ecf.provider.jgroups-feature
-
-plugin@org.eclipse.ecf.provider.jgroups=@CVSTag@,:pserver:anonymous@ecf1.osuosl.org:/ecf,,plugins/org.eclipse.ecf.provider.jgroups
-plugin@org.eclipse.ecf.provider.jgroups.ui=@CVSTag@,:pserver:anonymous@ecf1.osuosl.org:/ecf,,plugins/org.eclipse.ecf.provider.jgroups.ui
-plugin@org.eclipse.ecf.server.jgroups=@CVSTag@,:pserver:anonymous@ecf1.osuosl.org:/ecf,,plugins/org.eclipse.ecf.server.jgroups
