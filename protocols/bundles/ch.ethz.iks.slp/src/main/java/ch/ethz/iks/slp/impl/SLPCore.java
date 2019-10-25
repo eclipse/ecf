@@ -233,7 +233,7 @@ public abstract class SLPCore {
 				for (int i = 0; i < addresses.length; i++) {
 					// https://bugs.eclipse.org/328074
 					if(addresses[i] instanceof Inet6Address) {
-						platform.logWarning("No support for IPv6 in jSLP yet (see https://bugs.eclipse.org/328074), skipping interface...");
+						System.err.println("No support for IPv6 in jSLP yet (see https://bugs.eclipse.org/328074), skipping interface...");
 						continue;
 					}
 					ips.add(addresses[i].getHostAddress());
