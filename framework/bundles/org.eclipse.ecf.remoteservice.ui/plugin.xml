@@ -25,59 +25,6 @@
             name="Disconnect Command">
       </command>
    </extension>
-   <extension
-         point="org.eclipse.ui.menus">
-      <menuContribution
-            locationURI="popup:org.eclipse.ecf.discovery.ui.DiscoveryView?after=additions">
-         <command
-               commandId="org.eclipse.ecf.remoteservices.ui.commands.connectCommand"
-               id="org.eclipse.ecf.remoteservices.ui.menus.connectCommand"
-               mnemonic="S">
-            <visibleWhen>
-               <with
-                     variable="activeMenuSelection">
-                  <iterate
-                        ifEmpty="false"
-                        operator="and">
-                     <test
-                           property="org.eclipse.ecf.remoteservices.isConnected"
-                           value="false">
-                     </test>
-                     <test
-                           args="remotesvcs"
-                           property="org.eclipse.ecf.discovery.isServiceType"
-                           value="true">
-                     </test>
-                  </iterate>
-               </with>
-            </visibleWhen>
-         </command>
-         <command
-               commandId="org.eclipse.ecf.remoteservices.ui.commands.disconnectCommand"
-               id="org.eclipse.ecf.remoteservices.ui.menus.disconnectCommand"
-               mnemonic="S"
-               style="push">
-            <visibleWhen
-                  checkEnabled="false">
-               <with
-                     variable="activeMenuSelection">
-                  <iterate
-                        ifEmpty="false"
-                        operator="and">
-                     <test
-                           property="org.eclipse.ecf.remoteservices.isConnected"
-                           value="true">
-                     </test>
-                     <test
-                           args="remotesvcs"
-                           property="org.eclipse.ecf.discovery.isServiceType"
-                           value="true">
-                     </test></iterate>
-               </with>
-            </visibleWhen>
-         </command>
-      </menuContribution>
-   </extension>
 
 	 <extension
          point="org.eclipse.core.expressions.propertyTesters">

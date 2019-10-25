@@ -2,52 +2,6 @@
 <?eclipse version="3.0"?>
 <plugin>
    <extension
-         point="org.eclipse.ui.menus">
-      <menuContribution
-            locationURI="popup:org.eclipse.ecf.discovery.ui.DiscoveryView?after=additions">
-         <command
-               commandId="org.eclipse.ecf.discovery.ui.browser.command.open"
-               mnemonic="S"
-               style="push">
-            <visibleWhen
-                  checkEnabled="false">
-               <with
-                     variable="activeMenuSelection">
-                  <iterate
-                        ifEmpty="false">
-                     <test
-                           args="http"
-                           property="org.eclipse.ecf.discovery.isServiceType"
-                           value="true">
-                     </test></iterate>
-               </with>
-            </visibleWhen>
-         </command>
-      </menuContribution>
-      <menuContribution
-            locationURI="popup:org.eclipse.ecf.discovery.ui.DiscoveryView?after=additions">
-         <command
-               commandId="org.eclipse.ecf.discovery.ui.browser.command.open"
-               mnemonic="S"
-               style="push">
-            <visibleWhen
-                  checkEnabled="false">
-               <with
-                     variable="activeMenuSelection">
-                  <iterate
-                        ifEmpty="false">
-                     <test
-                           args="https"
-                           property="org.eclipse.ecf.discovery.isServiceType"
-                           value="true">
-                     </test>
-                  </iterate>
-               </with>
-            </visibleWhen>
-         </command>
-      </menuContribution>
-   </extension>
-   <extension
          point="org.eclipse.ui.commands">
       <command
             defaultHandler="org.eclipse.ecf.discovery.ui.browser.OpenBrowserCommand"

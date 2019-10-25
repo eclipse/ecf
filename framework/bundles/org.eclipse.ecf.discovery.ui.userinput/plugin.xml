@@ -29,26 +29,6 @@
             sequence="M1+L">
       </key>
    </extension>
-   <extension
-         point="org.eclipse.ui.menus">
-      <menuContribution
-            locationURI="menu:org.eclipse.ecf.discovery.ui.DiscoveryView?after=additions">
-            <command
-                  commandId="org.eclipse.ecf.discovery.ui.userinput.commands.manualLookupCommand"
-                  id="org.eclipse.ecf.discovery.ui.userinput.menus.manualLookupCommand"
-                  mnemonic="S">
-            </command>
-      </menuContribution>
-      <menuContribution
-            locationURI="toolbar:org.eclipse.ecf.discovery.ui.DiscoveryView?after=additions">
-            <command
-                  commandId="org.eclipse.ecf.discovery.ui.userinput.commands.manualLookupCommand"
-                  icon="icons/manual.png"
-                  id="org.eclipse.ecf.discovery.ui.userinput.toolbars.manualLookupCommand"
-                  tooltip="%lookup.tooltip">
-            </command>
-      </menuContribution>
-   </extension>
     <extension
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
