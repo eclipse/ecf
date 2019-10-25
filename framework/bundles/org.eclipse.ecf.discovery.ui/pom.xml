@@ -10,6 +10,6 @@
   </parent>
   <groupId>org.eclipse.ecf</groupId>
   <artifactId>org.eclipse.ecf.discovery.ui</artifactId>
-  <version>3.0.201-SNAPSHOT</version>
+  <version>3.0.202-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>
