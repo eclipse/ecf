@@ -12,7 +12,7 @@ package org.eclipse.ecf.internal.provider.jslp;
 
 import ch.ethz.iks.slp.Advertiser;
 import ch.ethz.iks.slp.Locator;
-import java.util.Properties;
+import java.util.Hashtable;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.Namespace;
@@ -45,9 +45,9 @@ public class Activator implements BundleActivator {
 	// @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=108214
 	private volatile BundleContext bundleContext;
 
-	private volatile ServiceTracker locatorSt;
-	private volatile ServiceTracker advertiserSt;
-	private volatile ServiceRegistration serviceRegistration;
+	private volatile ServiceTracker<Locator, Locator> locatorSt;
+	private volatile ServiceTracker<Advertiser, Advertiser> advertiserSt;
+	private volatile ServiceRegistration<?> serviceRegistration;
 
 	/**
 	 * The constructor
@@ -62,7 +62,7 @@ public class Activator implements BundleActivator {
 
 	public LocatorDecorator getLocator() {
 		locatorSt.open();
-		final Locator aLocator = (Locator) locatorSt.getService();
+		final Locator aLocator = locatorSt.getService();
 		if (aLocator == null) {
 			return new NullPatternLocator();
 		}
@@ -71,12 +71,14 @@ public class Activator implements BundleActivator {
 
 	public Advertiser getAdvertiser() {
 		advertiserSt.open();
-		final Advertiser advertiser = (Advertiser) advertiserSt.getService();
+		final Advertiser advertiser = advertiserSt.getService();
 		if (advertiser == null) {
 			return new NullPatternAdvertiser();
 		}
 		return advertiser;
 	}
+
+	private static final boolean ENABLE_JSLP = Boolean.valueOf(System.getProperty("ch.ethz.iks.slp.enable", "false")); //$NON-NLS-1$ //$NON-NLS-2$
 
 	/*
 	 * (non-Javadoc)
@@ -84,30 +86,32 @@ public class Activator implements BundleActivator {
 	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(final BundleContext context) throws Exception {
-		bundleContext = context;
+		if (ENABLE_JSLP) {
+			bundleContext = context;
 
-		SafeRunner.run(new ExtensionRegistryRunnable(context) {
-			protected void runWithoutRegistry() throws Exception {
-				context.registerService(Namespace.class, new JSLPNamespace(), null);
-				context.registerService(ContainerTypeDescription.class, new ContainerTypeDescription("ecf.discovery.jslp", new ContainerInstantiator(), "JSLP Discovery Container", true, false), null); //$NON-NLS-1$//$NON-NLS-2$
-				context.registerService(ContainerTypeDescription.class, new ContainerTypeDescription("ecf.discovery.jslp.locator", new ContainerInstantiator(), "JSLP Discovery Locator Container", true, false), null); //$NON-NLS-1$//$NON-NLS-2$
-				context.registerService(ContainerTypeDescription.class, new ContainerTypeDescription("ecf.discovery.jslp.advertiser", new ContainerInstantiator(), "JSLP Discovery Advertiser Container", true, false), null); //$NON-NLS-1$//$NON-NLS-2$
-			}
-		});
+			SafeRunner.run(new ExtensionRegistryRunnable(context) {
+				protected void runWithoutRegistry() throws Exception {
+					context.registerService(Namespace.class, new JSLPNamespace(), null);
+					context.registerService(ContainerTypeDescription.class, new ContainerTypeDescription("ecf.discovery.jslp", new ContainerInstantiator(), "JSLP Discovery Container", true, false), null); //$NON-NLS-1$//$NON-NLS-2$
+					context.registerService(ContainerTypeDescription.class, new ContainerTypeDescription("ecf.discovery.jslp.locator", new ContainerInstantiator(), "JSLP Discovery Locator Container", true, false), null); //$NON-NLS-1$//$NON-NLS-2$
+					context.registerService(ContainerTypeDescription.class, new ContainerTypeDescription("ecf.discovery.jslp.advertiser", new ContainerInstantiator(), "JSLP Discovery Advertiser Container", true, false), null); //$NON-NLS-1$//$NON-NLS-2$
+				}
+			});
 
-		// initially get the locator and add a life cycle listener
-		locatorSt = new ServiceTracker(context, Locator.class.getName(), null);
+			// initially get the locator and add a life cycle listener
+			locatorSt = new ServiceTracker<Locator, Locator>(context, Locator.class.getName(), null);
 
-		// initially get the advertiser and add a life cycle listener
-		advertiserSt = new ServiceTracker(context, Advertiser.class.getName(), null);
+			// initially get the advertiser and add a life cycle listener
+			advertiserSt = new ServiceTracker<Advertiser, Advertiser>(context, Advertiser.class.getName(), null);
 
-		// register ourself as an OSGi service
-		final Properties props = new Properties();
-		props.put(IDiscoveryService.CONTAINER_NAME, JSLPDiscoveryContainer.NAME);
-		props.put(Constants.SERVICE_RANKING, new Integer(500));
+			// register ourself as an OSGi service
+			final Hashtable<String, Object> props = new Hashtable<String, Object>();
+			props.put(IDiscoveryService.CONTAINER_NAME, JSLPDiscoveryContainer.NAME);
+			props.put(Constants.SERVICE_RANKING, new Integer(500));
 
-		String[] clazzes = new String[] {IDiscoveryService.class.getName(), IDiscoveryLocator.class.getName(), IDiscoveryAdvertiser.class.getName()};
-		serviceRegistration = context.registerService(clazzes, serviceFactory, props);
+			String[] clazzes = new String[] {IDiscoveryService.class.getName(), IDiscoveryLocator.class.getName(), IDiscoveryAdvertiser.class.getName()};
+			serviceRegistration = context.registerService(clazzes, serviceFactory, props);
+		}
 	}
 
 	private final DiscoveryServiceFactory serviceFactory = new DiscoveryServiceFactory();
@@ -155,12 +159,12 @@ public class Activator implements BundleActivator {
 	public void stop(final BundleContext context) throws Exception {
 		//TODO-mkuppe here we should do something like a deregisterAll(), but see ungetService(...);
 		if (serviceRegistration != null && serviceFactory.isActive()) {
-			ServiceReference reference = serviceRegistration.getReference();
+			ServiceReference<?> reference = serviceRegistration.getReference();
 			IDiscoveryLocator aLocator = (IDiscoveryLocator) context.getService(reference);
 
 			serviceRegistration.unregister();
 
-			IContainer container = (IContainer) aLocator.getAdapter(IContainer.class);
+			IContainer container = aLocator.getAdapter(IContainer.class);
 			container.disconnect();
 			container.dispose();
 

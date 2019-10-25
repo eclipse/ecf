@@ -27,33 +27,41 @@ import org.osgi.framework.ServiceRegistration;
  */
 public class Activator implements BundleActivator {
 
+	private static final boolean ENABLE_JSLP = Boolean
+			.valueOf(System.getProperty("ch.ethz.iks.slp.enable", "false"));
+
 	/**
 	 * 
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(final BundleContext context) throws Exception {
 
-		// create the platform abstraction layer but do not initialize!!!
-		SLPCore.platform = new OSGiPlatformAbstraction(context);
+		if (ENABLE_JSLP) {
+			// create the platform abstraction layer but do not initialize!!!
+			SLPCore.platform = new OSGiPlatformAbstraction(context);
 
-		// register the service factories so each consumer gets its own Locator/Activator instance
-		context.registerService("ch.ethz.iks.slp.Advertiser", new ServiceFactory() {
-			public Object getService(Bundle bundle, ServiceRegistration registration) {
-				SLPCore.init();
-				SLPCore.initMulticastSocket();
-				return new AdvertiserImpl();
-			}
-			public void ungetService(Bundle bundle, ServiceRegistration registration, Object service) {
-			}
-		}, null);
-		context.registerService("ch.ethz.iks.slp.Locator", new ServiceFactory() {
-			public Object getService(Bundle bundle, ServiceRegistration registration) {
-				SLPCore.init();
-				return new LocatorImpl();
-			}
-			public void ungetService(Bundle bundle,	ServiceRegistration registration, Object service) {
-			}
-		}, null);
+			// register the service factories so each consumer gets its own
+			// Locator/Activator instance
+			context.registerService("ch.ethz.iks.slp.Advertiser", new ServiceFactory() {
+				public Object getService(Bundle bundle, ServiceRegistration registration) {
+					SLPCore.init();
+					SLPCore.initMulticastSocket();
+					return new AdvertiserImpl();
+				}
+
+				public void ungetService(Bundle bundle, ServiceRegistration registration, Object service) {
+				}
+			}, null);
+			context.registerService("ch.ethz.iks.slp.Locator", new ServiceFactory() {
+				public Object getService(Bundle bundle, ServiceRegistration registration) {
+					SLPCore.init();
+					return new LocatorImpl();
+				}
+
+				public void ungetService(Bundle bundle, ServiceRegistration registration, Object service) {
+				}
+			}, null);
+		}
 	}
 
 	/**
