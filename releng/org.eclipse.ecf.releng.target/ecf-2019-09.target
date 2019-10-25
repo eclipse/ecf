@@ -25,8 +25,8 @@
 <unit id="org.json" version="1.0.0.v201011060100"/>
 <unit id="org.xbill.dns" version="2.0.8.v201112050911"/>
 <unit id="org.xbill.dns.source" version="2.0.8.v201112050911"/>
-<unit id="org.objectweb.asm" version="5.0.1.v201505121915"/>
-<unit id="org.objectweb.asm.source" version="5.0.1.v201505121915"/>
+<unit id="org.objectweb.asm" version="7.1.0.v20190412-2143"/>
+<unit id="org.objectweb.asm.source" version="7.1.0.v20190412-2143"/>
 <unit id="org.apache.httpcomponents.httpclient" version="4.5.6.v20190503-0009"/>
 <unit id="org.apache.httpcomponents.httpclient.source" version="4.5.6.v20190503-0009"/>
 <unit id="org.apache.httpcomponents.httpclient.win" version="4.5.6.v20190213-1947"/>
