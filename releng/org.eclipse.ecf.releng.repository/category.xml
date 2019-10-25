@@ -84,12 +84,6 @@
    <iu id="org.xbill.dns" version="0.0.0">
       <category name="sdk"/>
    </iu>
-   <iu id="org.apache.commons.codec" version="0.0.0">
-      <category name="core"/>
-   </iu>
-   <iu id="org.apache.commons.logging" version="0.0.0">
-      <category name="core"/>
-   </iu>
    <iu id="org.apache.httpcomponents.httpclient" version="0.0.0">
       <category name="core"/>
    </iu>
@@ -130,6 +124,18 @@
       <category name="other"/>
    </feature>
    <feature id="org.eclipse.ecf.docshare.feature.source" version="0.0.0">
+      <category name="other"/>
+   </feature>
+   <feature id="org.eclipse.ecf.provider.generic.datashare.feature" version="0.0.0">
+      <category name="other"/>
+   </feature>
+   <feature id="org.eclipse.ecf.provider.generic.datashare.feature.source" version="0.0.0">
+      <category name="other"/>
+   </feature>
+   <feature id="org.eclipse.ecf.presence.feature" version="0.0.0">
+      <category name="other"/>
+   </feature>
+   <feature id="org.eclipse.ecf.presence.feature.source" version="0.0.0">
       <category name="other"/>
    </feature>
    <feature id="org.eclipse.ecf.remoteservice.rest.feature" version="0.0.0">
