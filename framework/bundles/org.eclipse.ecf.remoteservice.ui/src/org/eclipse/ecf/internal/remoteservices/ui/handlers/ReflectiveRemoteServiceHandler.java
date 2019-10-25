@@ -115,12 +115,12 @@ public class ReflectiveRemoteServiceHandler extends AbstractHandler implements I
 					break;
 				case MethodInvocationDialog.OSGI_SERVICE_PROXY:
 					throw new UnsupportedOperationException();
-					// invokeOSGiProxy(interfaceClass, remoteCall);
-					// break;
+				// invokeOSGiProxy(interfaceClass, remoteCall);
+				// break;
 				case MethodInvocationDialog.REMOTE_SERVICE_PROXY:
 					throw new UnsupportedOperationException();
-					// invokeProxy(interfaceClass, remoteService, remoteCall);
-					// break;
+				// invokeProxy(interfaceClass, remoteService, remoteCall);
+				// break;
 				case MethodInvocationDialog.SYNCHRONOUS:
 					invokeSync(cls, remoteService, remoteCall);
 					break;

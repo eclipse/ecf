@@ -68,8 +68,7 @@ public class ConnectedTester extends PropertyTester {
 	}
 
 	/**
-	 * @param connectID
-	 *            The conected ID for which an IContainer is to be returned
+	 * @param connectID The conected ID for which an IContainer is to be returned
 	 * @return a IContainer instance of null
 	 */
 	// TODO push this functionality down into the ContainerManager

@@ -21,7 +21,9 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.ecf.core.IContainerManager;
+import org.eclipse.ecf.core.util.BundleStarter;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -56,6 +58,8 @@ public class Activator extends AbstractUIPlugin {
 	@Override
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		BundleStarter.startDependents(context, new String[] { "org.eclipse.ecf.osgi.services.distribution" },
+				Bundle.RESOLVED | Bundle.STARTING);
 		this.context = context;
 		ServiceTracker<IExtensionRegistry, IExtensionRegistry> st = new ServiceTracker(this.context,
 				IExtensionRegistry.class, null);

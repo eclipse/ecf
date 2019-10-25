@@ -102,7 +102,7 @@ public class RemoteServiceHandlerUtil {
 
 	private static IRemoteServiceReference[] getRemoteServiceReferencesForRemoteServiceAdapter(
 			IRemoteServiceContainerAdapter adapter, IServiceInfo serviceInfo)
-					throws InvalidSyntaxException, IDCreateException {
+			throws InvalidSyntaxException, IDCreateException {
 		ID serviceID = null;
 		final String serviceNamespace = getServiceNamespace(serviceInfo);
 		final String serviceid = getServiceID(serviceInfo);

@@ -28,6 +28,7 @@ public class EndpointNode extends AbstractEndpointNode {
 		this.endpointDescription = ed;
 		this.importReference = (ImportReference) irn.getImportRegistration().getImportReference();
 	}
+
 	/**
 	 * @since 3.3
 	 */
@@ -51,18 +52,17 @@ public class EndpointNode extends AbstractEndpointNode {
 	public EndpointDescription getEndpointDescription() {
 		return endpointDescription;
 	}
-	
+
 	@Deprecated
 	public ImportRegistrationNode getImportReg() {
 		return null;
 	}
-	
-	
+
 	@Deprecated
 	public ImportRegistration getImportRegistration() {
 		return null;
 	}
-	
+
 	/**
 	 * @since 3.3
 	 */
@@ -84,10 +84,10 @@ public class EndpointNode extends AbstractEndpointNode {
 	public void setImportReference(ImportReference iref) {
 		this.importReference = iref;
 	}
-	
+
 	@Deprecated
 	public void setImportReg(ImportRegistrationNode ir) {
-		
+
 	}
 
 }

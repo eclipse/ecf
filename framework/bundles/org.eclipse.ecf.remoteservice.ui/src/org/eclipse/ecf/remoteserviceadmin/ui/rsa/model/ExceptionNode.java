@@ -16,16 +16,16 @@ public class ExceptionNode extends NameValuePropertyNode {
 	public ExceptionNode(String exceptionLabel, Throwable exception, boolean showStack) {
 		super(exceptionLabel, exception.getLocalizedMessage());
 		if (showStack) {
-			for(StackTraceElement ste: exception.getStackTrace()) 
+			for (StackTraceElement ste : exception.getStackTrace())
 				addChild(new StackTraceElementNode(ste.toString()));
 			Throwable cause = exception.getCause();
 			if (cause != null)
-				addChild(new ExceptionNode(cause,true));
+				addChild(new ExceptionNode(cause, true));
 		}
 	}
 
 	public ExceptionNode(Throwable exception, boolean showStack) {
-		this("",exception, showStack);
+		this("", exception, showStack);
 		setNameValueSeparator("");
 	}
 }

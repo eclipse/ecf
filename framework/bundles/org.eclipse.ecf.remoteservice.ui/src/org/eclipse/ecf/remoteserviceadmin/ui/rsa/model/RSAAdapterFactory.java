@@ -25,7 +25,7 @@ public class RSAAdapterFactory implements IAdapterFactory {
 	private NameValuePropertyNodeWorkbenchAdapter nameValuePropertyAdapter = new NameValuePropertyNodeWorkbenchAdapter();
 	private EndpointDescriptionRSANodeWorkbenchAdapter edAdapter = new EndpointDescriptionRSANodeWorkbenchAdapter();
 	private ExceptionNodeWorkbenchAdapter enAdapter = new ExceptionNodeWorkbenchAdapter();
-	
+
 	@Override
 	public Object getAdapter(Object adaptableObject, @SuppressWarnings("rawtypes") Class adapterType) {
 		if (adapterType.isInstance(adaptableObject)) {

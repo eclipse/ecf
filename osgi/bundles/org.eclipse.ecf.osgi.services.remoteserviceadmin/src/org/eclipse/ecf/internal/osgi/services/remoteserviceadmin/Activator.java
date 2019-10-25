@@ -63,7 +63,8 @@ public class Activator implements BundleActivator {
 	private static Activator instance;
 
 	private static final String[] DEPENDENT_BUNDLES = new String[] { "org.eclipse.ecf.identity", "org.eclipse.ecf", //$NON-NLS-1$ //$NON-NLS-2$
-			"org.eclipse.ecf.discovery", "org.eclipse.ecf.remoteservice", "org.eclipse.ecf.remoteservice.asyncproxy" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			"org.eclipse.ecf.discovery", "org.eclipse.ecf.remoteservice", "org.eclipse.ecf.remoteservice.asyncproxy", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			"org.eclipse.osgi.services.remoteserviceadmin" }; //$NON-NLS-1$
 
 	public static BundleContext getContext() {
 		return context;
@@ -120,14 +121,18 @@ public class Activator implements BundleActivator {
 				}
 			});
 			List<Capability> capabilities = rb.getCapabilities(namespace);
+			int bundleTypes = rb.getTypes();
 			if (capabilities != null && capabilities.size() > 0
-					&& !b.getSymbolicName().equals(hostBundle.getSymbolicName()))
-				try {
-					b.start();
-				} catch (BundleException e) {
-					LogUtility.logError("RemoteServiceAdmin.initializeProviders", DebugOptions.REMOTE_SERVICE_ADMIN, //$NON-NLS-1$
-							Activator.class, startErrorMessage + " bundle=" + b.getSymbolicName(), e); //$NON-NLS-1$
+					&& !b.getSymbolicName().equals(hostBundle.getSymbolicName())) {
+				if ((bundleTypes & BundleRevision.TYPE_FRAGMENT) == 0) {
+					try {
+						b.start();
+					} catch (BundleException e) {
+						LogUtility.logError("RemoteServiceAdmin.initializeProviders", DebugOptions.REMOTE_SERVICE_ADMIN, //$NON-NLS-1$
+								Activator.class, startErrorMessage + " bundle=" + b.getSymbolicName(), e); //$NON-NLS-1$
+					}
 				}
+			}
 		}
 	}
 
@@ -248,7 +253,7 @@ public class Activator implements BundleActivator {
 		// approach/using the ServiceFactory extender approach for this purpose:
 		// https://mail.osgi.org/pipermail/osgi-dev/2011-February/003000.html
 		initializeProxyServiceFactoryBundle();
-		
+
 		// Start distribution providers if not already started
 		initializeProviders(context.getBundle(), DistributionNamespace.DISTRIBUTION_NAMESPACE,
 				"Could not start distribution provider. "); //$NON-NLS-1$
@@ -280,7 +285,8 @@ public class Activator implements BundleActivator {
 						}
 					}
 				}, (Dictionary) rsaProps);
-		// Setup tracker for ContainerTypeDescriptions, which will modify the RSA properties when
+		// Setup tracker for ContainerTypeDescriptions, which will modify the RSA
+		// properties when
 		// added/removed by distribution providers
 		ctdTracker = new ServiceTracker<ContainerTypeDescription, ContainerTypeDescription>(context,
 				ContainerTypeDescription.class,
@@ -329,7 +335,7 @@ public class Activator implements BundleActivator {
 
 		// start endpointDescriptionLocator
 		endpointDescriptionLocator.start();
-		
+
 		// Start discovery providers if not already started
 		initializeProviders(context.getBundle(), DiscoveryNamespace.DISCOVERY_NAMESPACE,
 				"Could not start discovery provider. "); //$NON-NLS-1$
@@ -454,6 +460,7 @@ public class Activator implements BundleActivator {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public void log(IStatus status) {
 		if (logService == null)
 			logService = getLogService();
@@ -465,6 +472,7 @@ public class Activator implements BundleActivator {
 		log(sr, LogHelper.getLogCode(status), LogHelper.getLogMessage(status), status.getException());
 	}
 
+	@SuppressWarnings("deprecation")
 	public void log(ServiceReference sr, int level, String message, Throwable t) {
 		if (logService == null)
 			logService = getLogService();

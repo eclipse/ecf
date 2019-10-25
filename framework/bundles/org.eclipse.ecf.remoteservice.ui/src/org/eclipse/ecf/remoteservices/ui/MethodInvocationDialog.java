@@ -68,31 +68,27 @@ public final class MethodInvocationDialog extends Dialog {
 	public static final int ASYNC_LISTENER = 0;
 
 	/**
-	 * An integer constant that corresponds to the "Async Future Result"
-	 * selection.
+	 * An integer constant that corresponds to the "Async Future Result" selection.
 	 * 
 	 * @see #getInvocationType()
 	 */
 	public static final int ASYNC_FUTURE_RESULT = ASYNC_LISTENER + 1;
 
 	/**
-	 * An integer constant that corresponds to the "Async Fire-and-Go"
-	 * selection.
+	 * An integer constant that corresponds to the "Async Fire-and-Go" selection.
 	 * 
 	 * @see #getInvocationType()
 	 */
 	public static final int ASYNC_FIRE_AND_GO = ASYNC_FUTURE_RESULT + 1;
 
 	/**
-	 * An integer constant that corresponds to the "OSGi Service Proxy"
-	 * selection.
+	 * An integer constant that corresponds to the "OSGi Service Proxy" selection.
 	 * 
 	 * @see #getInvocationType()
 	 */
 	public static final int OSGI_SERVICE_PROXY = ASYNC_FIRE_AND_GO + 1;
 	/**
-	 * An integer constant that corresponds to the "Remote Service Proxy"
-	 * selection.
+	 * An integer constant that corresponds to the "Remote Service Proxy" selection.
 	 * 
 	 * @see #getInvocationType()
 	 */
@@ -124,13 +120,10 @@ public final class MethodInvocationDialog extends Dialog {
 	private int invocationType;
 
 	/**
-	 * Creates a new MethodInvocationDialog on top of the specified shell
-	 * provider.
+	 * Creates a new MethodInvocationDialog on top of the specified shell provider.
 	 * 
-	 * @param parentShell
-	 *            the provider to return the parent shell of this dialog
-	 * @param cls
-	 *            the class to select the methods from
+	 * @param parentShell the provider to return the parent shell of this dialog
+	 * @param cls         the class to select the methods from
 	 */
 	public MethodInvocationDialog(IShellProvider parentShell, Class cls) {
 		super(parentShell);
@@ -174,10 +167,8 @@ public final class MethodInvocationDialog extends Dialog {
 	/**
 	 * Creates a new MethodInvocationDialog over the provided shell.
 	 * 
-	 * @param parentShell
-	 *            the parent shell
-	 * @param cls
-	 *            the class to select the methods from
+	 * @param parentShell the parent shell
+	 * @param cls         the class to select the methods from
 	 */
 	public MethodInvocationDialog(Shell parentShell, Class cls) {
 		this(new SameShellProvider(parentShell), cls);
@@ -408,8 +399,8 @@ public final class MethodInvocationDialog extends Dialog {
 	}
 
 	/**
-	 * Retrieves the timeout value that has been specified by the user. This
-	 * value is in milliseconds.
+	 * Retrieves the timeout value that has been specified by the user. This value
+	 * is in milliseconds.
 	 * 
 	 * @return the timeout valued specified by the user in milliseconds
 	 */

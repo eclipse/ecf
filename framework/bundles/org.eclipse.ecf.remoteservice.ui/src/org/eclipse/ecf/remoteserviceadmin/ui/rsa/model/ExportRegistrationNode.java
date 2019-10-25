@@ -41,7 +41,7 @@ public class ExportRegistrationNode extends AbstractRegistrationNode {
 	protected String getErrorName() {
 		return "Export " + super.getErrorName();
 	}
-	
+
 	protected ExportRegistration getExportRegistration() {
 		return this.exportRegistration;
 	}

@@ -29,7 +29,7 @@ public abstract class AbstractRegistrationNode extends AbstractRSANode {
 	 */
 	public AbstractRegistrationNode(Throwable t, boolean showStack) {
 		this.error = t;
-		if (this.error != null) 
+		if (this.error != null)
 			addChild(new ExceptionNode(this.error, showStack));
 	}
 
@@ -48,21 +48,21 @@ public abstract class AbstractRegistrationNode extends AbstractRSANode {
 	public abstract boolean isClosed();
 
 	protected abstract String getValidName();
-	
+
 	/**
 	 * @since 3.4
 	 */
-	protected String getErrorName(){
+	protected String getErrorName() {
 		return ERROR;
 	}
-	
+
 	/**
 	 * @since 3.4
 	 */
 	protected String getClosedName() {
 		return CLOSED;
 	}
-	
+
 	public abstract ServiceReference getServiceReference();
 
 	public String getName() {

@@ -433,7 +433,7 @@ public class EndpointDiscoveryView extends ViewPart {
 	}
 
 	protected EndpointNode createEndpointDescriptionNode(EndpointDescription ed) {
-		EndpointNode edo = new EndpointNode(ed,findImportReference(ed));
+		EndpointNode edo = new EndpointNode(ed, findImportReference(ed));
 
 		// Interfaces
 		EndpointInterfacesNode ein = new EndpointInterfacesNode();
@@ -480,7 +480,7 @@ public class EndpointDiscoveryView extends ViewPart {
 
 	EndpointNode findEndpointNode(final ImportReference ir) {
 		EndpointGroupNode egn = contentProvider.getRootNode();
-		for(AbstractEndpointNode aen: egn.getChildren()) {
+		for (AbstractEndpointNode aen : egn.getChildren()) {
 			if (aen instanceof EndpointNode) {
 				EndpointNode en = (EndpointNode) aen;
 				ImportReference iRef = en.getImportReference();
@@ -490,13 +490,14 @@ public class EndpointDiscoveryView extends ViewPart {
 		}
 		return null;
 	}
-	
+
 	public void handleRSAEent(RemoteServiceAdminEvent event) {
 		final int type = event.getType();
 		Throwable t = event.getException();
 		if (t == null) {
 			TreeViewer treeViewer = this.viewer;
-			if (treeViewer == null) return;
+			if (treeViewer == null)
+				return;
 			switch (type) {
 			case RemoteServiceAdminEvent.IMPORT_UNREGISTRATION:
 				final ImportReference ir = (ImportReference) event.getImportReference();
@@ -505,7 +506,7 @@ public class EndpointDiscoveryView extends ViewPart {
 						@Override
 						public void run() {
 							EndpointGroupNode egn = contentProvider.getRootNode();
-							for(AbstractEndpointNode aen: egn.getChildren()) {
+							for (AbstractEndpointNode aen : egn.getChildren()) {
 								if (aen instanceof EndpointNode) {
 									EndpointNode en = (EndpointNode) aen;
 									ImportReference iRef = en.getImportReference();
@@ -514,7 +515,8 @@ public class EndpointDiscoveryView extends ViewPart {
 								}
 							}
 							viewer.refresh();
-						}});
+						}
+					});
 				}
 				break;
 			}

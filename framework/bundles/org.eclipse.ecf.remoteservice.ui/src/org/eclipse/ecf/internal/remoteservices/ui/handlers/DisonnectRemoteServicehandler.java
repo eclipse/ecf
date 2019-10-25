@@ -26,8 +26,7 @@ public class DisonnectRemoteServicehandler extends ConnectionHandler {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.ecf.internal.remoteservices.ui.handlers.ConnectionHandler
+	 * @see org.eclipse.ecf.internal.remoteservices.ui.handlers.ConnectionHandler
 	 * #getJob()
 	 */
 	protected Job getJob(final ExecutionEvent event) throws ExecutionException {

@@ -41,7 +41,6 @@ public class ImportRegistrationNode extends AbstractRegistrationNode {
 	protected String getErrorName() {
 		return "Import " + super.getErrorName();
 	}
-	
 
 	protected ImportRegistration getImportRegistration() {
 		return this.importRegistration;

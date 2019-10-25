@@ -14,7 +14,7 @@ package org.eclipse.ecf.remoteserviceadmin.ui.rsa.model;
 public class StackTraceElementNode extends NameValuePropertyNode {
 
 	public StackTraceElementNode(String stackTraceElement) {
-		super("at",stackTraceElement);
+		super("at", stackTraceElement);
 		setNameValueSeparator(" ");
 	}
 }

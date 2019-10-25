@@ -3,9 +3,5 @@
    <implementation class="org.eclipse.ecf.internal.remoteservices.ui.DiscoveryComponent"/>
    <property name="endpoint.listener.scope" type="String" value="(ecf.endpoint.id.ns=*)"/>
    <reference bind="bindRemoteServiceAdmin" cardinality="0..1" interface="org.osgi.service.remoteserviceadmin.RemoteServiceAdmin" name="RemoteServiceAdmin" policy="dynamic" unbind="unbindRemoteServiceAdmin"/>
-   <service>
-      <provide interface="org.osgi.service.remoteserviceadmin.EndpointEventListener"/>
-      <provide interface="org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener"/>
-   </service>
    <reference bind="bindEndpointDescriptionLocator" cardinality="0..1" interface="org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionLocator" name="IEndpointDescriptionLocator" policy="dynamic" unbind="unbindEndpointDescriptionLocator"/>
 </scr:component>

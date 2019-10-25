@@ -9,15 +9,16 @@
 package org.eclipse.ecf.internal.remoteservices.ui;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionLocator;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.ITopologyManager;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin;
 import org.eclipse.ecf.remoteserviceadmin.ui.endpoint.EndpointDiscoveryView;
 import org.eclipse.ecf.remoteserviceadmin.ui.rsa.RemoteServiceAdminView;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.remoteserviceadmin.EndpointEvent;
 import org.osgi.service.remoteserviceadmin.EndpointEventListener;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent;
@@ -25,12 +26,16 @@ import org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener;
 
 public class DiscoveryComponent implements EndpointEventListener, RemoteServiceAdminListener {
 
-	private static final String RSA_SYMBOLICNAME = "org.eclipse.ecf.osgi.services.remoteserviceadmin"; //$NON-NLS-1$
+	private static String ENDPOINT_LISTENER_SCOPE = System
+			.getProperty("org.eclipse.ecf.remoteservices.ui.endpointListenerScope", "(ecf.endpoint.id.ns=*)");
 
 	private static DiscoveryComponent instance;
 
 	private BundleContext context;
 	private RemoteServiceAdmin rsa;
+
+	@SuppressWarnings("unused")
+	private ITopologyManager tm;
 
 	void bindRemoteServiceAdmin(org.osgi.service.remoteserviceadmin.RemoteServiceAdmin r) {
 		rsa = (RemoteServiceAdmin) r;
@@ -38,6 +43,14 @@ public class DiscoveryComponent implements EndpointEventListener, RemoteServiceA
 
 	void unbindRemoteServiceAdmin(org.osgi.service.remoteserviceadmin.RemoteServiceAdmin rsa) {
 		this.rsa = null;
+	}
+
+	void bindTopologyManager(ITopologyManager tm) {
+		this.tm = tm;
+	}
+
+	void unbindTopologyManager(ITopologyManager tm) {
+		this.tm = null;
 	}
 
 	public BundleContext getContext() {
@@ -48,6 +61,10 @@ public class DiscoveryComponent implements EndpointEventListener, RemoteServiceA
 	private RemoteServiceAdminView rsaView;
 
 	private IEndpointDescriptionLocator edLocator;
+
+	private ServiceRegistration<EndpointEventListener> eelRegistration;
+
+	private ServiceRegistration<RemoteServiceAdminListener> rsaadminRegistration;
 
 	void bindEndpointDescriptionLocator(IEndpointDescriptionLocator locator) {
 		this.edLocator = locator;
@@ -80,11 +97,26 @@ public class DiscoveryComponent implements EndpointEventListener, RemoteServiceA
 		synchronized (this) {
 			instance = this;
 			this.context = context;
+			// Register this instance as an endpoint event listener
+			Hashtable<String, Object> props = new Hashtable<String, Object>();
+			props.put(EndpointEventListener.ENDPOINT_LISTENER_SCOPE, ENDPOINT_LISTENER_SCOPE);
+			this.eelRegistration = context.registerService(EndpointEventListener.class, this, props);
+			// register as remote service admin listener
+			this.rsaadminRegistration = context.registerService(RemoteServiceAdminListener.class, this, null);
 		}
+
 	}
 
 	void deactivate() {
 		synchronized (this) {
+			if (this.eelRegistration != null) {
+				this.eelRegistration.unregister();
+				this.eelRegistration = null;
+			}
+			if (this.rsaadminRegistration != null) {
+				this.rsaadminRegistration.unregister();
+				this.rsaadminRegistration = null;
+			}
 			instance = null;
 			discoveryView = null;
 			rsa = null;
@@ -94,22 +126,6 @@ public class DiscoveryComponent implements EndpointEventListener, RemoteServiceA
 				history = null;
 			}
 		}
-	}
-
-	public void startRSA() throws BundleException {
-		Bundle rsaBundle = null;
-		BundleContext ctxt = null;
-		synchronized (this) {
-			ctxt = this.context;
-			if (ctxt == null)
-				return;
-		}
-		for (Bundle b : ctxt.getBundles())
-			if (b.getSymbolicName().equals(RSA_SYMBOLICNAME))
-				rsaBundle = b;
-		if (rsaBundle == null)
-			throw new BundleException(Messages.DiscoveryComponent_ERROR_MSG_CANNOT_FIND_RSA_BUNDLE);
-		rsaBundle.start();
 	}
 
 	private List<EndpointEvent> history;
