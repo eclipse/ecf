@@ -2018,20 +2018,4 @@
 		</bundle>
 	</feature>
 
-	<feature name="ecf-rs-distribution-hazelcast" version="1.4.0"
-		description="ECF Hazelcast Distribution Provider Support. See https://github.com/ECF/HazelcastProvider">
-		<feature>ecf-rs-rsa</feature>
-		<feature>ecf-rs-console</feature>
-		<feature>ecf-rs-distribution-generic</feature>
-		<feature>transaction-api</feature>
-		<bundle>https://raw.githubusercontent.com/ECF/HazelcastProvider/master/build/plugins/com.hazelcast_3.12.2.jar
-		</bundle>
-		<bundle>https://raw.githubusercontent.com/ECF/HazelcastProvider/master/build/plugins/javax.jms_1.1.0.v201205091237.jar
-		</bundle>
-		<bundle>https://raw.githubusercontent.com/ECF/HazelcastProvider/master/build/plugins/org.eclipse.ecf.provider.jms_1.10.100.201806152009.jar
-		</bundle>
-		<bundle>https://raw.githubusercontent.com/ECF/HazelcastProvider/master/build/plugins/org.eclipse.ecf.provider.jms.hazelcast_1.1.0.201908051806.jar
-		</bundle>
-	</feature>
-
 </features>
