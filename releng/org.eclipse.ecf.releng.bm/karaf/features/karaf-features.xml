@@ -163,7 +163,7 @@
 		version="3.14.6"
 		description="ECF RemoteService TimeService API Example. See https://wiki.eclipse.org/Tutorial:_Building_your_first_OSGi_Remote_Service">
 		<bundle>
-			http://download.eclipse.org/rt/ecf/3.14.3/site.p2/plugins/com.mycorp.examples.timeservice.async_2.1.0.v20180314-1732.jar
+			http://download.eclipse.org/rt/ecf/3.14.6/site.p2/plugins/com.mycorp.examples.timeservice.async_2.1.1.v20191012-1926.jar
 		</bundle>
 	</feature>
 	<feature name="ecf-rs-examples-timeservice-host"
@@ -171,15 +171,23 @@
 		description="ECF RemoteService TimeService Host Example. See https://wiki.eclipse.org/Tutorial:_Building_your_first_OSGi_Remote_Service">
 		<feature version="3.14.6">ecf-rs-examples-timeservice-api</feature>
 		<bundle>
-			http://download.eclipse.org/rt/ecf/3.14.3/site.p2/plugins/com.mycorp.examples.timeservice.host_1.1.200.v20180728-0140.jar
+			http://download.eclipse.org/rt/ecf/3.14.6/site.p2/plugins/com.mycorp.examples.timeservice.host_1.1.201.v20191012-1926.jar
 		</bundle>
 	</feature>
 	<feature name="ecf-rs-examples-timeservice-consumer"
 		version="3.14.6"
-		description="ECF RemoteService TimeService Host Example. See https://wiki.eclipse.org/Tutorial:_Building_your_first_OSGi_Remote_Service">
+		description="ECF RemoteService TimeService Consumer Example. See https://wiki.eclipse.org/Tutorial:_Building_your_first_OSGi_Remote_Service">
 		<feature version="3.14.6">ecf-rs-examples-timeservice-api</feature>
 		<bundle>
-			http://download.eclipse.org/rt/ecf/3.14.3/site.p2/plugins/com.mycorp.examples.timeservice.consumer.ds_1.0.200.v20180728-0140.jar
+			http://download.eclipse.org/rt/ecf/3.14.6/site.p2/plugins/com.mycorp.examples.timeservice.consumer.ds_1.0.201.v20191012-1926.jar
+		</bundle>
+	</feature>
+	<feature name="ecf-rs-examples-timeservice-consumer-async"
+		version="3.14.6"
+		description="ECF RemoteService TimeService Async Consumer Example. See https://wiki.eclipse.org/Tutorial:_Building_your_first_OSGi_Remote_Service">
+		<feature version="3.14.6">ecf-rs-examples-timeservice-api</feature>
+		<bundle>
+			http://download.eclipse.org/rt/ecf/3.14.6/site.p2/plugins/com.mycorp.examples.timeservice.consumer.ds.async_1.0.101.v20191012-1926.jar
 		</bundle>
 	</feature>
 	<feature name="ecf-rs-sdk" version="3.14.6"
