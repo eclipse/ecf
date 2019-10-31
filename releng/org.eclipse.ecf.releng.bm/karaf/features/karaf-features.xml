@@ -381,8 +381,7 @@
 		description="ECF JaxRS Distribution Provider Client Support. See https://github.com/ECF/JaxRSProviders">
 		<feature>ecf-rs-distribution-jaxrs</feature>
 		<bundle>
-			https://raw.githubusercontent.com/ECF/JaxRSProviders/master/build/plugins/
-			org.eclipse.ecf.provider.jaxrs.client_1.5.0.201907292049.jar
+			https://raw.githubusercontent.com/ECF/JaxRSProviders/master/build/plugins/org.eclipse.ecf.provider.jaxrs.client_1.5.0.201907292049.jar
 		</bundle>
 	</feature>
 	<feature name="ecf-rs-jersey-deps" version="1.10.0"
