@@ -153,7 +153,6 @@ public class ServerManager {
 					registerServerForDiscovery(group, false);
 				servers.put(cont.getID(), cont);
 				final String msg = "Starting server with id=" + cont.getID().getName(); //$NON-NLS-1$
-				System.out.println(msg);
 				Activator.log(msg);
 			}
 			serverGroups[j].putOnTheAir();

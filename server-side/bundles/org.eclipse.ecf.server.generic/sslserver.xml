@@ -1,5 +1,7 @@
 <server>
+<!-- 
 	<connector protocol="ecfssl"  hostname="localhost" port="4282" timeout="30000">
 		<group name="secureserver"/>
 	</connector>
+-->
 </server>
