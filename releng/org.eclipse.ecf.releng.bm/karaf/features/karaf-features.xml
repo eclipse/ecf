@@ -157,7 +157,7 @@
 		<feature version="3.14.7">ecf-rs-distribution-generic</feature>
 		<bundle>mvn:org.eclipse.ecf/org.eclipse.ecf.server/2.1.200</bundle>
 		<bundle>
-			mvn:org.eclipse.ecf/org.eclipse.ecf.server.generic/8.0.100
+			http://download.eclipse.org/rt/ecf/3.14.7/site.p2/plugins/org.eclipse.ecf.server.generic_8.1.0.v20191224-2127.jar
 		</bundle>
 	</feature>
 	<feature name="ecf-rs-examples-timeservice-api"
