@@ -83,6 +83,8 @@
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
     <project.resources.sourceEncoding>ISO-8859-1</project.resources.sourceEncoding>
     <tycho.scmUrl>${project.scm.connection}</tycho.scmUrl>
+    <tycho.baseline>fail</tycho.baseline>
+    <tycho.baseline.replace>all</tycho.baseline.replace>
     <!-- Skip tests by default because they take a long time -->
     <skipTests>true</skipTests>
   </properties>
@@ -390,15 +392,15 @@
             <failIfNoTests>false</failIfNoTests>
           </configuration>
         </plugin>
-	<plugin>
-	  <groupId>org.apache.maven.plugins</groupId>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-clean-plugin</artifactId>
-	  <version>3.1.0</version>
+          <version>3.1.0</version>
         </plugin>
-	<plugin>
-	  <groupId>org.apache.maven.plugins</groupId>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-	  <version>3.1.0</version>
+          <version>3.1.0</version>
           <configuration>
             <additionalDependencies>
               <additionalDependency>
@@ -509,6 +511,32 @@
               </execution>
             </executions>
           </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <!-- Enable this profile to run the baseline comparison and version sanity checks -->
+      <id>baseline-checks</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>tycho-p2-plugin</artifactId>
+            <version>${tycho-version}</version>
+            <configuration>
+              <baselineMode>${tycho.baseline}</baselineMode>
+              <baselineReplace>${tycho.baseline.replace}</baselineReplace>
+              <baselineRepositories>
+                <repository>
+                  <url>https://download.eclipse.org/rt/ecf/latest/site.p2/</url>
+                </repository>
+              </baselineRepositories>
+              <ignoredPatterns>
+                <pattern>META-INF/ECLIPSE_.RSA</pattern>
+                <pattern>META-INF/ECLIPSE_.SF</pattern>
+              </ignoredPatterns>
+            </configuration>
+          </plugin>
           <plugin>
             <groupId>org.eclipse.tycho.extras</groupId>
             <artifactId>tycho-p2-extras-plugin</artifactId>
@@ -524,7 +552,7 @@
                     <url>https://download.eclipse.org/rt/ecf/latest/site.p2/</url>
                   </baselines>
                   <comparator>zip</comparator>
-                  <onIllegalVersion>warn</onIllegalVersion>
+                  <onIllegalVersion>fail</onIllegalVersion>
                 </configuration>
               </execution>
             </executions>
