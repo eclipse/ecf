@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.osgi.services.feature"
       label="ECF Remote Services Admin"
-      version="2.4.2.qualifier"
+      version="2.4.3.qualifier"
       provider-name="%providerName"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
@@ -39,7 +39,7 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
    <requires>
       <import feature="org.eclipse.ecf.discovery.feature" version="1.0" match="compatible"/>
       <import feature="org.eclipse.ecf.remoteservice.feature" version="2.1" match="compatible"/>
-      <import feature="org.eclipse.ecf.console.feature" version="1.1.0.qualifier" match="compatible"/>
+      <import feature="org.eclipse.ecf.console.feature" version="1.2.0.qualifier" match="compatible"/>
    </requires>
 
    <plugin
