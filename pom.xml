@@ -434,7 +434,7 @@
                 <name>nooverride</name><placement>a</placement><head>Restriction:</head>
               </tag>
             </tags>
-            <windowtitle>${project.name} 3.14.6 API</windowtitle>
+            <windowtitle>${project.name} 3.14.7 API</windowtitle>
           </configuration>
         </plugin>
       </plugins>
