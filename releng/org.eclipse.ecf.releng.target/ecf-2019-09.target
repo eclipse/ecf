@@ -25,7 +25,6 @@
 <unit id="org.json" version="1.0.0.v201011060100"/>
 <unit id="org.xbill.dns" version="2.0.8.v201112050911"/>
 <unit id="org.xbill.dns.source" version="2.0.8.v201112050911"/>
-https://download.eclipse.org/tools/orbit/downloads/drops2/S20200128200239/repository/plugins/org.objectweb.asm_7.2.0.v20191010-1910.jar
 <unit id="org.objectweb.asm" version="7.2.0.v20191010-1910"/>
 <unit id="org.objectweb.asm.source" version="7.2.0.v20191010-1910"/>
 <unit id="org.apache.httpcomponents.httpclient" version="4.5.10.v20200114-1512"/>
