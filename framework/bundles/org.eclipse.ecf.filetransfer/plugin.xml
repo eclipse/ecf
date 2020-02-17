@@ -2,5 +2,4 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension-point id="urlStreamHandlerService" name="URL Stream Handler Service" schema="schema/urlStreamHandlerService.exsd"/>
-
 </plugin>

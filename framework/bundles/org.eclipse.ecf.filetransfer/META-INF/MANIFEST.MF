@@ -3,12 +3,12 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.filetransfer;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.filetransfer
-Bundle-Version: 5.0.300.qualifier
+Bundle-Version: 5.1.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.filetransfer.Activator
 Bundle-Vendor: %plugin.provider
 Eclipse-LazyStart: true
 Bundle-Localization: plugin
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.eclipse.ecf.filetransfer;version="5.0.0",
  org.eclipse.ecf.filetransfer.events;version="5.0.0",
  org.eclipse.ecf.filetransfer.events.socket;version:="1.0";x-internal:=true,
