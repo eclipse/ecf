@@ -21,26 +21,26 @@
 	<feature name="ecf-rs-core" version="3.14.7"
 		description="ECF Core">
 		<feature version="3.14.7">ecf-rs-dependencies</feature>
-		<bundle> mvn:org.eclipse.ecf/org.eclipse.ecf.identity/3.9.1 </bundle>
-		<bundle> mvn:org.eclipse.ecf/org.eclipse.ecf/3.9.3 </bundle>
+		<bundle> mvn:org.eclipse.ecf/org.eclipse.ecf.identity/3.9.300 </bundle>
+		<bundle> mvn:org.eclipse.ecf/org.eclipse.ecf/3.9.5 </bundle>
 		<bundle>
-			mvn:org.eclipse.ecf/org.eclipse.ecf.sharedobject/2.6.0
+			mvn:org.eclipse.ecf/org.eclipse.ecf.sharedobject/2.6.1
 		</bundle>
 		<bundle>
-			mvn:org.eclipse.ecf/org.eclipse.ecf.discovery/5.0.300
+			mvn:org.eclipse.ecf/org.eclipse.ecf.discovery/5.0.301
 		</bundle>
 		<bundle>
-			mvn:org.eclipse.ecf/org.eclipse.ecf.remoteservice.asyncproxy/2.1.0
+			mvn:org.eclipse.ecf/org.eclipse.ecf.remoteservice.asyncproxy/2.1.2
 		</bundle>
 		<bundle>
-			mvn:org.eclipse.ecf/org.eclipse.ecf.remoteservice/8.13.1
+			mvn:org.eclipse.ecf/org.eclipse.ecf.remoteservice/8.13.2
 		</bundle>
 	</feature>
 	<feature name="ecf-rs-console" version="3.14.7"
 		description="ECF Console">
-		<bundle> mvn:org.eclipse.ecf/org.eclipse.ecf.console/1.3.0 </bundle>
+		<bundle> mvn:org.eclipse.ecf/org.eclipse.ecf.console/1.3.1 </bundle>
 		<bundle>
-			mvn:org.eclipse.ecf/org.eclipse.ecf.osgi.services.remoteserviceadmin.console/1.2.0
+			mvn:org.eclipse.ecf/org.eclipse.ecf.osgi.services.remoteserviceadmin.console/1.2.1
 		</bundle>
 	</feature>
 	<feature name="ecf-rs-rsa-impl" version="3.14.7"
@@ -50,16 +50,16 @@
 			mvn:org.eclipse.ecf/org.eclipse.osgi.services.remoteserviceadmin/1.6.200
 		</bundle>
 		<bundle>
-			mvn:org.eclipse.ecf/org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy/1.0.100
+			mvn:org.eclipse.ecf/org.eclipse.ecf.osgi.services.remoteserviceadmin.proxy/1.0.101
 		</bundle>
 		<bundle>
-			mvn:org.eclipse.ecf/org.eclipse.ecf.osgi.services.remoteserviceadmin/4.6.800
+			mvn:org.eclipse.ecf/org.eclipse.ecf.osgi.services.remoteserviceadmin/4.6.1102
 		</bundle>
 	</feature>
 	<feature name="ecf-rs-rsa-topology-manager" version="3.14.7"
 		description="ECF RemoteServices OSGi R6 Default Topology Manager (promiscuous). See https://wiki.eclipse.org/Remote_Services_Admin">
 		<bundle>
-			mvn:org.eclipse.ecf/org.eclipse.ecf.osgi.services.distribution/2.1.200
+			mvn:org.eclipse.ecf/org.eclipse.ecf.osgi.services.distribution/2.1.400
 		</bundle>
 	</feature>
 	<feature name="ecf-rs-rsa" version="3.14.7"
@@ -70,9 +70,9 @@
 	<feature name="ecf-rs-distribution-generic" version="3.14.7"
 		description="ECF RemoteServices Generic Distribution Provider. https://wiki.eclipse.org/EIG:Configuration_Properties">
 		<feature version="3.14.7">ecf-rs-core</feature>
-		<bundle> mvn:org.eclipse.ecf/org.eclipse.ecf.provider/4.8.0 </bundle>
+		<bundle> mvn:org.eclipse.ecf/org.eclipse.ecf.provider/4.8.200 </bundle>
 		<bundle>
-			mvn:org.eclipse.ecf/org.eclipse.ecf.provider.remoteservice/4.4.100
+			mvn:org.eclipse.ecf/org.eclipse.ecf.provider.remoteservice/4.4.101
 		</bundle>
 	</feature>
 	<feature name="ecf-rs-distribution-rosgi" version="3.14.7"
@@ -80,10 +80,10 @@
 		<feature version="3.14.7">ecf-rs-core</feature>
 		<bundle>mvn:org.eclipse.ecf/org.objectweb.asm</bundle>
 		<bundle>
-			mvn:org.eclipse.ecf/ch.ethz.iks.r_osgi.remote/1.2.200
+			mvn:org.eclipse.ecf/ch.ethz.iks.r_osgi.remote/1.2.201
 		</bundle>
 		<bundle>
-			mvn:org.eclipse.ecf/org.eclipse.ecf.provider.r_osgi/3.6.200
+			mvn:org.eclipse.ecf/org.eclipse.ecf.provider.r_osgi/3.6.201
 		</bundle>
 	</feature>
 	<feature name="ecf-rs-discovery-jmdns" version="3.14.7"
@@ -103,15 +103,15 @@
 			mvn:org.eclipse.ecf/org.apache.hadoop.zookeeper/3.3.3.v201105210832
 		</bundle>
 		<bundle>
-			mvn:org.eclipse.ecf/org.eclipse.ecf.provider.zookeeper/1.2.200
+			mvn:org.eclipse.ecf/org.eclipse.ecf.provider.zookeeper/1.2.201
 		</bundle>
 	</feature>
 	<feature name="ecf-rs-discovery-slp" version="3.14.7"
 		description="ECF Discovery SLP Provider. See https://wiki.eclipse.org/R-OSGi_Properties">
 		<feature version="3.14.7">ecf-rs-core</feature>
-		<bundle>mvn:org.eclipse.ecf/ch.ethz.iks.slp/1.2.0</bundle>
+		<bundle>mvn:org.eclipse.ecf/ch.ethz.iks.slp/1.3.1</bundle>
 		<bundle>
-			mvn:org.eclipse.ecf/org.eclipse.ecf.provider.jslp/3.2.200
+			mvn:org.eclipse.ecf/org.eclipse.ecf.provider.jslp/3.2.202
 		</bundle>
 	</feature>
 	<feature name="ecf-rs-distribution-rest" version="3.14.7"
@@ -131,14 +131,14 @@
 		</bundle>
 		<bundle>mvn:org.eclipse.ecf/org.json/1.0.0.v201011060100</bundle>
 		<bundle>
-			mvn:org.eclipse.ecf/org.eclipse.ecf.remoteservice.rest/2.7.100
+			mvn:org.eclipse.ecf/org.eclipse.ecf.remoteservice.rest/2.7.201
 		</bundle>
 	</feature>
 	<feature name="ecf-rs-eventadmin" version="3.14.7"
 		description="ECF 3.14.7 RemoteServices SDK Distributed EventAdmin">
 		<feature version="3.14.7">ecf-rs-core</feature>
 		<bundle>
-			mvn:org.eclipse.ecf/org.eclipse.ecf.remoteservice.eventadmin/1.3.0
+			mvn:org.eclipse.ecf/org.eclipse.ecf.remoteservice.eventadmin/1.3.1
 		</bundle>
 	</feature>
 	<feature name="ecf-rs-distribution-servlet" version="3.14.7"
@@ -148,14 +148,14 @@
 			mvn:org.eclipse.ecf/javax.servlet/3.1.0.v201410161800
 		</bundle>
 		<bundle>
-			mvn:org.eclipse.ecf/org.eclipse.ecf.remoteservice.servlet/1.0.100
+			mvn:org.eclipse.ecf/org.eclipse.ecf.remoteservice.servlet/1.0.101
 		</bundle>
 	</feature>
 	<feature name="ecf-rs-distribution-generic-server"
 		version="3.14.7"
 		description="ECF 3.14.7 RemoteServices SDK Generic Server Support">
 		<feature version="3.14.7">ecf-rs-distribution-generic</feature>
-		<bundle>mvn:org.eclipse.ecf/org.eclipse.ecf.server/2.1.200</bundle>
+		<bundle>mvn:org.eclipse.ecf/org.eclipse.ecf.server/2.1.201</bundle>
 		<bundle>
 			http://download.eclipse.org/rt/ecf/3.14.7/site.p2/plugins/org.eclipse.ecf.server.generic_8.1.0.v20191224-2127.jar
 		</bundle>
