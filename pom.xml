@@ -85,6 +85,7 @@
     <tycho.scmUrl>${project.scm.connection}</tycho.scmUrl>
     <tycho.baseline>fail</tycho.baseline>
     <tycho.baseline.replace>all</tycho.baseline.replace>
+    <tycho.baseline.comparison>fail</tycho.baseline.comparison>
     <!-- Skip tests by default because they take a long time -->
     <skipTests>true</skipTests>
   </properties>
@@ -564,10 +565,16 @@
                     <url>https://download.eclipse.org/rt/ecf/latest/site.p2/</url>
                   </baselines>
                   <comparator>zip</comparator>
-                  <onIllegalVersion>warn</onIllegalVersion>
+                  <onIllegalVersion>${tycho.baseline.comparison}</onIllegalVersion>
                 </configuration>
               </execution>
             </executions>
+            <configuration>
+              <ignoredPatterns>
+                <pattern>META-INF/ECLIPSE_.RSA</pattern>
+                <pattern>META-INF/ECLIPSE_.SF</pattern>
+              </ignoredPatterns>
+            </configuration>
           </plugin>
         </plugins>
       </build>
