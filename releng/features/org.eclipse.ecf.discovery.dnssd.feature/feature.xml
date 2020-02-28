@@ -2,8 +2,10 @@
 <feature
       id="org.eclipse.ecf.discovery.dnssd.feature"
       label="ECF Discovery DNS-SD Provider"
-      version="1.0.1.qualifier"
-      provider-name="%providerName">
+      version="1.0.100.qualifier"
+      provider-name="%providerName"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
 
    <description url="http://www.eclipse.org/ecf">
       This feature provides the ECF Discovery DNS-SD Provider.  This provider can be used by ECF Remote Services Discovery to publish and discover RS EndpointDescriptions.

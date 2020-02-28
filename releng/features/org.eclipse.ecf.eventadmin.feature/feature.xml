@@ -2,8 +2,10 @@
 <feature
       id="org.eclipse.ecf.eventadmin.feature"
       label="ECF Distributed EventAdmin"
-      version="2.0.101.qualifier"
-      provider-name="%providerName">
+      version="2.0.200.qualifier"
+      provider-name="%providerName"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
 
    <description url="http://www.eclipse.org/ecf">
       This feature provides the ECF Distributed EventAdmin API.  This is a distributed implementation of the OSGi EventAdmin service.   For information about this API please see:

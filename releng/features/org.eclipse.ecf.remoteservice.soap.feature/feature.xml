@@ -2,8 +2,10 @@
 <feature
       id="org.eclipse.ecf.remoteservice.soap.feature"
       label="ECF Remote Services SOAP Support"
-      version="1.0.101.qualifier"
-      provider-name="%providerName">
+      version="1.0.200.qualifier"
+      provider-name="%providerName"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
 
    <description url="http://www.eclipse.org/ecf">
       This feature installs the SOAP support for ECF Remote Services.  This SOAP support is an implementation that provides the distribution for Remote Services.  For information about both OSGi Remote Services and the SOAP support see

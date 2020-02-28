@@ -2,8 +2,10 @@
 <feature
       id="org.eclipse.ecf.discovery.zookeeper.feature"
       label="ECF Discovery Zookeeper Provider"
-      version="1.0.100.qualifier"
-      provider-name="%providerName">
+      version="1.0.200.qualifier"
+      provider-name="%providerName"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
 
    <description url="http://wiki.eclipse.org/Zookeeper_Based_ECF_Discovery">
       This feature provides the Apache Zookeeper Discovery Provider.  This provider can be used by Remote Services Discovery to publish and discover RS EndpointDescriptions.

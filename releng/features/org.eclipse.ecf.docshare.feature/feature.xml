@@ -2,8 +2,10 @@
 <feature
       id="org.eclipse.ecf.docshare.feature"
       label="ECF Docshare"
-      version="1.0.101.qualifier"
-      provider-name="Eclipse.org - ECF">
+      version="1.0.200.qualifier"
+      provider-name="%providerName"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
 
    <description url="http://www.eclipse.org/ecf">
       This feature provides the ECF Docshare Add-on for Eclipse.   This add-on allows Eclipse-based text editors to do real-time document sharing using XMPP/Google Talk or other protocols.  For a demo of docshare see the following

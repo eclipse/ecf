@@ -3,7 +3,9 @@
       id="org.eclipse.ecf.filetransfer.p2.feature"
       label="ECF P2 FileTransfer"
       version="1.0.300.qualifier"
-      provider-name="Eclipse.org - ECF">
+      provider-name="%providerName"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
 
    <description url="http://www.eclipse.org/ecf">
       This feature id not intended to be installed directly.

@@ -2,8 +2,10 @@
 <feature
       id="org.eclipse.ecf.xmpp.feature"
       label="ECF XMPP Provider"
-      version="1.0.101.qualifier"
-      provider-name="%providerName">
+      version="1.0.200.qualifier"
+      provider-name="%providerName"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
 
    <description url="http://www.eclipse.org/ecf">
       This feature installs the XMPP/XMPPS/Google Talk provider.  The XMPP provider implements the Presence API for presence and instant messaging, the Datashare API for channel-based asynchronous messaging, the Remote Service API for providing Remote Services via XMPP/XMPPS/Google Talk services, and the Shared Object API.   For tutorials,

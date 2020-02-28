@@ -2,9 +2,11 @@
 <feature
       id="org.eclipse.ecf.examples"
       label="%featureName"
-      version="3.2.1.qualifier"
+      version="3.2.100.qualifier"
       provider-name="%providerName"
-      plugin="org.eclipse.ecf.example.collab">
+      plugin="org.eclipse.ecf.example.collab"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
 
    <description url="http://www.eclipse.org/ecf">
       This feature provides ECF example applications and providers.
