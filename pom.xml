@@ -86,8 +86,6 @@
     <tycho.baseline>fail</tycho.baseline>
     <tycho.baseline.replace>all</tycho.baseline.replace>
     <tycho.baseline.comparison>fail</tycho.baseline.comparison>
-    <!-- Skip tests by default because they take a long time -->
-    <skipTests>true</skipTests>
   </properties>
 
   <pluginRepositories>
@@ -206,7 +204,10 @@
     <module>server-side/features/org.eclipse.ecf.server.generic.feature</module>
 
     <module>tests/bundles/org.eclipse.ecf.tests</module>
+    <module>tests/bundles/org.eclipse.ecf.tests.apache.httpclient.server</module>
     <module>tests/bundles/org.eclipse.ecf.tests.datashare</module>
+    <module>tests/bundles/org.eclipse.ecf.tests.filetransfer</module>
+    <module>tests/bundles/org.eclipse.ecf.tests.filetransfer.httpserver</module>
     <module>tests/bundles/org.eclipse.ecf.tests.presence</module>
     <module>tests/bundles/org.eclipse.ecf.tests.protocol.msn</module>
     <module>tests/bundles/org.eclipse.ecf.tests.provider.datashare.nio</module>
@@ -258,6 +259,7 @@
     <module>releng/features/org.eclipse.ecf.remoteservice.soap.feature</module>
     <module>releng/features/org.eclipse.ecf.sharedobject.feature</module>
     <module>releng/features/org.eclipse.ecf.tests.feature</module>
+    <module>releng/features/org.eclipse.ecf.tests.filetransfer.feature</module>
     <module>releng/features/org.eclipse.ecf.xmpp.feature</module>
 
     <module>releng/org.eclipse.ecf.releng.target</module>

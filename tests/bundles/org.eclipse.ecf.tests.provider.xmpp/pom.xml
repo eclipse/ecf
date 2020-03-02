@@ -13,6 +13,11 @@
   <version>2.0.101-SNAPSHOT</version>
   <packaging>eclipse-test-plugin</packaging>
 
+  <properties>
+    <!-- Always skip these tests for now, requires an the external service -->
+    <skipTests>true</skipTests>
+  </properties>
+
   <build>
     <plugins>
       <plugin>

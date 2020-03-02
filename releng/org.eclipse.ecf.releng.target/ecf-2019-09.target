@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.8"?>
-<target name="2019-09" sequenceNumber="25">
+<target name="2019-09" sequenceNumber="26">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.license.feature.group" version="1.0.1.v20140414-1359"/>
@@ -9,6 +9,8 @@
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.apache.hadoop.zookeeper" version="3.3.3.v201105210832"/>
 <unit id="org.apache.hadoop.zookeeper.source" version="3.3.3.v201105210832"/>
+<unit id="org.apache.commons.httpclient" version="3.1.0.v201012070820"/>
+<unit id="org.apache.commons.httpclient.source" version="3.1.0.v201012070820"/>
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
@@ -37,7 +39,7 @@
 <unit id="com.sun.jna.platform" version="4.5.1.v20190425-1842"/>
 <unit id="com.sun.jna.platform.source" version="4.5.1.v20190425-1842"/>
 <unit id="com.sun.jna.source" version="4.5.1.v20190425-1842"/>
-<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/S20200128200239/repository"/>
+<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/S20200224183213/repository"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.emf.edit.ui.feature.group" version="2.17.0.v20190323-1059"/>
