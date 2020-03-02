@@ -10,5 +10,5 @@
   <groupId>org.eclipse.ecf</groupId>
   <artifactId>org.eclipse.ecf.tests.apache.httpclient.server</artifactId>
   <version>3.0.100-SNAPSHOT</version>
-  <packaging>eclipse-test-plugin</packaging>
+  <packaging>eclipse-plugin</packaging>
 </project>
