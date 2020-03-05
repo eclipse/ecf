@@ -54,14 +54,14 @@ public class FileBrowseTest extends AbstractBrowseTestCase {
 	public void testBrowseRoots() throws Exception {
 		for (int i = 0; i < roots.length; i++) {
 			if (roots[i].exists())
-				testBrowse(roots[i].toURL());
+				testBrowse(roots[i].toURI().toURL());
 			Thread.sleep(100);
 		}
 	}
 
 	public void testFileBrowse() throws Exception {
 		for (int i = 0; i < files.length; i++) {
-			testBrowse(files[i].toURL());
+			testBrowse(files[i].toURI().toURL());
 			Thread.sleep(100);
 		}
 	}

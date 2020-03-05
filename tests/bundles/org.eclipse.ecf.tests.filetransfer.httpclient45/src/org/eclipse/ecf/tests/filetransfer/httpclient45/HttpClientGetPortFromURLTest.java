@@ -9,16 +9,16 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.tests.filetransfer.httpclient4;
+package org.eclipse.ecf.tests.filetransfer.httpclient45;
 
-import org.eclipse.ecf.provider.filetransfer.httpclient4.HttpClientRetrieveFileTransfer;
+import org.eclipse.ecf.provider.filetransfer.httpclient45.HttpClientRetrieveFileTransfer;
 
 import junit.framework.TestCase;
 
 public class HttpClientGetPortFromURLTest extends TestCase {
 
 	public static class HttpClientRetrieveTest extends HttpClientRetrieveFileTransfer {
-
+		
 		public HttpClientRetrieveTest() {
 			super(null);
 		}
