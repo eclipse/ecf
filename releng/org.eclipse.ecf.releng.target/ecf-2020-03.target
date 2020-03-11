@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.8"?>
-<target name="Photon" sequenceNumber="26">
+<target name="2020-03" sequenceNumber="26">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.license.feature.group" version="1.0.1.v20140414-1359"/>
@@ -42,13 +42,13 @@
 <repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20200224183213/repository"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.emf.edit.ui.feature.group" version="2.14.0.v20180213-0527"/>
-<unit id="org.eclipse.emf.edit.ui.source.feature.group" version="2.14.0.v20180213-0527"/>
-<unit id="org.eclipse.pde.feature.group" version="3.13.100.v20180611-0826"/>
-<unit id="org.eclipse.pde.source.feature.group" version="3.13.100.v20180611-0826"/>
-<unit id="org.eclipse.platform.feature.group" version="4.8.0.v20180611-0656"/>
-<unit id="org.eclipse.platform.source.feature.group" version="4.8.0.v20180611-0656"/>
-<repository location="http://download.eclipse.org/releases/photon"/>
+<unit id="org.eclipse.emf.edit.ui.feature.group" version="2.19.0.v20200205-0529"/>
+<unit id="org.eclipse.emf.edit.ui.source.feature.group" version="2.19.0.v20200205-0529"/>
+<unit id="org.eclipse.pde.feature.group" version="3.14.300.v20200226-1800"/>
+<unit id="org.eclipse.pde.source.feature.group" version="3.14.300.v20200226-1800"/>
+<unit id="org.eclipse.platform.feature.group" version="4.15.0.v20200226-1800"/>
+<unit id="org.eclipse.platform.source.feature.group" version="4.15.0.v20200226-1800"/>
+<repository location="http://download.eclipse.org/releases/2020-03"/>
 </location>
 </locations>
 </target>

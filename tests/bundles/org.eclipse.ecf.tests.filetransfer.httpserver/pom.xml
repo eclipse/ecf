@@ -11,5 +11,5 @@
   <groupId>org.eclipse.ecf</groupId>
   <artifactId>org.eclipse.ecf.tests.filetransfer.httpserver</artifactId>
   <version>1.0.101-SNAPSHOT</version>
-  <packaging>eclipse-test-plugin</packaging>
+  <packaging>eclipse-plugin</packaging>
 </project>

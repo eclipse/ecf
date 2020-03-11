@@ -39,7 +39,7 @@
 <unit id="com.sun.jna.platform" version="4.5.1.v20190425-1842"/>
 <unit id="com.sun.jna.platform.source" version="4.5.1.v20190425-1842"/>
 <unit id="com.sun.jna.source" version="4.5.1.v20190425-1842"/>
-<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/S20200224183213/repository"/>
+<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20200224183213/repository"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.emf.edit.ui.feature.group" version="2.17.0.v20190323-1059"/>
