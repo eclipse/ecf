@@ -1,12 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-        Copyright (C) 2016, Red Hat, Inc
-
-   All rights reserved. This program and the accompanying materials
-   are made available under the terms of the Eclipse Public License v1.0
-   which accompanies this distribution, and is available at
-   http://www.eclipse.org/legal/epl-v10.html
--->
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
@@ -37,16 +29,17 @@
 
   <licenses>
     <license>
-      <name>Eclipse Public License v1.0</name>
-      <url>http://www.eclipse.org/legal/epl-v10.html</url>
+      <name>Eclipse Public License - Version 2.0</name>
+      <url>https://www.eclipse.org/legal/epl-2.0</url>
       <distribution>repo</distribution>
       <comments>
-        All rights reserved.
+        Copyright (C) 2016, 2020 Red Hat, Inc and others.
 
         This program and the accompanying materials are made
-        available under the terms of the Eclipse Public License v1.0
-        which accompanies this distribution, and is available at
-        http://www.eclipse.org/legal/epl-v10.htm
+        available under the terms of the Eclipse Public License 2.0
+        which is available at https://www.eclipse.org/legal/epl-2.0/
+
+        SPDX-License-Identifier: EPL-2.0
       </comments>
     </license>
   </licenses>
@@ -77,7 +70,7 @@
   </distributionManagement>
 
   <properties>
-    <tycho-version>1.5.0</tycho-version>
+    <tycho-version>1.6.0</tycho-version>
     <cbi-version>1.1.7</cbi-version>
     <target-platform>photon</target-platform>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
@@ -405,7 +398,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.1.1</version>
           <configuration>
             <additionalDependencies>
               <additionalDependency>

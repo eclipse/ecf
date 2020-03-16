@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.remoteservice.examples.feature"
       label="ECF Remote Services Examples"
-      version="1.5.101.qualifier"
+      version="1.5.200.qualifier"
       provider-name="%providerName"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
