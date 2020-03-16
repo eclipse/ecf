@@ -3,7 +3,9 @@
       id="org.eclipse.ecf.serverfeature"
       label="ECF Server"
       version="2.0.101.qualifier"
-      provider-name="Eclipse.org">
+      provider-name="Eclipse.org"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
 
    <description url="http://www.eclipse.org/ecf">
       This feature provides support API for OSGi servers.
