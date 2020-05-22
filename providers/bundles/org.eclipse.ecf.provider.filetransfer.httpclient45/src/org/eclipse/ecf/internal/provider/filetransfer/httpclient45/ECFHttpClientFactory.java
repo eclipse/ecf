@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2019 Yatta Solutions and others. All rights reserved. This
+* Copyright (c) 2019, 2020 Yatta Solutions and others. All rights reserved. This
 * program and the accompanying materials are made available under the terms of
 * the Eclipse Public License v1.0 which accompanies this distribution, and is
 * available at http://www.eclipse.org/legal/epl-v10.html
@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSocketFactory;
 import org.apache.http.auth.AuthSchemeProvider;
@@ -53,6 +54,7 @@ public class ECFHttpClientFactory implements IHttpClientFactory {
 	private static final List<String> DEFAULT_PREFERRED_AUTH_SCHEMES_NO_NTLM = Arrays.asList(AuthSchemes.BASIC, AuthSchemes.DIGEST);
 	private static final List<String> DEFAULT_PREFERRED_AUTH_SCHEMES = Arrays.asList(AuthSchemes.BASIC, AuthSchemes.DIGEST, AuthSchemes.NTLM);
 	public static final int DEFAULT_CONNECTION_TIMEOUT = HttpClientOptions.RETRIEVE_DEFAULT_CONNECTION_TIMEOUT;
+	public static final int DEFAULT_CONNECTION_TTL = HttpClientOptions.RETRIEVE_DEFAULT_CONNECTION_TTL;
 	public static final int DEFAULT_READ_TIMEOUT = HttpClientOptions.RETRIEVE_DEFAULT_READ_TIMEOUT;
 
 	public static final int DEFAULT_CONNECTION_REQUEST_TIMEOUT = HttpClientOptions.RETRIEVE_DEFAULT_CONNECTION_TIMEOUT;
@@ -80,6 +82,7 @@ public class ECFHttpClientFactory implements IHttpClientFactory {
 		configureSSLSocketFactory(builder);
 		builder.setDefaultCredentialsProvider(new HttpClientProxyCredentialProvider());
 		builder.setDefaultRequestConfig(newRequestConfig(null, System.getProperties()).build());
+		builder.setConnectionTimeToLive(DEFAULT_CONNECTION_TTL, TimeUnit.MILLISECONDS);
 		builder.setMaxConnPerRoute(100);
 		builder.setMaxConnTotal(300);
 		builder.setDefaultSocketConfig(DEFAULT_SOCKET_CONFIG);

@@ -4,7 +4,7 @@ Bundle-Name: %plugin.name
 Bundle-Vendor: %plugin.provider
 Bundle-SymbolicName: org.eclipse.ecf.provider.filetransfer.httpclient45;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.provider.filetransfer.httpclient45
-Bundle-Version: 1.0.200.qualifier
+Bundle-Version: 1.0.300.qualifier
 Bundle-Localization: plugin
 Bundle-Activator: org.eclipse.ecf.internal.provider.filetransfer.httpclient45.Activator
 Bundle-ClassPath: .
