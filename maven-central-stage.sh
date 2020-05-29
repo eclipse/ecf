@@ -2,14 +2,22 @@
 set -e
 
 # A space delimited list of feature IDs
-features_whose_bundles_we_will_deploy="org.eclipse.ecf.remoteservice.sdk.feature"
+features_whose_bundles_we_will_deploy="org.eclipse.ecf.remoteservice.sdk.feature
+org.eclipse.ecf.filetransfer.feature
+org.eclipse.ecf.filetransfer.ssl.feature
+org.eclipse.ecf.filetransfer.httpclient45.feature
+org.eclipse.ecf.filetransfer.httpclient4.feature
+org.eclipse.ecf.filetransfer.httpclient4.ssl.feature"
 
 # Exclude orbit bundles, they should be done separately
 orbit_bundles="javax.servlet
+com.sun.jna
+com.sun.jna.platform
 org.apache.commons.codec
 org.apache.commons.logging
 org.apache.hadoop.zookeeper
 org.apache.httpcomponents.httpclient
+org.apache.httpcomponents.httpclient.win
 org.apache.httpcomponents.httpcore
 org.apache.log4j
 org.json
@@ -131,7 +139,6 @@ function parse_feature() {
 			break
 		fi
 		local plugin=$(xpath_call $xml "string(//requires/import[$i]/@plugin)")
-		set +x
 		if [ -n "$plugin" ] ; then
 			_add_bundle_to_list $plugin || :
 		fi
@@ -166,15 +173,22 @@ function parse_feature() {
 
 bundles_deploy=""
 function check_maven_central() {
-	local central_version=$(curl https://repo1.maven.org/maven2/org/eclipse/ecf/$1/maven-metadata.xml 2>/dev/null | grep '<latest>' | sed -e 's/.*>\(.*\)<.*/\1/')
+	local central_metadata="$(curl https://repo1.maven.org/maven2/org/eclipse/ecf/$1/maven-metadata.xml 2>/dev/null | grep '<latest>')"
+	local central_version=0.0.0
+	if [ -n "$central_metadata" ] ; then
+		local central_version=$(echo $central_metadata | sed -e 's/.*>\(.*\)<.*/\1/')
+	fi
 	local jar_version=$(find -name "$1-*-SNAPSHOT.jar" | tail -n1 | sed -e "s/.*$1-\(.*\)-SNAPSHOT.jar/\1/")
 	local op="="
-	if [ $(echo $jar_version | cut -f1 -d.) -gt $(echo $central_version | cut -f1 -d.) ] ; then
+	if [ $(echo $jar_version | cut -f1 -d.) -gt "$(echo $central_version | cut -f1 -d.)" ] ; then
 		op=">"
-	elif [ $(echo $jar_version | cut -f2 -d.) -gt $(echo $central_version | cut -f2 -d.) ] ; then
+	elif [ $(echo $jar_version | cut -f2 -d.) -gt "$(echo $central_version | cut -f2 -d.)" ] ; then
 		op=">"
-	elif [ $(echo $jar_version | cut -f3 -d.) -gt $(echo $central_version | cut -f3 -d.) ] ; then
+	elif [ $(echo $jar_version | cut -f3 -d.) -gt "$(echo $central_version | cut -f3 -d.)" ] ; then
 		op=">"
+	fi
+	if [ "$central_version" = "0.0.0" ] ; then
+		central_version="N/A"
 	fi
 	echo "  $1 $jar_version $op $central_version"
 	if [ "$op" != "=" ] ; then
