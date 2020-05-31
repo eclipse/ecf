@@ -224,5 +224,8 @@
 	<!-- Include Hazelcast repo -->
 	<repository>https://raw.githubusercontent.com/ECF/HazelcastProvider/master/build/karaf-features.xml</repository>
 	<!-- Include Dubbo repo -->
-	<repository>https://github.com/ECF/DubboProvider/blob/master/build/karaf-features.xml</repository>
+	<repository>https://raw.githubusercontent.com/ECF/DubboProvider/master/build/karaf-features.xml</repository>
+	<!-- Include gRPC repo -->
+	<repository>https://raw.githubusercontent.com/ECF/grpc-RemoteServicesProvider/master/build/karaf-features.xml</repository>
+	
 </features>
