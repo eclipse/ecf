@@ -2,14 +2,17 @@
 <feature
       id="org.eclipse.ecf.remoteservice.soa.feature"
       label="ECF Service-Oriented Architecture"
-      version="2.0.100.qualifier">
+      version="2.0.200.qualifier"
+      provider-name="%providerName"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
 
    <description url="http://www.eclipse.org/ecf">
       This feature provides the ECF SOA Target Components.
    </description>
 
    <copyright>
-      TODO: Write something here!
+      %copyright
    </copyright>
 
    <license url="%licenseURL">

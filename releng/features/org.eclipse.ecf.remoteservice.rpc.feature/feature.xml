@@ -2,8 +2,10 @@
 <feature
       id="org.eclipse.ecf.remoteservice.rpc.feature"
       label="%featureName"
-      version="1.1.1.qualifier"
-      provider-name="%providerName">
+      version="1.1.100.qualifier"
+      provider-name="%providerName"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
 
    <description url="http://www.eclipse.org/ecf">
       This feature installs the ECF Remote Services XML-RPC Provider.  The XML-RPC provider is an implementation that provides the distribution for Remote Services.  For information about both Remote Services and the XML-RPC provider see
@@ -12,13 +14,7 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
    </description>
 
    <copyright>
-      ############################################################################
-# Copyright (c) 2010-2011 Naumen, IBM Corp, and others.
-# All rights reserved. This program and the accompanying materials
-# are made available under the terms of the Eclipse Public License v1.0
-# which accompanies this distribution, and is available at
-# http://www.eclipse.org/legal/epl-v10.html
-############################################################################
+      %copyright
    </copyright>
 
    <license url="%licenseURL">

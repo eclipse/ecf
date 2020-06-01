@@ -1,6 +1,16 @@
+/****************************************************************************
+ * Copyright (c) 2012, 2020 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ *****************************************************************************/
+
 package org.eclipse.ecf.tests.filetransfer.httpclient4;
 
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.eclipse.ecf.provider.filetransfer.httpclient4.HttpClientRetrieveFileTransfer;
 
 import junit.framework.TestCase;
@@ -9,8 +19,8 @@ public class HttpClientGetPortFromURLTest extends TestCase {
 
 	public static class HttpClientRetrieveTest extends HttpClientRetrieveFileTransfer {
 
-		public HttpClientRetrieveTest(DefaultHttpClient httpClient) {
-			super(httpClient);
+		public HttpClientRetrieveTest() {
+			super(null);
 		}
 
 		public static int getPortFromURLTest(String url) {

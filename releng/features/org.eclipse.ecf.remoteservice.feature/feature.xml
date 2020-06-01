@@ -2,8 +2,10 @@
 <feature
       id="org.eclipse.ecf.remoteservice.feature"
       label="ECF Remote Services"
-      version="2.5.102.qualifier"
-      provider-name="%providerName">
+      version="2.5.200.qualifier"
+      provider-name="%providerName"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
 
    <description url="http://www.eclipse.org/ecf">
       This feature provides the ECF Remote Services API.  The ECF Remote
@@ -19,15 +21,7 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
    </description>
 
    <copyright>
-      #################################################
-# Copyright (c) 2010 Composent, Inc. and others. All rights reserved.
-# This program and the accompanying materials are made available under the 
-# terms of the Eclipse Public License v1.0 which accompanies this 
-# distribution, and is available at 
-# http://www.eclipse.org/legal/epl-v10.html
-#
-# Contributors: Composent, Inc. - initial API and implementation
-#################################################
+      %copyright
    </copyright>
 
    <license url="%licenseURL">

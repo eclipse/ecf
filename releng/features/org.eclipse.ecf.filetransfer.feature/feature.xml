@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.ecf.filetransfer.feature"
-      label="ECF Filetransfer Feature"
-      version="3.14.700.qualifier"
-      provider-name="Eclipse.org"
+      label="%featureName"
+      version="3.14.800.qualifier"
+      provider-name="%providerName"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
 
@@ -13,14 +13,7 @@ by the Eclipse platform to support P2 filetransfer and is required for any of th
    </description>
 
    <copyright>
-      Copyright (c) 2004, 2007 Composent, Inc. and others. All rights
-reserved.
-This program and the accompanying materials are made available
-under the terms of the Eclipse Public License v1.0 which accompanies
-this distribution, and is available at 
-http://www.eclipse.org/legal/epl-v10.html
- 
-Contributors: Composent, Inc. - initial API and implementation
+      %copyright
    </copyright>
 
    <license url="%licenseURL">

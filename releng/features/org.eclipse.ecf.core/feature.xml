@@ -2,23 +2,18 @@
 <feature
       id="org.eclipse.ecf.core"
       label="ECF SDK for Eclipse"
-      version="3.14.7.qualifier"
+      version="3.14.8.qualifier"
       provider-name="%providerName"
-      plugin="org.eclipse.ecf">
+      plugin="org.eclipse.ecf"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
 
    <description url="http://www.eclipse.org/ecf">
       This feature provides an all-in-one distribution of ECF APIs, providers, ui, tools, and examples for Eclipse.  Use this feature if you want to install all of ECF into Eclipse.
    </description>
 
    <copyright>
-      Copyright (c) 2009 Composent, Inc. and others. All rights
-reserved.
-This program and the accompanying materials are made available
-under the terms of the Eclipse Public License v1.0 which accompanies
-this distribution, and is available at 
-http://www.eclipse.org/legal/epl-v10.html
- 
-Contributors: Composent, Inc. - initial API and implementation
+      %copyright
    </copyright>
 
    <license url="%licenseURL">

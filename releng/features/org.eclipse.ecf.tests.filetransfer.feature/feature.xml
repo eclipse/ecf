@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.ecf.tests.filetransfer.feature"
-      label="ECF Platform "
-      version="1.0.100.qualifier"
-      provider-name="%providerName">
+      label="%featureName"
+      version="1.0.200.qualifier"
+      provider-name="%providerName"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
 
    <description url="http://www.eclipse.org/ecf">
-      TODO: Write something here!
+      Eclipse Communications Framework Filetransfer Tests
    </description>
 
    <copyright>
-      TODO: Write something here!
+      %copyright
    </copyright>
 
    <license url="%licenseURL">
@@ -59,6 +61,22 @@
 
    <plugin
          id="org.eclipse.ecf.provider.filetransfer.ssl"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.ecf.tests.filetransfer.httpclient4"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.ecf.tests.filetransfer.httpclient45"
          download-size="0"
          install-size="0"
          version="0.0.0"

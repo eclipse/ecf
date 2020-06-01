@@ -1,12 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-        Copyright (C) 2016, Red Hat, Inc
-
-   All rights reserved. This program and the accompanying materials
-   are made available under the terms of the Eclipse Public License v1.0
-   which accompanies this distribution, and is available at
-   http://www.eclipse.org/legal/epl-v10.html
--->
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
@@ -25,7 +17,7 @@
 
   <organization>
     <name>Eclipse Foundation</name>
-    <url>http://www.eclipse.org/</url>
+    <url>https://www.eclipse.org/</url>
   </organization>
 
   <developers>
@@ -37,16 +29,17 @@
 
   <licenses>
     <license>
-      <name>Eclipse Public License v1.0</name>
-      <url>http://www.eclipse.org/legal/epl-v10.html</url>
+      <name>Eclipse Public License - Version 2.0</name>
+      <url>https://www.eclipse.org/legal/epl-2.0</url>
       <distribution>repo</distribution>
       <comments>
-        All rights reserved.
+        Copyright (C) 2016, 2020 Red Hat, Inc and others.
 
         This program and the accompanying materials are made
-        available under the terms of the Eclipse Public License v1.0
-        which accompanies this distribution, and is available at
-        http://www.eclipse.org/legal/epl-v10.htm
+        available under the terms of the Eclipse Public License 2.0
+        which is available at https://www.eclipse.org/legal/epl-2.0/
+
+        SPDX-License-Identifier: EPL-2.0
       </comments>
     </license>
   </licenses>
@@ -77,7 +70,7 @@
   </distributionManagement>
 
   <properties>
-    <tycho-version>1.5.0</tycho-version>
+    <tycho-version>1.6.0</tycho-version>
     <cbi-version>1.1.7</cbi-version>
     <target-platform>photon</target-platform>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
@@ -85,8 +78,7 @@
     <tycho.scmUrl>${project.scm.connection}</tycho.scmUrl>
     <tycho.baseline>fail</tycho.baseline>
     <tycho.baseline.replace>all</tycho.baseline.replace>
-    <!-- Skip tests by default because they take a long time -->
-    <skipTests>true</skipTests>
+    <tycho.baseline.comparison>fail</tycho.baseline.comparison>
   </properties>
 
   <pluginRepositories>
@@ -205,7 +197,12 @@
     <module>server-side/features/org.eclipse.ecf.server.generic.feature</module>
 
     <module>tests/bundles/org.eclipse.ecf.tests</module>
+    <module>tests/bundles/org.eclipse.ecf.tests.apache.httpclient.server</module>
     <module>tests/bundles/org.eclipse.ecf.tests.datashare</module>
+    <module>tests/bundles/org.eclipse.ecf.tests.filetransfer</module>
+    <module>tests/bundles/org.eclipse.ecf.tests.filetransfer.httpclient4</module>
+    <module>tests/bundles/org.eclipse.ecf.tests.filetransfer.httpclient45</module>
+    <module>tests/bundles/org.eclipse.ecf.tests.filetransfer.httpserver</module>
     <module>tests/bundles/org.eclipse.ecf.tests.presence</module>
     <module>tests/bundles/org.eclipse.ecf.tests.protocol.msn</module>
     <module>tests/bundles/org.eclipse.ecf.tests.provider.datashare.nio</module>
@@ -257,6 +254,7 @@
     <module>releng/features/org.eclipse.ecf.remoteservice.soap.feature</module>
     <module>releng/features/org.eclipse.ecf.sharedobject.feature</module>
     <module>releng/features/org.eclipse.ecf.tests.feature</module>
+    <module>releng/features/org.eclipse.ecf.tests.filetransfer.feature</module>
     <module>releng/features/org.eclipse.ecf.xmpp.feature</module>
 
     <module>releng/org.eclipse.ecf.releng.target</module>
@@ -400,7 +398,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.1.1</version>
           <configuration>
             <additionalDependencies>
               <additionalDependency>
@@ -411,7 +409,7 @@
             </additionalDependencies>
             <additionalOptions>-Xdoclint:none</additionalOptions>
             <author>false</author>
-            <doctitle>${project.name} 3.14.7 API</doctitle>
+            <doctitle>${project.name} 3.14.8 API</doctitle>
             <excludePackageNames>*.ui*:*.smack.*:*.incubation.*:*.internal.*:ch.*:*.jmdns.*:*.tests.*:*.sdo.*:*.twitter.*:*.jivesoftware.*:*.collab.*:*.osgi.services.discovery.*:com.mycorp.*:org.eclipse.ecf.core.start:org.eclipse.ecf.core.user:org.eclipse.ecf.docshare.*:org.eclipse.ecf.datashare.*:org.eclipse.ecf.example.*:org.eclipse.ecf.presence.*:org.eclipse.ecf.protocol.bittorrent:org.eclipse.ecf.protocol.msn:org.eclipse.ecf.provider.irc:org.eclipse.ecf.provider.datashare.*:org.eclipse.ecf.provider.discovery.*:org.eclipse.ecf.provider.xmpp:org.eclipse.ecf.remoteservice.rpc:org.eclipse.ecf.remoteservice.soap:org.eclipse.ecf.server:org.eclipse.ecf.storage:org.eclipse.ecf.sync:org.eclipse.ecf.telephony:org.eclipse.ecf.remoteservice.asyncproxy.j8:org.eclipse.ecf.remoteservices.tooling.pde:org.eclipse.ecf.tests.*:org.eclipse.ecf.remoteservices.rest.rss:org.eclipse.ecf.examples.*</excludePackageNames>
             <links>
               <link>https://osgi.org/javadoc/r6/core/</link>
@@ -434,7 +432,19 @@
                 <name>nooverride</name><placement>a</placement><head>Restriction:</head>
               </tag>
             </tags>
-            <windowtitle>${project.name} 3.14.7 API</windowtitle>
+            <windowtitle>${project.name} 3.14.8 API</windowtitle>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-gpg-plugin</artifactId>
+          <version>1.6</version>
+          <configuration>
+            <!-- This is necessary for gpg to not try to use the pinentry programs -->
+            <gpgArguments>
+              <arg>--pinentry-mode</arg>
+              <arg>loopback</arg>
+            </gpgArguments>
           </configuration>
         </plugin>
       </plugins>
@@ -552,10 +562,16 @@
                     <url>https://download.eclipse.org/rt/ecf/latest/site.p2/</url>
                   </baselines>
                   <comparator>zip</comparator>
-                  <onIllegalVersion>fail</onIllegalVersion>
+                  <onIllegalVersion>${tycho.baseline.comparison}</onIllegalVersion>
                 </configuration>
               </execution>
             </executions>
+            <configuration>
+              <ignoredPatterns>
+                <pattern>META-INF/ECLIPSE_.RSA</pattern>
+                <pattern>META-INF/ECLIPSE_.SF</pattern>
+              </ignoredPatterns>
+            </configuration>
           </plugin>
         </plugins>
       </build>

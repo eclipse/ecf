@@ -25,10 +25,10 @@ public class URLRetrieveTestUnknownHost extends AbstractRetrieveTestCase {
 
 	public static final String HTTP_UNKNOWN_HOST_URL = "http://unknown-abcdefghi.eclipse.org/foo";
 
-	private boolean CANCEL_SUPPORTED_ON_CONNECT = new Boolean(
+	private boolean CANCEL_SUPPORTED_ON_CONNECT = Boolean.parseBoolean(
 			System.getProperty(
 					"org.eclipse.ecf.tests.filetransfer.cancelSupportedOnConnect",
-					"true")).booleanValue();
+					"true"));
 
 	/*
 	 * (non-Javadoc)
