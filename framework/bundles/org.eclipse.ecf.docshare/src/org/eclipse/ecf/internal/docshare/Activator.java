@@ -1,14 +1,16 @@
 /****************************************************************************
  * Copyright (c) 2008, 2009 Composent, Inc. and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *    Remy Chi Jian Suen - Bug 270332 put() is called twice for DocShares due to ECF Generic group handling
  *    IBM Corporation - Bug 270332 put() is called twice for DocShares due to ECF Generic group handling
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *****************************************************************************/
 package org.eclipse.ecf.internal.docshare;
 

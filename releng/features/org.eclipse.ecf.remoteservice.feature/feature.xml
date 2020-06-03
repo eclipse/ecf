@@ -44,14 +44,14 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
          id="org.eclipse.ecf.remoteservice.asyncproxy"
          download-size="0"
          install-size="0"
-         version="1.1.101.qualifier"
+         version="1.1.200.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.ecf.remoteservice.asyncproxy"
          download-size="0"
          install-size="0"
-         version="2.1.2.qualifier"
+         version="2.1.100.qualifier"
          unpack="false"/>
 
 </feature>

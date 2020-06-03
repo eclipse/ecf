@@ -4,7 +4,7 @@ Bundle-Name: %plugin.name
 Bundle-Vendor: %plugin.provider
 Bundle-SymbolicName: org.eclipse.ecf.remoteservice.soap;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.remoteservice.soap
-Bundle-Version: 1.1.101.qualifier
+Bundle-Version: 1.1.200.qualifier
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Import-Package: org.eclipse.ecf.remoteservice,
  org.eclipse.ecf.remoteservice.asyncproxy;version="1.0.0",

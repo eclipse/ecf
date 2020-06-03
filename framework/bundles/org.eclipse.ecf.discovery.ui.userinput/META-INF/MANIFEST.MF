@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.discovery.ui.userinput;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.discovery.ui.userinput
-Bundle-Version: 1.0.102.qualifier
+Bundle-Version: 1.0.200.qualifier
 Bundle-Activator: org.eclipse.ecf.discovery.ui.userinput.Activator
 Bundle-Vendor: %plugin.provider
 Bundle-RequiredExecutionEnvironment: J2SE-1.4

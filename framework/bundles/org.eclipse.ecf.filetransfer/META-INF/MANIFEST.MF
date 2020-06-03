@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.filetransfer;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.filetransfer
-Bundle-Version: 5.1.0.qualifier
+Bundle-Version: 5.1.100.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.filetransfer.Activator
 Bundle-Vendor: %plugin.provider
 Eclipse-LazyStart: true

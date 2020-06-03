@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.team.ecf.core;singleton:=true
 Automatic-Module-Name: org.eclipse.team.ecf.core
-Bundle-Version: 1.0.100.qualifier
+Bundle-Version: 1.0.200.qualifier
 Bundle-Vendor: %plugin.provider
 Bundle-Activator: org.eclipse.team.internal.ecf.core.TeamSynchronization
 Require-Bundle: org.eclipse.core.runtime,

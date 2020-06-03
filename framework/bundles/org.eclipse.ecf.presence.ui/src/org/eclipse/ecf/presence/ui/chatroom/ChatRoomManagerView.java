@@ -1,9 +1,9 @@
-/*******************************************************************************
+/****************************************************************************
  * Copyright (c) 2004, 2008 Composent, Inc. and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
@@ -11,7 +11,9 @@
  *    Abner Ballardo <modlost@modlost.net> - bug 192756, 199336, 200630
  *    Jakub Jurkiewicz <jakub.jurkiewicz@pl.ibm.com> - bug 197332
  *    Hiroyuki Inaba <Hiroyuki <hiroyuki.inaba@gmail.com> - bug 222253
- ******************************************************************************/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *****************************************************************************/
 package org.eclipse.ecf.presence.ui.chatroom;
 
 import java.net.URI;
