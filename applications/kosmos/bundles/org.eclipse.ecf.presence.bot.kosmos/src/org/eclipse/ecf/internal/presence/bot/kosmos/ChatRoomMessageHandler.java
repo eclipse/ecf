@@ -1,16 +1,18 @@
-/*******************************************************************************
+/****************************************************************************
  * Copyright (c) 2007, 2008 Remy Suen and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
  *
  * Contributors:
  *    Remy Suen <remy.suen@gmail.com> - initial API and implementation
  *    Markus Kuppe <mkuppe@versant.com> - bug 184036
  *    Nick Boldt <codeslave@ca.ibm.com> - bug 206528, 209410
  *    Dominik Goepel <dominik.goepel@gmx.de> - bug 216644
- ******************************************************************************/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *****************************************************************************/
 package org.eclipse.ecf.internal.presence.bot.kosmos;
 
 import java.io.BufferedReader;
@@ -69,13 +71,11 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 			+ NEWLINE
 			+ "# Copyright (c) 2007, 2008 Remy Suen and others." //$NON-NLS-1$
 			+ NEWLINE
-			+ "# All rights reserved. This program and the accompaning materials" //$NON-NLS-1$
+			+ "# This program and the accompanying materials are made" //$NON-NLS-1$
 			+ NEWLINE
-			+ "# are made available under the terms of the Eclipse Public License v1.0" //$NON-NLS-1$
+			+ "# available under the terms of the Eclipse Public License 2.0" //$NON-NLS-1$
 			+ NEWLINE
-			+ "# which accompanies this distribution, and is available at" //$NON-NLS-1$
-			+ NEWLINE
-			+ "# http://www.eclipse.org/legal/epl-v10.html" //$NON-NLS-1$
+			+ "# which is available at https://www.eclipse.org/legal/epl-2.0/" //$NON-NLS-1$
 			+ NEWLINE
 			+ "#" //$NON-NLS-1$
 			+ NEWLINE
