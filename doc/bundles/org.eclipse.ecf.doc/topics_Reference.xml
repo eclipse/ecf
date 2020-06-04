@@ -1,10 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?NLS TYPE="org.eclipse.help.toc"?>
 
-<toc label="Reference" link_to="toc.xml#reference">
-	<topic label="ECF Homepage" href="http://www.eclipse.org/ecf"/>
-	<topic label="Mailing List" href="https://dev.eclipse.org/mailman/listinfo/ecf-dev"/>
-	<topic label="Newsgroup" href="http://www.eclipse.org/forums/index.php"/>
-    <topic label="Blog" href="http://eclipseecf.blogspot.com/"/>
-	<topic label="Project Dashboard" href="https://projects.eclipse.org/projects/rt.ecf"/>
+<toc label="Reference">
+	<link toc="tocjavadoc.xml"/>
+
+	<topic label="Extension Points Reference">
+		<topic label="org.eclipse.ecf.containerFactory" href="html/reference/extension-points/org_eclipse_ecf_containerFactory.html" />
+		<topic label="org.eclipse.ecf.container" href="html/reference/extension-points/org_eclipse_ecf_container.html" />
+		<topic label="org.eclipse.ecf.filetransfer.urlStreamHandlerService" href="html/reference/extension-points/org_eclipse_ecf_filetransfer_urlStreamHandlerService.html" />
+		<topic label="org.eclipse.ecf.identity.namespace" href="html/reference/extension-points/org_eclipse_ecf_identity_namespace.html" />
+		<topic label="org.eclipse.ecf.presence.bot.chatRoomMessageHandler" href="html/reference/extension-points/org_eclipse_ecf_presence_bot_chatRoomMessageHandler.html" />
+		<topic label="org.eclipse.ecf.presence.bot.chatRoomRobot" href="html/reference/extension-points/org_eclipse_ecf_presence_bot_chatRoomRobot.html" />
+		<topic label="org.eclipse.ecf.presence.bot.imMessageHandler" href="html/reference/extension-points/org_eclipse_ecf_presence_bot_imMessageHandler.html" />
+		<topic label="org.eclipse.ecf.presence.bot.imRobot" href="html/reference/extension-points/org_eclipse_ecf_presence_bot_imRobot.html" />
+		<topic label="org.eclipse.ecf.presence.ui.rosterViewerDropTarget" href="html/reference/extension-points/org_eclipse_ecf_presence_ui_rosterViewerDropTarget.html" />
+		<topic label="org.eclipse.ecf.provider.filetransfer.browseFileTransferProtocolFactory" href="html/reference/extension-points/org_eclipse_ecf_provider_filetransfer_browseFileTransferProtocolFactory.html" />
+		<topic label="org.eclipse.ecf.provider.filetransfer.retrieveFileTransferProtocolFactory" href="html/reference/extension-points/org_eclipse_ecf_provider_filetransfer_retrieveFileTransferProtocolFactory.html" />
+		<topic label="org.eclipse.ecf.provider.filetransfer.sendFileTransferProtocolFactory" href="html/reference/extension-points/org_eclipse_ecf_provider_filetransfer_sendFileTransferProtocolFactory.html" />
+		<topic label="org.eclipse.ecf.remoteservice.ui.servicesview" href="html/reference/extension-points/org_eclipse_ecf_remoteservice_ui_servicesview.html" />
+		<topic label="org.eclipse.ecf.server.generic.configuration" href="html/reference/extension-points/org_eclipse_ecf_server_generic_configuration.html" />
+		<topic label="org.eclipse.ecf.sharedobject.sharedObjectFactory" href="html/reference/extension-points/org_eclipse_ecf_sharedobject_sharedObjectFactory.html" />
+		<topic label="org.eclipse.ecf.start" href="html/reference/extension-points/org_eclipse_ecf_start.html" />
+		<topic label="org.eclipse.ecf.ui.configurationWizards" href="html/reference/extension-points/org_eclipse_ecf_ui_configurationWizards.html" />
+		<topic label="org.eclipse.ecf.ui.connectWizards" href="html/reference/extension-points/org_eclipse_ecf_ui_connectWizards.html" />
+	</topic>
 </toc>

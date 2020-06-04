@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.eclipse.ecf</groupId>
@@ -10,6 +10,95 @@
   </parent>
   <groupId>org.eclipse.ecf</groupId>
   <artifactId>org.eclipse.ecf.doc</artifactId>
-  <version>1.3.201-SNAPSHOT</version>
+  <version>1.3.300-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.eclipse.tycho.extras</groupId>
+        <artifactId>tycho-document-bundle-plugin</artifactId>
+        <version>${tycho-version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>javadoc</goal>
+            </goals>
+            <configuration>
+              <javadocOptions>
+                <additionalArguments>
+                  <additionalArgument>-Xdoclint:none</additionalArgument>
+                  <additionalArgument>-splitindex</additionalArgument>
+                  <additionalArgument>-use</additionalArgument>
+                  <additionalArgument>-doctitle "Eclipse Communication Framework (ECF) 3.14.8 API"</additionalArgument>
+                  <additionalArgument>-windowtitle "Eclipse Communication Framework (ECF) 3.14.8 API"</additionalArgument>
+                  <additionalArgument>-link https://docs.oracle.com/javase/8/docs/api/</additionalArgument>
+                  <additionalArgument>-link https://osgi.org/javadoc/r6/core/</additionalArgument>
+                  <additionalArgument>-tag 'noimplement:a:Restriction:'</additionalArgument>
+                  <additionalArgument>-tag 'noextend:a:Restriction:'</additionalArgument>
+                  <additionalArgument>-tag 'noreference:a:Restriction:'</additionalArgument>
+                  <additionalArgument>-tag 'noinstantiate:a:Restriction:'</additionalArgument>
+                  <additionalArgument>-tag 'nooverride:a:Restriction:'</additionalArgument>
+                  <additionalArgument>-bottom "Copyright &amp;#169; ${project.inceptionYear}&amp;#x2013;2020 &lt;a href=\"${project.organization.url}\"&gt;${project.organization.name}&lt;/a&gt;. All rights reserved."</additionalArgument>
+                </additionalArguments>
+                <excludes>
+                  <exclude>ch.*</exclude>
+                  <exclude>*.internal.*</exclude>
+                  <exclude>*.internal</exclude>
+                  <exclude>org.eclipse.ecf.core.start</exclude>
+                  <exclude>org.eclipse.ecf.core.user</exclude>
+                  <exclude>org.eclipse.ecf.docshare*</exclude>
+                  <exclude>org.eclipse.ecf.datashare*</exclude>
+                  <exclude>org.eclipse.ecf.presence*</exclude>
+                  <exclude>org.eclipse.ecf.storage</exclude>
+                  <exclude>org.eclipse.ecf.sync</exclude>
+                </excludes>
+              </javadocOptions>
+              <outputDirectory>${project.basedir}/html/reference/api</outputDirectory>
+              <tocFile>${project.basedir}/tocjavadoc.xml</tocFile>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.eclipse.tycho.extras</groupId>
+        <artifactId>tycho-eclipserun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>build-schema-docs</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>eclipse-run</goal>
+            </goals>
+            <configuration>
+              <appArgLine>-consolelog -data target/workspace -application org.eclipse.ant.core.antRunner -quiet -buildfile buildschemadocs.xml
+              </appArgLine>
+              <dependencies>
+                <dependency>
+                  <artifactId>org.eclipse.ant.core</artifactId>
+                  <type>eclipse-plugin</type>
+                </dependency>
+                <dependency>
+                  <artifactId>org.apache.ant</artifactId>
+                  <type>eclipse-plugin</type>
+                </dependency>
+                <dependency>
+                  <artifactId>org.eclipse.pde.build</artifactId>
+                  <type>eclipse-plugin</type>
+                </dependency>
+                <dependency>
+                  <artifactId>org.eclipse.pde.core</artifactId>
+                  <type>eclipse-plugin</type>
+                </dependency>
+                <dependency>
+                  <artifactId>org.eclipse.help.base</artifactId>
+                  <type>eclipse-plugin</type>
+                </dependency>
+              </dependencies>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

@@ -104,7 +104,6 @@
       &lt;/servicesview&gt;
    &lt;/extension&gt;
 &lt;/pre&gt;
-
       </documentation>
    </annotation>
 
@@ -114,7 +113,6 @@
       </appInfo>
       <documentation>
          See the IServicesView interface.   This interface allows other views to set the selected service in the associated view.  If the view given does not implement IServicesView then it will not be used in this manner, but this interface should be implemented by Service View extensions.
-
       </documentation>
    </annotation>
 
@@ -124,16 +122,14 @@
          <meta.section type="copyright"/>
       </appInfo>
       <documentation>
-         /*******************************************************************************
- * Copyright (c) 2015 Composent, Inc. All rights reserved. This
- * program and the accompanying materials are made available under the terms of
- * the Eclipse Public License v1.0 which accompanies this distribution, and is
- * available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: Scott Lewis - initial API and implementation
- ******************************************************************************/
+         Copyright (c) 2015 Composent, Inc. and others.
 
- 
+This program and the accompanying materials are made
+available under the terms of the Eclipse Public License 2.0
+which is available at https://www.eclipse.org/legal/epl-2.0/
+
+SPDX-License-Identifier: EPL-2.0
+
       </documentation>
    </annotation>
 

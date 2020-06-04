@@ -1,18 +1,21 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.eclipse.ecf.presence.bot">
+<schema targetNamespace="org.eclipse.ecf.presence.bot" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appInfo>
          <meta.schema plugin="org.eclipse.ecf.presence.bot" id="chatRoomMessageHandler" name="Chat Room Message Handler"/>
       </appInfo>
       <documentation>
          This extension point allows message handlers to be associated with a given chatroomrobot (via chatroomrobotid attribute).  Note that the chatroomrobotid must exist or the handler will not be called.
-
-
       </documentation>
    </annotation>
 
    <element name="extension">
+      <annotation>
+         <appInfo>
+            <meta.element />
+         </appInfo>
+      </annotation>
       <complexType>
          <sequence minOccurs="1" maxOccurs="unbounded">
             <element ref="handler"/>
@@ -116,8 +119,6 @@ Note that the given chatroomrobotid=&lt;b&gt;org.eclipse.ecf.presence.bot.defaul
       &lt;/chatRoomRobot&gt;
    &lt;/extension&gt;
 &lt;/pre&gt;
-
-
       </documentation>
    </annotation>
 
@@ -131,20 +132,19 @@ Note that the given chatroomrobotid=&lt;b&gt;org.eclipse.ecf.presence.bot.defaul
 &lt;pre&gt;
 public interface IChatRoomMessageHandler extends IChatRoomContainerAdvisor {
 
-	/**
-	 * This method is called when a {@link IChatRoomMessage} is received.
-	 * 
-	 * @param message
-	 *            the {@link IChatRoomMessage} received. Will not be
-	 *            &lt;code&gt;null&lt;/code&gt;. Implementers should not block the
-	 *            calling thread. Any methods on the given &lt;code&gt;message&lt;/code&gt;
-	 *            parameter may be called.
-	 */
-	public void handleRoomMessage(IChatRoomMessage message);
+ /**
+  * This method is called when a {@link IChatRoomMessage} is received.
+  * 
+  * @param message
+  *            the {@link IChatRoomMessage} received. Will not be
+  *            &lt;code&gt;null&lt;/code&gt;. Implementers should not block the
+  *            calling thread. Any methods on the given &lt;code&gt;message&lt;/code&gt;
+  *            parameter may be called.
+  */
+ public void handleRoomMessage(IChatRoomMessage message);
 
 }
 &lt;/pre&gt;
-
       </documentation>
    </annotation>
 
@@ -162,7 +162,13 @@ public interface IChatRoomMessageHandler extends IChatRoomContainerAdvisor {
          <meta.section type="copyright"/>
       </appInfo>
       <documentation>
-         Copyright (c) 2007 IBM Corporation and others.  All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+         Copyright (c) 2007 IBM Corporation and others.
+
+This program and the accompanying materials are made
+available under the terms of the Eclipse Public License 2.0
+which is available at https://www.eclipse.org/legal/epl-2.0/
+
+SPDX-License-Identifier: EPL-2.0
 
       </documentation>
    </annotation>

@@ -1,3 +1,2 @@
-*.class
-*.java
-tocextpoint.xml
+/index/
+/tocjavadoc.xml

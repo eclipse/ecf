@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.doc; singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.doc
-Bundle-Version: 1.3.201.qualifier
+Bundle-Version: 1.3.300.qualifier
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.help;bundle-version="[3.0.0,4.0.0)",

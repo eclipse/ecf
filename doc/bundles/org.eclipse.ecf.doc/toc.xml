@@ -2,12 +2,14 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc label="ECF Remote Services Developer Guide" link_to="toc.xml">
-    <topic label="New and Noteworthy" href="http://www.eclipse.org/ecf/NewAndNoteworthy.html"/>
-    <topic label="Download and Install" href="http://www.eclipse.org/ecf/downloads.php"/>
-    <topic label="Remote Services" href="http://wiki.eclipse.org/ECF">
-		<link toc="topics_Reference_RemoteServices.xml"/>
-    </topic>
-    <topic label="Resources">
-        <link toc="topics_Reference.xml"/>
-    </topic> 
+	<topic label="New and Noteworthy" href="https://www.eclipse.org/ecf/NewAndNoteworthy.html"/>
+	<topic label="Download and Install" href="https://www.eclipse.org/ecf/downloads.php"/>
+	<topic label="Tutorials, Examples, and Documentation" href="https://wiki.eclipse.org/Eclipse_Communication_Framework_Project"/>
+	<topic label="Reference">
+		<link toc="topics_Reference.xml"/>
+	</topic>
+	<topic label="Other Resources">
+		<link toc="topics_Resources.xml"/>
+	</topic>
+	<topic label="Legal" href="notices.html"/>
 </toc>

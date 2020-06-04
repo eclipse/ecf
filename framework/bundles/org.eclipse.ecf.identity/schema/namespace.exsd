@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.eclipse.ecf.identity">
+<schema targetNamespace="org.eclipse.ecf.identity" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appInfo>
          <meta.schema plugin="org.eclipse.ecf.identity" id="namespace" name="ECF Namespace"/>
@@ -13,6 +13,11 @@ Plugins implementing this extension point must define a Namespace class that ext
    </annotation>
 
    <element name="extension">
+      <annotation>
+         <appInfo>
+            <meta.element />
+         </appInfo>
+      </annotation>
       <complexType>
          <sequence>
             <element ref="namespace" minOccurs="1" maxOccurs="unbounded"/>
@@ -180,7 +185,13 @@ ID newID = org.eclipse.ecf.core.identity.IDFactory.createGUID(16);
       </appInfo>
       <documentation>
          Copyright (c) 2004 Composent, Inc. and others.
-All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html.  Contributors:  Composent, Inc. - initial API and implementation
+
+This program and the accompanying materials are made
+available under the terms of the Eclipse Public License 2.0
+which is available at https://www.eclipse.org/legal/epl-2.0/
+
+SPDX-License-Identifier: EPL-2.0
+
       </documentation>
    </annotation>
 

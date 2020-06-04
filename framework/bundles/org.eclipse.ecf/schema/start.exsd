@@ -1,16 +1,21 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.eclipse.ecf">
+<schema targetNamespace="org.eclipse.ecf" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appInfo>
          <meta.schema plugin="org.eclipse.ecf" id="start" name="ECF start"/>
       </appInfo>
       <documentation>
-         ECF Core Start Extension Point.  This extension point (&lt;b&gt;org.eclipse.ecf.start&lt;/b&gt;) allows extensions to run upon ECF core bundle startup.  Note that extensions will be run when the ECF core bundle (ID: &lt;b&gt;org.eclipse.ecf&lt;/b&gt;) is started by the runtime, not necessarily upon platform startup.  
+         ECF Core Start Extension Point.  This extension point (&lt;b&gt;org.eclipse.ecf.start&lt;/b&gt;) allows extensions to run upon ECF core bundle startup.  Note that extensions will be run when the ECF core bundle (ID: &lt;b&gt;org.eclipse.ecf&lt;/b&gt;) is started by the runtime, not necessarily upon platform startup.
       </documentation>
    </annotation>
 
    <element name="extension">
+      <annotation>
+         <appInfo>
+            <meta.element />
+         </appInfo>
+      </annotation>
       <complexType>
          <sequence minOccurs="1" maxOccurs="unbounded">
             <element ref="run"/>
@@ -152,7 +157,13 @@ public interface IECFStart {
       </appInfo>
       <documentation>
          Copyright (c) 2007 Composent, Inc. and others.
-All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html.  Contributors:  Composent, Inc. - initial API and implementation
+
+This program and the accompanying materials are made
+available under the terms of the Eclipse Public License 2.0
+which is available at https://www.eclipse.org/legal/epl-2.0/
+
+SPDX-License-Identifier: EPL-2.0
+
       </documentation>
    </annotation>
 

@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.eclipse.ecf.ui">
+<schema targetNamespace="org.eclipse.ecf.ui" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appInfo>
          <meta.schema plugin="org.eclipse.ecf.ui" id="connectWizards" name="ECF Connect Wizard"/>
@@ -12,6 +12,11 @@ instances.
    </annotation>
 
    <element name="extension">
+      <annotation>
+         <appInfo>
+            <meta.element />
+         </appInfo>
+      </annotation>
       <complexType>
          <choice minOccurs="0" maxOccurs="unbounded">
             <element ref="category"/>
@@ -190,7 +195,6 @@ of the export engine functionality.
      &lt;/wizard&gt;
   &lt;/extension&gt;
 &lt;/pre&gt;
-
       </documentation>
    </annotation>
 
@@ -210,48 +214,34 @@ of the export engine functionality.
  */
 public interface IConnectWizard extends IWizard {
 
-	/**
-	 * Initialize the connect wizard.
-	 * 
-	 * @param workbench
-	 *            the currently working workbench instance. Will not be null.
-	 * @param container
-	 *            the container that is to be connected. Will not be null.
-	 */
-	public void init(IWorkbench workbench, IContainer container);
+ /**
+  * Initialize the connect wizard.
+  * 
+  * @param workbench
+  *            the currently working workbench instance. Will not be null.
+  * @param container
+  *            the container that is to be connected. Will not be null.
+  */
+ public void init(IWorkbench workbench, IContainer container);
 }
 
 &lt;/pre&gt;
-
-
       </documentation>
    </annotation>
 
-   <annotation>
-      <appInfo>
-         <meta.section type="implementation"/>
-      </appInfo>
-      <documentation>
-         
-      </documentation>
-   </annotation>
 
    <annotation>
       <appInfo>
          <meta.section type="copyright"/>
       </appInfo>
       <documentation>
-         /****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *    Composent, Inc. - initial API and implementation
- *****************************************************************************/
+         Copyright (c) 2004 Composent, Inc. and others.
 
+This program and the accompanying materials are made
+available under the terms of the Eclipse Public License 2.0
+which is available at https://www.eclipse.org/legal/epl-2.0/
+
+SPDX-License-Identifier: EPL-2.0
 
       </documentation>
    </annotation>

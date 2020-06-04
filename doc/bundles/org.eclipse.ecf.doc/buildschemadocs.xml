@@ -1,0 +1,37 @@
+<project default="all">
+
+	<property name="dest" value="html/reference/extension-points" />
+
+	<target name="all" depends="clean">
+		<antcall target="convertSchemaToHtml" />
+		<antcall target="buildIndex" />
+	</target>
+
+	<target name="convertSchemaToHtml" description="Generate HTML help pages for extension point schema" if="eclipse.running">
+		<mkdir dir="${dest}"/>
+		<pde.convertSchemaToHTML manifest="../../../framework/bundles/org.eclipse.ecf/plugin.xml" destination="${dest}" />
+		<pde.convertSchemaToHTML manifest="../../../framework/bundles/org.eclipse.ecf.filetransfer/plugin.xml" destination="${dest}" />
+		<pde.convertSchemaToHTML manifest="../../../framework/bundles/org.eclipse.ecf.identity/plugin.xml" destination="${dest}" />
+		<pde.convertSchemaToHTML manifest="../../../framework/bundles/org.eclipse.ecf.presence.bot/plugin.xml" destination="${dest}" />
+		<pde.convertSchemaToHTML manifest="../../../framework/bundles/org.eclipse.ecf.presence.ui/plugin.xml" destination="${dest}" />
+		<pde.convertSchemaToHTML manifest="../../../framework/bundles/org.eclipse.ecf.remoteservice.ui/plugin.xml" destination="${dest}" />
+		<pde.convertSchemaToHTML manifest="../../../framework/bundles/org.eclipse.ecf.sharedobject/plugin.xml" destination="${dest}" />
+		<pde.convertSchemaToHTML manifest="../../../framework/bundles/org.eclipse.ecf.ui/plugin.xml" destination="${dest}" />
+		<pde.convertSchemaToHTML manifest="../../../providers/bundles/org.eclipse.ecf.provider.filetransfer/plugin.xml" destination="${dest}" />
+		<pde.convertSchemaToHTML manifest="../../../server-side/bundles/org.eclipse.ecf.server.generic/plugin.xml" destination="${dest}" />
+
+		<!-- Allow re-using the same CSS as used by the Platform docs -->
+		<replace dir="${dest}" token="../../" value="../../../../org.eclipse.platform.doc.isv/" includes="*.html"/>
+	</target>
+
+	<target name="buildIndex" description="Pre-build search indices for documentation bundle" if="eclipse.running">
+		<mkdir dir="${basedir}/index"/>
+		<help.buildHelpIndex manifest="${basedir}/plugin.xml" destination="${basedir}"/>
+	</target>
+
+	<target name="clean">
+		<delete dir="${basedir}/${dest}" failonerror="false" />
+		<delete dir="${basedir}/index" failonerror="false" />
+	</target>
+
+</project>

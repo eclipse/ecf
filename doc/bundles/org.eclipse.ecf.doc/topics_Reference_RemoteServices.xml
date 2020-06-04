@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?NLS TYPE="org.eclipse.help.toc"?>
-<toc label="Remote Services"> 
-    <topic label="See ECF Wiki Page for Latest" href="wiki.eclipse.org/ECF"/>
-    <topic label="JavaDoc">
-	      <link toc="tocapi.xml"/>
-	</topic>
-</toc>

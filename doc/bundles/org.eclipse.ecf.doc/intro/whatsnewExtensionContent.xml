@@ -4,7 +4,7 @@
 		style="css/whatsnew.css" path="whatsnew/@">
 		<group id="content-group" style-id="content-group">
 			<link label="ECF Remote Services"
-				url="http://org.eclipse.ui.intro/showHelpTopic?id=http://www.eclipse.org/ecf/NewAndNoteworthy.html"
+				url="http://org.eclipse.ui.intro/openBrowser?url=https://www.eclipse.org/ecf/NewAndNoteworthy.html"
 				id="orgeclipseecfdoc-introLink" style-id="content-link">
 				<text>
 					Find out the significant changes made to ECF in recent versions

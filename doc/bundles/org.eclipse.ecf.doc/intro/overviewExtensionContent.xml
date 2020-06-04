@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <introContent>
-  	<extensionContent id="orgeclipseecfdoc-introExtension" style="css/overview.css" name="ECF Remote Services" path="overview/@">
-		<group style-id="content-group" id="orgeclipseecfdoc-introLink-group">
-       		<link label="ECF Remote Services" url="http://org.eclipse.ui.intro/showHelpTopic?id=https://wiki.eclipse.org/ECF" id="orgeclipseecfdoc-introLink" style-id="content-link">
-          		<text>Learn how to use Remote Services for Inter-Process Communications</text>
-       		</link>
-       	</group>
-  	</extensionContent>
+  <extensionContent id="orgeclipseecfdoc-introExtension" style="css/overview.css" name="ECF Remote Services" path="overview/@">
+    <group style-id="content-group" id="content-group">
+      <link label="ECF Remote Services"
+        url="http://org.eclipse.ui.intro/openBrowser?url=https://wiki.eclipse.org/Eclipse_Communication_Framework_Project"
+        id="orgeclipseecfdoc-introLink" style-id="content-link">
+        <text>Learn how to use Remote Services for Inter-Process Communications</text>
+      </link>
+    </group>
+  </extensionContent>
 </introContent>

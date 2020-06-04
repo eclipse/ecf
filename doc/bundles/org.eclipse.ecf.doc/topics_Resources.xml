@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?NLS TYPE="org.eclipse.help.toc"?>
+
+<toc label="Other Resources">
+	<topic label="ECF Homepage" href="https://www.eclipse.org/ecf"/>
+	<topic label="Mailing List" href="https://dev.eclipse.org/mailman/listinfo/ecf-dev"/>
+	<topic label="Newsgroup" href="https://www.eclipse.org/forums/index.php"/>
+	<topic label="Blog" href="https://eclipseecf.blogspot.com/"/>
+	<topic label="Project Dashboard" href="https://projects.eclipse.org/projects/rt.ecf"/>
+</toc>
