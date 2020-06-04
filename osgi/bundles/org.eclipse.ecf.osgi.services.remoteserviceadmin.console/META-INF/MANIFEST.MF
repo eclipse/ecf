@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %bundle.name
 Bundle-SymbolicName: org.eclipse.ecf.osgi.services.remoteserviceadmin.console
-Bundle-Version: 1.2.1.qualifier
+Bundle-Version: 1.2.100.qualifier
 Bundle-Vendor: %bundle.provider
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-Localization: bundle
