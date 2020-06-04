@@ -1,15 +1,17 @@
-/*******************************************************************************
+/****************************************************************************
  * Copyright (c) 2004, 2010 Composent, Inc. and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *    Benjamin Cabe <benjamin.cabe@anyware-tech.com> - bug 220258
  *    Henrich Kraemer - bug 295030, Update Manager doesn't work with SOCKS proxy  
- ******************************************************************************/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *****************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.retrieve;
 
 import java.io.BufferedOutputStream;

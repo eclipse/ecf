@@ -1,8 +1,9 @@
-/*******************************************************************************
- * Copyright (c) 2004, 2010 Composent, Inc., IBM All rights reserved. This
- * program and the accompanying materials are made available under the terms of
- * the Eclipse Public License v1.0 which accompanies this distribution, and is
- * available at http://www.eclipse.org/legal/epl-v10.html
+/****************************************************************************
+ * Copyright (c) 2004, 2010 Composent, Inc., IBM
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
  *
  * Contributors: 
  *  Composent, Inc. - initial API and implementation
@@ -10,7 +11,9 @@
  *  Henrich Kraemer - bug 263869, testHttpsReceiveFile fails using HTTP proxy
  *  Henrich Kraemer - bug 263613, [transport] Update site contacting / downloading is not cancelable
  *  Thomas Joiner - HttpClient 4 implementation
- ******************************************************************************/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *****************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.httpclient4;
 
 import java.io.FilterInputStream;

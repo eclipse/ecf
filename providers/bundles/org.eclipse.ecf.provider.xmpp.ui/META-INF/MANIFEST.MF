@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.provider.xmpp.ui;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.provider.xmpp.ui
-Bundle-Version: 2.2.201.qualifier
+Bundle-Version: 2.2.300.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.provider.xmpp.ui.Activator
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin

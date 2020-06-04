@@ -10,6 +10,6 @@
   </parent>
   <groupId>org.eclipse.ecf</groupId>
   <artifactId>org.eclipse.ecf.provider.zookeeper</artifactId>
-  <version>1.2.201-SNAPSHOT</version>
+  <version>1.2.300-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>
