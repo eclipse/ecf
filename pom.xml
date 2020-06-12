@@ -381,6 +381,10 @@
             </sourceReferences>
             <timestampProvider>jgit</timestampProvider>
             <jgit.dirtyWorkingTree>warning</jgit.dirtyWorkingTree>
+            <jgit.ignore>
+              pom.xml
+              .polyglot.build.properties
+            </jgit.ignore>
           </configuration>
         </plugin>
         <plugin>
