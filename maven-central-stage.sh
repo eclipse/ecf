@@ -3,6 +3,8 @@ set -e
 
 # A space delimited list of feature IDs
 features_whose_bundles_we_will_deploy="org.eclipse.ecf.remoteservice.sdk.feature
+org.eclipse.ecf.core.feature
+org.eclipse.ecf.core.ssl.feature
 org.eclipse.ecf.filetransfer.feature
 org.eclipse.ecf.filetransfer.ssl.feature
 org.eclipse.ecf.filetransfer.httpclient45.feature
@@ -22,6 +24,22 @@ org.apache.httpcomponents.httpcore
 org.apache.log4j
 org.json
 org.objectweb.asm"
+
+wget 'https://downloads.sourceforge.net/project/xmltask/xmltask/1.16.1/xmltask.jar?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fxmltask%2Ffiles%2Fxmltask%2F1.16.1%2Fxmltask.jar' -O xmltask.jar
+cat << EOF > xpath.xml
+<project xmlns:if="ant:if" xmlns:unless="ant:unless" name="xpath" default="xpath">
+        <target name="init">
+                <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpath="xmltask.jar"/>
+        </target>
+        <target name="xpath" depends="init">
+                <xmltask source="\${xml.file}">
+                        <copy path="\${xml.path}" property="results" append="true"/>
+                </xmltask>
+                <echo if:set="results" message="\${results}" file="results" append="false"/>
+                <echo unless:set="results" message="" file="results" append="false"/>
+        </target>
+</project>
+EOF
 
 function deploy() {
 	local target=$1
@@ -106,13 +124,9 @@ function _add_feature_to_list() {
 function xpath_call() {
 	local xmlfile=$1
 	local xmlquery=$2
-	local result=
-	if [ -n "$JENKINS_NAME" ] ; then
-		result=$(xpath $xmlfile "$xmlquery")
-	else
-		result=$(xpath -e "$xmlquery" $xmlfile 2>/dev/null)
-	fi
-	echo "$result"
+	ant -f xpath.xml -Dxml.file=$xmlfile -Dxml.path="$xmlquery" >/dev/null
+	cat results
+	rm -f results
 }
 
 function parse_feature() {
