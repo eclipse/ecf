@@ -30,7 +30,7 @@
 			mvn:org.eclipse.ecf/org.eclipse.ecf.discovery/5.0.301
 		</bundle>
 		<bundle>
-			mvn:org.eclipse.ecf/org.eclipse.ecf.remoteservice.asyncproxy/2.1.2
+			mvn:org.eclipse.ecf/org.eclipse.ecf.remoteservice.asyncproxy
 		</bundle>
 		<bundle>
 			mvn:org.eclipse.ecf/org.eclipse.ecf.remoteservice/8.13.2
