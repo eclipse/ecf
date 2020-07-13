@@ -80,7 +80,7 @@
     <tycho.scmUrl>${project.scm.connection}</tycho.scmUrl>
     <tycho.baseline>warn</tycho.baseline>
     <tycho.baseline.replace>all</tycho.baseline.replace>
-    <tycho.baseline.comparison>fail</tycho.baseline.comparison>
+    <tycho.baseline.comparison>warn</tycho.baseline.comparison>
   </properties>
 
   <pluginRepositories>
