@@ -94,6 +94,10 @@
                   <artifactId>org.eclipse.help.base</artifactId>
                   <type>eclipse-plugin</type>
                 </dependency>
+                <dependency>
+                  <artifactId>javax.annotation</artifactId>
+                  <type>eclipse-plugin</type>
+                </dependency>
               </dependencies>
             </configuration>
           </execution>
