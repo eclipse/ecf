@@ -4,16 +4,16 @@
 	<feature name="ecf-rs-dependencies" version="3.14.13"
 		description="ECF 3.14.13 RemoteServices External Dependencies. https://wiki.eclipse.org/ECF#OSGi_Remote_Services">
 		<bundle>
-			mvn:org.eclipse.platform/org.eclipse.equinox.supplement
+			mvn:org.eclipse.platform/org.eclipse.equinox.supplement/1.9.100
 		</bundle>
 		<bundle>
-			mvn:org.eclipse.platform/org.eclipse.equinox.common
+			mvn:org.eclipse.platform/org.eclipse.equinox.common/3.10.600
 		</bundle>
 		<bundle>
-			mvn:org.eclipse.platform/org.eclipse.core.jobs
+			mvn:org.eclipse.platform/org.eclipse.core.jobs/3.10.500
 		</bundle>
 		<bundle>
-			mvn:org.eclipse.platform/org.eclipse.equinox.concurrent
+			mvn:org.eclipse.platform/org.eclipse.equinox.concurrent/1.1.400
 		</bundle>
 		<feature>scr</feature>
 		<feature>eventadmin</feature>
