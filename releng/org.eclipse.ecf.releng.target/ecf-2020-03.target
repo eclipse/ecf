@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.8"?>
-<target name="2020-03" sequenceNumber="27">
+<target name="2020-03" sequenceNumber="26">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.license.feature.group" version="2.0.2.v20181016-2210"/>
@@ -35,14 +35,11 @@
 <unit id="org.apache.httpcomponents.httpclient.win.source" version="4.5.10.v20200113-2105"/>
 <unit id="org.apache.httpcomponents.httpcore" version="4.4.12.v20200108-1212"/>
 <unit id="org.apache.httpcomponents.httpcore.source" version="4.4.12.v20200108-1212"/>
+<unit id="com.sun.jna" version="4.5.1.v20190425-1842"/>
+<unit id="com.sun.jna.platform" version="4.5.1.v20190425-1842"/>
+<unit id="com.sun.jna.platform.source" version="4.5.1.v20190425-1842"/>
+<unit id="com.sun.jna.source" version="4.5.1.v20190425-1842"/>
 <repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20200224183213/repository"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="com.sun.jna" version="5.6.0.v20200716-0148"/>
-<unit id="com.sun.jna.platform" version="5.6.0.v20200722-0209"/>
-<unit id="com.sun.jna.platform.source" version="5.6.0.v20200722-0209"/>
-<unit id="com.sun.jna.source" version="5.6.0.v20200716-0148"/>
-<repository location="https://download.eclipse.org/tools/orbit/downloads/2020-09/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.emf.edit.ui.feature.group" version="2.19.0.v20200205-0529"/>
