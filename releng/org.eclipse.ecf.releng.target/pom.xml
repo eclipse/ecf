@@ -70,11 +70,6 @@
                   <type>target</type>
                   <classifier>ecf-2020-03</classifier>
                 </artifact>
-                <artifact>
-                  <file>ecf-2020-09.target</file>
-                  <type>target</type>
-                  <classifier>ecf-2020-09</classifier>
-                </artifact>
               </artifacts>
             </configuration>
           </execution>
