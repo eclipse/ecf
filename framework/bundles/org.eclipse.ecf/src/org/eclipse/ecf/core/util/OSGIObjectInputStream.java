@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2018 Composent, Inc. and others.
+ * Copyright (c) 2018, 2020 Composent, Inc. and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -210,7 +210,7 @@ public class OSGIObjectInputStream extends ObjectInputStream implements OSGIObje
 		Class<?> clazz = loadClass(in.readUTF());
 		Object result = null;
 		try {
-			result = clazz.newInstance();
+			result = clazz.getDeclaredConstructor().newInstance();
 			for (Field f : clazz.getFields()) {
 				final int mod = f.getModifiers();
 				// If it's static or transient then ignore
@@ -257,7 +257,7 @@ public class OSGIObjectInputStream extends ObjectInputStream implements OSGIObje
 
 	protected Object createInstance(Class<?> clazz) throws IOException {
 		try {
-			return clazz.newInstance();
+			return clazz.getDeclaredConstructor().newInstance();
 		} catch (Exception e) {
 			throw new IOException("Could create new instance of class=" + clazz.getName() + ".  Class must have public no-arg constructor"); //$NON-NLS-1$ //$NON-NLS-2$
 		}

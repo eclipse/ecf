@@ -11,6 +11,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.core;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
@@ -124,7 +125,15 @@ public class ContainerTypeDescription {
 		// Load instantiator class
 		Class clazz = Class.forName(instantiatorClass);
 		// Make new instance
-		instantiator = (IContainerInstantiator) clazz.newInstance();
+		try {
+			instantiator = (IContainerInstantiator) clazz.getDeclaredConstructor().newInstance();
+		} catch (InvocationTargetException e) {
+			throw new ClassNotFoundException("Invocation target exception accessing null constructor for class=" + clazz, e); //$NON-NLS-1$
+		} catch (NoSuchMethodException e) {
+			throw new ClassNotFoundException("No null constructor found on class=" + clazz, e); //$NON-NLS-1$
+		} catch (SecurityException e) {
+			throw new ClassNotFoundException("Security exception accessing null constructor for class=" + clazz, e); //$NON-NLS-1$
+		}
 	}
 
 	/**

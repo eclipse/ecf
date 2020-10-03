@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+ * Copyright (c) 2004, 2020 Composent, Inc. and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -141,7 +141,7 @@ public class ECFPlugin implements BundleActivator {
 		// initialize the default ssl socket factory 
 		try {
 			Class ecfSocketFactoryClass = Class.forName("org.eclipse.ecf.internal.ssl.ECFTrustManager"); //$NON-NLS-1$
-			ecfTrustManager = (BundleActivator) ecfSocketFactoryClass.newInstance();
+			ecfTrustManager = (BundleActivator) ecfSocketFactoryClass.getDeclaredConstructor().newInstance();
 			ecfTrustManager.start(ctxt);
 		} catch (ClassNotFoundException e) {
 			// will occur if fragment is not installed or not on proper execution environment
