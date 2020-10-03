@@ -120,7 +120,7 @@ public class URLRetrievePauseResumeTest extends ContainerAbstractTestCase {
 						incomingFile = new File(FILENAME);
 						outs = new FileOutputStream(incomingFile);
 						session = rse.receive(outs);
-						pausable = (IFileTransferPausable) session.getAdapter(IFileTransferPausable.class);
+						pausable = session.getAdapter(IFileTransferPausable.class);
 						assertNotNull("pausable is null", pausable);
 					} catch (IOException e) {
 						fail(e.getLocalizedMessage());

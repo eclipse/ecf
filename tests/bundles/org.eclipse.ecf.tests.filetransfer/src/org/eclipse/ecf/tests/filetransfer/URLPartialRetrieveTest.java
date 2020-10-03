@@ -105,7 +105,7 @@ public class URLPartialRetrieveTest extends AbstractRetrieveTestCase {
 					try {
 						outs = new FileOutputStream(FILENAME);
 						session = rse.receive(outs);
-						pausable = (IFileTransferPausable) session.getAdapter(IFileTransferPausable.class);
+						pausable = session.getAdapter(IFileTransferPausable.class);
 						if (pausable == null)
 							fail("pausable is null");
 					} catch (final IOException e) {

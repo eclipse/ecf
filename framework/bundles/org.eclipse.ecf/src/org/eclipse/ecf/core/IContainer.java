@@ -160,7 +160,7 @@ public interface IContainer extends IAdaptable, IIdentifiable {
 	 *         <code>null</code> if this container does not support the given
 	 *         service
 	 */
-	public Object getAdapter(Class serviceType);
+	public <T> T getAdapter(Class<T> serviceType);
 
 	/**
 	 * Dispose this IContainer instance. The container instance will be made

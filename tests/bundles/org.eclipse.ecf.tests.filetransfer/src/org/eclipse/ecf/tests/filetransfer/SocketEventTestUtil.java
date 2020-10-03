@@ -95,19 +95,16 @@ public class SocketEventTestUtil {
 		}
 
 		private Object canAdaptTo(ISocketEventSource source) {
-			IRetrieveFileTransferContainerAdapter receive = (IRetrieveFileTransferContainerAdapter) source
+			IRetrieveFileTransferContainerAdapter receive = source
 					.getAdapter(IRetrieveFileTransferContainerAdapter.class);
 			if (receive != null) {
-				canAdaptTo(source, receive, new Class[] {
-						IRetrieveFileTransfer.class,
-						IIncomingFileTransfer.class, IFileTransfer.class });
+				canAdaptTo(source, receive,
+						new Class[] { IRetrieveFileTransfer.class, IIncomingFileTransfer.class, IFileTransfer.class });
 				return receive;
 			}
-			ISendFileTransferContainerAdapter send = (ISendFileTransferContainerAdapter) source
-					.getAdapter(ISendFileTransferContainerAdapter.class);
+			ISendFileTransferContainerAdapter send = source.getAdapter(ISendFileTransferContainerAdapter.class);
 			if (send != null) {
-				canAdaptTo(source, send, new Class[] {
-						IIncomingFileTransfer.class, IFileTransfer.class });
+				canAdaptTo(source, send, new Class[] { IIncomingFileTransfer.class, IFileTransfer.class });
 				return send;
 			}
 			fail("Should be adapable to IRetrieveFileTransferContainerAdapter or ISendFileTransferContainerAdapter");
@@ -127,8 +124,7 @@ public class SocketEventTestUtil {
 
 	public static TrackSocketEvents observeSocketEvents(
 			IFileTransferConnectStartEvent event) {
-		ISocketEventSource socketSource = (ISocketEventSource) event
-				.getAdapter(ISocketEventSource.class);
+		ISocketEventSource socketSource = event.getAdapter(ISocketEventSource.class);
 		return new TrackSocketEvents(socketSource);
 	}
 

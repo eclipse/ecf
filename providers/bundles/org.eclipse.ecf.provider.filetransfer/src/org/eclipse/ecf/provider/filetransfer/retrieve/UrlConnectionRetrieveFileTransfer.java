@@ -424,11 +424,11 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 	 * org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer
 	 * #getAdapter(java.lang.Class)
 	 */
-	public Object getAdapter(Class adapter) {
+	public <T> T getAdapter(Class<T> adapter) {
 		if (adapter == null)
 			return null;
 		if (adapter.equals(IFileTransferPausable.class) && isHTTP11())
-			return this;
+			return adapter.cast(this);
 		return super.getAdapter(adapter);
 	}
 

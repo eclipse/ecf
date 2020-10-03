@@ -90,14 +90,14 @@ public class User implements IUser {
 		this.nickname = nickname;
 	}
 
-	public Object getAdapter(Class adapter) {
+	public <T> T getAdapter(Class<T> adapter) {
 		if (adapter.isInstance(this)) {
-			return this;
+			return adapter.cast(this);
 		}
 		IAdapterManager adapterManager = ECFPlugin.getDefault().getAdapterManager();
 		if (adapterManager == null)
 			return null;
-		return adapterManager.loadAdapter(this, adapter.getName());
+		return (T) adapterManager.loadAdapter(this, adapter.getName());
 	}
 
 	public String toString() {

@@ -546,14 +546,14 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 	 * 
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
-	public Object getAdapter(Class adapter) {
+	public <T> T getAdapter(Class<T> adapter) {
 		if (adapter == null)
 			return null;
 		if (adapter.isInstance(this)) {
-			return this;
+			return adapter.cast(this);
 		}
 		final IAdapterManager adapterManager = Activator.getDefault().getAdapterManager();
-		return (adapterManager == null) ? null : adapterManager.loadAdapter(this, adapter.getName());
+		return (T) ((adapterManager == null) ? null : adapterManager.loadAdapter(this, adapter.getName()));
 	}
 
 	/**

@@ -56,7 +56,7 @@ public abstract class AbstractSendTestCase extends TestCase {
 	}
 
 	protected ISendFileTransferContainerAdapter getSendAdapter() throws Exception {
-		return (ISendFileTransferContainerAdapter) ContainerFactory.getDefault().createContainer().getAdapter(ISendFileTransferContainerAdapter.class);
+		return ContainerFactory.getDefault().createContainer().getAdapter(ISendFileTransferContainerAdapter.class);
 	}
 
 	protected IFileID createFileID(URL url) throws Exception {

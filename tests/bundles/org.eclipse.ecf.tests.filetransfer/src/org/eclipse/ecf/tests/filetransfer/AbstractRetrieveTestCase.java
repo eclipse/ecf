@@ -57,7 +57,7 @@ public abstract class AbstractRetrieveTestCase extends AbstractFileTransferTestC
 	Object lock = new Object();
 	
 	protected IRetrieveFileTransferContainerAdapter getRetrieveAdapter() throws Exception {
-		return (IRetrieveFileTransferContainerAdapter) ContainerFactory.getDefault().createContainer().getAdapter(IRetrieveFileTransferContainerAdapter.class);
+		return ContainerFactory.getDefault().createContainer().getAdapter(IRetrieveFileTransferContainerAdapter.class);
 	}
 
 	protected IFileID createFileID(URL url) throws Exception {

@@ -121,7 +121,7 @@ public class URIProtocolFactoryRetrieveTest extends AbstractRetrieveTestCase {
 					public void setProxy(Proxy proxy) {
 					}
 
-					public Object getAdapter(Class adapter) {
+					public <T> T getAdapter(Class<T> adapter) {
 						return null;
 					}};
 			}};

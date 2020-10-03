@@ -27,11 +27,11 @@ public abstract class AbstractContainerAdapterFactory implements IAdapterFactory
 	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object,
 	 *      java.lang.Class)
 	 */
-	public Object getAdapter(Object adaptableObject, Class adapterType) {
+	public <T> T getAdapter(Object adaptableObject, Class<T> adapterType) {
 		if (adaptableObject == null || adapterType == null)
 			return null;
 		if (IContainer.class.isInstance(adaptableObject))
-			return getContainerAdapter((IContainer) adaptableObject, adapterType);
+			return adapterType.cast(getContainerAdapter((IContainer) adaptableObject, adapterType));
 		return null;
 	}
 
@@ -51,6 +51,6 @@ public abstract class AbstractContainerAdapterFactory implements IAdapterFactory
 	 * 
 	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapterList()
 	 */
-	public abstract Class[] getAdapterList();
+	public abstract Class<?>[] getAdapterList();
 
 }

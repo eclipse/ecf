@@ -53,7 +53,7 @@ public abstract class AbstractBrowseTestCase extends AbstractFileTransferTestCas
 	protected void setUp() throws Exception {
 		super.setUp();
 		final IContainer container = ContainerFactory.getDefault().createContainer();
-		adapter = (IRemoteFileSystemBrowserContainerAdapter) container.getAdapter(IRemoteFileSystemBrowserContainerAdapter.class);
+		adapter = container.getAdapter(IRemoteFileSystemBrowserContainerAdapter.class);
 	}
 
 	/* (non-Javadoc)
