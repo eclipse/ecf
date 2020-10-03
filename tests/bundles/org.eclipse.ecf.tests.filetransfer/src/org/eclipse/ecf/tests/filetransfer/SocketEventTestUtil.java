@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2009 IBM, and others.
+ * Copyright (c) 2009, 2020 IBM and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,12 +13,13 @@
 
 package org.eclipse.ecf.tests.filetransfer;
 
+import static org.junit.Assert.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import junit.framework.Assert;
 
 import org.eclipse.ecf.filetransfer.IFileTransfer;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
@@ -55,7 +56,7 @@ public class SocketEventTestUtil {
 
 
 		public void validateNoSocketCreated() {
-			Assert.assertEquals(0, socketEvents.size());
+			assertEquals(0, socketEvents.size());
 		}
 		
 		public void validateOneSocketCreatedAndClosed() {
@@ -63,34 +64,34 @@ public class SocketEventTestUtil {
 //				return;
 //			}
 			eventSource.removeListener(listener);
-			Assert.assertTrue(socketEvents.size() > 0);
+			assertTrue(socketEvents.size() > 0);
 			ISocketEvent socketEvent = (ISocketEvent) socketEvents.remove(0);
-			Assert.assertTrue(socketEvent.toString(),
+			assertTrue(socketEvent.toString(),
 					socketEvent instanceof ISocketCreatedEvent);
 			ISocketCreatedEvent createdEvent = (ISocketCreatedEvent) socketEvent;
 			ISocketEventSource source = createdEvent.getSource();
-			Assert.assertNotNull(source.toString(), source);
+			assertNotNull(source.toString(), source);
 			Object primary = canAdaptTo(source);
 			Socket createdSocket = createdEvent.getSocket();
-			Assert.assertNotNull(primary.toString(), createdSocket);
+			assertNotNull(primary.toString(), createdSocket);
 
-			Assert.assertTrue(socketEvents.size() > 0);
+			assertTrue(socketEvents.size() > 0);
 			socketEvent = (ISocketEvent) socketEvents.remove(0);
-			Assert.assertTrue(socketEvent.toString(),
+			assertTrue(socketEvent.toString(),
 					socketEvent instanceof ISocketConnectedEvent);
 			ISocketConnectedEvent connectedEvent = (ISocketConnectedEvent) socketEvent;
-			Assert.assertSame(source, connectedEvent.getSource());
-			Assert.assertTrue(createdEvent.isSameFactorySocket(connectedEvent));
+			assertSame(source, connectedEvent.getSource());
+			assertTrue(createdEvent.isSameFactorySocket(connectedEvent));
 
-			Assert.assertTrue(socketEvents.size() > 0);
+			assertTrue(socketEvents.size() > 0);
 			socketEvent = (ISocketEvent) socketEvents.remove(0);
-			Assert.assertTrue(socketEvent.toString(),
+			assertTrue(socketEvent.toString(),
 					socketEvent instanceof ISocketClosedEvent);
 			ISocketClosedEvent closedEvent = (ISocketClosedEvent) socketEvent;
-			Assert.assertSame(source, closedEvent.getSource());
-			Assert.assertTrue(createdEvent.isSameFactorySocket(closedEvent));
+			assertSame(source, closedEvent.getSource());
+			assertTrue(createdEvent.isSameFactorySocket(closedEvent));
 
-			Assert.assertEquals(0, socketEvents.size());
+			assertEquals(0, socketEvents.size());
 		}
 
 		private Object canAdaptTo(ISocketEventSource source) {
@@ -109,8 +110,7 @@ public class SocketEventTestUtil {
 						IIncomingFileTransfer.class, IFileTransfer.class });
 				return send;
 			}
-			Assert
-					.fail("Should be adapable to IRetrieveFileTransferContainerAdapter or ISendFileTransferContainerAdapter");
+			fail("Should be adapable to IRetrieveFileTransferContainerAdapter or ISendFileTransferContainerAdapter");
 			// TODO: for browse as well.
 			return null;
 		}
@@ -119,7 +119,7 @@ public class SocketEventTestUtil {
 				Class[] classes) {
 			for (int i = 0; i < classes.length; i++) {
 				Class class1 = classes[i];
-				Assert.assertNotNull(source.toString() + ".getAdapter("
+				assertNotNull(source.toString() + ".getAdapter("
 						+ class1.getName() + ")", source.getAdapter(class1));
 			}
 		}
