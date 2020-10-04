@@ -78,7 +78,7 @@ public class URLRetrieveTestWithCustomJob extends AbstractRetrieveTestCase {
 		fileTransferJob.addJobChangeListener(new JobChangeTraceListener(startTime));
 		retrieveAdapter.sendRetrieveRequest(fileID, listener, null);
 
-		waitForDone(10000);
+		waitForDone(20000);
 
 		final IStatus result = fileTransferJob.getResult();
 		System.out.println("job=" + fileTransferJob.getName() + " result=" + result);

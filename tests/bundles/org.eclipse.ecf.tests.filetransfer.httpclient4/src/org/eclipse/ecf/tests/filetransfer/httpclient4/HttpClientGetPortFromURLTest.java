@@ -13,7 +13,7 @@
 
 package org.eclipse.ecf.tests.filetransfer.httpclient4;
 
-import org.eclipse.ecf.provider.filetransfer.httpclient4.HttpClientRetrieveFileTransfer;
+import org.eclipse.ecf.provider.filetransfer.httpclient45.HttpClientRetrieveFileTransfer;
 
 import junit.framework.TestCase;
 

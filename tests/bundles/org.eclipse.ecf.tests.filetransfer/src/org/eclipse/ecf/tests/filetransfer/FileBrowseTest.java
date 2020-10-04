@@ -63,7 +63,7 @@ public class FileBrowseTest extends AbstractBrowseTestCase {
 
 	public void testFileBrowse() throws Exception {
 		for (int i = 0; i < files.length; i++) {
-			testBrowse(files[i].toURI().toURL());
+			testBrowse(files[i].toURL());
 			Thread.sleep(100);
 		}
 	}
