@@ -156,7 +156,7 @@
         <setEntry value="org.eclipse.ecf.provider.filetransfer@default:default"/>
         <setEntry value="org.eclipse.ecf.ssl@default:false"/>
         <setEntry value="org.eclipse.ecf.tests.apache.httpclient.server@default:default"/>
-        <setEntry value="org.eclipse.ecf.tests.filetransfer.httpclient4@default:false"/>
+        <setEntry value="org.eclipse.ecf.tests.filetransfer.httpclient45@default:default"/>
         <setEntry value="org.eclipse.ecf.tests.filetransfer.httpserver@default:default"/>
         <setEntry value="org.eclipse.ecf.tests.filetransfer@default:default"/>
         <setEntry value="org.eclipse.ecf.tests@default:default"/>
