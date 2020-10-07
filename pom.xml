@@ -73,7 +73,7 @@
   <properties>
     <tycho-version>1.6.0</tycho-version>
     <cbi-version>1.1.7</cbi-version>
-    <target-platform>photon</target-platform>
+    <target-platform>2020-09</target-platform>
     <eclipserun-repo>https://download.eclipse.org/eclipse/updates/latest/</eclipserun-repo>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
     <project.resources.sourceEncoding>ISO-8859-1</project.resources.sourceEncoding>
