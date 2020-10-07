@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.filetransfer.feature"
       label="%featureName"
-      version="3.14.1600.qualifier"
+      version="3.14.1700.qualifier"
       provider-name="%providerName"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">

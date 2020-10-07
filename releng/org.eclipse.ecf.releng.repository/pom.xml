@@ -10,7 +10,7 @@
   </parent>
   <groupId>org.eclipse.ecf</groupId>
   <artifactId>org.eclipse.ecf.releng.repository</artifactId>
-  <version>3.14.16-SNAPSHOT</version>
+  <version>3.14.17-SNAPSHOT</version>
   <packaging>eclipse-repository</packaging>
 
   <name>ECF p2 Repository</name>
