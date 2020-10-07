@@ -202,7 +202,6 @@
     <module>tests/bundles/org.eclipse.ecf.tests.apache.httpclient.server</module>
     <module>tests/bundles/org.eclipse.ecf.tests.datashare</module>
     <module>tests/bundles/org.eclipse.ecf.tests.filetransfer</module>
-    <module>tests/bundles/org.eclipse.ecf.tests.filetransfer.httpclient4</module>
     <module>tests/bundles/org.eclipse.ecf.tests.filetransfer.httpclient45</module>
     <module>tests/bundles/org.eclipse.ecf.tests.filetransfer.httpserver</module>
     <module>tests/bundles/org.eclipse.ecf.tests.presence</module>
