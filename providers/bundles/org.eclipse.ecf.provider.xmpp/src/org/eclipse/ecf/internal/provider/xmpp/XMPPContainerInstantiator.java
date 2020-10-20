@@ -30,7 +30,7 @@ public class XMPPContainerInstantiator extends GenericContainerInstantiator {
 	public IContainer createInstance(ContainerTypeDescription description,
 			Object[] args) throws ContainerCreateException {
 		try {
-			Integer ka = new Integer(XMPPContainer.DEFAULT_KEEPALIVE);
+			Integer ka = Integer.valueOf(XMPPContainer.DEFAULT_KEEPALIVE);
 			String name = null;
 			if (args != null) {
 				if (args.length > 0) {
@@ -48,7 +48,7 @@ public class XMPPContainerInstantiator extends GenericContainerInstantiator {
 				}
 			} else {
 				if (ka == null) {
-					ka = new Integer(XMPPContainer.DEFAULT_KEEPALIVE);
+					ka = Integer.valueOf(XMPPContainer.DEFAULT_KEEPALIVE);
 				}
 				return new XMPPContainer(name, ka.intValue());
 			}

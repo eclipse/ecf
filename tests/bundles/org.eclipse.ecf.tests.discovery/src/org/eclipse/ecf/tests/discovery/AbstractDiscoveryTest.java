@@ -110,8 +110,8 @@ public abstract class AbstractDiscoveryTest extends TestCase {
 		testId = Long.toString(random.nextLong());
 		serviceProperties.setPropertyString(getName() + "testIdentifier", testId);
 		serviceProperties.setPropertyString(getName() + "servicePropertiesString", "serviceProperties");
-		serviceProperties.setProperty(getName() + "servicePropertiesIntegerMax", new Integer(Integer.MIN_VALUE));
-		serviceProperties.setProperty(getName() + "servicePropertiesIntegerMin", new Integer(Integer.MAX_VALUE));
+		serviceProperties.setProperty(getName() + "servicePropertiesIntegerMax", Integer.valueOf(Integer.MIN_VALUE));
+		serviceProperties.setProperty(getName() + "servicePropertiesIntegerMin", Integer.valueOf(Integer.MAX_VALUE));
 		serviceProperties.setProperty(getName() + "servicePropertiesBoolean", new Boolean(false));
 		serviceProperties.setPropertyBytes(getName() + "servicePropertiesByte", new byte[]{-127, -126, -125, 0, 1, 2, 3, 'a', 'b', 'c', 'd', 126, 127});
 		serviceInfo = new ServiceInfo(uri, DiscoveryTestHelper.SERVICENAME, serviceTypeID, 1, 1, serviceProperties, ttl);

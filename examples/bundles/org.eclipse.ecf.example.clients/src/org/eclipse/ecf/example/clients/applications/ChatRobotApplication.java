@@ -44,7 +44,7 @@ public class ChatRobotApplication implements IApplication, IMessageReceiver, IPr
 		if (originalArgs.length < 3) {
 			System.out
 					.println("Parameters:  <senderAccount> <senderPassword> <targetAccount> [<message>].  e.g. sender@gmail.com senderpassword receiver@gmail.com \"Hello there\"");
-			return new Integer(-1);
+			return Integer.valueOf(-1);
 		}
 		String message = null;
 		if (originalArgs.length > 3) message = originalArgs[3];
@@ -64,7 +64,7 @@ public class ChatRobotApplication implements IApplication, IMessageReceiver, IPr
 		ID targetID = (ID) rosterUsers.get(originalArgs[2]);
 		if (targetID == null) {
 			System.out.println("target user="+originalArgs[2]+" is not on active on your contacts list.  Cannot send message to this user");
-			return new Integer(0);
+			return Integer.valueOf(0);
 		}
 		// Construct message
 		String msgToSend = (message==null)?"Hi, I'm an ECF chat robot.":message;

@@ -44,9 +44,8 @@ import org.osgi.framework.InvalidSyntaxException;
 public abstract class AbstractRemoteServiceTest extends
 		ContainerAbstractTestCase {
 
-	protected static final int SLEEPTIME = new Integer(System.getProperty(
-			"org.eclipse.ecf.tests.remoteservice.AbstractRemoteServiceTest.SLEEPTIME", "5000"))
-			.intValue();
+	protected static final int SLEEPTIME = Integer.parseInt(System.getProperty(
+			"org.eclipse.ecf.tests.remoteservice.AbstractRemoteServiceTest.SLEEPTIME", "5000"));
 
 	protected IRemoteServiceContainerAdapter[] adapters = null;
 

@@ -32,7 +32,7 @@ import org.eclipse.ecf.presence.im.IChatMessageEvent;
 public abstract class AbstractChatTest extends AbstractPresenceTestCase {
 
 	IChatManager chat0, chat1 = null;
-	public static final int SLEEPTIME = new Integer(
+	public static final int SLEEPTIME = Integer.valueOf(
 			System.getProperty(
 					"org.eclipse.ecf.tests.presence.AbstractChatTest.SLEEPTIME",
 					"5000")).intValue();

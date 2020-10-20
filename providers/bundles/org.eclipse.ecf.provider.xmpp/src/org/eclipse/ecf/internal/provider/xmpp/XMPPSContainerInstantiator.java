@@ -28,7 +28,7 @@ public class XMPPSContainerInstantiator extends XMPPContainerInstantiator {
 	public IContainer createInstance(ContainerTypeDescription description,
 			Object[] args) throws ContainerCreateException {
 		try {
-			Integer ka = new Integer(XMPPSContainer.DEFAULT_KEEPALIVE);
+			Integer ka = Integer.valueOf(XMPPSContainer.DEFAULT_KEEPALIVE);
 			String name = null;
 			if (args != null) {
 				if (args.length > 0) {
@@ -46,7 +46,7 @@ public class XMPPSContainerInstantiator extends XMPPContainerInstantiator {
 				}
 			} else {
 				if (ka == null) {
-					ka = new Integer(XMPPSContainer.DEFAULT_KEEPALIVE);
+					ka = Integer.valueOf(XMPPSContainer.DEFAULT_KEEPALIVE);
 				}
 				return new XMPPSContainer(name, ka.intValue());
 			}

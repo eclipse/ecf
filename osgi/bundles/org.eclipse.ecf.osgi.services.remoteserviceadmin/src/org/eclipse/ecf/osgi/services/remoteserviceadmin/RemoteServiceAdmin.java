@@ -177,7 +177,7 @@ public class RemoteServiceAdmin implements org.osgi.service.remoteserviceadmin.R
 		// Only setup defaults if it hasn't already been done by some other
 		// Remote Service Admin instance
 		Properties props = new Properties();
-		props.put(org.osgi.framework.Constants.SERVICE_RANKING, new Integer(Integer.MIN_VALUE));
+		props.put(org.osgi.framework.Constants.SERVICE_RANKING, Integer.valueOf(Integer.MIN_VALUE));
 		// host container selector
 		ServiceReference[] hostContainerSelectorRefs = null;
 		BundleContext rsaBundleContext = getRSABundleContext();

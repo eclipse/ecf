@@ -46,7 +46,7 @@ public class ChatRoomRobotApplication implements IApplication, IMessageReceiver,
 		if (originalArgs.length < 4) {
 			System.out
 					.println("Parameters:  <senderAccount> <senderPassword> <chatroomname>.  e.g. sender@gmail.com senderpassword mychatroom");
-			return new Integer(-1);
+			return Integer.valueOf(-1);
 		}
 		senderAccount = originalArgs[0];
 		// Create client

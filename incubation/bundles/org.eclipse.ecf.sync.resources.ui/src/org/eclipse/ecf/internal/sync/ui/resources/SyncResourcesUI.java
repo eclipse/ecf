@@ -131,10 +131,10 @@ public class SyncResourcesUI extends AbstractUIPlugin {
 		IPath path = file.getFullPath();
 		Integer integer = (Integer) sharedFiles.get(path);
 		if (integer == null) {
-			sharedFiles.put(path, new Integer(1));
+			sharedFiles.put(path, Integer.valueOf(1));
 			return true;
 		}
-		sharedFiles.put(path, new Integer(integer.intValue() + 1));
+		sharedFiles.put(path, Integer.valueOf(integer.intValue() + 1));
 		return false;
 	}
 
@@ -150,7 +150,7 @@ public class SyncResourcesUI extends AbstractUIPlugin {
 			return true;
 		}
 
-		sharedFiles.put(path, new Integer(integer.intValue() - 1));
+		sharedFiles.put(path, Integer.valueOf(integer.intValue() - 1));
 		return false;
 	}
 

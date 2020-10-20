@@ -467,7 +467,7 @@ class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerAdapter
 		props.put(org.eclipse.ecf.remoteservice.Constants.OBJECTCLASS, clazzes);
 		// service ranking (Integer).  Allow this to be set by user
 		Integer serviceRanking = (Integer) props.get(org.eclipse.ecf.remoteservice.Constants.SERVICE_RANKING);
-		serviceRanking = (serviceRanking == null) ? new Integer(0) : serviceRanking;
+		serviceRanking = (serviceRanking == null) ? Integer.valueOf(0) : serviceRanking;
 		props.put(org.eclipse.ecf.remoteservice.Constants.SERVICE_RANKING, serviceRanking);
 
 		for (String clazz : clazzes) {

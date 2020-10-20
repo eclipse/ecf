@@ -22,7 +22,7 @@ import org.eclipse.ecf.core.identity.ID;
 public abstract class AbstractConnectTest extends AbstractPresenceTestCase {
 
 	public static final int CLIENT_COUNT = 2;
-	public static final int SLEEPTIME = new Integer(System.getProperty(
+	public static final int SLEEPTIME = Integer.valueOf(System.getProperty(
 			"org.eclipse.ecf.tests.presence.AbstractConnectTest.SLEEPTIME", "1000"))
 			.intValue();
 

@@ -133,7 +133,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		// so that any other registered factories will be preferred
 		final Properties properties = new Properties();
 		properties.put(Constants.SERVICE_RANKING,
-				new Integer(Integer.MIN_VALUE));
+				Integer.valueOf(Integer.MIN_VALUE));
 		serviceInfoFactory = new ServiceInfoFactory();
 		defaultServiceInfoFactoryRegistration = context.registerService(
 				IServiceInfoFactory.class.getName(), serviceInfoFactory,

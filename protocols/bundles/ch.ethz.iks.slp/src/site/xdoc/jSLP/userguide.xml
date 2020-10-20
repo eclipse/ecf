@@ -66,7 +66,7 @@ ServiceURL myService = new ServiceURL("service:test:myService://my.host.ch", 60)
 Hashtable attributes = new Hashtable();
 attributes.put("persistent", Boolean.TRUE);
 attributes.put("cool", "yes");
-attributes.put("max-connections", new Integer(5));
+attributes.put("max-connections", Integer.valueOf(5));
 
 advertiser.register(myService, attributes);
 </source>

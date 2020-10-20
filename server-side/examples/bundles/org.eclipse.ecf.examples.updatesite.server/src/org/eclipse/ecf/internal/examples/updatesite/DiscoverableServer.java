@@ -86,12 +86,12 @@ public class DiscoverableServer implements IApplication {
 				wait();
 			}
 		}
-		return new Integer(0);
+		return Integer.valueOf(0);
 	}
 
 	private int getServicePort() {
 		final String osgiPort = System.getProperty("org.osgi.service.http.port"); //$NON-NLS-1$
-		Integer servicePort = new Integer(80);
+		Integer servicePort = Integer.valueOf(80);
 		if (osgiPort != null) {
 			servicePort = Integer.valueOf(osgiPort);
 		}

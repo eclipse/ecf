@@ -26,14 +26,14 @@ public class ClassUtilTest extends TestCase {
 	 * Test method for {@link org.eclipse.ecf.core.util.reflection.ClassUtil#getMethod(java.lang.Class, java.lang.String, java.lang.Class[])}.
 	 */
 	public void testGetPrimitiveMethodWithPrimitive() {
-		testGetMethod(new Class[] {int.class}, new Class[] {int.class}, new Object[]{new Integer(1)});		
+		testGetMethod(new Class[] {int.class}, new Class[] {int.class}, new Object[]{Integer.valueOf(1)});
 	}
 	
 	/**
 	 * Test method for {@link org.eclipse.ecf.core.util.reflection.ClassUtil#getMethod(java.lang.Class, java.lang.String, java.lang.Class[])}.
 	 */
 	public void testGetPrimitiveMethodWithObject() {
-		testGetMethod(new Class[] {Integer.class}, new Class[] {int.class}, new Object[]{new Integer(1)});
+		testGetMethod(new Class[] {Integer.class}, new Class[] {int.class}, new Object[]{Integer.valueOf(1)});
 	}
 
 	/**

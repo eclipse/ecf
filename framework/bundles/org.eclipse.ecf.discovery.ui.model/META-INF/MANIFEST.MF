@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.discovery.ui.model;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.discovery.ui.model
-Bundle-Version: 3.0.200.qualifier
+Bundle-Version: 3.0.201.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin

@@ -36,11 +36,11 @@ import org.eclipse.ecf.pubsub.ISubscriptionCallback;
 
 public class SubscriptionAgent extends PlatformObject implements ISharedObject, ISubscriber {
 	
-	protected static final Object CONTAINER_ID_KEY = new Integer(0);
+	protected static final Object CONTAINER_ID_KEY = Integer.valueOf(0);
 	
-	protected static final Object SHARED_OBJECT_ID_KEY = new Integer(1);
+	protected static final Object SHARED_OBJECT_ID_KEY = Integer.valueOf(1);
 	
-	protected static final Object CALLBACK_KEY = new Integer(2);
+	protected static final Object CALLBACK_KEY = Integer.valueOf(2);
 
 	protected ISharedObjectConfig config;
 	

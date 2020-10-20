@@ -60,7 +60,7 @@ public class ServerConfigParser {
 			int port = Connector.DEFAULT_PORT;
 			if (ports != null) {
 				try {
-					Integer porti = new Integer(ports);
+					Integer porti = Integer.valueOf(ports);
 					port = porti.intValue();
 				} catch (NumberFormatException e) {
 					// ignore
@@ -70,7 +70,7 @@ public class ServerConfigParser {
 			int timeout = Connector.DEFAULT_TIMEOUT;
 			if (timeouts != null) {
 				try {
-					Integer timeouti = new Integer(timeouts);
+					Integer timeouti = Integer.valueOf(timeouts);
 					timeout = timeouti.intValue();
 				} catch (NumberFormatException e) {
 					// ignore

@@ -226,7 +226,7 @@ public class SharedObjectMsg implements Serializable {
 		final Object args[] = aMsg.getArgs();
 		for (int i = 0; i < args.length; i++) {
 			if (args[i] != null && !(args[i] instanceof Serializable))
-				throw new NotSerializableException(NLS.bind(Messages.SharedObjectMsg_EXCEPTION_NOT_SERIALIZABLE, new Integer(i)));
+				throw new NotSerializableException(NLS.bind(Messages.SharedObjectMsg_EXCEPTION_NOT_SERIALIZABLE, Integer.valueOf(i)));
 		}
 	}
 

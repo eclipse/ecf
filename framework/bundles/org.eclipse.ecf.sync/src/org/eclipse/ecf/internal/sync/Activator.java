@@ -98,7 +98,7 @@ public class Activator implements BundleActivator {
 		// Register cola synchronizer service
 		final Dictionary colaServiceProps = new Properties();
 		//OSGi container will return the service with the highest ranking, so by default the Cola SynchStrategie is returned
-		colaServiceProps.put(Constants.SERVICE_RANKING, new Integer(1)); 
+		colaServiceProps.put(Constants.SERVICE_RANKING, Integer.valueOf(1));
 		colaServiceProps.put(IServiceConstants.SYNCSTRATEGY_TYPE_PROPERTY, ColaSynchronizationStrategyFactory.SYNCHSTRATEGY_TYPE);
 		colaServiceProps.put(IServiceConstants.SYNCSTRATEGY_PROVIDER_PROPETY, ColaSynchronizationStrategyFactory.SYNCHSTRATEGY_PROVIDER);
 		colaServiceRegistration = this.context.registerService(IDocumentSynchronizationStrategyFactory.class.getName(), this.cola, colaServiceProps);

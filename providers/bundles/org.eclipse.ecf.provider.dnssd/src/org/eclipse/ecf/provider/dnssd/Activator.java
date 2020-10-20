@@ -71,7 +71,7 @@ public class Activator implements BundleActivator {
 		// register the locator service
 		final Properties locProps = new Properties();
 		locProps.put(DISCOVERY_CONTAINER_NAME_KEY, DISCOVERY_CONTAINER_NAME_VALUE + LOCATOR);
-		locProps.put(Constants.SERVICE_RANKING, new Integer(750));
+		locProps.put(Constants.SERVICE_RANKING, Integer.valueOf(750));
 		serviceRegistrations.put(null, context.registerService(IDiscoveryLocator.class.getName(), new DnsSdServiceFactory(DnsSdDiscoveryLocator.class), locProps));
 
 		// register a managed factory for the advertiser service
@@ -82,7 +82,7 @@ public class Activator implements BundleActivator {
 		// register the advertiser service
 		final Properties advProps = new Properties();
 		advProps.put(DISCOVERY_CONTAINER_NAME_KEY, DISCOVERY_CONTAINER_NAME_VALUE + ADVERTISER);
-		advProps.put(Constants.SERVICE_RANKING, new Integer(750));
+		advProps.put(Constants.SERVICE_RANKING, Integer.valueOf(750));
 		serviceRegistrations.put(null, context.registerService(IDiscoveryAdvertiser.class.getName(), new DnsSdServiceFactory(DnsSdDiscoveryAdvertiser.class), advProps));
 	}
 	

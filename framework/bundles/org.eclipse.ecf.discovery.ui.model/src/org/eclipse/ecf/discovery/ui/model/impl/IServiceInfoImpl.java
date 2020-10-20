@@ -330,9 +330,9 @@ public class IServiceInfoImpl extends EObjectImpl implements IServiceInfo {
 			case ModelPackage.ISERVICE_INFO__ECF_LOCATION:
 				return getEcfLocation();
 			case ModelPackage.ISERVICE_INFO__ECF_PRIORITY:
-				return new Integer(getEcfPriority());
+				return Integer.valueOf(getEcfPriority());
 			case ModelPackage.ISERVICE_INFO__ECF_WEIGHT:
-				return new Integer(getEcfWeight());
+				return Integer.valueOf(getEcfWeight());
 			case ModelPackage.ISERVICE_INFO__SERVICE_ID:
 				if (resolve) return getServiceID();
 				return basicGetServiceID();

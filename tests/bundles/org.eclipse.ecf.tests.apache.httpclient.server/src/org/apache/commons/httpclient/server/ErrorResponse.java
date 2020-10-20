@@ -51,7 +51,7 @@ public class ErrorResponse {
     }
     
     public static SimpleResponse getResponse(int statusCode) {
-        Integer code = new Integer(statusCode);
+        Integer code = Integer.valueOf(statusCode);
         SimpleResponse response = (SimpleResponse)responses.get(code);
         if (response == null) {
             response = new SimpleResponse();

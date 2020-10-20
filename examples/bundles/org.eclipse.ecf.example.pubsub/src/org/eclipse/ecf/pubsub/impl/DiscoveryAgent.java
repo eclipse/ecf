@@ -36,7 +36,7 @@ import org.eclipse.ecf.pubsub.PublishedServiceDescriptor;
 
 public class DiscoveryAgent extends PlatformObject implements ISharedObject {
 	
-	protected static final Object DIRECTORY_KEY = new Integer(0);
+	protected static final Object DIRECTORY_KEY = Integer.valueOf(0);
 
 	protected ISharedObjectConfig config;
 	

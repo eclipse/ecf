@@ -418,7 +418,7 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 		int priority = DEFAULT_PRIORITY;
 		if (priorityString != null) {
 			try {
-				priority = new Integer(priorityString).intValue();
+				priority = Integer.parseInt(priorityString);
 				// Make sure that any negative values are reset to 0 (highest priority)
 				priority = (priority < 0) ? 0 : priority;
 			} catch (NumberFormatException e) {
@@ -681,10 +681,10 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 						return false;
 					} else if (result == 0) {
 						// Warn that we are using new one because they have the same priority.
-						Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  Both have same priority={3}.", new Object[] {CONTRIBUTION_WARNING, protocol, id, new Integer(priority)}), null)); //$NON-NLS-1$
+						Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  Both have same priority={3}.", new Object[] {CONTRIBUTION_WARNING, protocol, id, Integer.valueOf(priority)}), null)); //$NON-NLS-1$
 					} else if (result > 0) {
 						// Warn that we are using new one because it has higher priority.
-						Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  New handler has higher priority={3}<{4}.", new Object[] {CONTRIBUTION_WARNING, protocol, id, new Integer(priority), new Integer(oldProtocolFactory.priority)}), null)); //$NON-NLS-1$
+						Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  New handler has higher priority={3}<{4}.", new Object[] {CONTRIBUTION_WARNING, protocol, id, Integer.valueOf(priority), Integer.valueOf(oldProtocolFactory.priority)}), null)); //$NON-NLS-1$
 					}
 				}
 				// If !uri, then check/register protocol as URLStreamHandlerService
@@ -768,10 +768,10 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 						return false;
 					} else if (result == 0) {
 						// Warn that we are using new one because they have the same priority.
-						Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  Both have same priority={3}.", new Object[] {CONTRIBUTION_WARNING, protocol, id, new Integer(priority)}), null)); //$NON-NLS-1$
+						Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  Both have same priority={3}.", new Object[] {CONTRIBUTION_WARNING, protocol, id, Integer.valueOf(priority)}), null)); //$NON-NLS-1$
 					} else if (result > 0) {
 						// Warn that we are using new one because it has higher priority.
-						Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  New handler has higher priority={3}<{4}.", new Object[] {CONTRIBUTION_WARNING, protocol, id, new Integer(priority), new Integer(oldProtocolFactory.priority)}), null)); //$NON-NLS-1$
+						Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  New handler has higher priority={3}<{4}.", new Object[] {CONTRIBUTION_WARNING, protocol, id, Integer.valueOf(priority), Integer.valueOf(oldProtocolFactory.priority)}), null)); //$NON-NLS-1$
 					}
 				}
 				// If !uri, then check/register protocol as URLStreamHandlerService
@@ -855,10 +855,10 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 						return false;
 					} else if (result == 0) {
 						// Warn that we are using new one because they have the same priority.
-						Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  Both have same priority={3}.", new Object[] {CONTRIBUTION_WARNING, protocol, id, new Integer(priority)}), null)); //$NON-NLS-1$
+						Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  Both have same priority={3}.", new Object[] {CONTRIBUTION_WARNING, protocol, id, Integer.valueOf(priority)}), null)); //$NON-NLS-1$
 					} else if (result > 0) {
 						// Warn that we are using new one because it has higher priority.
-						Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  New handler has higher priority={3}<{4}.", new Object[] {CONTRIBUTION_WARNING, protocol, id, new Integer(priority), new Integer(oldProtocolFactory.priority)}), null)); //$NON-NLS-1$
+						Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, NLS.bind("{0} for protocol {1} from {2} will be used in preference to existing handler.  New handler has higher priority={3}<{4}.", new Object[] {CONTRIBUTION_WARNING, protocol, id, Integer.valueOf(priority), Integer.valueOf(oldProtocolFactory.priority)}), null)); //$NON-NLS-1$
 					}
 				}
 				// If !uri, then check/register protocol as URLStreamHandlerService

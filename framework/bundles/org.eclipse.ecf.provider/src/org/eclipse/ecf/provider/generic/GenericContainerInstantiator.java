@@ -75,11 +75,11 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 
 	protected Integer getIntegerFromArg(Object arg) {
 		if (arg == null)
-			return new Integer(-1);
+			return Integer.valueOf(-1);
 		if (arg instanceof Integer)
 			return (Integer) arg;
 		else if (arg instanceof String) {
-			return new Integer((String) arg);
+			return Integer.valueOf((String) arg);
 		} else
 			throw new IllegalArgumentException("arg=" + arg + " is not of integer type"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
@@ -149,7 +149,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 		if (newID == null)
 			newID = IDFactory.getDefault().createStringID(IDFactory.getDefault().createGUID().getName());
 		if (ka == null)
-			ka = new Integer(TCPServerSOContainer.DEFAULT_KEEPALIVE);
+			ka = Integer.valueOf(TCPServerSOContainer.DEFAULT_KEEPALIVE);
 		return new GenericContainerArgs(newID, ka);
 	}
 
@@ -228,7 +228,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator, IRe
 			newID = createTCPServerID(TCPServerSOContainer.DEFAULT_HOST, port, TCPServerSOContainer.DEFAULT_NAME);
 		}
 		if (ka == null)
-			ka = new Integer(TCPServerSOContainer.DEFAULT_KEEPALIVE);
+			ka = Integer.valueOf(TCPServerSOContainer.DEFAULT_KEEPALIVE);
 		
 		// Check private intent
 		if (privateIntent)

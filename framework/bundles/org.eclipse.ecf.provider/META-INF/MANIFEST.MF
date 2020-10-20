@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-SymbolicName: org.eclipse.ecf.provider;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.provider
-Bundle-Version: 4.8.300.qualifier
+Bundle-Version: 4.8.301.qualifier
 Bundle-Name: %plugin.name
 Bundle-Vendor: %plugin.provider
 Bundle-Activator: org.eclipse.ecf.internal.provider.ProviderPlugin

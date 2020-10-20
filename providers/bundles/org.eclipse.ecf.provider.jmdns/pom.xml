@@ -10,6 +10,6 @@
   </parent>
   <groupId>org.eclipse.ecf</groupId>
   <artifactId>org.eclipse.ecf.provider.jmdns</artifactId>
-  <version>4.3.300-SNAPSHOT</version>
+  <version>4.3.301-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>

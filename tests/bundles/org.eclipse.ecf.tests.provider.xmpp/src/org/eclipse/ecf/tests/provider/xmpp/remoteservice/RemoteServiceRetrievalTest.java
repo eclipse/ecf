@@ -36,10 +36,10 @@ public class RemoteServiceRetrievalTest extends TestCase {
 
 	private XMPPClient[] xmppClients;
 
-	private static final int SLEEPTIME = new Integer(
+	private static final int SLEEPTIME = Integer.parseInt(
 			System.getProperty(
 					"org.eclipse.ecf.tests.provider.xmpp.remoteservice.RemoteServiceRetrieval.SLEEPTIME",
-					"6000")).intValue();
+					"6000"));
 
 	public void setUp() {
 		try {

@@ -45,7 +45,7 @@ public abstract class SSLAbstractGenericClientApplication {
 				i++;
 			}
 			if (args[i].equals("-waitTime")) { //$NON-NLS-1$
-				waitTime = new Integer(args[i + 1]).intValue();
+				waitTime = Integer.parseInt(args[i + 1]);
 				i++;
 			}
 			if (args[i].equals("-clientId")) { //$NON-NLS-1$

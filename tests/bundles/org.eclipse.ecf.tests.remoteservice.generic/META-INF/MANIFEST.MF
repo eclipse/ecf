@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.tests.remoteservice.generic;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.tests.remoteservice.generic
-Bundle-Version: 2.1.101.qualifier
+Bundle-Version: 2.1.102.qualifier
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.equinox.common,

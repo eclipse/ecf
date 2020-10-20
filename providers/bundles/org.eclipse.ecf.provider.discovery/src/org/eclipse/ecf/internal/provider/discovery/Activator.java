@@ -62,7 +62,7 @@ public class Activator implements BundleActivator {
 
 			final Hashtable<String, Object> props = new Hashtable<String, Object>();
 			props.put(IDiscoveryLocator.CONTAINER_NAME, CompositeDiscoveryContainer.NAME);
-			props.put(Constants.SERVICE_RANKING, new Integer(1000));
+			props.put(Constants.SERVICE_RANKING, Integer.valueOf(1000));
 			String[] clazzes = new String[] {IDiscoveryService.class.getName(), IDiscoveryLocator.class.getName(), IDiscoveryAdvertiser.class.getName()};
 			context.registerService(clazzes, new ServiceFactory() {
 

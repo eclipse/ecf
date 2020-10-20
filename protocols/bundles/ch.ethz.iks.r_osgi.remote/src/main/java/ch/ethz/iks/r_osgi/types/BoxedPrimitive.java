@@ -73,7 +73,7 @@ public final class BoxedPrimitive implements Serializable {
 	 *            the int value.
 	 */
 	public BoxedPrimitive(final int i) {
-		boxed = new Integer(i);
+		boxed = Integer.valueOf(i);
 	}
 
 	/**

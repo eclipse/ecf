@@ -275,7 +275,7 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 			} else if (code == HttpURLConnection.HTTP_PROXY_AUTH) {
 				throw new BrowseFileTransferException(Messages.HttpClientRetrieveFileTransfer_Proxy_Auth_Required, code);
 			} else {
-				throw new BrowseFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, new Integer(code)), code);
+				throw new BrowseFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, Integer.valueOf(code)), code);
 			}
 			remoteFiles = new IRemoteFile[1];
 			remoteFiles[0] = new URLRemoteFile(lastModified, fileLength, fileID);

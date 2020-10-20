@@ -518,7 +518,7 @@ public abstract class SLPCore {
 		case SLPMessage.SRVTYPERPLY:
 			synchronized (replyListeners) {
 				List queue = (List) replyListeners
-						.get(new Integer(message.xid));
+						.get(Integer.valueOf(message.xid));
 
 				if (queue != null) {
 					synchronized (queue) {
@@ -773,7 +773,7 @@ public abstract class SLPCore {
 			}
 
 			// register the reply queue as listener
-			Integer queryXID = new Integer(msg.xid);
+			Integer queryXID = Integer.valueOf(msg.xid);
 			synchronized (replyListeners) {
 				replyListeners.put(queryXID, replyQueue);
 			}

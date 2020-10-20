@@ -72,7 +72,7 @@ public class AddRegistrationRequest implements Serializable {
 	}
 
 	public Integer getId() {
-		return new Integer(System.identityHashCode(this));
+		return Integer.valueOf(System.identityHashCode(this));
 	}
 
 	/**

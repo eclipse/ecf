@@ -134,7 +134,7 @@ public abstract class AbstractUrlConnectionOutgoingFileTransfer extends Abstract
 		super.hardClose();
 		int rCode = getResponseCode();
 		if (rCode != OK_RESPONSE_CODE) {
-			exception = new ProtocolException(NLS.bind("{0} {1}", new Integer(rCode), responseMessage)); //$NON-NLS-1$
+			exception = new ProtocolException(NLS.bind("{0} {1}", Integer.valueOf(rCode), responseMessage)); //$NON-NLS-1$
 		}
 		urlConnection = null;
 		if (proxyHelper != null) {

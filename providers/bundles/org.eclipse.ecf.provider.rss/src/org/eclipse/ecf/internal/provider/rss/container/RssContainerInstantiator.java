@@ -31,7 +31,7 @@ public class RssContainerInstantiator extends GenericContainerInstantiator {
 	public IContainer createInstance(ContainerTypeDescription description,
 			Object[] args) throws ContainerCreateException {
 		try {
-			Integer keepAlive = new Integer(
+			Integer keepAlive = Integer.valueOf(
 					RssClientSOContainer.DEFAULT_KEEPALIVE);
 			String name = null;
 
@@ -52,7 +52,7 @@ public class RssContainerInstantiator extends GenericContainerInstantiator {
 				}
 			} else {
 				if (keepAlive == null) {
-					keepAlive = new Integer(
+					keepAlive = Integer.valueOf(
 							RssClientSOContainer.DEFAULT_KEEPALIVE);
 				}
 				return new RssClientSOContainer(name, keepAlive.intValue());
@@ -68,9 +68,9 @@ public class RssContainerInstantiator extends GenericContainerInstantiator {
 		if (arg instanceof Integer) {
 			return (Integer) arg;
 		} else if (arg != null) {
-			return new Integer((String) arg);
+			return Integer.valueOf((String) arg);
 		} else {
-			return new Integer(-1);
+			return Integer.valueOf(-1);
 		}
 	}
 

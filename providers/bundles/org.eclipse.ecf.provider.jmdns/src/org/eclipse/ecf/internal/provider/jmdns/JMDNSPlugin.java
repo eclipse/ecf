@@ -75,7 +75,7 @@ public class JMDNSPlugin implements BundleActivator {
 
 		final Properties props = new Properties();
 		props.put(IDiscoveryService.CONTAINER_NAME, NAME);
-		props.put(Constants.SERVICE_RANKING, new Integer(750));
+		props.put(Constants.SERVICE_RANKING, Integer.valueOf(750));
 		String[] clazzes = new String[] {IDiscoveryService.class.getName(), IDiscoveryLocator.class.getName(), IDiscoveryAdvertiser.class.getName()};
 		serviceRegistration = context.registerService(clazzes, serviceFactory, props);
 		SafeRunner.run(new ExtensionRegistryRunnable(ctxt) {

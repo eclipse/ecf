@@ -127,7 +127,7 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 
 	/**
 	 * the services provided by the OSGi framework holding the remote channel
-	 * endpoint. Map of service URI -> RemoteServiceReferences
+	 * endpoint. Map of service URI -&gt; RemoteServiceReferences
 	 */
 	private Map remoteServices = new HashMap(0);
 
@@ -146,9 +146,8 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	/**
 	 * Timeout.
 	 */
-	private static final int TIMEOUT = new Integer(System.getProperty(
-			"ch.ethz.iks.r_osgi.channelEndpointImpl.timeout", "120000"))
-			.intValue();
+	private static final int TIMEOUT = Integer.parseInt(System.getProperty(
+			"ch.ethz.iks.r_osgi.channelEndpointImpl.timeout", "120000"));
 
 	/**
 	 * the callback register
@@ -156,22 +155,22 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	protected final Map callbacks = new HashMap(0);
 
 	/**
-	 * map of service uri -> RemoteServiceRegistration.
+	 * map of service uri -&gt; RemoteServiceRegistration.
 	 */
 	private final HashMap localServices = new HashMap(2);
 
 	/**
-	 * map of service uri -> service registration.
+	 * map of service uri -&gt; service registration.
 	 */
 	private final HashMap proxiedServices = new HashMap(0);
 
 	/**
-	 * map of service uri -> proxy bundle. If the endpoint is closed, the
+	 * map of service uri -&gt; proxy bundle. If the endpoint is closed, the
 	 * proxies are unregistered.
 	 */
 	protected final HashMap proxyBundles = new HashMap(0);
 	/**
-	 * map of stream id -> stream instance.
+	 * map of stream id -&gt; stream instance.
 	 */
 	private final HashMap streams = new HashMap(0);
 
@@ -302,7 +301,7 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 			dispose();
 			return;
 		}
-		final Integer xid = new Integer(msg.getXID());
+		final Integer xid = Integer.valueOf(msg.getXID());
 		final WaitingCallback callback;
 		synchronized (callbacks) {
 			callback = (WaitingCallback) callbacks.remove(xid);
@@ -414,7 +413,7 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 			}
 		}
 
-		final Integer xid = new Integer(RemoteOSGiServiceImpl.nextXid());
+		final Integer xid = Integer.valueOf(RemoteOSGiServiceImpl.nextXid());
 
 		synchronized (callbacks) {
 			callbacks.put(xid, new AsyncCallback() {
@@ -1331,7 +1330,7 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 			final StreamRequestMessage reqMsg = (StreamRequestMessage) msg;
 			try {
 				// fetch stream object
-				final Object stream = streams.get(new Integer(reqMsg
+				final Object stream = streams.get(Integer.valueOf(reqMsg
 						.getStreamID()));
 				if (stream == null) {
 					throw new IllegalStateException(
@@ -1435,7 +1434,7 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 		if (msg.getXID() == 0) {
 			msg.setXID(RemoteOSGiServiceImpl.nextXid());
 		}
-		final Integer xid = new Integer(msg.getXID());
+		final Integer xid = Integer.valueOf(msg.getXID());
 		final WaitingCallback blocking = new WaitingCallback();
 
 		synchronized (callbacks) {
@@ -1652,7 +1651,7 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	 */
 	private InputStreamHandle getInputStreamPlaceholder(final InputStream origIS) {
 		final InputStreamHandle sp = new InputStreamHandle(nextStreamID());
-		streams.put(new Integer(sp.getStreamID()), origIS);
+		streams.put(Integer.valueOf(sp.getStreamID()), origIS);
 		return sp;
 	}
 
@@ -1678,7 +1677,7 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	private OutputStreamHandle getOutputStreamPlaceholder(
 			final OutputStream origOS) {
 		final OutputStreamHandle sp = new OutputStreamHandle(nextStreamID());
-		streams.put(new Integer(sp.getStreamID()), origOS);
+		streams.put(Integer.valueOf(sp.getStreamID()), origOS);
 		return sp;
 	}
 

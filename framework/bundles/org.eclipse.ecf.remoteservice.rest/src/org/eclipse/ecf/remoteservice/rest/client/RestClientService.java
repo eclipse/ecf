@@ -43,9 +43,9 @@ import org.eclipse.ecf.remoteservice.rest.RestException;
  */
 public class RestClientService extends AbstractRestClientService {
 
-	public static final int socketTimeout = Integer.valueOf(System.getProperty("org.eclipse.ecf.remoteservice.rest.RestClientService.socketTimeout", "-1")).intValue(); //$NON-NLS-1$ //$NON-NLS-2$
-	public static final int connectRequestTimeout = Integer.valueOf(System.getProperty("org.eclipse.ecf.remoteservice.rest.RestClientService.connectRequestTimeout", "-1")).intValue(); //$NON-NLS-1$ //$NON-NLS-2$
-	public static final int connectTimeout = Integer.valueOf(System.getProperty("org.eclipse.ecf.remoteservice.rest.RestClientService.connectTimeout", "-1")).intValue(); //$NON-NLS-1$ //$NON-NLS-2$
+	public static final int socketTimeout = Integer.parseInt(System.getProperty("org.eclipse.ecf.remoteservice.rest.RestClientService.socketTimeout", "-1")); //$NON-NLS-1$ //$NON-NLS-2$
+	public static final int connectRequestTimeout = Integer.parseInt(System.getProperty("org.eclipse.ecf.remoteservice.rest.RestClientService.connectRequestTimeout", "-1")); //$NON-NLS-1$ //$NON-NLS-2$
+	public static final int connectTimeout = Integer.parseInt(System.getProperty("org.eclipse.ecf.remoteservice.rest.RestClientService.connectTimeout", "-1")); //$NON-NLS-1$ //$NON-NLS-2$
 
 	protected final static int DEFAULT_RESPONSE_BUFFER_SIZE = 1024;
 
@@ -147,7 +147,7 @@ public class RestClientService extends AbstractRestClientService {
 					responseBody = getResponseAsBytes(response);
 				}
 				// Now pass to the exception handler
-				handleException("Http response not OK.  httpMethod=" + httpMethod + " responseCode=" + new Integer(responseCode), null, responseCode, responseBody); //$NON-NLS-1$ //$NON-NLS-2$
+				handleException("Http response not OK.  httpMethod=" + httpMethod + " responseCode=" + Integer.valueOf(responseCode), null, responseCode, responseBody); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		} catch (IOException e) {
 			handleException("RestClientService transport IOException", e, responseCode); //$NON-NLS-1$
@@ -158,7 +158,7 @@ public class RestClientService extends AbstractRestClientService {
 			trace("processResponse", "httpMethod=" + httpMethod + ";call=" + call + ";callable=" + callable + ";responseHeaders=" + responseHeaders + ";responseBody=" + responseBody); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 			result = processResponse(endpointUri, call, callable, responseHeaders, responseBody);
 		} catch (NotSerializableException e) {
-			handleException("Exception deserializing response.  httpMethod=" + httpMethod + " responseCode=" + new Integer(responseCode), e, responseCode); //$NON-NLS-1$ //$NON-NLS-2$
+			handleException("Exception deserializing response.  httpMethod=" + httpMethod + " responseCode=" + Integer.valueOf(responseCode), e, responseCode); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		return result;
 	}

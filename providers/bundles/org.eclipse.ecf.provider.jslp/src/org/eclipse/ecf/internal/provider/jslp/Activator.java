@@ -109,7 +109,7 @@ public class Activator implements BundleActivator {
 			// register ourself as an OSGi service
 			final Hashtable<String, Object> props = new Hashtable<String, Object>();
 			props.put(IDiscoveryService.CONTAINER_NAME, JSLPDiscoveryContainer.NAME);
-			props.put(Constants.SERVICE_RANKING, new Integer(500));
+			props.put(Constants.SERVICE_RANKING, Integer.valueOf(500));
 
 			String[] clazzes = new String[] {IDiscoveryService.class.getName(), IDiscoveryLocator.class.getName(), IDiscoveryAdvertiser.class.getName()};
 			serviceRegistration = context.registerService(clazzes, serviceFactory, props);

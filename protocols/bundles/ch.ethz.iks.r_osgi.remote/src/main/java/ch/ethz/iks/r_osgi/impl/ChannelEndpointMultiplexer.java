@@ -323,7 +323,7 @@ final class ChannelEndpointMultiplexer implements ChannelEndpoint,
 	 *      int)
 	 */
 	public void setEndpointPolicy(final URI service, final int policy) {
-		policies.put(service.toString(), new Integer(policy));
+		policies.put(service.toString(), Integer.valueOf(policy));
 	}
 
 	/**

@@ -42,7 +42,7 @@ public class SSLRemoteServiceProxyTest extends AbstractRemoteServiceTest {
 	}
 
 	protected String getServerIdentity() {
-		return NLS.bind(SSLGeneric.HOST_CONTAINER_ENDPOINT_ID, new Integer(genericServerPort));
+		return NLS.bind(SSLGeneric.HOST_CONTAINER_ENDPOINT_ID, Integer.valueOf(genericServerPort));
 	}
 
 	protected String getServerContainerName() {

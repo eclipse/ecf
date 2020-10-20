@@ -129,7 +129,7 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 	}
 
 	protected String getServerIdentity(int port) {
-		return NLS.bind(genericServerIdentity, new Integer(port));
+		return NLS.bind(genericServerIdentity, Integer.valueOf(port));
 	}
 	
 	protected String getServerIdentity() {

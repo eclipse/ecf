@@ -337,7 +337,7 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 				} else if (code == HttpURLConnection.HTTP_PROXY_AUTH) {
 					throw new IncomingFileTransferException("Proxy authentication required", code, responseHeaders); //$NON-NLS-1$
 				} else {
-					throw new IncomingFileTransferException(NLS.bind("General connection error with response code={0}", new Integer(code)), code, responseHeaders); //$NON-NLS-1$
+					throw new IncomingFileTransferException(NLS.bind("General connection error with response code={0}", Integer.valueOf(code)), code, responseHeaders); //$NON-NLS-1$
 				}
 			} else {
 				fireReceiveStartEvent();
@@ -499,7 +499,7 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 			} else if (code == HttpURLConnection.HTTP_PROXY_AUTH) {
 				throw new IncomingFileTransferException("Proxy authentication required", code, responseHeaders); //$NON-NLS-1$
 			} else {
-				throw new IncomingFileTransferException(NLS.bind("General connection error with response code={0}", new Integer(code)), code, responseHeaders); //$NON-NLS-1$
+				throw new IncomingFileTransferException(NLS.bind("General connection error with response code={0}", Integer.valueOf(code)), code, responseHeaders); //$NON-NLS-1$
 			}
 		} catch (final Exception e) {
 			this.exception = (e instanceof IncomingFileTransferException) ? e : new IncomingFileTransferException(NLS.bind(Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, getRemoteFileURL().toString()), e, code, responseHeaders);

@@ -37,7 +37,7 @@ public class Activator implements BundleActivator {
 		if (hostname != null) 
 			props.put("ecf.generic.server.hostname",hostname);
 		// Setup port config (default:-1)
-		props.put("ecf.generic.server.port",new Integer(System.getProperty("ecf.generic.server.port","-1")));
+		props.put("ecf.generic.server.port",Integer.valueOf(System.getProperty("ecf.generic.server.port","-1")));
 		// Setup IRaspberryPiAsync as async remote service
 		props.put("ecf.exported.async.interfaces", "*");
 		// This remote service registration will trigger export, and publishing via zeroconf

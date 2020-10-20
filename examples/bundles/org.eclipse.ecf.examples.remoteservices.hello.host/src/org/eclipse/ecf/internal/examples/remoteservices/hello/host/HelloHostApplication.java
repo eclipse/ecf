@@ -112,7 +112,7 @@ public class HelloHostApplication implements IApplication,
 		// Register the console hello start/stop command provider
 		HelloCommandProvider helloCommandProvider = new HelloCommandProvider(this);
 		Dictionary props = new Hashtable();
-		props.put(org.osgi.framework.Constants.SERVICE_RANKING, new Integer(
+		props.put(org.osgi.framework.Constants.SERVICE_RANKING, Integer.valueOf(
 				Integer.MAX_VALUE - 100));
 		bundleContext.registerService(CommandProvider.class.getName(),
 				helloCommandProvider, props);

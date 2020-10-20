@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.tests.apache.httpclient.server
 Automatic-Module-Name: org.eclipse.ecf.tests.apache.httpclient.server
-Bundle-Version: 3.0.100.qualifier
+Bundle-Version: 3.0.101.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.tests.apache.httpclient.server.Activator
 Bundle-Vendor: %plugin.provider
 Bundle-RequiredExecutionEnvironment: J2SE-1.4

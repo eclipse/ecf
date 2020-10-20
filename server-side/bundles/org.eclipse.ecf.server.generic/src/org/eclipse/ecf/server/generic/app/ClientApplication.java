@@ -84,7 +84,7 @@ public class ClientApplication {
 	protected ISharedObjectContainer createClient() throws Exception {
 		// Make identity instance for the new container
 		ID newContainerID = IDFactory.getDefault().createGUID();
-		ISharedObjectContainer result = SharedObjectContainerFactory.getDefault().createSharedObjectContainer(contd, new Object[] {newContainerID, new Integer(DEFAULT_TIMEOUT)});
+		ISharedObjectContainer result = SharedObjectContainerFactory.getDefault().createSharedObjectContainer(contd, new Object[] {newContainerID, Integer.valueOf(DEFAULT_TIMEOUT)});
 		return result;
 	}
 

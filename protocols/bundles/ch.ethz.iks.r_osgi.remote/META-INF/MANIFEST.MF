@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: ch.ethz.iks.r_osgi.remote
 Automatic-Module-Name: ch.ethz.iks.r_osgi.remote
-Bundle-Version: 1.2.201.qualifier
+Bundle-Version: 1.2.202.qualifier
 Bundle-Vendor: %plugin.provider
 Import-Package: org.eclipse.ecf.remoteservice;version="7.3.0",
  org.eclipse.ecf.remoteservice.asyncproxy;version="[1.0.0,3.0.0)",

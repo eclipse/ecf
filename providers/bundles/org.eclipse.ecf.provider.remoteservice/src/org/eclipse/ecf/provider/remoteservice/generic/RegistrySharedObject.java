@@ -43,7 +43,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	/**
 	 * @since 3.3
 	 */
-	protected static final int ADD_REGISTRATION_REQUEST_TIMEOUT = new Integer(System.getProperty("org.eclipse.ecf.provider.remoteservice.addRegistrationRequestTimeout", "7000")).intValue(); //$NON-NLS-1$ //$NON-NLS-2$
+	protected static final int ADD_REGISTRATION_REQUEST_TIMEOUT = Integer.parseInt(System.getProperty("org.eclipse.ecf.provider.remoteservice.addRegistrationRequestTimeout", "7000")); //$NON-NLS-1$ //$NON-NLS-2$
 
 	/**
 	 * @since 4.2
@@ -54,7 +54,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	private static synchronized Integer createNextRequestId() {
 		uniqueRequestId = (uniqueRequestId == Integer.MAX_VALUE) ? 0 : uniqueRequestId + 1;
-		return new Integer(uniqueRequestId);
+		return Integer.valueOf(uniqueRequestId);
 	}
 
 	/**

@@ -332,7 +332,7 @@ public class Activator implements BundleActivator {
 		endpointDescriptionLocator = new EndpointDescriptionLocator(context);
 		// create and register endpoint description advertiser
 		final Properties properties = new Properties();
-		properties.put(Constants.SERVICE_RANKING, new Integer(Integer.MIN_VALUE));
+		properties.put(Constants.SERVICE_RANKING, Integer.valueOf(Integer.MIN_VALUE));
 		iServiceInfoFactoryRegistration = context.registerService(IServiceInfoFactory.class.getName(),
 				new ServiceInfoFactory(), (Dictionary) properties);
 

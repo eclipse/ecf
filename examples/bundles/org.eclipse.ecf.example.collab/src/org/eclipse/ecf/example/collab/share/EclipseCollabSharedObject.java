@@ -776,7 +776,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 			receiver = touser.getID();
 		}
 		try {
-			final SharedObjectMsg m = SharedObjectMsg.createMsg(null, HANDLE_ADD_MARKER_FOR_FILE_MSG, getUser(), resourceName, new SharedMarker(Messages.EclipseCollabSharedObject_MARKER_NAME, new Integer(offset), new Integer(length)));
+			final SharedObjectMsg m = SharedObjectMsg.createMsg(null, HANDLE_ADD_MARKER_FOR_FILE_MSG, getUser(), resourceName, new SharedMarker(Messages.EclipseCollabSharedObject_MARKER_NAME, Integer.valueOf(offset), Integer.valueOf(length)));
 			forwardMsgTo(receiver, m);
 			if (receiver == null) {
 				sendSelf(m);
@@ -795,7 +795,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject {
 			receiver = touser.getID();
 		}
 		try {
-			final SharedObjectMsg m = SharedObjectMsg.createMsg(null, HANDLE_OPEN_AND_SELECT_FOR_FILE_MSG, getUser(), resourceName, new SharedMarker(Messages.EclipseCollabSharedObject_MARKER_NAME, new Integer(offset), new Integer(length)));
+			final SharedObjectMsg m = SharedObjectMsg.createMsg(null, HANDLE_OPEN_AND_SELECT_FOR_FILE_MSG, getUser(), resourceName, new SharedMarker(Messages.EclipseCollabSharedObject_MARKER_NAME, Integer.valueOf(offset), Integer.valueOf(length)));
 			forwardMsgTo(receiver, m);
 			if (receiver == null) {
 				sendSelf(m);

@@ -372,7 +372,7 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 			String proxyClass = (clazzes.length == 1) ? clazzes[0] : Arrays.asList(clazzes).toString();
 			return proxyClass + ".proxy@" + getRemoteServiceID(); //$NON-NLS-1$
 		} else if (methodName.equals("hashCode")) { //$NON-NLS-1$
-			return new Integer(hashCode());
+			return Integer.valueOf(hashCode());
 		} else if (methodName.equals("equals")) { //$NON-NLS-1$
 			if (args == null || args.length == 0)
 				return Boolean.FALSE;

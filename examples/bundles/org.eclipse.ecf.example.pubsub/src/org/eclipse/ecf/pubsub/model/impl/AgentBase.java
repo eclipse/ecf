@@ -30,11 +30,11 @@ import org.eclipse.ecf.pubsub.model.IModelUpdater;
 
 public abstract class AgentBase extends PlatformObject implements ISharedObject, IIdentifiable {
 	
-	public static final Object INITIAL_DATA_KEY = new Integer(0);
+	public static final Object INITIAL_DATA_KEY = Integer.valueOf(0);
 	
-	public static final Object MODEL_UPDATER_KEY = new Integer(1); 
+	public static final Object MODEL_UPDATER_KEY = Integer.valueOf(1);
 	
-	protected static final Object REQUESTOR_ID = new Integer(2); 
+	protected static final Object REQUESTOR_ID = Integer.valueOf(2);
 	
 	protected ISharedObjectConfig config;
 	

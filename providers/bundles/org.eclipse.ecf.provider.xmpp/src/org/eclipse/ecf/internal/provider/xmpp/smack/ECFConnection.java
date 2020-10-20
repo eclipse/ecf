@@ -75,9 +75,8 @@ public class ECFConnection implements ISynchAsynchConnection {
 
 	private boolean disconnecting = false;
 
-	private int BIND_TIMEOUT = new Integer(System.getProperty(
-			"org.eclipse.ecf.provider.xmpp.ECFConnection.bindTimeout", "15000"))
-			.intValue();
+	private int BIND_TIMEOUT = Integer.parseInt(System.getProperty(
+			"org.eclipse.ecf.provider.xmpp.ECFConnection.bindTimeout", "15000"));
 
 	private Object bindLock = new Object();
 

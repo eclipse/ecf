@@ -68,13 +68,13 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 
 	public static final int DEFAULT_BUF_LENGTH = 4096;
 
-	protected static final int POLLING_RETRY_ATTEMPTS = new Integer(System.getProperty("org.eclipse.ecf.provider.filetransfer.retrieve.retryAttempts", "30")).intValue(); //$NON-NLS-1$ //$NON-NLS-2$;;
+	protected static final int POLLING_RETRY_ATTEMPTS = Integer.parseInt(System.getProperty("org.eclipse.ecf.provider.filetransfer.retrieve.retryAttempts", "30")); //$NON-NLS-1$ //$NON-NLS-2$;;
 
 	protected static final int TIMEOUT_INPUTSTREAM_BUFFER_SIZE = 8192;
 
-	protected static final int READ_TIMEOUT = new Integer(System.getProperty("org.eclipse.ecf.provider.filetransfer.retrieve.readTimeout", "1000")).intValue(); //$NON-NLS-1$ //$NON-NLS-2$;
+	protected static final int READ_TIMEOUT = Integer.parseInt(System.getProperty("org.eclipse.ecf.provider.filetransfer.retrieve.readTimeout", "1000")); //$NON-NLS-1$ //$NON-NLS-2$;
 
-	protected static final int CLOSE_TIMEOUT = new Integer(System.getProperty("org.eclipse.ecf.provider.filetransfer.retrieve.closeTimeout", "1000")).intValue(); //$NON-NLS-1$ //$NON-NLS-2$;
+	protected static final int CLOSE_TIMEOUT = Integer.parseInt(System.getProperty("org.eclipse.ecf.provider.filetransfer.retrieve.closeTimeout", "1000")); //$NON-NLS-1$ //$NON-NLS-2$;
 
 	private static final String readTimeoutMessage = "Timeout while reading input stream.\n" + //$NON-NLS-1$
 			"The following system properties can be used to adjust the readTimeout, retryAttempts, and closeTimeout\n" + //$NON-NLS-1$
@@ -152,7 +152,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 				if (o instanceof Integer) {
 					result = ((Integer) o).intValue();
 				} else if (o instanceof String) {
-					result = new Integer(((String) o)).intValue();
+					result = Integer.parseInt(((String) o));
 				}
 			}
 		}
@@ -229,7 +229,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 				if (o instanceof Integer) {
 					result = ((Integer) o).intValue();
 				} else if (o instanceof String) {
-					result = new Integer(((String) o)).intValue();
+					result = Integer.parseInt(((String) o));
 				}
 				return result;
 			}
@@ -238,7 +238,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 				if (o instanceof Integer) {
 					result = ((Integer) o).intValue();
 				} else if (o instanceof String) {
-					result = new Integer(((String) o)).intValue();
+					result = Integer.parseInt(((String) o));
 				}
 			}
 		}
@@ -255,7 +255,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 				if (o instanceof Integer) {
 					result = ((Integer) o).intValue();
 				} else if (o instanceof String) {
-					result = new Integer(((String) o)).intValue();
+					result = Integer.parseInt(((String) o));
 				}
 			}
 		}

@@ -28,7 +28,7 @@ public class ChannelTest extends ContainerAbstractTestCase {
 
 	private static final String CHANNEL_NAME = "channel";
 
-	private static final int SLEEPTIME = new Integer(System.getProperty("org.eclipse.ecf.tests.provider.xmpp.datashare.ChannelTest.SLEEPTIME","5000")).intValue();
+	private static final int SLEEPTIME = Integer.parseInt(System.getProperty("org.eclipse.ecf.tests.provider.xmpp.datashare.ChannelTest.SLEEPTIME","5000"));
 
 	private static final int SEND_MESSAGE_COUNT = 5;
 

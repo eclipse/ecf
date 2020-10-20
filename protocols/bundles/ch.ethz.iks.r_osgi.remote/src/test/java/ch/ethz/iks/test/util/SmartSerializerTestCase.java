@@ -27,12 +27,12 @@ public class SmartSerializerTestCase extends TestCase {
 		final Object[] testArray = { "test1", "test2", "test3" };
 		final String[] testStringArray = { "test1", "test2", "test3", "test4" };
 		final byte[] testBytes = new byte[] {1,2,3,4,5,6,7,8,9,10};
-		final Integer testInteger = new Integer(10);
+		final Integer testInteger = Integer.valueOf(10);
 		final byte[] bigByteArray = new byte[1024];
 		final BoxedPrimitive testBp = new BoxedPrimitive(100L);
 		final float[] floats = new float[1000];
 		final Dictionary dict = new Hashtable();
-		dict.put("test1", new Integer(10));
+		dict.put("test1", Integer.valueOf(10));
 		dict.put("test2", "value");
 		
 		// serialize

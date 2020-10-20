@@ -290,7 +290,7 @@ public class Piece {
 			throw new IllegalArgumentException("The length cannot be a negative number"); //$NON-NLS-1$
 		}
 		files.add(file);
-		fileLengths.add(new Integer(length));
+		fileLengths.add(Integer.valueOf(length));
 	}
 
 	/**

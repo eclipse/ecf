@@ -166,7 +166,7 @@ public class RssClientSOContainer extends ClientSOContainer implements IMergeabl
 
 	protected ISynchAsynchConnection createConnection(ID remoteSpace, Object data) throws ConnectionCreateException {
 		trace("createConnection:" + remoteSpace + ":" + data);
-		// Object[] args = { new Integer(keepAlive) };
+		// Object[] args = { Integer.valueOf(keepAlive) };
 		final ISynchAsynchConnection conn = new HttpClient(receiver);
 		return conn;
 	}

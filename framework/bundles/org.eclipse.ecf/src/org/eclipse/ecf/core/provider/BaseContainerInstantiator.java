@@ -41,7 +41,7 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 		if (arg instanceof Integer)
 			return (Integer) arg;
 		else if (arg instanceof String) {
-			return new Integer((String) arg);
+			return Integer.valueOf((String) arg);
 		} else
 			throw new IllegalArgumentException("arg=" + arg + " is not of integer type"); //$NON-NLS-1$ //$NON-NLS-2$
 	}

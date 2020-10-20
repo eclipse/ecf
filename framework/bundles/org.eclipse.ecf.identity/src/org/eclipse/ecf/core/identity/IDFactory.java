@@ -165,7 +165,7 @@ public class IDFactory implements IIDFactory {
 	 * @see org.eclipse.ecf.core.identity.IIDFactory#createGUID(int)
 	 */
 	public ID createGUID(int length) throws IDCreateException {
-		return createID(new GUID.GUIDNamespace(), new Integer[] { new Integer(
+		return createID(new GUID.GUIDNamespace(), new Integer[] { Integer.valueOf(
 				length) });
 	}
 
