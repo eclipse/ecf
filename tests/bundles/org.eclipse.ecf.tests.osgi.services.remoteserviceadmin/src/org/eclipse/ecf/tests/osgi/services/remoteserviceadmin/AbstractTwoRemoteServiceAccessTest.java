@@ -128,7 +128,7 @@ public abstract class AbstractTwoRemoteServiceAccessTest extends
 		assertNotNull(proxy);
 		// Now use proxy
 		final String result = proxy.doStuff1();
-		Trace.trace(Activator.PLUGIN_ID, "proxy.doStuff1 result=" + result);
+		Trace.trace(PLUGIN_ID, "proxy.doStuff1 result=" + result);
 		assertTrue(TestServiceInterface1.TEST_SERVICE_STRING1.equals(result));
 	}
 
@@ -148,12 +148,12 @@ public abstract class AbstractTwoRemoteServiceAccessTest extends
 		assertNotNull(proxy);
 		// Now use proxy
 		String result = proxy.doStuff1();
-		Trace.trace(Activator.PLUGIN_ID, "proxy.doStuff1 result=" + result);
+		Trace.trace(PLUGIN_ID, "proxy.doStuff1 result=" + result);
 		assertTrue(TestServiceInterface1.TEST_SERVICE_STRING1.equals(result));
 		
 		// Now use proxy
 		result = proxy.doStuff2();
-		Trace.trace(Activator.PLUGIN_ID, "proxy.doStuff2 result=" + result);
+		Trace.trace(PLUGIN_ID, "proxy.doStuff2 result=" + result);
 		assertTrue(TestServiceInterface2.TEST_SERVICE_STRING2.equals(result));
 
 	}

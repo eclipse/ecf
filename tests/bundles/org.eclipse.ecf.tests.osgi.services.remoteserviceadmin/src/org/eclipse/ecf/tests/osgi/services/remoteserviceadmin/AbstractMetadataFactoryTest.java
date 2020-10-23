@@ -25,7 +25,9 @@ import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IDiscoveredEndpointDescriptionFactory;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.IServiceInfoFactory;
 import org.eclipse.ecf.tests.ECFAbstractTestCase;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.util.tracker.ServiceTracker;
 
 public abstract class AbstractMetadataFactoryTest extends ECFAbstractTestCase {
@@ -50,7 +52,7 @@ public abstract class AbstractMetadataFactoryTest extends ECFAbstractTestCase {
 	protected IDiscoveryLocator discoveryLocator;
 
 	protected IDiscoveryLocator getDiscoveryLocator() {
-		ServiceTracker serviceTracker = new ServiceTracker(Activator.getDefault().getContext(),IDiscoveryLocator.class.getName(), null);
+		ServiceTracker serviceTracker = new ServiceTracker(getContext(),IDiscoveryLocator.class.getName(), null);
 		serviceTracker.open();
 		IDiscoveryLocator result = (IDiscoveryLocator) serviceTracker.getService();
 		serviceTracker.close();
@@ -58,12 +60,17 @@ public abstract class AbstractMetadataFactoryTest extends ECFAbstractTestCase {
 	}
 	
 	protected IDiscoveryAdvertiser getDiscoveryAdvertiser() {
-		ServiceTracker serviceTracker = new ServiceTracker(Activator.getDefault().getContext(),IDiscoveryAdvertiser.class.getName(), null);
+		ServiceTracker serviceTracker = new ServiceTracker(getContext(),IDiscoveryAdvertiser.class.getName(), null);
 		serviceTracker.open();
 		IDiscoveryAdvertiser result = (IDiscoveryAdvertiser) serviceTracker.getService();
 		serviceTracker.close();
 		return result;
 	}
+	
+	protected BundleContext getContext() {
+		return FrameworkUtil.getBundle(getClass()).getBundleContext();
+	}
+
 
 	protected void setUp() throws Exception {
 		super.setUp();

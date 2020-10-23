@@ -21,7 +21,6 @@ import java.util.Iterator;
 import org.eclipse.ecf.discovery.IDiscoveryAdvertiser;
 import org.eclipse.ecf.discovery.IDiscoveryLocator;
 import org.eclipse.ecf.provider.discovery.CompositeDiscoveryContainer;
-import org.eclipse.ecf.tests.discovery.Activator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
