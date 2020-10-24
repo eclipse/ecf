@@ -28,10 +28,10 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
 import org.eclipse.ecf.tests.ContainerAbstractTestCase;
-import org.eclipse.ecf.tests.internal.osgi.services.distribution.Activator;
 import org.eclipse.ecf.tests.remoteservice.IConcatService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
@@ -41,6 +41,7 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 public abstract class AbstractDistributionTest extends
 		ContainerAbstractTestCase implements IDistributionConstants {
 
+	protected static final String PLUGIN_ID = "org.eclipse.ecf.tests.osgi.services.distribution";
 	protected IRemoteServiceContainerAdapter[] adapters = null;
 
 	/*
@@ -83,7 +84,7 @@ public abstract class AbstractDistributionTest extends
 	}
 
 	protected BundleContext getContext() {
-		return Activator.getDefault().getContext();
+		return FrameworkUtil.getBundle(getClass()).getBundleContext();
 	}
 
 	protected IRemoteServiceContainerAdapter[] getRemoteServiceAdapters() {
@@ -210,7 +211,7 @@ public abstract class AbstractDistributionTest extends
 			return;
 		} else {
 			// Check if the ECF bundles are even started
-			Bundle[] bundles = Activator.getDefault().getContext().getBundles();
+			Bundle[] bundles = getContext().getBundles();
 			for (Bundle bundle : bundles) {
 				String symbolicName = bundle.getSymbolicName();
 				if (symbolicName != null
@@ -258,20 +259,20 @@ public abstract class AbstractDistributionTest extends
 				new ServiceTrackerCustomizer() {
 
 					public Object addingService(ServiceReference reference) {
-						Trace.trace(Activator.PLUGIN_ID, "addingService="
+						Trace.trace(PLUGIN_ID, "addingService="
 								+ reference);
 						return getContext().getService(reference);
 					}
 
 					public void modifiedService(ServiceReference reference,
 							Object service) {
-						Trace.trace(Activator.PLUGIN_ID, "modifiedService="
+						Trace.trace(PLUGIN_ID, "modifiedService="
 								+ reference);
 					}
 
 					public void removedService(ServiceReference reference,
 							Object service) {
-						Trace.trace(Activator.PLUGIN_ID, "removedService="
+						Trace.trace(PLUGIN_ID, "removedService="
 								+ reference + ",svc=" + service);
 					}
 				});

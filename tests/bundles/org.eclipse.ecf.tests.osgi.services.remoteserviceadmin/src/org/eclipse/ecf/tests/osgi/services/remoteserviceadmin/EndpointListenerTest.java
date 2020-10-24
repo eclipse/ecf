@@ -3,6 +3,8 @@ package org.eclipse.ecf.tests.osgi.services.remoteserviceadmin;
 import java.util.Dictionary;
 import java.util.Properties;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.remoteserviceadmin.EndpointDescription;
 import org.osgi.service.remoteserviceadmin.EndpointListener;
@@ -10,6 +12,7 @@ import org.osgi.service.remoteserviceadmin.RemoteConstants;
 
 import junit.framework.TestCase;
 
+@SuppressWarnings("deprecation")
 public class EndpointListenerTest extends TestCase {
 
 	private EndpointListener createEndpointListener() {
@@ -31,7 +34,8 @@ public class EndpointListenerTest extends TestCase {
 	public void testEndpointListenerNotification() throws Exception {
 		Properties props = new Properties();
 		props.put(org.osgi.service.remoteserviceadmin.EndpointListener.ENDPOINT_LISTENER_SCOPE,"("+RemoteConstants.ENDPOINT_ID+"=*)");
-		ServiceRegistration endpointListenerRegistration = Activator.getDefault().getContext().registerService(EndpointListener.class.getName(), createEndpointListener(), (Dictionary) props);
+		BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
+		ServiceRegistration endpointListenerRegistration = context.registerService(EndpointListener.class.getName(), createEndpointListener(), (Dictionary) props);
 		Thread.sleep(5000);
 		endpointListenerRegistration.unregister();
 	}

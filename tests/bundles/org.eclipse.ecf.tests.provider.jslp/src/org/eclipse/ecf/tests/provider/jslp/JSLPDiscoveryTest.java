@@ -17,7 +17,6 @@ import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.internal.provider.jslp.NullPatternAdvertiser;
 import org.eclipse.ecf.internal.provider.jslp.NullPatternLocator;
 import org.eclipse.ecf.provider.jslp.container.JSLPDiscoveryContainer;
-import org.eclipse.ecf.tests.discovery.Activator;
 import org.eclipse.ecf.tests.discovery.DiscoveryContainerTest;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -67,7 +66,7 @@ public class JSLPDiscoveryTest extends DiscoveryContainerTest {
 		Bundle bundle = null;
 		try {
 			// stop the bundle assuming there is only one installed
-			BundleContext context = Activator.getDefault().getContext();
+			BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
 			Bundle[] bundles = context.getBundles();
 			for(int i = 0; i < bundles.length; i++) {
 				Bundle aBundle = bundles[i];

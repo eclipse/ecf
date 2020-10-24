@@ -12,10 +12,10 @@
  *****************************************************************************/
 package org.eclipse.ecf.tests.httpservice;
 
-import org.eclipse.ecf.internal.tests.httpservice.Activator;
 import org.eclipse.ecf.tests.ECFAbstractTestCase;
 import org.eclipse.ecf.tests.util.BundleUtil;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.FrameworkUtil;
 
 public abstract class AbstractHttpServiceTest extends ECFAbstractTestCase {
 
@@ -27,7 +27,7 @@ public abstract class AbstractHttpServiceTest extends ECFAbstractTestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		bundleUtil = new BundleUtil(Activator.getDefault().getContext());
+		bundleUtil = new BundleUtil(FrameworkUtil.getBundle(getClass()).getBundleContext());
 	}
 	
 	@Override

@@ -4,7 +4,6 @@ Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.tests.provider.filetransfer.xmpp
 Automatic-Module-Name: org.eclipse.ecf.tests.provider.filetransfer.xmpp
 Bundle-Version: 2.0.101.qualifier
-Bundle-Activator: org.eclipse.ecf.tests.provider.filetransfer.xmpp.Activator
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
