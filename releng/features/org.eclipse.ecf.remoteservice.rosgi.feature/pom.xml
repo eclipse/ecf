@@ -10,6 +10,6 @@
   </parent>
   <groupId>org.eclipse.ecf</groupId>
   <artifactId>org.eclipse.ecf.remoteservice.rosgi.feature</artifactId>
-  <version>1.1.200-SNAPSHOT</version>
+  <version>1.1.201-SNAPSHOT</version>
   <packaging>eclipse-feature</packaging>
 </project>

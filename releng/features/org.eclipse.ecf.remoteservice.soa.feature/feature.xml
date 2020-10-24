@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.remoteservice.soa.feature"
       label="ECF Service-Oriented Architecture"
-      version="2.0.200.qualifier"
+      version="2.0.201.qualifier"
       provider-name="%providerName"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">

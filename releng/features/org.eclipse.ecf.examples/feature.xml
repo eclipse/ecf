@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.examples"
       label="%featureName"
-      version="3.2.100.qualifier"
+      version="3.2.101.qualifier"
       provider-name="%providerName"
       plugin="org.eclipse.ecf.example.collab"
       license-feature="org.eclipse.license"

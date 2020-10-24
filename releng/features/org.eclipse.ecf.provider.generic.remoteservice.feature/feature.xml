@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.provider.generic.remoteservice.feature"
       label="ECF Generic Provider RemoteService Feature"
-      version="1.1.200.qualifier"
+      version="1.1.201.qualifier"
       provider-name="Eclipse.org - ECF"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
