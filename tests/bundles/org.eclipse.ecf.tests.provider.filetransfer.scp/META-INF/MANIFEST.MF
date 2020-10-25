@@ -4,7 +4,6 @@ Bundle-Name: SCP Provider Tests
 Bundle-SymbolicName: org.eclipse.ecf.tests.provider.filetransfer.scp
 Automatic-Module-Name: org.eclipse.ecf.tests.provider.filetransfer.scp
 Bundle-Version: 2.1.100.qualifier
-Bundle-Activator: org.eclipse.ecf.internal.tests.provider.filetransfer.scp.Activator
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,

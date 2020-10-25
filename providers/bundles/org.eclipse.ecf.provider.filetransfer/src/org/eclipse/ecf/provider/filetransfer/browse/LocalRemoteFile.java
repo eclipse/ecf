@@ -100,11 +100,11 @@ public class LocalRemoteFile implements IRemoteFile {
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
-	public Object getAdapter(Class adapter) {
+	public <T> T getAdapter(Class<T> adapter) {
 		IAdapterManager adapterManager = Activator.getDefault().getAdapterManager();
 		if (adapterManager == null)
 			return null;
-		return adapterManager.loadAdapter(this, adapter.getName());
+		return (T) adapterManager.loadAdapter(this, adapter.getName());
 	}
 
 	public String toString() {

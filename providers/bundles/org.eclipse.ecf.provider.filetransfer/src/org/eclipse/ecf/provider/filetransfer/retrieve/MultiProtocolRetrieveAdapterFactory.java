@@ -27,7 +27,7 @@ public class MultiProtocolRetrieveAdapterFactory extends AbstractContainerAdapte
 	 * 
 	 * @see org.eclipse.ecf.core.sharedobject.AbstractSharedObjectContainerAdapterFactory#getAdapterList()
 	 */
-	public Class[] getAdapterList() {
+	public Class<?>[] getAdapterList() {
 		return new Class[] {IRetrieveFileTransferContainerAdapter.class};
 	}
 

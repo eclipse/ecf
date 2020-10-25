@@ -65,17 +65,17 @@ public abstract class AbstractContainer implements IContainer {
 		}
 	}
 
-	public Object getAdapter(Class serviceType) {
+	public <T> T getAdapter(Class<T> serviceType) {
 		if (serviceType == null)
 			return null;
 		if (serviceType.isInstance(this)) {
-			return this;
+			return serviceType.cast(this);
 		}
 		ECFPlugin plugin = ECFPlugin.getDefault();
 		if (plugin == null)
 			return null;
 		IAdapterManager adapterManager = plugin.getAdapterManager();
-		return (adapterManager == null) ? null : adapterManager.loadAdapter(this, serviceType.getName());
+		return (T) ((adapterManager == null) ? null : adapterManager.loadAdapter(this, serviceType.getName()));
 	}
 
 	protected String getPasswordFromConnectContext(IConnectContext connectContext) throws ContainerConnectException {

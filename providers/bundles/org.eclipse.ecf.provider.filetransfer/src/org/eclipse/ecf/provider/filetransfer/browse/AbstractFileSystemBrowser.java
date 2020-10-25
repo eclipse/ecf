@@ -154,12 +154,12 @@ public abstract class AbstractFileSystemBrowser {
 
 	protected IRemoteFileSystemRequest createRemoteFileSystemRequest() {
 		return new RemoteFileSystemRequest() {
-			public Object getAdapter(Class adapter) {
+			public <T> T getAdapter(Class<T> adapter) {
 				if (adapter == null) {
 					return null;
 				}
 				if (adapter.isInstance(this)) {
-					return this;
+					return adapter.cast(this);
 				}
 				return null;
 			}

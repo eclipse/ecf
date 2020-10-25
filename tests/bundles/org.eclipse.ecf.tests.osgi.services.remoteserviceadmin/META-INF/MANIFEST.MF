@@ -4,7 +4,6 @@ Bundle-Name: %bundle.name
 Bundle-SymbolicName: org.eclipse.ecf.tests.osgi.services.remoteserviceadmin
 Automatic-Module-Name: org.eclipse.ecf.tests.osgi.services.remoteserviceadmin
 Bundle-Version: 1.1.101.qualifier
-Bundle-Activator: org.eclipse.ecf.tests.osgi.services.remoteserviceadmin.Activator
 Bundle-Vendor: %bundle.provider
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy

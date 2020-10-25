@@ -32,11 +32,11 @@ public class FileIDFactoryTest extends TestCase {
 	protected FileIDFactory factory;
 
 	protected IRetrieveFileTransferContainerAdapter getRetrieveAdapter() throws Exception {
-		return (IRetrieveFileTransferContainerAdapter) ContainerFactory.getDefault().createContainer().getAdapter(IRetrieveFileTransferContainerAdapter.class);
+		return ContainerFactory.getDefault().createContainer().getAdapter(IRetrieveFileTransferContainerAdapter.class);
 	}
 
 	protected ISendFileTransferContainerAdapter getSendAdapter() throws Exception {
-		return (ISendFileTransferContainerAdapter) ContainerFactory.getDefault().createContainer().getAdapter(ISendFileTransferContainerAdapter.class);
+		return ContainerFactory.getDefault().createContainer().getAdapter(ISendFileTransferContainerAdapter.class);
 	}
 
 	/* (non-Javadoc)

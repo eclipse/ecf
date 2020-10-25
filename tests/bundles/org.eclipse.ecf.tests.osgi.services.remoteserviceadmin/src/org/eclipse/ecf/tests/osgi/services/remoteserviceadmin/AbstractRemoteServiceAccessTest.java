@@ -143,7 +143,7 @@ public abstract class AbstractRemoteServiceAccessTest extends
 		assertNotNull(proxy);
 		// Now use proxy
 		final String result = proxy.doStuff1();
-		Trace.trace(Activator.PLUGIN_ID, "proxy.doStuff1 result=" + result);
+		Trace.trace(PLUGIN_ID, "proxy.doStuff1 result=" + result);
 		assertTrue(TestServiceInterface1.TEST_SERVICE_STRING1.equals(result));
 	}
 
@@ -182,7 +182,7 @@ public abstract class AbstractRemoteServiceAccessTest extends
 
 		// Call remote service synchronously
 		final Object result = remoteService.callSync(createRemoteCall());
-		Trace.trace(Activator.PLUGIN_ID, "proxy.doStuff1 result=" + result);
+		Trace.trace(PLUGIN_ID, "proxy.doStuff1 result=" + result);
 		assertStringResultValid(result, TestServiceInterface1.TEST_SERVICE_STRING1);
 	}
 
@@ -200,7 +200,7 @@ public abstract class AbstractRemoteServiceAccessTest extends
 
 		// Call synchronously
 		final Object result = rs.callSync(createRemoteCall());
-		Trace.trace(Activator.PLUGIN_ID, "callSync.doStuff1 result=" + result);
+		Trace.trace(PLUGIN_ID, "callSync.doStuff1 result=" + result);
 		assertStringResultValid(result, TestServiceInterface1.TEST_SERVICE_STRING1);
 	}
 
@@ -221,7 +221,7 @@ public abstract class AbstractRemoteServiceAccessTest extends
 				if (event instanceof IRemoteCallCompleteEvent) {
 					final Object result = ((IRemoteCallCompleteEvent) event)
 							.getResponse();
-					Trace.trace(Activator.PLUGIN_ID,
+					Trace.trace(PLUGIN_ID,
 							"callSync.doStuff1 result=" + result);
 					assertStringResultValid(result,TestServiceInterface1.TEST_SERVICE_STRING1);
 					syncNotify();
@@ -248,7 +248,7 @@ public abstract class AbstractRemoteServiceAccessTest extends
 
 		// now get result from futureResult
 		final Object result = futureResult.get();
-		Trace.trace(Activator.PLUGIN_ID, "callSync.doStuff1 result=" + result);
+		Trace.trace(PLUGIN_ID, "callSync.doStuff1 result=" + result);
 		assertStringResultValid(result, TestServiceInterface1.TEST_SERVICE_STRING1);
 	}
 
@@ -285,7 +285,7 @@ public abstract class AbstractRemoteServiceAccessTest extends
 		Future f = asyncSvc.doStuff1Async();
 		// now get result from futureResult
 		final Object result = f.get();
-		Trace.trace(Activator.PLUGIN_ID, "callSync.doStuff1 result=" + result);
+		Trace.trace(PLUGIN_ID, "callSync.doStuff1 result=" + result);
 		assertStringResultValid(result, TestServiceInterface1.TEST_SERVICE_STRING1);
 	}
 
