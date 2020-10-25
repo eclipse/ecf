@@ -218,6 +218,8 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 			t.printStackTrace();
 	}
 	
+	private static final boolean topicsDisabled = System.getProperty("ch.ethz.iks.r_osgi.topic.filter","").equals("*");
+	
 	/**
 	 * create a new channel endpoint.
 	 * 
@@ -1598,7 +1600,7 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 			// ch.ethz.iks.r_osgi.impl.RemoteOSGiServiceImpl.setupTrackers(...).new
 			// ServiceTrackerCustomizer() {...}.removedService(ServiceReference,
 			// Object)) with null as the topicsAdded list. Thus, ignore null.
-			if (topicsAdded != null && topicsAdded.length > 0) {
+			if (!topicsDisabled && topicsAdded != null && topicsAdded.length > 0) {
 				// register handler
 				final Dictionary properties = new Hashtable();
 				properties.put(EventConstants.EVENT_TOPIC, topicsAdded);
@@ -1618,11 +1620,11 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 				remoteTopics.addAll(Arrays.asList(topicsAdded));
 			}
 
-			if (remoteTopics.size() == 0) {
+			if (remoteTopics.size() == 0 && handlerReg != null) {
 				// unregister handler
 				handlerReg.unregister();
 				handlerReg = null;
-			} else {
+			} else if (handlerReg != null) {
 				// update topics
 				final Dictionary properties = new Hashtable();
 				properties.put(EventConstants.EVENT_TOPIC, remoteTopics

@@ -24,6 +24,7 @@ import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.events.*;
 import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
 import org.eclipse.ecf.provider.r_osgi.identity.*;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceRegisteredEvent;
@@ -33,6 +34,7 @@ import org.osgi.framework.*;
 import org.osgi.framework.Constants;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.service.remoteserviceadmin.RemoteConstants;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
@@ -42,7 +44,7 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
  * 
  * @author Jan S. Rellermeyer, ETH Zurich
  */
-class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerAdapter, IRemoteServiceContainerAdapter, IContainer, RemoteServiceListener {
+class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerAdapter, IRemoteServiceContainerAdapter, IContainer, RemoteServiceListener, IRSAConsumerContainerAdapter {
 
 	// the bundle context.
 	private BundleContext context;
@@ -557,6 +559,8 @@ class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerAdapter
 			return this;
 		} else if (adapter.equals(IContainer.class)) {
 			return this;
+		} else if (adapter.equals(IRSAConsumerContainerAdapter.class)) {
+			return this;
 		}
 		return null;
 	}
@@ -883,6 +887,59 @@ class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerAdapter
 		synchronized (remoteServicesRegs) {
 			remoteServicesRegs.remove(reg.getReference());
 		}
+	}
+
+	public IRemoteServiceReference[] importEndpoint(Map<String, Object> endpointDescriptionProperties) throws ContainerConnectException, InvalidSyntaxException {
+		EndpointDescription endpointDescription = new EndpointDescription(endpointDescriptionProperties);
+		ID endpointContainerID = endpointDescription.getContainerID();
+		Assert.isNotNull(endpointContainerID);
+		// Get connect target ID. May be null
+		ID tID = endpointDescription.getConnectTargetID();
+		if (tID == null)
+			tID = endpointContainerID;
+		final ID targetID = tID;
+		return getRemoteServiceReferences(targetID, getIDFilter(endpointDescription, targetID), endpointDescription.getInterfaces().iterator().next(), getRemoteServiceFilter(endpointDescription));
+	}
+
+	private String getRemoteServiceFilter(EndpointDescription endpointDescription) {
+
+		String intf = endpointDescription.getInterfaces().iterator().next();
+		String packageName = intf.substring(0, intf.lastIndexOf('.'));
+		String edRsFilter = endpointDescription.getRemoteServiceFilter();
+		// if edRsFilter is explicitly set, then simply use it
+		if (edRsFilter == null) {
+			Version intfPackageVersion = endpointDescription.getPackageVersion(packageName);
+			edRsFilter = "(" + RemoteConstants.ENDPOINT_PACKAGE_VERSION_ + packageName + "=" + intfPackageVersion + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		}
+		long rsId = 0;
+		// if the ECF remote service id is present in properties, allow it to
+		// override
+		Long l = endpointDescription.getRemoteServiceId();
+		if (l != null)
+			rsId = l.longValue();
+		// if rsId is still zero, use the endpoint.service.id from
+		// endpoint description
+		if (rsId == 0)
+			rsId = endpointDescription.getServiceId();
+		// If it's *still* zero, then just use the raw filter
+		if (rsId == 0) {
+			// It's not known...so we just return the 'raw' remote service
+			// filter
+			return edRsFilter;
+		}
+		// It's a real remote service id...so we return
+		StringBuffer result = new StringBuffer("(&(") //$NON-NLS-1$
+				.append(org.eclipse.ecf.remoteservice.Constants.SERVICE_ID).append("=").append(rsId).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
+		if (edRsFilter != null)
+			result.append(edRsFilter);
+		result.append(")"); //$NON-NLS-1$
+		return result.toString();
+	}
+
+	private ID[] getIDFilter(EndpointDescription endpointDescription, ID endpointID) {
+		ID[] idFilter = endpointDescription.getIDFilter();
+		// If it is null,
+		return (idFilter == null) ? new ID[] {endpointID} : idFilter;
 	}
 
 }
