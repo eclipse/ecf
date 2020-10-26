@@ -97,7 +97,7 @@ public class TCPServerSOContainer extends ServerSOContainer implements IConnectR
 	public TCPServerSOContainer(ISharedObjectContainerConfig config, InetAddress bindAddress, int keepAlive) throws IOException, URISyntaxException {
 		super(config);
 		isSingle = true;
-		URI actualURI = new URI(getID().getName());
+		URI actualURI = parseAndValidateURI();
 		int port = actualURI.getPort();
 		String path = actualURI.getPath();
 		if (path == null)
@@ -111,7 +111,7 @@ public class TCPServerSOContainer extends ServerSOContainer implements IConnectR
 		super(config);
 		this.keepAlive = keepAlive;
 		// Make sure URI syntax is followed.
-		URI actualURI = new URI(getID().getName());
+		URI actualURI = parseAndValidateURI();
 		int urlPort = actualURI.getPort();
 		String path = actualURI.getPath();
 		if (grp == null) {
@@ -122,6 +122,12 @@ public class TCPServerSOContainer extends ServerSOContainer implements IConnectR
 		group.add(path, this);
 		if (grp == null)
 			this.group.putOnTheAir();
+	}
+
+	private URI parseAndValidateURI() throws URISyntaxException {
+		URI uri = new URI(getID().getName());
+		uri.parseServerAuthority();
+		return uri;
 	}
 
 	public TCPServerSOContainer(ISharedObjectContainerConfig config, TCPServerSOContainerGroup listener, String path, int keepAlive) {
