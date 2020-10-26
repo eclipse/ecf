@@ -60,4 +60,12 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/org/eclipse/ecf/osgi/services/remoteserviceadmin/IEndpointDescriptionReader.java" type="org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionReader">
+        <filter comment="This new method is unlikely to break clients and so is not to be considered breaking" id="403804204">
+            <message_arguments>
+                <message_argument value="org.eclipse.ecf.osgi.services.remoteserviceadmin.IEndpointDescriptionReader"/>
+                <message_argument value="readEndpointDescriptions(InputStream, Map&lt;String,Object&gt;)"/>
+            </message_arguments>
+        </filter>
+    </resource>
 </component>

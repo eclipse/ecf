@@ -31,14 +31,14 @@ public class EndpointDescriptionReader implements IEndpointDescriptionReader {
 
 	public org.osgi.service.remoteserviceadmin.EndpointDescription[] readEndpointDescriptions(InputStream input)
 			throws IOException {
-		return readAndMergeEndpointDescriptions(input, null);
+		return readEndpointDescriptions(input, null);
 	}
 
 	/**
 	 * @since 4.7
 	 */
-	public org.osgi.service.remoteserviceadmin.EndpointDescription[] readAndMergeEndpointDescriptions(InputStream ins,
-			Map<String, Object> mergeProperties) throws IOException {
+	public org.osgi.service.remoteserviceadmin.EndpointDescription[] readEndpointDescriptions(InputStream ins,
+			Map<String, Object> overrideProperties) throws IOException {
 		// First create parser
 		EndpointDescriptionParser parser = new EndpointDescriptionParser();
 		// Parse input stream
@@ -50,8 +50,8 @@ public class EndpointDescriptionReader implements IEndpointDescriptionReader {
 		for (EndpointDescriptionParser.EndpointDescription ed : parsedDescriptions) {
 			Map<String, Object> parsedProperties = ed.getProperties();
 			Map<String, Object> mergedProperties = null;
-			if (mergeProperties != null) {
-				mergedProperties = mergeWithParsed(parsedProperties, mergeProperties);
+			if (overrideProperties != null) {
+				mergedProperties = mergeWithParsed(parsedProperties, overrideProperties);
 			} else {
 				mergedProperties = parsedProperties;
 			}

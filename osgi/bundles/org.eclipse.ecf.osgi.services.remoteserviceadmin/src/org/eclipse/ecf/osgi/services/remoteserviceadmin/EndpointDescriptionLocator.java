@@ -15,7 +15,11 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
@@ -116,7 +120,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 	private String frameworkUUID;
 
 	private ServiceRegistration<IEndpointDescriptionLocator> endpointLocatorReg;
-	
+
 	private String getFrameworkUUID() {
 		return frameworkUUID;
 	}
@@ -132,60 +136,48 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		// set the service ranking to Integer.MIN_VALUE
 		// so that any other registered factories will be preferred
 		final Properties properties = new Properties();
-		properties.put(Constants.SERVICE_RANKING,
-				Integer.valueOf(Integer.MIN_VALUE));
+		properties.put(Constants.SERVICE_RANKING, Integer.valueOf(Integer.MIN_VALUE));
 		serviceInfoFactory = new ServiceInfoFactory();
-		defaultServiceInfoFactoryRegistration = context.registerService(
-				IServiceInfoFactory.class.getName(), serviceInfoFactory,
-				(Dictionary) properties);
+		defaultServiceInfoFactoryRegistration = context.registerService(IServiceInfoFactory.class.getName(),
+				serviceInfoFactory, (Dictionary) properties);
 		defaultEndpointDescriptionFactory = new DiscoveredEndpointDescriptionFactory();
-		defaultEndpointDescriptionFactoryRegistration = context
-				.registerService(
-						IDiscoveredEndpointDescriptionFactory.class.getName(),
-						defaultEndpointDescriptionFactory,
-						(Dictionary) properties);
+		defaultEndpointDescriptionFactoryRegistration = context.registerService(
+				IDiscoveredEndpointDescriptionFactory.class.getName(), defaultEndpointDescriptionFactory,
+				(Dictionary) properties);
 		// setup/register default endpointDescriptionReader
 		defaultEndpointDescriptionReaderRegistration = context.registerService(
-				IEndpointDescriptionReader.class.getName(),
-				new EndpointDescriptionReader(), (Dictionary) properties);
+				IEndpointDescriptionReader.class.getName(), new EndpointDescriptionReader(), (Dictionary) properties);
 
 		// Create thread group, event manager, and eventQueue, and setup to
 		// dispatch EndpointListenerEvents
-		ThreadGroup eventGroup = new ThreadGroup(
-				"RSA EndpointDescriptionLocator ThreadGroup"); //$NON-NLS-1$
+		ThreadGroup eventGroup = new ThreadGroup("RSA EndpointDescriptionLocator ThreadGroup"); //$NON-NLS-1$
 		eventGroup.setDaemon(true);
-		eventManager = new EventManager(
-				"RSA EndpointDescriptionLocator Dispatcher", eventGroup); //$NON-NLS-1$
+		eventManager = new EventManager("RSA EndpointDescriptionLocator Dispatcher", eventGroup); //$NON-NLS-1$
 		eventQueue = new ListenerQueue(eventManager);
 		CopyOnWriteIdentityMap listeners = new CopyOnWriteIdentityMap();
 		listeners.put(this, this);
 		eventQueue.queueListeners(listeners.entrySet(), new EventDispatcher() {
-			public void dispatchEvent(Object eventListener,
-					Object listenerObject, int eventAction, Object eventObject) {
+			public void dispatchEvent(Object eventListener, Object listenerObject, int eventAction,
+					Object eventObject) {
 				final String logMethodName = "dispatchEvent"; //$NON-NLS-1$
 				// We now dispatch both EndpointListenerEvents
 				if (eventObject instanceof EndpointListenerEvent) {
 					final EndpointListenerEvent event = (EndpointListenerEvent) eventObject;
-					final EndpointListener endpointListener = event
-							.getEndpointListener();
-					final EndpointDescription endpointDescription = event
-							.getEndointDescription();
+					final EndpointListener endpointListener = event.getEndpointListener();
+					final EndpointDescription endpointDescription = event.getEndointDescription();
 					final String matchingFilter = event.getMatchingFilter();
 
 					try {
 						boolean discovered = event.isDiscovered();
-						trace("endpointListener.discovered=" + discovered + " ", "fwk=" + getFrameworkUUID() + ", endpointListener=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-										+ endpointListener
-										+ ", endpointDescription=" //$NON-NLS-1$
-										+ endpointDescription
-										+ ", matchingFilter=" //$NON-NLS-1$
+						trace("endpointListener.discovered=" + discovered + " ", //$NON-NLS-1$ //$NON-NLS-2$
+								"fwk=" + getFrameworkUUID() + ", endpointListener=" //$NON-NLS-1$ //$NON-NLS-2$
+										+ endpointListener + ", endpointDescription=" //$NON-NLS-1$
+										+ endpointDescription + ", matchingFilter=" //$NON-NLS-1$
 										+ matchingFilter);
 						if (discovered)
-							endpointListener.endpointAdded(endpointDescription,
-									matchingFilter);
+							endpointListener.endpointAdded(endpointDescription, matchingFilter);
 						else
-							endpointListener.endpointRemoved(
-									endpointDescription, matchingFilter);
+							endpointListener.endpointRemoved(endpointDescription, matchingFilter);
 					} catch (Exception e) {
 						String message = "Exception in EndpointListener listener=" //$NON-NLS-1$
 								+ endpointListener + " description=" //$NON-NLS-1$
@@ -208,19 +200,17 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 					// and EndpointEventListenerEvents
 				} else if (eventObject instanceof EndpointEventListenerEvent) {
 					final EndpointEventListenerEvent event = (EndpointEventListenerEvent) eventObject;
-					final EndpointEventListener endpointEventListener = event
-							.getEndpointEventListener();
-					final EndpointEvent endpointEvent = event
-							.getEndpointEvent();
+					final EndpointEventListener endpointEventListener = event.getEndpointEventListener();
+					final EndpointEvent endpointEvent = event.getEndpointEvent();
 					final String matchingFilter = event.getMatchingFilter();
 					try {
-						trace("endpointEventListener.discovered=" + getEndpointEventTypeAsString(endpointEvent.getType()) + " ", "fwk=" + getFrameworkUUID() + ", endpointEventListener=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-										+ endpointEventListener
-										+ ", endpointEvent=" //$NON-NLS-1$
+						trace("endpointEventListener.discovered=" //$NON-NLS-1$
+								+ getEndpointEventTypeAsString(endpointEvent.getType()) + " ", //$NON-NLS-1$
+								"fwk=" + getFrameworkUUID() + ", endpointEventListener=" //$NON-NLS-1$ //$NON-NLS-2$
+										+ endpointEventListener + ", endpointEvent=" //$NON-NLS-1$
 										+ endpointEvent + ", matchingFilter=" //$NON-NLS-1$
 										+ matchingFilter);
-						endpointEventListener.endpointChanged(endpointEvent,
-								matchingFilter);
+						endpointEventListener.endpointChanged(endpointEvent, matchingFilter);
 					} catch (Exception e) {
 						String message = "Exception in EndpointEventListener listener=" //$NON-NLS-1$
 								+ endpointEventListener + " event=" //$NON-NLS-1$
@@ -247,14 +237,12 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		// Register the endpoint listener tracker, so that endpoint listeners
 		// that are subsequently added
 		// will then be notified of discovered endpoints
-		endpointListenerTracker = new ServiceTracker(context,
-				EndpointListener.class.getName(),
+		endpointListenerTracker = new ServiceTracker(context, EndpointListener.class.getName(),
 				new ServiceTrackerCustomizer() {
 					public Object addingService(ServiceReference reference) {
 						if (context == null)
 							return null;
-						EndpointListener listener = (EndpointListener) context
-								.getService(reference);
+						EndpointListener listener = (EndpointListener) context.getService(reference);
 						if (listener == null)
 							return null;
 						Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> allDiscoveredEndpointDescriptions = getEDs();
@@ -263,25 +251,19 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 									new ServiceReference[] { reference }, ed);
 							if (endpointListenerHolders != null) {
 								for (int i = 0; i < endpointListenerHolders.length; i++) {
-									queueEndpointDescription(
-											endpointListenerHolders[i]
-													.getListener(),
-											endpointListenerHolders[i]
-													.getDescription(),
-											endpointListenerHolders[i]
-													.getMatchingFilter(), true);
+									queueEndpointDescription(endpointListenerHolders[i].getListener(),
+											endpointListenerHolders[i].getDescription(),
+											endpointListenerHolders[i].getMatchingFilter(), true);
 								}
 							}
 						}
 						return listener;
 					}
 
-					public void modifiedService(ServiceReference reference,
-							Object service) {
+					public void modifiedService(ServiceReference reference, Object service) {
 					}
 
-					public void removedService(ServiceReference reference,
-							Object service) {
+					public void removedService(ServiceReference reference, Object service) {
 					}
 				});
 
@@ -291,44 +273,34 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		// listeners
 		// that are subsequently added
 		// will then be notified of discovered endpoints
-		endpointEventListenerTracker = new ServiceTracker(context,
-				EndpointEventListener.class.getName(),
+		endpointEventListenerTracker = new ServiceTracker(context, EndpointEventListener.class.getName(),
 				new ServiceTrackerCustomizer() {
 					public Object addingService(ServiceReference reference) {
 						if (context == null)
 							return null;
-						EndpointEventListener listener = (EndpointEventListener) context
-								.getService(reference);
+						EndpointEventListener listener = (EndpointEventListener) context.getService(reference);
 						if (listener == null)
 							return null;
 						Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> allDiscoveredEndpointDescriptions = getEDs();
 						for (org.osgi.service.remoteserviceadmin.EndpointDescription ed : allDiscoveredEndpointDescriptions) {
 							EndpointDescriptionLocator.EndpointEventListenerHolder[] endpointEventListenerHolders = getMatchingEndpointEventListenerHolders(
-									new ServiceReference[] { reference }, ed,
-									EndpointEvent.ADDED);
+									new ServiceReference[] { reference }, ed, EndpointEvent.ADDED);
 							if (endpointEventListenerHolders != null) {
 								for (int i = 0; i < endpointEventListenerHolders.length; i++) {
-									queueEndpointDescription(
-											endpointEventListenerHolders[i]
-													.getListener(),
-											endpointEventListenerHolders[i]
-													.getDescription(),
-											endpointEventListenerHolders[i]
-													.getMatchingFilter(),
-											endpointEventListenerHolders[i]
-													.getType());
+									queueEndpointDescription(endpointEventListenerHolders[i].getListener(),
+											endpointEventListenerHolders[i].getDescription(),
+											endpointEventListenerHolders[i].getMatchingFilter(),
+											endpointEventListenerHolders[i].getType());
 								}
 							}
 						}
 						return listener;
 					}
 
-					public void modifiedService(ServiceReference reference,
-							Object service) {
+					public void modifiedService(ServiceReference reference, Object service) {
 					}
 
-					public void removedService(ServiceReference reference,
-							Object service) {
+					public void removedService(ServiceReference reference, Object service) {
 					}
 				});
 
@@ -337,31 +309,25 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		locatorListeners = new HashMap();
 		// Create locator service tracker, so new IDiscoveryLocators can
 		// be used to discover endpoint descriptions
-		locatorServiceTracker = new ServiceTracker(context,
-				IDiscoveryLocator.class.getName(),
+		locatorServiceTracker = new ServiceTracker(context, IDiscoveryLocator.class.getName(),
 				new LocatorTrackerCustomizer());
 		locatorServiceTracker.open();
 		// Create bundle tracker for reading local/xml-file endpoint
 		// descriptions
 		bundleTrackerCustomizer = new EndpointDescriptionBundleTrackerCustomizer();
-		bundleTracker = new BundleTracker(context, Bundle.ACTIVE
-				| Bundle.STARTING, bundleTrackerCustomizer);
+		bundleTracker = new BundleTracker(context, Bundle.ACTIVE | Bundle.STARTING, bundleTrackerCustomizer);
 		// This may trigger local endpoint description discovery
 		bundleTracker.open();
 
-		this.endpointLocatorReg = this.context.registerService(
-				IEndpointDescriptionLocator.class, this, null);
+		this.endpointLocatorReg = this.context.registerService(IEndpointDescriptionLocator.class, this, null);
 	}
 
 	private void logError(String methodName, String message, Throwable e) {
-		LogUtility.logError(methodName,
-				DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, this.getClass(),
-				message, e);
+		LogUtility.logError(methodName, DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, this.getClass(), message, e);
 	}
 
 	private void trace(String methodName, String message) {
-		LogUtility.trace(methodName, DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR,
-				this.getClass(), message);
+		LogUtility.trace(methodName, DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, this.getClass(), message);
 	}
 
 	public void close() {
@@ -381,8 +347,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		// shutdown locatorListeners
 		synchronized (locatorListeners) {
 			for (IDiscoveryLocator l : locatorListeners.keySet()) {
-				LocatorServiceListener locatorListener = locatorListeners
-						.get(l);
+				LocatorServiceListener locatorListener = locatorListeners.get(l);
 				if (locatorListener != null) {
 					l.removeServiceListener(locatorListener);
 					locatorListener.close();
@@ -461,44 +426,37 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		synchronized (edToServiceIDMap) {
 			edToServiceIDMap.clear();
 		}
-		
+
 		this.executor = null;
 		this.context = null;
 	}
 
 	public IDiscoveryAdvertiser[] getDiscoveryAdvertisers() {
-		return AccessController
-				.doPrivileged(new PrivilegedAction<IDiscoveryAdvertiser[]>() {
-					public IDiscoveryAdvertiser[] run() {
-						synchronized (advertiserTrackerLock) {
-							if (advertiserTracker == null) {
-								advertiserTracker = new ServiceTracker(context,
-										IDiscoveryAdvertiser.class.getName(),
-										null);
-								advertiserTracker.open();
-							}
-						}
-						ServiceReference[] advertiserRefs = advertiserTracker
-								.getServiceReferences();
-						if (advertiserRefs == null)
-							return null;
-						List<IDiscoveryAdvertiser> results = new ArrayList<IDiscoveryAdvertiser>();
-						for (int i = 0; i < advertiserRefs.length; i++) {
-							results.add((IDiscoveryAdvertiser) context
-									.getService(advertiserRefs[i]));
-						}
-						return results.toArray(new IDiscoveryAdvertiser[results
-								.size()]);
+		return AccessController.doPrivileged(new PrivilegedAction<IDiscoveryAdvertiser[]>() {
+			public IDiscoveryAdvertiser[] run() {
+				synchronized (advertiserTrackerLock) {
+					if (advertiserTracker == null) {
+						advertiserTracker = new ServiceTracker(context, IDiscoveryAdvertiser.class.getName(), null);
+						advertiserTracker.open();
 					}
-				});
+				}
+				ServiceReference[] advertiserRefs = advertiserTracker.getServiceReferences();
+				if (advertiserRefs == null)
+					return null;
+				List<IDiscoveryAdvertiser> results = new ArrayList<IDiscoveryAdvertiser>();
+				for (int i = 0; i < advertiserRefs.length; i++) {
+					results.add((IDiscoveryAdvertiser) context.getService(advertiserRefs[i]));
+				}
+				return results.toArray(new IDiscoveryAdvertiser[results.size()]);
+			}
+		});
 	}
 
 	private void openLocator(IDiscoveryLocator locator) {
 		if (context == null)
 			return;
 		synchronized (locatorListeners) {
-			LocatorServiceListener locatorListener = new LocatorServiceListener(
-					locator);
+			LocatorServiceListener locatorListener = new LocatorServiceListener(locator);
 			locatorListeners.put(locator, locatorListener);
 			processInitialLocatorServices(locator, locatorListener);
 		}
@@ -508,61 +466,49 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		if (locator == null || context == null)
 			return;
 		synchronized (locatorListeners) {
-			LocatorServiceListener locatorListener = locatorListeners
-					.remove(locator);
+			LocatorServiceListener locatorListener = locatorListeners.remove(locator);
 			if (locatorListener != null)
 				locatorListener.close();
 		}
 	}
 
-	void queueEndpointDescription(
-			EndpointEventListener listener,
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
-			String matchingFilter, int eventType) {
+	void queueEndpointDescription(EndpointEventListener listener,
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription, String matchingFilter,
+			int eventType) {
+		if (eventQueue == null)
+			return;
+		synchronized (eventQueue) {
+			eventQueue.dispatchEventAsynchronous(0, new EndpointEventListenerEvent(listener,
+					new EndpointEvent(eventType, endpointDescription), matchingFilter));
+		}
+	}
+
+	void queueEndpointDescription(EndpointListener listener,
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription, String matchingFilters,
+			boolean discovered) {
 		if (eventQueue == null)
 			return;
 		synchronized (eventQueue) {
 			eventQueue.dispatchEventAsynchronous(0,
-					new EndpointEventListenerEvent(listener, new EndpointEvent(
-							eventType, endpointDescription), matchingFilter));
+					new EndpointListenerEvent(listener, endpointDescription, matchingFilters, discovered));
 		}
 	}
 
-	void queueEndpointDescription(
-			EndpointListener listener,
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
-			String matchingFilters, boolean discovered) {
-		if (eventQueue == null)
-			return;
-		synchronized (eventQueue) {
-			eventQueue
-					.dispatchEventAsynchronous(0, new EndpointListenerEvent(
-							listener, endpointDescription, matchingFilters,
-							discovered));
-		}
-	}
-
-	void queueEndpointEvent(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
-			int type) {
+	void queueEndpointEvent(org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription, int type) {
 		EndpointEventListenerHolder[] endpointEventListenerHolders = getMatchingEndpointEventListenerHolders(
 				endpointDescription, type);
 		if (endpointEventListenerHolders != null) {
 			for (int i = 0; i < endpointEventListenerHolders.length; i++) {
-				queueEndpointDescription(
-						endpointEventListenerHolders[i].getListener(),
+				queueEndpointDescription(endpointEventListenerHolders[i].getListener(),
 						endpointEventListenerHolders[i].getDescription(),
-						endpointEventListenerHolders[i].getMatchingFilter(),
-						endpointEventListenerHolders[i].getType());
+						endpointEventListenerHolders[i].getMatchingFilter(), endpointEventListenerHolders[i].getType());
 
 			}
 		} else {
-			LogUtility.logWarning(
-					"queueEndpointDescription", //$NON-NLS-1$
+			LogUtility.logWarning("queueEndpointDescription", //$NON-NLS-1$
 					DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, this.getClass(),
 					"No matching EndpointEventListeners found for event type" //$NON-NLS-1$
-							+ getEndpointEventTypeAsString(type)
-							+ " endpointDescription=" + endpointDescription); //$NON-NLS-1$
+							+ getEndpointEventTypeAsString(type) + " endpointDescription=" + endpointDescription); //$NON-NLS-1$
 		}
 	}
 
@@ -578,21 +524,19 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		return "unknown"; //$NON-NLS-1$
 	}
 
-	void queueEndpointDescription(
-			org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
+	void queueEndpointDescription(org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
 			boolean discovered) {
 		EndpointListenerHolder[] endpointListenerHolders = getMatchingEndpointListenerHolders(endpointDescription);
 		if (endpointListenerHolders != null) {
 			for (int i = 0; i < endpointListenerHolders.length; i++) {
-				queueEndpointDescription(
-						endpointListenerHolders[i].getListener(),
-						endpointListenerHolders[i].getDescription(),
-						endpointListenerHolders[i].getMatchingFilter(),
+				queueEndpointDescription(endpointListenerHolders[i].getListener(),
+						endpointListenerHolders[i].getDescription(), endpointListenerHolders[i].getMatchingFilter(),
 						discovered);
 
 			}
 		} else {
-			// For old-style notification, we ignore this since it's probably using EndpointEvents
+			// For old-style notification, we ignore this since it's probably using
+			// EndpointEvents
 		}
 
 	}
@@ -605,8 +549,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 				try {
 					serviceInfos = locator.getServices();
 				} catch (Exception e) {
-					logError(
-							"processInitialLocatorServices", "Exception in locator.getServices()", e); //$NON-NLS-1$ //$NON-NLS-2$
+					logError("processInitialLocatorServices", "Exception in locator.getServices()", e); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				if (serviceInfos != null)
 					for (int i = 0; i < serviceInfos.length; i++) {
@@ -634,9 +577,8 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		private EndpointEvent event;
 		private String matchingFilter;
 
-		public EndpointEventListenerEvent(
-				EndpointEventListener endpointEventListener,
-				EndpointEvent event, String matchingFilter) {
+		public EndpointEventListenerEvent(EndpointEventListener endpointEventListener, EndpointEvent event,
+				String matchingFilter) {
 			this.endpointEventListener = endpointEventListener;
 			this.event = event;
 			this.matchingFilter = matchingFilter;
@@ -663,10 +605,9 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		private String matchingFilter;
 		private boolean discovered;
 
-		public EndpointListenerEvent(
-				EndpointListener endpointListener,
-				org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription,
-				String matchingFilter, boolean discovered) {
+		public EndpointListenerEvent(EndpointListener endpointListener,
+				org.osgi.service.remoteserviceadmin.EndpointDescription endpointDescription, String matchingFilter,
+				boolean discovered) {
 			this.endpointListener = endpointListener;
 			this.endpointDescription = endpointDescription;
 			this.matchingFilter = matchingFilter;
@@ -695,13 +636,11 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see
-		 * org.osgi.util.tracker.ServiceTrackerCustomizer#addingService(org.
+		 * @see org.osgi.util.tracker.ServiceTrackerCustomizer#addingService(org.
 		 * osgi.framework.ServiceReference)
 		 */
 		public Object addingService(ServiceReference reference) {
-			IDiscoveryLocator locator = (IDiscoveryLocator) context
-					.getService(reference);
+			IDiscoveryLocator locator = (IDiscoveryLocator) context.getService(reference);
 			if (locator != null)
 				openLocator(locator);
 			return locator;
@@ -716,21 +655,18 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 	}
 
 	public IServiceInfoFactory getServiceInfoFactory() {
-		return AccessController
-				.doPrivileged(new PrivilegedAction<IServiceInfoFactory>() {
-					public IServiceInfoFactory run() {
-						synchronized (serviceInfoFactoryTrackerLock) {
-							if (serviceInfoFactoryTracker == null) {
-								serviceInfoFactoryTracker = new ServiceTracker(
-										context, IServiceInfoFactory.class
-												.getName(), null);
-								serviceInfoFactoryTracker.open();
-							}
-						}
-						return (IServiceInfoFactory) serviceInfoFactoryTracker
-								.getService();
+		return AccessController.doPrivileged(new PrivilegedAction<IServiceInfoFactory>() {
+			public IServiceInfoFactory run() {
+				synchronized (serviceInfoFactoryTrackerLock) {
+					if (serviceInfoFactoryTracker == null) {
+						serviceInfoFactoryTracker = new ServiceTracker(context, IServiceInfoFactory.class.getName(),
+								null);
+						serviceInfoFactoryTracker.open();
 					}
-				});
+				}
+				return (IServiceInfoFactory) serviceInfoFactoryTracker.getService();
+			}
+		});
 	}
 
 	public IDiscoveredEndpointDescriptionFactory getDiscoveredEndpointDescriptionFactory() {
@@ -739,12 +675,10 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 				return null;
 			if (endpointDescriptionFactoryTracker == null) {
 				endpointDescriptionFactoryTracker = new ServiceTracker(context,
-						IDiscoveredEndpointDescriptionFactory.class.getName(),
-						null);
+						IDiscoveredEndpointDescriptionFactory.class.getName(), null);
 				endpointDescriptionFactoryTracker.open();
 			}
-			return (IDiscoveredEndpointDescriptionFactory) endpointDescriptionFactoryTracker
-					.getService();
+			return (IDiscoveredEndpointDescriptionFactory) endpointDescriptionFactoryTracker.getService();
 		}
 	}
 
@@ -752,40 +686,34 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 
 	private Object endpointEventListenerServiceTrackerLock = new Object();
 
-	protected EndpointListenerHolder[] getMatchingEndpointListenerHolders(
-			final EndpointDescription description) {
-		return AccessController
-				.doPrivileged(new PrivilegedAction<EndpointListenerHolder[]>() {
-					public EndpointListenerHolder[] run() {
-						synchronized (endpointListenerServiceTrackerLock) {
-							return getMatchingEndpointListenerHolders(
-									endpointListenerTracker
-											.getServiceReferences(),
-									description);
-						}
-					}
-				});
+	protected EndpointListenerHolder[] getMatchingEndpointListenerHolders(final EndpointDescription description) {
+		return AccessController.doPrivileged(new PrivilegedAction<EndpointListenerHolder[]>() {
+			public EndpointListenerHolder[] run() {
+				synchronized (endpointListenerServiceTrackerLock) {
+					return getMatchingEndpointListenerHolders(endpointListenerTracker.getServiceReferences(),
+							description);
+				}
+			}
+		});
 	}
 
 	/**
 	 * @param description description
-	 * @param type type
-	 * @return EndpointEventListenerHolder[] matching endpoint event listener holders
+	 * @param type        type
+	 * @return EndpointEventListenerHolder[] matching endpoint event listener
+	 *         holders
 	 * @since 4.1
 	 */
 	protected EndpointEventListenerHolder[] getMatchingEndpointEventListenerHolders(
 			final EndpointDescription description, final int type) {
-		return AccessController
-				.doPrivileged(new PrivilegedAction<EndpointEventListenerHolder[]>() {
-					public EndpointEventListenerHolder[] run() {
-						synchronized (endpointEventListenerServiceTrackerLock) {
-							return getMatchingEndpointEventListenerHolders(
-									endpointEventListenerTracker
-											.getServiceReferences(),
-									description, type);
-						}
-					}
-				});
+		return AccessController.doPrivileged(new PrivilegedAction<EndpointEventListenerHolder[]>() {
+			public EndpointEventListenerHolder[] run() {
+				synchronized (endpointEventListenerServiceTrackerLock) {
+					return getMatchingEndpointEventListenerHolders(endpointEventListenerTracker.getServiceReferences(),
+							description, type);
+				}
+			}
+		});
 	}
 
 	/**
@@ -797,8 +725,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		private String matchingFilter;
 		private int type;
 
-		public EndpointEventListenerHolder(EndpointEventListener l,
-				EndpointDescription d, String f, int t) {
+		public EndpointEventListenerHolder(EndpointEventListener l, EndpointDescription d, String f, int t) {
 			this.listener = l;
 			this.description = d;
 			this.matchingFilter = f;
@@ -828,8 +755,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		private EndpointDescription description;
 		private String matchingFilter;
 
-		public EndpointListenerHolder(EndpointListener l,
-				EndpointDescription d, String f) {
+		public EndpointListenerHolder(EndpointListener l, EndpointDescription d, String f) {
 			this.listener = l;
 			this.description = d;
 			this.matchingFilter = f;
@@ -849,64 +775,58 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 	}
 
 	/**
-	 * @param refs service references
+	 * @param refs        service references
 	 * @param description description
-	 * @param type type
-	 * @return EndpointEventListenerHolder[] matching endpoint event listener holders
+	 * @param type        type
+	 * @return EndpointEventListenerHolder[] matching endpoint event listener
+	 *         holders
 	 * @since 4.1
 	 */
-	public EndpointEventListenerHolder[] getMatchingEndpointEventListenerHolders(
-			ServiceReference[] refs, EndpointDescription description, int type) {
+	public EndpointEventListenerHolder[] getMatchingEndpointEventListenerHolders(ServiceReference[] refs,
+			EndpointDescription description, int type) {
 		if (refs == null)
 			return null;
 		List results = new ArrayList();
 		for (int i = 0; i < refs.length; i++) {
-			EndpointEventListener listener = (EndpointEventListener) context
-					.getService(refs[i]);
+			EndpointEventListener listener = (EndpointEventListener) context.getService(refs[i]);
 			if (listener == null)
 				continue;
-			List<String> filters = PropertiesUtil.getStringPlusProperty(
-					getMapFromProperties(refs[i]),
+			List<String> filters = PropertiesUtil.getStringPlusProperty(getMapFromProperties(refs[i]),
 					EndpointEventListener.ENDPOINT_LISTENER_SCOPE);
 			// Only proceed if there is a filter present
 			if (filters.size() > 0) {
 				String matchingFilter = isMatch(description, filters);
 				if (matchingFilter != null)
-					results.add(new EndpointEventListenerHolder(listener,
-							description, matchingFilter, type));
+					results.add(new EndpointEventListenerHolder(listener, description, matchingFilter, type));
 			}
 		}
-		return (EndpointEventListenerHolder[]) results
-				.toArray(new EndpointEventListenerHolder[results.size()]);
+		return (EndpointEventListenerHolder[]) results.toArray(new EndpointEventListenerHolder[results.size()]);
 	}
 
-	public EndpointListenerHolder[] getMatchingEndpointListenerHolders(
-			ServiceReference[] refs, EndpointDescription description) {
+	public EndpointListenerHolder[] getMatchingEndpointListenerHolders(ServiceReference[] refs,
+			EndpointDescription description) {
 		if (refs == null)
 			return null;
 		List results = new ArrayList();
 		for (int i = 0; i < refs.length; i++) {
-			EndpointListener listener = (EndpointListener) context
-					.getService(refs[i]);
+			EndpointListener listener = (EndpointListener) context.getService(refs[i]);
 			if (listener == null)
 				continue;
-			List<String> filters = PropertiesUtil.getStringPlusProperty(
-					getMapFromProperties(refs[i]),
+			List<String> filters = PropertiesUtil.getStringPlusProperty(getMapFromProperties(refs[i]),
 					EndpointListener.ENDPOINT_LISTENER_SCOPE);
 			if (filters.size() > 0) {
 				String matchingFilter = isMatch(description, filters);
 				if (matchingFilter != null)
-					results.add(new EndpointListenerHolder(listener,
-							description, matchingFilter));
+					results.add(new EndpointListenerHolder(listener, description, matchingFilter));
 			}
 		}
-		return (EndpointListenerHolder[]) results
-				.toArray(new EndpointListenerHolder[results.size()]);
+		return (EndpointListenerHolder[]) results.toArray(new EndpointListenerHolder[results.size()]);
 	}
 
 	private String isMatch(EndpointDescription description, List<String> filters) {
 		for (String filter : filters) {
-			if (filter == null || "".equals(filter))continue; //$NON-NLS-1$
+			if (filter == null || "".equals(filter)) //$NON-NLS-1$
+				continue;
 			try {
 				if (description.matches(filter))
 					return filter;
@@ -919,8 +839,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 	}
 
 	private Map getMapFromProperties(ServiceReference ref) {
-		Map<String, Object> results = new TreeMap<String, Object>(
-				String.CASE_INSENSITIVE_ORDER);
+		Map<String, Object> results = new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER);
 		String[] keys = ref.getPropertyKeys();
 		if (keys != null) {
 			for (int i = 0; i < keys.length; i++) {
@@ -930,14 +849,14 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		return results;
 	}
 
-	class EndpointDescriptionBundleTrackerCustomizer implements
-			BundleTrackerCustomizer {
+	class EndpointDescriptionBundleTrackerCustomizer implements BundleTrackerCustomizer {
 
 		private static final String REMOTESERVICE_MANIFESTHEADER = "Remote-Service"; //$NON-NLS-1$
 		private static final String XML_FILE_PATTERN = "*.xml"; //$NON-NLS-1$
 
 		private Map<Long, Collection<org.osgi.service.remoteserviceadmin.EndpointDescription>> bundleDescriptionMap = Collections
-				.synchronizedMap(new HashMap<Long, Collection<org.osgi.service.remoteserviceadmin.EndpointDescription>>());
+				.synchronizedMap(
+						new HashMap<Long, Collection<org.osgi.service.remoteserviceadmin.EndpointDescription>>());
 
 		private Object endpointDescriptionReaderTrackerLock = new Object();
 		private ServiceTracker endpointDescriptionReaderTracker;
@@ -945,14 +864,12 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		private IEndpointDescriptionReader getEndpointDescriptionReader() {
 			synchronized (endpointDescriptionReaderTrackerLock) {
 				if (endpointDescriptionReaderTracker == null) {
-					endpointDescriptionReaderTracker = new ServiceTracker(
-							context,
+					endpointDescriptionReaderTracker = new ServiceTracker(context,
 							IEndpointDescriptionReader.class.getName(), null);
 					endpointDescriptionReaderTracker.open();
 				}
 			}
-			return (IEndpointDescriptionReader) endpointDescriptionReaderTracker
-					.getService();
+			return (IEndpointDescriptionReader) endpointDescriptionReaderTracker.getService();
 		}
 
 		public Object addingBundle(Bundle bundle, BundleEvent event) {
@@ -963,8 +880,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		private void handleAddingBundle(Bundle bundle) {
 			if (context == null)
 				return;
-			String remoteServicesHeaderValue = (String) bundle.getHeaders()
-					.get(REMOTESERVICE_MANIFESTHEADER);
+			String remoteServicesHeaderValue = (String) bundle.getHeaders().get(REMOTESERVICE_MANIFESTHEADER);
 			if (remoteServicesHeaderValue != null) {
 				// First parse into comma-separated values
 				String[] paths = remoteServicesHeaderValue.split(","); //$NON-NLS-1$
@@ -974,33 +890,28 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 			}
 		}
 
-		private void handleEndpointDescriptionPath(Bundle bundle,
-				String remoteServicesHeaderValue) {
+		protected void handleEndpointDescriptionPath(Bundle bundle, String remoteServicesHeaderValue) {
 			// if it's empty, ignore
 			if ("".equals(remoteServicesHeaderValue)) //$NON-NLS-1$
 				return;
 			Enumeration<URL> e = null;
 			// if it endswith a '/', then scan for *.xml files
 			if (remoteServicesHeaderValue.endsWith("/")) { //$NON-NLS-1$
-				e = bundle.findEntries(remoteServicesHeaderValue,
-						XML_FILE_PATTERN, false);
+				e = bundle.findEntries(remoteServicesHeaderValue, XML_FILE_PATTERN, false);
 			} else {
 				// Break into path and filename/pattern
 				int lastSlashIndex = remoteServicesHeaderValue.lastIndexOf('/');
 				if (lastSlashIndex == -1) {
 					// no slash...might be a file name or pattern, assumed to be
 					// at root of bundle
-					e = bundle.findEntries(
-							"/", remoteServicesHeaderValue, false); //$NON-NLS-1$
+					e = bundle.findEntries("/", remoteServicesHeaderValue, false); //$NON-NLS-1$
 				} else {
-					String path = remoteServicesHeaderValue.substring(0,
-							lastSlashIndex);
+					String path = remoteServicesHeaderValue.substring(0, lastSlashIndex);
 					if ("".equals(path)) { //$NON-NLS-1$
 						// path is empty so assume it's root
 						path = "/"; //$NON-NLS-1$
 					}
-					String filePattern = remoteServicesHeaderValue
-							.substring(lastSlashIndex + 1);
+					String filePattern = remoteServicesHeaderValue.substring(lastSlashIndex + 1);
 					e = bundle.findEntries(path, filePattern, false);
 				}
 			}
@@ -1016,13 +927,15 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 				}
 			} else {
 				// logError
-				logError(
-						"handleEndpointDescriptionPath", "EDEF file(s) not found.  The EDEF files given by Remote-Service header value='" + remoteServicesHeaderValue + "' in bundle='" + bundle.getSymbolicName() + "' cannot be found for remote services discovery", new FileNotFoundException("name=" + remoteServicesHeaderValue)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+				logError("handleEndpointDescriptionPath", //$NON-NLS-1$
+						"EDEF file(s) not found.  The EDEF files given by Remote-Service header value='" //$NON-NLS-1$
+								+ remoteServicesHeaderValue + "' in bundle='" + bundle.getSymbolicName() //$NON-NLS-1$
+								+ "' cannot be found for remote services discovery", //$NON-NLS-1$
+						new FileNotFoundException("name=" + remoteServicesHeaderValue)); //$NON-NLS-1$
 			}
 			// finally, handle them
 			if (endpointDescriptions.size() > 0) {
-				bundleDescriptionMap.put(new Long(bundle.getBundleId()),
-						endpointDescriptions);
+				bundleDescriptionMap.put(Long.valueOf(bundle.getBundleId()), endpointDescriptions);
 				for (org.osgi.service.remoteserviceadmin.EndpointDescription ed : endpointDescriptions) {
 					addED(ed, null);
 					handleEndpointDescription(ed, true);
@@ -1030,9 +943,10 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 			}
 		}
 
-		private org.osgi.service.remoteserviceadmin.EndpointDescription[] handleEndpointDescriptionFile(
-				Bundle bundle, URL fileURL) {
+		protected org.osgi.service.remoteserviceadmin.EndpointDescription[] handleEndpointDescriptionFile(Bundle bundle,
+				URL fileURL) {
 			InputStream ins = null;
+			Map<String, Object> mergeProperties = findOverrideProperties(bundle, fileURL);
 			try {
 				IEndpointDescriptionReader endpointDescriptionReader = getEndpointDescriptionReader();
 				if (endpointDescriptionReader == null)
@@ -1040,11 +954,12 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 							"No endpointDescriptionReader available for handleEndpointDescriptionFile fileURL=" //$NON-NLS-1$
 									+ fileURL);
 				ins = fileURL.openStream();
-				return endpointDescriptionReader.readEndpointDescriptions(ins);
+				return endpointDescriptionReader.readEndpointDescriptions(ins, mergeProperties);
 			} catch (Throwable e) {
 				logError("handleEndpointDescriptionFile", //$NON-NLS-1$
 						"Exception creating endpoint descriptions from fileURL=" //$NON-NLS-1$
-								+ fileURL, e);
+								+ fileURL,
+						e);
 				return null;
 			} finally {
 				if (ins != null)
@@ -1053,30 +968,27 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 					} catch (IOException e) {
 						logError("handleEndpointDescriptionFile", //$NON-NLS-1$
 								"Exception closing endpointDescription input fileURL=" //$NON-NLS-1$
-										+ fileURL, e);
+										+ fileURL,
+								e);
 					}
 			}
 		}
 
 		private void logError(String method, String message, Throwable t) {
-			LogUtility.logError(method,
-					DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, this.getClass(),
-					new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-							IStatus.ERROR, message, t));
+			LogUtility.logError(method, DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, this.getClass(),
+					new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, message, t));
 		}
 
-		public void modifiedBundle(Bundle bundle, BundleEvent event,
-				Object object) {
+		public void modifiedBundle(Bundle bundle, BundleEvent event, Object object) {
 		}
 
-		public void removedBundle(Bundle bundle, BundleEvent event,
-				Object object) {
+		public void removedBundle(Bundle bundle, BundleEvent event, Object object) {
 			handleRemovedBundle(bundle);
 		}
 
 		private void handleRemovedBundle(Bundle bundle) {
 			Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> endpointDescriptions = bundleDescriptionMap
-					.remove(new Long(bundle.getBundleId()));
+					.remove(Long.valueOf(bundle.getBundleId()));
 			if (endpointDescriptions != null)
 				for (org.osgi.service.remoteserviceadmin.EndpointDescription ed : endpointDescriptions) {
 					removeED(ed);
@@ -1103,28 +1015,81 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		}
 	}
 
+	/**
+	 * @since 4.7
+	 */
+	protected URL getPropsURLFromEDFileURL(URL edFileURL) {
+		String edFile = edFileURL.getFile();
+		int slashIndex = edFile.lastIndexOf('/');
+		String parentPath = ""; //$NON-NLS-1$
+		if (slashIndex > -1) {
+			parentPath = edFile.substring(0, slashIndex);
+			edFile = edFile.substring(slashIndex + 1);
+		}
+		int dotIndex = edFile.lastIndexOf('.');
+		if (dotIndex > 0) {
+			edFile = edFile.substring(0, dotIndex);
+		}
+		// Now combine to create new path name/filename.ext
+		try {
+			return new URL(edFileURL.getProtocol(), edFileURL.getHost(), edFileURL.getPort(),
+					parentPath + edFile + "." + "properties"); //$NON-NLS-1$//$NON-NLS-2$
+		} catch (MalformedURLException e) {
+			return null;
+		}
+	}
+
+	/**
+	 * @since 4.7
+	 */
+	protected Map<String, Object> findOverrideProperties(Bundle bundle, URL fileURL) {
+		URL propsFileURL = getPropsURLFromEDFileURL(fileURL);
+		if (propsFileURL != null) {
+			InputStream ins = null;
+			try {
+				ins = propsFileURL.openStream();
+			} catch (IOException e) {
+				// this means that file does not exist...and we are done
+				return null;
+			}
+			Properties props = new Properties();
+			try {
+				props.load(ins);
+				ins.close();
+			} catch (IOException e) {
+				logError("findOverrideProperties", "Could not load properties file from " + propsFileURL, e); //$NON-NLS-1$ //$NON-NLS-2$
+				return null;
+			}
+			Map<String, Object> result = new HashMap<String, Object>();
+			for (Object key : props.keySet()) {
+				if (key instanceof String) {
+					result.put((String) key, props.get(key));
+				}
+			}
+			return result;
+		}
+		return null;
+	}
+
 	EndpointDescription findED(IServiceID serviceID) {
 		synchronized (edToServiceIDMap) {
 			for (EndpointDescription ed : getEDs()) {
 				IServiceID sid = edToServiceIDMap.get(ed);
-				if (sid != null
-						&& sid.getLocation().equals(serviceID.getLocation()))
+				if (sid != null && sid.getLocation().equals(serviceID.getLocation()))
 					return ed;
 			}
 		}
 		return null;
 	}
 
-	void updateED(EndpointDescription existing, EndpointDescription update,
-			IServiceID updateServiceID) {
+	void updateED(EndpointDescription existing, EndpointDescription update, IServiceID updateServiceID) {
 		synchronized (edToServiceIDMap) {
 			edToServiceIDMap.remove(existing);
 			edToServiceIDMap.put(update, updateServiceID);
 		}
 	}
 
-	void addED(org.osgi.service.remoteserviceadmin.EndpointDescription ed,
-			IServiceID serviceID) {
+	void addED(org.osgi.service.remoteserviceadmin.EndpointDescription ed, IServiceID serviceID) {
 		synchronized (edToServiceIDMap) {
 			edToServiceIDMap.put(ed, serviceID);
 		}
@@ -1147,15 +1112,13 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		synchronized (edToServiceIDMap) {
 			for (EndpointDescription ed : edToServiceIDMap.keySet()) {
 				IServiceID svcID = edToServiceIDMap.get(ed);
-				if (svcID != null
-						&& svcID.getNamespace().getName()
-								.equals(namespace.getName()))
+				if (svcID != null && svcID.getNamespace().getName().equals(namespace.getName()))
 					results.add(ed);
 			}
 		}
 		return results;
 	}
-	
+
 	/**
 	 * @since 4.3
 	 */
@@ -1166,8 +1129,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		}
 	}
 
-	void handleEndpointDescription(EndpointDescription endpointDescription,
-			boolean discovered) {
+	void handleEndpointDescription(EndpointDescription endpointDescription, boolean discovered) {
 		if (discovered) {
 			queueEndpointEvent(endpointDescription, EndpointEvent.ADDED);
 			queueEndpointDescription(endpointDescription, discovered);
@@ -1223,43 +1185,44 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 							// Make sure that the discoveredEndpointDescription
 							// is non-null
 							if (discoveredEndpointDescription != null) {
-								ed = discoveredEndpointDescription
-										.getEndpointDescription();
+								ed = discoveredEndpointDescription.getEndpointDescription();
 								if (ed != null) {
-									EndpointDescription prevEd = isEndpointDescriptionUpdate(
-											ed, serviceID);
+									EndpointDescription prevEd = isEndpointDescriptionUpdate(ed, serviceID);
 									if (prevEd == null) {
 										if (!containsED(ed)) {
 											addED(ed, serviceID);
 											handleEndpointDescription(ed, true);
 										} else
-											trace("handleEndpointDescription", "endpointDescription previously discovered...ignoring"); //$NON-NLS-1$ //$NON-NLS-2$
+											trace("handleEndpointDescription", //$NON-NLS-1$
+													"endpointDescription previously discovered...ignoring"); //$NON-NLS-1$
 									} else {
 										// It was a modify/update
-										trace("handleEndpointDescription", "endpointDescription updated. prev=" + prevEd + ", update=" + ed); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-										queueEndpointEvent(ed,
-												EndpointEvent.MODIFIED);
+										trace("handleEndpointDescription", //$NON-NLS-1$
+												"endpointDescription updated. prev=" + prevEd + ", update=" + ed); //$NON-NLS-1$ //$NON-NLS-2$
+										queueEndpointEvent(ed, EndpointEvent.MODIFIED);
 									}
 								} else
-									trace("handleService", "EndpointDescription is null for serviceID=" + serviceID); //$NON-NLS-1$ //$NON-NLS-2$ 
+									trace("handleService", "EndpointDescription is null for serviceID=" + serviceID); //$NON-NLS-1$ //$NON-NLS-2$
 							} else
-								trace("handleService", "DiscoveredEndpointDescription is null for serviceID=" + serviceID); //$NON-NLS-1$ //$NON-NLS-2$ 
+								trace("handleService", //$NON-NLS-1$
+										"DiscoveredEndpointDescription is null for serviceID=" + serviceID); //$NON-NLS-1$
 						} else
-							trace("handleService", "Found previous EndpointDescription with same serviceID=" + serviceID + ".  Ignoring"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+							trace("handleService", "Found previous EndpointDescription with same serviceID=" + serviceID //$NON-NLS-1$ //$NON-NLS-2$
+									+ ".  Ignoring"); //$NON-NLS-1$
 					} else {
 						// It was undiscovered
 						if (ed != null) {
 							removeED(ed);
 							handleEndpointDescription(ed, false);
 						} else
-							trace("handleService", "Did not find serviceInfo with serviceID=" + serviceID + ".  Ignoring"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+							trace("handleService", //$NON-NLS-1$
+									"Did not find serviceInfo with serviceID=" + serviceID + ".  Ignoring"); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 				}
 			}
 		}
 
-		EndpointDescription isEndpointDescriptionUpdate(
-				EndpointDescription endpointDescription,
+		EndpointDescription isEndpointDescriptionUpdate(EndpointDescription endpointDescription,
 				IServiceID updateServiceID) {
 			if (endpointDescription instanceof org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription) {
 				org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription ed = (org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription) endpointDescription;
@@ -1281,9 +1244,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 							// timestamp is
 							// after the
 							// previous timestamp
-							if (pedTS != null
-									&& pedTS.longValue() < receivedTS
-											.longValue())
+							if (pedTS != null && pedTS.longValue() < receivedTS.longValue())
 								update = true;
 						}
 					}
@@ -1293,10 +1254,8 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 					}
 				}
 			} else {
-				Map<String, Object> edProperties = endpointDescription
-						.getProperties();
-				Long receivedTS = PropertiesUtil
-						.getOSGiEndpointModifiedValue(edProperties);
+				Map<String, Object> edProperties = endpointDescription.getProperties();
+				Long receivedTS = PropertiesUtil.getOSGiEndpointModifiedValue(edProperties);
 				if (receivedTS != null) {
 					String receivedId = endpointDescription.getId();
 					boolean update = false;
@@ -1318,8 +1277,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 							update = true;
 						else if (pedTS.longValue() == receivedTS.longValue())
 							return null;
-						else if (pedTS == null
-								|| pedTS.longValue() < receivedTS.longValue())
+						else if (pedTS == null || pedTS.longValue() < receivedTS.longValue())
 							update = true;
 					}
 					if (update) {
@@ -1331,9 +1289,8 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 			return null;
 		}
 
-		private DiscoveredEndpointDescription getDiscoveredEndpointDescription(
-				IServiceID serviceId, IServiceInfo serviceInfo,
-				boolean discovered) {
+		private DiscoveredEndpointDescription getDiscoveredEndpointDescription(IServiceID serviceId,
+				IServiceInfo serviceInfo, boolean discovered) {
 			// Get IEndpointDescriptionFactory
 			final String methodName = "getDiscoveredEndpointDescription"; //$NON-NLS-1$
 			IDiscoveredEndpointDescriptionFactory factory = getDiscoveredEndpointDescriptionFactory();
@@ -1341,24 +1298,19 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 				// Else get endpoint description factory to create
 				// EndpointDescription
 				// for given serviceID and serviceInfo
-				return (discovered) ? factory
-						.createDiscoveredEndpointDescription(locator,
-								serviceInfo)
-						: factory.removeDiscoveredEndpointDescription(locator,
-								serviceId);
+				return (discovered) ? factory.createDiscoveredEndpointDescription(locator, serviceInfo)
+						: factory.removeDiscoveredEndpointDescription(locator, serviceId);
 			} catch (Exception e) {
-				logError(
-						methodName,
-						"Exception calling IEndpointDescriptionFactory." //$NON-NLS-1$
-								+ ((discovered) ? "createDiscoveredEndpointDescription" //$NON-NLS-1$
-										: "getUndiscoveredEndpointDescription"), e); //$NON-NLS-1$
+				logError(methodName, "Exception calling IEndpointDescriptionFactory." //$NON-NLS-1$
+						+ ((discovered) ? "createDiscoveredEndpointDescription" //$NON-NLS-1$
+								: "getUndiscoveredEndpointDescription"), //$NON-NLS-1$
+						e);
 				return null;
 			} catch (NoClassDefFoundError e) {
-				logError(
-						methodName,
-						"NoClassDefFoundError calling IEndpointDescriptionFactory." //$NON-NLS-1$
-								+ ((discovered) ? "createDiscoveredEndpointDescription" //$NON-NLS-1$
-										: "getUndiscoveredEndpointDescription"), e); //$NON-NLS-1$
+				logError(methodName, "NoClassDefFoundError calling IEndpointDescriptionFactory." //$NON-NLS-1$
+						+ ((discovered) ? "createDiscoveredEndpointDescription" //$NON-NLS-1$
+								: "getUndiscoveredEndpointDescription"), //$NON-NLS-1$
+						e);
 				return null;
 			}
 		}
@@ -1412,8 +1364,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 				results.add((org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription) ed);
 		}
 		return results
-				.toArray(new org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription[results
-						.size()]);
+				.toArray(new org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription[results.size()]);
 	}
 
 }
