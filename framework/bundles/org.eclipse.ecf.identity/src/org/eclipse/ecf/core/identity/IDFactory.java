@@ -23,8 +23,7 @@ import org.eclipse.ecf.internal.core.identity.Activator;
  * 
  */
 public class IDFactory implements IIDFactory {
-	public static final String SECURITY_PROPERTY = IDFactory.class.getName()
-			+ ".security"; //$NON-NLS-1$
+	public static final String SECURITY_PROPERTY = IDFactory.class.getName() + ".security"; //$NON-NLS-1$
 
 	private static Hashtable<String, Namespace> namespaces = new Hashtable<String, Namespace>();
 
@@ -77,8 +76,7 @@ public class IDFactory implements IIDFactory {
 		return (Namespace) namespaces.put(namespace.getName(), namespace);
 	}
 
-	protected final static void checkPermission(
-			NamespacePermission namespacepermission) throws SecurityException {
+	protected final static void checkPermission(NamespacePermission namespacepermission) throws SecurityException {
 	}
 
 	/*
@@ -88,8 +86,7 @@ public class IDFactory implements IIDFactory {
 	 * org.eclipse.ecf.core.identity.IIDFactory#containsNamespace(org.eclipse
 	 * .ecf.core.identity.Namespace)
 	 */
-	public boolean containsNamespace(Namespace namespace)
-			throws SecurityException {
+	public boolean containsNamespace(Namespace namespace) throws SecurityException {
 		if (namespace == null)
 			return false;
 		initialize();
@@ -165,12 +162,10 @@ public class IDFactory implements IIDFactory {
 	 * @see org.eclipse.ecf.core.identity.IIDFactory#createGUID(int)
 	 */
 	public ID createGUID(int length) throws IDCreateException {
-		return createID(new GUID.GUIDNamespace(), new Integer[] { Integer.valueOf(
-				length) });
+		return createID(new GUID.GUIDNamespace(), new Integer[] { Integer.valueOf(length) });
 	}
 
-	protected static void logAndThrow(String s, Throwable t)
-			throws IDCreateException {
+	protected static void logAndThrow(String s, Throwable t) throws IDCreateException {
 		IDCreateException e = null;
 		if (t != null) {
 			e = new IDCreateException(s + ": " + t.getClass().getName() + ": " //$NON-NLS-1$ //$NON-NLS-2$
@@ -178,9 +173,7 @@ public class IDFactory implements IIDFactory {
 		} else {
 			e = new IDCreateException(s);
 		}
-		Activator.getDefault().log(
-				new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR,
-						s, e));
+		Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, s, e));
 		throw e;
 	}
 
@@ -210,17 +203,14 @@ public class IDFactory implements IIDFactory {
 	 * @see org.eclipse.ecf.core.identity.IIDFactory#createID(java.lang.String,
 	 * java.lang.Object[])
 	 */
-	public ID createID(String namespaceName, Object[] args)
-			throws IDCreateException {
+	public ID createID(String namespaceName, Object[] args) throws IDCreateException {
 		Namespace n = getNamespaceByName(namespaceName);
 		if (n == null)
-			throw new IDCreateException(
-					"Namespace " + namespaceName + " not found"); //$NON-NLS-1$
+			throw new IDCreateException("Namespace " + namespaceName + " not found"); //$NON-NLS-1$
 		return createID(n, args);
 	}
 
-	public ID createID(Namespace namespace, String uri)
-			throws IDCreateException {
+	public ID createID(Namespace namespace, String uri) throws IDCreateException {
 		return createID(namespace, new Object[] { uri });
 	}
 
@@ -237,8 +227,7 @@ public class IDFactory implements IIDFactory {
 	public ID createStringID(String idstring) throws IDCreateException {
 		if (idstring == null)
 			throw new IDCreateException("StringID cannot be null"); //$NON-NLS-1$
-		return createID(new StringID.StringIDNamespace(),
-				new String[] { idstring });
+		return createID(new StringID.StringIDNamespace(), new String[] { idstring });
 	}
 
 	/*
@@ -247,7 +236,7 @@ public class IDFactory implements IIDFactory {
 	 * @see org.eclipse.ecf.core.identity.IIDFactory#createLongID(long)
 	 */
 	public ID createLongID(long l) throws IDCreateException {
-		return createID(new LongID.LongNamespace(), new Long[] { new Long(l) });
+		return createID(new LongID.LongNamespace(), new Long[] { Long.valueOf(l) });
 	}
 
 	/*

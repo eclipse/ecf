@@ -83,16 +83,6 @@ public class ClassResolverObjectInputStream extends ObjectInputStream {
 		return this.bundleContext;
 	}
 
-	private IClassResolver getClassResolver() {
-		IClassResolver result = null;
-		if (this.classResolverST != null) {
-			this.classResolverST.open();
-			result = this.classResolverST.getService();
-			this.classResolverST.close();
-		}
-		return result;
-	}
-
 	@SuppressWarnings("unused")
 	@Override
 	protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {

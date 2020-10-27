@@ -28,11 +28,9 @@ public class LongID extends BaseID {
 		}
 
 		/**
-		 * @param args
-		 *            must not be <code>null></code>
+		 * @param args must not be <code>null></code>
 		 * @return ID created. Will not be <code>null</code>.
-		 * @throws IDCreateException
-		 *             never thrown
+		 * @throws IDCreateException never thrown
 		 */
 		public ID createInstance(Object[] args) throws IDCreateException {
 			try {
@@ -74,7 +72,7 @@ public class LongID extends BaseID {
 
 	protected LongID(Namespace n, long v) {
 		super(n);
-		value = new Long(v);
+		value = Long.valueOf(v);
 	}
 
 	protected int namespaceCompareTo(BaseID o) {
