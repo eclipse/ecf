@@ -23,22 +23,20 @@ import org.eclipse.osgi.service.debug.DebugOptions;
  */
 public class Trace {
 
-	private static final boolean TRACEALL = new Boolean(System.getProperty(
-			"org.eclipse.ecf.core.util.traceAll", "false"));
+	private static final boolean TRACEALL = Boolean
+			.getBoolean(System.getProperty("org.eclipse.ecf.core.util.traceAll", "false"));
 
 	private static final List<String> TRACE_BUNDLES = new ArrayList<String>();
 
 	static {
 		if (!TRACEALL) {
-			String tracePlugins = System
-					.getProperty("org.eclipse.ecf.core.util.traceBundles");
+			String tracePlugins = System.getProperty("org.eclipse.ecf.core.util.traceBundles");
 			if (tracePlugins != null)
 				try {
 					String[] plugins = tracePlugins.split(",");
 					TRACE_BUNDLES.addAll(Arrays.asList(plugins));
 				} catch (Exception e) {
-					System.err
-							.println("Unexpected exception in Trace class static initializer");
+					System.err.println("Unexpected exception in Trace class static initializer");
 					e.printStackTrace(System.err);
 				}
 		}
@@ -151,9 +149,8 @@ public class Trace {
 	 * specified plug-in.
 	 * 
 	 * @return Whether tracing is enabled for the plug-in.
-	 * @param pluginId
-	 *            The symbolic plugin id for which to determine trace
-	 *            enablement.
+	 * @param pluginId The symbolic plugin id for which to determine trace
+	 * enablement.
 	 * 
 	 */
 	protected static boolean shouldTrace(String pluginId) {
@@ -178,10 +175,8 @@ public class Trace {
 	 * specified debug option of the specified plug-in.
 	 * 
 	 * @return Whether tracing is enabled for the debug option of the plug-in.
-	 * @param pluginId
-	 *            The plug-in for which to determine trace enablement.
-	 * @param option
-	 *            The debug option for which to determine trace enablement.
+	 * @param pluginId The plug-in for which to determine trace enablement.
+	 * @param option The debug option for which to determine trace enablement.
 	 * 
 	 */
 	public static boolean shouldTrace(String pluginId, String option) {
@@ -210,8 +205,8 @@ public class Trace {
 	 * Retrieves a textual representation of the specified argument.
 	 * 
 	 * @return A textual representation of the specified argument.
-	 * @param argument
-	 *            The argument for which to retrieve a textual representation.
+	 * @param argument The argument for which to retrieve a textual
+	 * representation.
 	 * 
 	 */
 	public static String getArgumentString(Object argument) {
@@ -240,8 +235,8 @@ public class Trace {
 	 * Retrieves a textual representation of the specified arguments.
 	 * 
 	 * @return A textual representation of the specified arguments.
-	 * @param arguments
-	 *            The arguments for which to retrieve a textual representation.
+	 * @param arguments The arguments for which to retrieve a textual
+	 * representation.
 	 * 
 	 */
 	public static String getArgumentsString(Object[] arguments) {
@@ -262,14 +257,12 @@ public class Trace {
 	/**
 	 * Traces the specified message.
 	 * 
-	 * @param message
-	 *            The message to be traced.
+	 * @param message The message to be traced.
 	 * 
 	 */
 	protected static void trace(String message) {
 		StringBuilder buf = new StringBuilder(PARENTHESIS_OPEN);
-		buf.append(TRACE_STR).append(PARENTHESIS_CLOSE).append(getTimeString())
-				.append(message).append(SEPARATOR_SPACE);
+		buf.append(TRACE_STR).append(PARENTHESIS_CLOSE).append(getTimeString()).append(message).append(SEPARATOR_SPACE);
 		System.out.println(buf.toString());
 	}
 
@@ -287,10 +280,8 @@ public class Trace {
 	/**
 	 * Traces the specified message from the specified plug-in.
 	 * 
-	 * @param pluginId
-	 *            The plug-in from which to trace.
-	 * @param message
-	 *            The message to be traced.
+	 * @param pluginId The plug-in from which to trace.
+	 * @param message The message to be traced.
 	 * 
 	 */
 	public static void trace(String pluginId, String message) {
@@ -302,12 +293,9 @@ public class Trace {
 	 * Traces the specified message from the specified plug-in for the specified
 	 * debug option.
 	 * 
-	 * @param pluginId
-	 *            The plug-in from which to trace.
-	 * @param option
-	 *            The debug option for which to trace.
-	 * @param message
-	 *            The message to be traced.
+	 * @param pluginId The plug-in from which to trace.
+	 * @param option The debug option for which to trace.
+	 * @param message The message to be traced.
 	 * 
 	 */
 	public static void trace(String pluginId, String option, String message) {
@@ -319,27 +307,19 @@ public class Trace {
 	 * Traces the specified message from the specified plug-in for the specified
 	 * debug option.
 	 * 
-	 * @param pluginId
-	 *            The plug-in from which to trace.
-	 * @param option
-	 *            The debug option for which to trace.
-	 * @param clazz
-	 *            The class whose method is being entered.
-	 * @param methodName
-	 *            The name of method that is being entered.
-	 * @param message
-	 *            The message to be traced.
+	 * @param pluginId The plug-in from which to trace.
+	 * @param option The debug option for which to trace.
+	 * @param clazz The class whose method is being entered.
+	 * @param methodName The name of method that is being entered.
+	 * @param message The message to be traced.
 	 * 
 	 */
-	public static void trace(String pluginId, String option,
-			@SuppressWarnings("rawtypes") Class clazz, String methodName,
-			String message) {
+	public static void trace(String pluginId, String option, @SuppressWarnings("rawtypes") Class clazz,
+			String methodName, String message) {
 		if (shouldTrace(pluginId, option)) {
-			StringBuffer buf = new StringBuffer(PREFIX_TRACING).append(clazz
-					.getName());
+			StringBuffer buf = new StringBuffer(PREFIX_TRACING).append(clazz.getName());
 			buf.append(SEPARATOR_METHOD).append(methodName);
-			buf.append(PARENTHESIS_OPEN).append(message)
-					.append(PARENTHESIS_CLOSE);
+			buf.append(PARENTHESIS_OPEN).append(message).append(PARENTHESIS_CLOSE);
 			trace(buf.toString());
 		}
 	}
@@ -347,60 +327,42 @@ public class Trace {
 	/**
 	 * Traces the changing of a value.
 	 * 
-	 * @param pluginId
-	 *            The plug-in from which to trace.
-	 * @param option
-	 *            The debug option for which to trace.
-	 * @param valueDescription
-	 *            The description of the value which is changing.
-	 * @param oldValue
-	 *            The old value.
-	 * @param newValue
-	 *            The new value.
+	 * @param pluginId The plug-in from which to trace.
+	 * @param option The debug option for which to trace.
+	 * @param valueDescription The description of the value which is changing.
+	 * @param oldValue The old value.
+	 * @param newValue The new value.
 	 */
-	public static void changing(String pluginId, String option,
-			String valueDescription, Object oldValue, Object newValue) {
+	public static void changing(String pluginId, String option, String valueDescription, Object oldValue,
+			Object newValue) {
 
 		if (shouldTrace(pluginId, option)) {
 			StringBuilder buf = new StringBuilder(PREFIX_CHANGING);
-			buf.append(valueDescription).append(SEPARATOR_SPACE)
-					.append(LABEL_OLD_VALUE)
+			buf.append(valueDescription).append(SEPARATOR_SPACE).append(LABEL_OLD_VALUE)
 					.append(getArgumentString(oldValue));
-			buf.append(SEPARATOR_PARAMETER).append(LABEL_NEW_VALUE)
-					.append(getArgumentString(newValue));
+			buf.append(SEPARATOR_PARAMETER).append(LABEL_NEW_VALUE).append(getArgumentString(newValue));
 			trace(buf.toString());
 		}
 	}
 
 	/**
 	 * 
-	 * @param pluginId
-	 *            The plug-in from which to trace.
-	 * @param option
-	 *            The debug option for which to trace.
-	 * @param clazz
-	 *            The class in which the value is changing.
-	 * @param methodName
-	 *            The name of the method in which the value is changing.
-	 * @param valueDescription
-	 *            The description of the value which is changing.
-	 * @param oldValue
-	 *            The old value.
-	 * @param newValue
-	 *            The new value.
+	 * @param pluginId The plug-in from which to trace.
+	 * @param option The debug option for which to trace.
+	 * @param clazz The class in which the value is changing.
+	 * @param methodName The name of the method in which the value is changing.
+	 * @param valueDescription The description of the value which is changing.
+	 * @param oldValue The old value.
+	 * @param newValue The new value.
 	 */
-	public static void changing(String pluginId, String option,
-			@SuppressWarnings("rawtypes") Class clazz, String methodName,
-			String valueDescription, Object oldValue, Object newValue) {
+	public static void changing(String pluginId, String option, @SuppressWarnings("rawtypes") Class clazz,
+			String methodName, String valueDescription, Object oldValue, Object newValue) {
 		if (shouldTrace(pluginId, option)) {
 			StringBuilder buf = new StringBuilder(PREFIX_CHANGING);
-			buf.append(valueDescription).append(SEPARATOR_SPACE)
-					.append(LABEL_OLD_VALUE)
+			buf.append(valueDescription).append(SEPARATOR_SPACE).append(LABEL_OLD_VALUE)
 					.append(getArgumentString(oldValue));
-			buf.append(SEPARATOR_PARAMETER).append(LABEL_NEW_VALUE)
-					.append(getArgumentString(newValue));
-			buf.append(SEPARATOR_SPACE).append(PARENTHESIS_OPEN)
-					.append(clazz.getName()).append(SEPARATOR_METHOD);
+			buf.append(SEPARATOR_PARAMETER).append(LABEL_NEW_VALUE).append(getArgumentString(newValue));
+			buf.append(SEPARATOR_SPACE).append(PARENTHESIS_OPEN).append(clazz.getName()).append(SEPARATOR_METHOD);
 			buf.append(methodName).append(PARENTHESIS_CLOSE);
 			trace(buf.toString());
 		}
@@ -410,21 +372,16 @@ public class Trace {
 	 * Traces the catching of the specified throwable in the specified method of
 	 * the specified class.
 	 * 
-	 * @param pluginId
-	 *            The plug-in from which to trace.
-	 * @param option
-	 *            The debug option for which to trace.
-	 * @param clazz
-	 *            The class in which the throwable is being caught.
-	 * @param methodName
-	 *            The name of the method in which the throwable is being caught.
-	 * @param throwable
-	 *            The throwable that is being caught.
+	 * @param pluginId The plug-in from which to trace.
+	 * @param option The debug option for which to trace.
+	 * @param clazz The class in which the throwable is being caught.
+	 * @param methodName The name of the method in which the throwable is being
+	 * caught.
+	 * @param throwable The throwable that is being caught.
 	 * 
 	 */
-	public static void catching(String pluginId, String option,
-			@SuppressWarnings("rawtypes") Class clazz, String methodName,
-			Throwable throwable) {
+	public static void catching(String pluginId, String option, @SuppressWarnings("rawtypes") Class clazz,
+			String methodName, Throwable throwable) {
 
 		if (shouldTrace(pluginId, option)) {
 			StringBuilder buf = new StringBuilder(PREFIX_CATCHING);
@@ -433,8 +390,7 @@ public class Trace {
 				if (message != null)
 					buf.append(message).append(SEPARATOR_SPACE);
 			}
-			buf.append(PARENTHESIS_OPEN).append(clazz.getName())
-					.append(SEPARATOR_METHOD);
+			buf.append(PARENTHESIS_OPEN).append(clazz.getName()).append(SEPARATOR_METHOD);
 			buf.append(methodName).append(PARENTHESIS_CLOSE);
 			trace(buf.toString());
 			if (throwable != null) {
@@ -447,22 +403,16 @@ public class Trace {
 	 * Traces the throwing of the specified throwable from the specified method
 	 * of the specified class.
 	 * 
-	 * @param pluginId
-	 *            The plug-in from which to trace.
-	 * @param option
-	 *            The debug option for which to trace.
-	 * @param clazz
-	 *            The class from which the throwable is being thrown.
-	 * @param methodName
-	 *            The name of the method from which the throwable is being
-	 *            thrown.
-	 * @param throwable
-	 *            The throwable that is being thrown.
+	 * @param pluginId The plug-in from which to trace.
+	 * @param option The debug option for which to trace.
+	 * @param clazz The class from which the throwable is being thrown.
+	 * @param methodName The name of the method from which the throwable is
+	 * being thrown.
+	 * @param throwable The throwable that is being thrown.
 	 * 
 	 */
-	public static void throwing(String pluginId, String option,
-			@SuppressWarnings("rawtypes") Class clazz, String methodName,
-			Throwable throwable) {
+	public static void throwing(String pluginId, String option, @SuppressWarnings("rawtypes") Class clazz,
+			String methodName, Throwable throwable) {
 
 		if (shouldTrace(pluginId, option)) {
 			StringBuilder buf = new StringBuilder(PREFIX_THROWING);
@@ -471,8 +421,7 @@ public class Trace {
 				if (message != null)
 					buf.append(message).append(SEPARATOR_SPACE);
 			}
-			buf.append(PARENTHESIS_OPEN).append(clazz.getName())
-					.append(SEPARATOR_METHOD);
+			buf.append(PARENTHESIS_OPEN).append(clazz.getName()).append(SEPARATOR_METHOD);
 			buf.append(methodName).append(PARENTHESIS_CLOSE);
 			trace(buf.toString());
 			throwable.printStackTrace(System.err);
@@ -482,24 +431,18 @@ public class Trace {
 	/**
 	 * Traces the entering into the specified method of the specified class.
 	 * 
-	 * @param pluginId
-	 *            The plug-in from which to trace.
-	 * @param option
-	 *            The debug option for which to trace.
-	 * @param clazz
-	 *            The class whose method is being entered.
-	 * @param methodName
-	 *            The name of method that is being entered.
+	 * @param pluginId The plug-in from which to trace.
+	 * @param option The debug option for which to trace.
+	 * @param clazz The class whose method is being entered.
+	 * @param methodName The name of method that is being entered.
 	 * 
 	 */
-	public static void entering(String pluginId, String option,
-			@SuppressWarnings("rawtypes") Class clazz, String methodName) {
+	public static void entering(String pluginId, String option, @SuppressWarnings("rawtypes") Class clazz,
+			String methodName) {
 
 		if (shouldTrace(pluginId, option)) {
-			StringBuffer buf = new StringBuffer(PREFIX_ENTERING).append(clazz
-					.getName());
-			buf.append(SEPARATOR_METHOD).append(methodName)
-					.append(PARENTHESIS_OPEN).append(PARENTHESIS_CLOSE);
+			StringBuffer buf = new StringBuffer(PREFIX_ENTERING).append(clazz.getName());
+			buf.append(SEPARATOR_METHOD).append(methodName).append(PARENTHESIS_OPEN).append(PARENTHESIS_CLOSE);
 			trace(buf.toString());
 		}
 	}
@@ -508,28 +451,20 @@ public class Trace {
 	 * Traces the entering into the specified method of the specified class,
 	 * with the specified parameter.
 	 * 
-	 * @param pluginId
-	 *            The plug-in from which to trace.
-	 * @param option
-	 *            The debug option for which to trace.
-	 * @param clazz
-	 *            The class whose method is being entered.
-	 * @param methodName
-	 *            The name of method that is being entered.
-	 * @param parameter
-	 *            The parameter to the method being entered.
+	 * @param pluginId The plug-in from which to trace.
+	 * @param option The debug option for which to trace.
+	 * @param clazz The class whose method is being entered.
+	 * @param methodName The name of method that is being entered.
+	 * @param parameter The parameter to the method being entered.
 	 * 
 	 */
-	public static void entering(String pluginId, String option,
-			@SuppressWarnings("rawtypes") Class clazz, String methodName,
-			Object parameter) {
+	public static void entering(String pluginId, String option, @SuppressWarnings("rawtypes") Class clazz,
+			String methodName, Object parameter) {
 
 		if (shouldTrace(pluginId, option)) {
-			StringBuffer buf = new StringBuffer(PREFIX_ENTERING).append(clazz
-					.getName());
+			StringBuffer buf = new StringBuffer(PREFIX_ENTERING).append(clazz.getName());
 			buf.append(SEPARATOR_METHOD).append(methodName);
-			buf.append(PARENTHESIS_OPEN).append(getArgumentString(parameter))
-					.append(PARENTHESIS_CLOSE);
+			buf.append(PARENTHESIS_OPEN).append(getArgumentString(parameter)).append(PARENTHESIS_CLOSE);
 			trace(buf.toString());
 		}
 
@@ -539,28 +474,20 @@ public class Trace {
 	 * Traces the entering into the specified method of the specified class,
 	 * with the specified parameters.
 	 * 
-	 * @param pluginId
-	 *            The plug-in from which to trace.
-	 * @param option
-	 *            The debug option for which to trace.
-	 * @param clazz
-	 *            The class whose method is being entered.
-	 * @param methodName
-	 *            The name of method that is being entered.
-	 * @param parameters
-	 *            The parameters to the method being entered.
+	 * @param pluginId The plug-in from which to trace.
+	 * @param option The debug option for which to trace.
+	 * @param clazz The class whose method is being entered.
+	 * @param methodName The name of method that is being entered.
+	 * @param parameters The parameters to the method being entered.
 	 * 
 	 */
-	public static void entering(String pluginId, String option,
-			@SuppressWarnings("rawtypes") Class clazz, String methodName,
-			Object[] parameters) {
+	public static void entering(String pluginId, String option, @SuppressWarnings("rawtypes") Class clazz,
+			String methodName, Object[] parameters) {
 
 		if (shouldTrace(pluginId, option)) {
-			StringBuffer buf = new StringBuffer(PREFIX_ENTERING).append(clazz
-					.getName());
+			StringBuffer buf = new StringBuffer(PREFIX_ENTERING).append(clazz.getName());
 			buf.append(SEPARATOR_METHOD).append(methodName);
-			buf.append(PARENTHESIS_OPEN).append(getArgumentString(parameters))
-					.append(PARENTHESIS_CLOSE);
+			buf.append(PARENTHESIS_OPEN).append(getArgumentString(parameters)).append(PARENTHESIS_CLOSE);
 			trace(buf.toString());
 		}
 
@@ -569,22 +496,17 @@ public class Trace {
 	/**
 	 * Traces the exiting from the specified method of the specified class.
 	 * 
-	 * @param pluginId
-	 *            The plug-in from which to trace.
-	 * @param option
-	 *            The debug option for which to trace.
-	 * @param clazz
-	 *            The class whose method is being exited.
-	 * @param methodName
-	 *            The name of method that is being exited.
+	 * @param pluginId The plug-in from which to trace.
+	 * @param option The debug option for which to trace.
+	 * @param clazz The class whose method is being exited.
+	 * @param methodName The name of method that is being exited.
 	 * 
 	 */
-	public static void exiting(String pluginId, String option,
-			@SuppressWarnings("rawtypes") Class clazz, String methodName) {
+	public static void exiting(String pluginId, String option, @SuppressWarnings("rawtypes") Class clazz,
+			String methodName) {
 
 		if (shouldTrace(pluginId, option)) {
-			StringBuffer buf = new StringBuffer(PREFIX_EXITING).append(clazz
-					.getName());
+			StringBuffer buf = new StringBuffer(PREFIX_EXITING).append(clazz.getName());
 			buf.append(SEPARATOR_METHOD).append(methodName);
 			trace(buf.toString());
 		}
@@ -594,28 +516,20 @@ public class Trace {
 	 * Traces the exiting from the specified method of the specified class, with
 	 * the specified return value.
 	 * 
-	 * @param pluginId
-	 *            The plug-in from which to trace.
-	 * @param option
-	 *            The debug option for which to trace.
-	 * @param clazz
-	 *            The class whose method is being exited.
-	 * @param methodName
-	 *            The name of method that is being exited.
-	 * @param returnValue
-	 *            The return value of the method being exited.
+	 * @param pluginId The plug-in from which to trace.
+	 * @param option The debug option for which to trace.
+	 * @param clazz The class whose method is being exited.
+	 * @param methodName The name of method that is being exited.
+	 * @param returnValue The return value of the method being exited.
 	 * 
 	 */
-	public static void exiting(String pluginId, String option,
-			@SuppressWarnings("rawtypes") Class clazz, String methodName,
-			Object returnValue) {
+	public static void exiting(String pluginId, String option, @SuppressWarnings("rawtypes") Class clazz,
+			String methodName, Object returnValue) {
 
 		if (shouldTrace(pluginId, option)) {
-			StringBuffer buf = new StringBuffer(PREFIX_EXITING).append(clazz
-					.getName());
+			StringBuffer buf = new StringBuffer(PREFIX_EXITING).append(clazz.getName());
 			buf.append(SEPARATOR_METHOD).append(methodName);
-			buf.append(PARENTHESIS_OPEN).append(getArgumentString(returnValue))
-					.append(PARENTHESIS_CLOSE);
+			buf.append(PARENTHESIS_OPEN).append(getArgumentString(returnValue)).append(PARENTHESIS_CLOSE);
 			trace(buf.toString());
 		}
 
