@@ -30,45 +30,10 @@
             </goals>
             <configuration>
               <artifacts>
-                <artifact>
-                  <file>ecf-luna.target</file>
-                  <type>target</type>
-                  <classifier>ecf-luna</classifier>
-                </artifact>
-                <artifact>
-                  <file>ecf-mars.target</file>
-                  <type>target</type>
-                  <classifier>ecf-mars</classifier>
-                </artifact>
-                <artifact>
-                  <file>ecf-neon.target</file>
-                  <type>target</type>
-                  <classifier>ecf-neon</classifier>
-                </artifact>
-                <artifact>
-                  <file>ecf-oxygen.target</file>
-                  <type>target</type>
-                  <classifier>ecf-oxygen</classifier>
-                </artifact>
-                <artifact>
-                  <file>ecf-photon.target</file>
-                  <type>target</type>
-                  <classifier>ecf-photon</classifier>
-                </artifact>
-                <artifact>
-                  <file>ecf-2019-03.target</file>
-                  <type>target</type>
-                  <classifier>ecf-2019-03</classifier>
-                </artifact>
-                <artifact>
+                 <artifact>
                   <file>ecf-2019-09.target</file>
                   <type>target</type>
                   <classifier>ecf-2019-09</classifier>
-                </artifact>
-                <artifact>
-                  <file>ecf-2020-03.target</file>
-                  <type>target</type>
-                  <classifier>ecf-2020-03</classifier>
                 </artifact>
               </artifacts>
             </configuration>

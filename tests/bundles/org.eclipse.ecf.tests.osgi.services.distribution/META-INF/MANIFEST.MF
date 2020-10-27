@@ -19,6 +19,5 @@ Require-Bundle: org.eclipse.ecf.tests,
  org.eclipse.equinox.concurrent;bundle-version="1.0.0",
  org.junit;bundle-version="4.8.2",
  org.eclipse.equinox.common;bundle-version="3.6.0"
-Export-Package: org.eclipse.ecf.tests.internal.osgi.services.distribution;x-internal:=true,
- org.eclipse.ecf.tests.osgi.services.distribution,
+Export-Package: org.eclipse.ecf.tests.osgi.services.distribution,
  org.eclipse.ecf.tests.osgi.services.distribution.async
