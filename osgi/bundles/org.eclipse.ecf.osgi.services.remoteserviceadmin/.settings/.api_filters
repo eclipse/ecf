@@ -47,13 +47,6 @@
         </filter>
         <filter id="643850349">
             <message_arguments>
-                <message_argument value="EndpointDescription"/>
-                <message_argument value="EndpointListenerHolder"/>
-                <message_argument value="EndpointListenerHolder(EndpointDescriptionLocator, EndpointListener, EndpointDescription, String)"/>
-            </message_arguments>
-        </filter>
-        <filter id="643850349">
-            <message_arguments>
                 <message_argument value="EndpointListener"/>
                 <message_argument value="EndpointListenerHolder"/>
                 <message_argument value="EndpointListenerHolder(EndpointDescriptionLocator, EndpointListener, EndpointDescription, String)"/>

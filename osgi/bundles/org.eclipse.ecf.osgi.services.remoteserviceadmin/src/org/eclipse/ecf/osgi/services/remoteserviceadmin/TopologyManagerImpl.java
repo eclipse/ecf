@@ -19,9 +19,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.Activator;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.AbstractTopologyManager;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteServiceAdmin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;

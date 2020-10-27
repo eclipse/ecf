@@ -12,8 +12,6 @@
  *****************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
-import org.eclipse.ecf.osgi.services.remoteserviceadmin.RemoteConstants;
-
 /**
  * @since 4.6
  */

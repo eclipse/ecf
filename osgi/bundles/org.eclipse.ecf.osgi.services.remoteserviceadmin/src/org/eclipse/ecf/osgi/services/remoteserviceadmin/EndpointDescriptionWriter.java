@@ -217,6 +217,7 @@ public class EndpointDescriptionWriter {
 	public Writer writeEndpointDescriptions(
 			org.osgi.service.remoteserviceadmin.EndpointDescription[] endpointDescriptions)
 			throws IOException {
+		@SuppressWarnings("resource")
 		StringWriter writer = new StringWriter().append(
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>").append( //$NON-NLS-1$
 				"\n"); //$NON-NLS-1$

@@ -252,8 +252,9 @@ public class RemoteServiceAdmin implements org.osgi.service.remoteserviceadmin.R
 		trace("exportService", "serviceReference=" + serviceReference //$NON-NLS-1$ //$NON-NLS-2$
 				+ ",properties=" + op); //$NON-NLS-1$
 
+		Map<String,Object> op1 = new HashMap<String,Object>(op);
 		final Map<String, ?> overridingProperties = PropertiesUtil.mergeProperties(serviceReference,
-				op == null ? Collections.EMPTY_MAP : op);
+				op == null ? Collections.EMPTY_MAP : op1);
 		// get exported interfaces
 		final String[] exportedInterfaces = PropertiesUtil.getExportedInterfaces(serviceReference,
 				overridingProperties);
@@ -298,7 +299,7 @@ public class RemoteServiceAdmin implements org.osgi.service.remoteserviceadmin.R
 			// interfaces, configs, and intents
 			IRemoteServiceContainer[] rsContainers = null;
 			try {
-				rsContainers = AccessController.doPrivileged(new PrivilegedExceptionAction() {
+				rsContainers = (IRemoteServiceContainer[]) AccessController.doPrivileged(new PrivilegedExceptionAction() {
 					public Object run() throws SelectContainerException {
 						return hostContainerSelector.selectHostContainers(serviceReference,
 								(Map<String, Object>) overridingProperties, exportedInterfaces, exportedConfigs,
