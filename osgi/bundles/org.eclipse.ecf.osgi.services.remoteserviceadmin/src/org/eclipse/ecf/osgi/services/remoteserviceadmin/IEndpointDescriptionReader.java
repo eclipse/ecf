@@ -82,8 +82,6 @@ public interface IEndpointDescriptionReader {
 	 * 
 	 * @throws EndpointDescriptionParseException if the EDE format cannot be parsed
 	 *                                           from the input stream.
-	 */
-	/**
 	 * @since 4.7
 	 */
 	public org.osgi.service.remoteserviceadmin.EndpointDescription[] readEndpointDescriptions(InputStream ins,
