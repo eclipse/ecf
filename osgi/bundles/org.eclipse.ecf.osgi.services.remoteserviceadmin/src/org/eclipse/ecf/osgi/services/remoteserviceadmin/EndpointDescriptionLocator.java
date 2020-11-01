@@ -76,6 +76,9 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
  */
 public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 
+	private static final String LOCAL_PROPERTIES_PROFILE = EndpointDescriptionLocator.class.getName()
+			+ ".localPropertiesProfile"; //$NON-NLS-1$
+	
 	private BundleContext context;
 	private IExecutor executor;
 
@@ -1015,11 +1018,14 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 	 * @since 4.7
 	 */
 	protected URL getPropsURLFromEDFileURL(URL edFileURL) {
+		String localPropertiesProfile = System.getProperty(LOCAL_PROPERTIES_PROFILE);
+		String profileSuffix = localPropertiesProfile != null ? "-" + localPropertiesProfile : ""; //$NON-NLS-1$ //$NON-NLS-2$
+		
 		String edFile = edFileURL.getFile();
 		int slashIndex = edFile.lastIndexOf('/');
 		String parentPath = ""; //$NON-NLS-1$
 		if (slashIndex > -1) {
-			parentPath = edFile.substring(0, slashIndex);
+			parentPath = edFile.substring(0, slashIndex) + "/"; //$NON-NLS-1$
 			edFile = edFile.substring(slashIndex + 1);
 		}
 		int dotIndex = edFile.lastIndexOf('.');
@@ -1029,7 +1035,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		// Now combine to create new path name/filename.ext
 		try {
 			return new URL(edFileURL.getProtocol(), edFileURL.getHost(), edFileURL.getPort(),
-					parentPath + edFile + "." + "properties"); //$NON-NLS-1$//$NON-NLS-2$
+					parentPath + edFile + profileSuffix + "." + "properties"); //$NON-NLS-1$//$NON-NLS-2$
 		} catch (MalformedURLException e) {
 			return null;
 		}
