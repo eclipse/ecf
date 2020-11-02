@@ -396,16 +396,22 @@ public class PropertiesUtil {
 		final Map target = copyProperties(source, new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER));
 
 		// now do actual merge
-		final Set<String> keySet = overrides.keySet();
-		for (final String key : keySet) {
+		for (final String key : overrides.keySet()) {
 			// skip keys not allowed
 			if (Constants.SERVICE_ID.equals(key) || Constants.OBJECTCLASS.equals(key)) {
 				continue;
 			}
-			target.remove(key.toLowerCase());
-			target.put(key.toLowerCase(), overrides.get(key));
+			// to lower case
+			String k = key.toLowerCase();
+			// remove from target if exists
+			target.remove(k);
+			// get value associated with key
+			Object value = overrides.get(k);
+			// if value not null then put new key->value into target
+			if (value != null) {
+				target.put(k, value);
+			}
 		}
-
 		return target;
 	}
 
