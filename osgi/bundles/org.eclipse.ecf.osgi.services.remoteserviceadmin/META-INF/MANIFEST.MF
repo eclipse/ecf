@@ -40,8 +40,8 @@ Import-Package: javax.xml.parsers,
 DynamicImport-Package: *
 Provide-Capability: osgi.extender; osgi.extender=osgi.remoteserviceadmin; version:Version=1.1; uses:="org.osgi.service.remoteserviceadmin",
  osgi.remoteserviceadmin.discovery;protocols:List<String>="local";version:Version=1.1, 
+ osgi.extender;osgi.extender=osgi.remoteserviceadmin.localdiscovery;version:Version="1.0";uses:="org.osgi.service.remoteserviceadmin",
  osgi.service; objectClass:List<String>="org.osgi.service.remoteserviceadmin.RemoteServiceAdmin";uses:="org.osgi.service.remoteserviceadmin"
-Provide-Capability: osgi.extender;osgi.extender=osgi.remoteserviceadmin.localdiscovery;version:Version="1.1";uses:="org.osgi.service.remoteserviceadmin"
 Bundle-ActivationPolicy: lazy
 
 
