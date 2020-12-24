@@ -15,6 +15,8 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.AccessController;
@@ -32,6 +34,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.UUID;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -72,13 +75,19 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 /**
  * Implementation of EndpointDescription discovery mechanism, using any/all ECF
  * discovery providers (implementers if {@link IDiscoveryLocator}.
+ * @since 4.8
  * 
  */
 public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 
 	private static final String LOCAL_PROPERTIES_PROFILE = EndpointDescriptionLocator.class.getName()
 			+ ".localPropertiesProfile"; //$NON-NLS-1$
-	
+
+	private static final String DEFAULT_PROPERTIES_FILE = System.getProperty(
+			EndpointDescriptionLocator.class.getName() + ".defaultPropertiesFilename", "default.properties"); //$NON-NLS-1$ //$NON-NLS-2$
+	private static final String DEFAULT_PROPERTIES_URL = System
+			.getProperty(EndpointDescriptionLocator.class.getName() + ".defaultPropertiesUrl"); //$NON-NLS-1$
+
 	private BundleContext context;
 	private IExecutor executor;
 
@@ -872,21 +881,17 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		}
 
 		public Object addingBundle(Bundle bundle, BundleEvent event) {
-			handleAddingBundle(bundle);
-			return bundle;
-		}
-
-		private void handleAddingBundle(Bundle bundle) {
-			if (context == null)
-				return;
-			String remoteServicesHeaderValue = (String) bundle.getHeaders().get(REMOTESERVICE_MANIFESTHEADER);
-			if (remoteServicesHeaderValue != null) {
-				// First parse into comma-separated values
-				String[] paths = remoteServicesHeaderValue.split(","); //$NON-NLS-1$
-				if (paths != null)
-					for (int i = 0; i < paths.length; i++)
-						handleEndpointDescriptionPath(bundle, paths[i].trim());
+			if (context != null) {
+				String remoteServicesHeaderValue = (String) bundle.getHeaders().get(REMOTESERVICE_MANIFESTHEADER);
+				if (remoteServicesHeaderValue != null) {
+					// First parse into comma-separated values
+					String[] paths = remoteServicesHeaderValue.split(","); //$NON-NLS-1$
+					if (paths != null)
+						for (int i = 0; i < paths.length; i++)
+							handleEndpointDescriptionPath(bundle, paths[i].trim());
+				}
 			}
+			return bundle;
 		}
 
 		protected void handleEndpointDescriptionPath(Bundle bundle, String remoteServicesHeaderValue) {
@@ -1020,7 +1025,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 	protected URL getPropsURLFromEDFileURL(URL edFileURL) {
 		String localPropertiesProfile = System.getProperty(LOCAL_PROPERTIES_PROFILE);
 		String profileSuffix = localPropertiesProfile != null ? "-" + localPropertiesProfile : ""; //$NON-NLS-1$ //$NON-NLS-2$
-		
+
 		String edFile = edFileURL.getFile();
 		int slashIndex = edFile.lastIndexOf('/');
 		String parentPath = ""; //$NON-NLS-1$
@@ -1035,42 +1040,390 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		// Now combine to create new path name/filename.ext
 		try {
 			return new URL(edFileURL.getProtocol(), edFileURL.getHost(), edFileURL.getPort(),
-					parentPath + edFile + profileSuffix + "." + "properties"); //$NON-NLS-1$//$NON-NLS-2$
+					parentPath + edFile + profileSuffix + ".properties"); //$NON-NLS-1$
 		} catch (MalformedURLException e) {
+			LogUtility.logError("getPropsURLFromEDFileURL", DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, getClass(), //$NON-NLS-1$
+					"URL could not be used to load properties file"); //$NON-NLS-1$
 			return null;
 		}
+	}
+
+	/**
+	 * @since 4.8
+	 */
+	protected URL getDefaultPropsURLFromEDFileURL(URL edFileURL) {
+		try {
+			URL url = null;
+			if (DEFAULT_PROPERTIES_URL != null) {
+				url = new URL(DEFAULT_PROPERTIES_URL);
+			} else {
+				String edFile = edFileURL.getFile();
+				int slashIndex = edFile.lastIndexOf('/');
+				String parentPath = ""; //$NON-NLS-1$
+				if (slashIndex > -1) {
+					parentPath = edFile.substring(0, slashIndex) + "/"; //$NON-NLS-1$
+				}
+				url = new URL(edFileURL.getProtocol(), edFileURL.getHost(), edFileURL.getPort(),
+						parentPath + DEFAULT_PROPERTIES_FILE);
+			}
+			return url;
+		} catch (MalformedURLException e) {
+			LogUtility.logError("getDefaultPropsURLFromEDFileURL", DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, //$NON-NLS-1$
+					getClass(), "URL could not be used to load properties file"); //$NON-NLS-1$
+			return null;
+		}
+	}
+
+	/**
+	 * @since 4.8
+	 */
+	protected static class EDEFProperties extends Properties {
+
+		private static final long serialVersionUID = -7351470248095230347L;
+
+		@Override
+		public synchronized Object put(Object key, Object value) {
+			String keyStr = (String) key;
+			String valueStr = (String) value;
+			EDEFPropertyValue propValue = null;
+			if (keyStr != null && valueStr != null) {
+				EDEFPropertyValue newValue = new EDEFPropertyValue(valueStr);
+				EDEFPropertyValue oldValue = (EDEFPropertyValue) this.get(keyStr);
+				if (oldValue == null) {
+					propValue = newValue;
+				} else {
+					propValue = oldValue.addPropertyValue(newValue);
+				}
+				super.put(keyStr, propValue);
+			}
+			return null;
+		}
+	}
+
+	/**
+	 * @since 4.8
+	 */
+	protected EDEFProperties loadProperties(URL url) throws IOException {
+		EDEFProperties result = new EDEFProperties();
+		try (InputStream ins = url.openStream()) {
+			result.load(ins);
+		}
+		return result;
+	}
+
+	/**
+	 * @since 4.8
+	 */
+	public static class EDEFPropertyValue {
+		private static int nextInt = 0;
+		private static long nextLong = 0;
+		private static short nextShort = 0;
+		private static byte nextByte = 0;
+		private String type1;
+		private String type2;
+		private String value;
+		private Object resultValue;
+
+		synchronized static int getNextInteger() {
+			if (nextInt == Integer.MAX_VALUE) {
+				nextInt = 0;
+			}
+			return ++nextInt;
+		}
+
+		boolean isArray() {
+			return this.type1.equalsIgnoreCase("array"); //$NON-NLS-1$
+		}
+
+		boolean isSet() {
+			return this.type1.equalsIgnoreCase("set"); //$NON-NLS-1$
+		}
+
+		boolean isList() {
+			return this.type1.equalsIgnoreCase("list"); //$NON-NLS-1$
+		}
+
+		boolean isCollection() {
+			return isSet() || isList();
+		}
+
+		boolean isSimpleType() {
+			return !isSet() && !isList() && !isArray();
+		}
+
+		boolean hasTypeAgreement(EDEFPropertyValue otherValue) {
+			String otherType = (otherValue.isArray() || otherValue.isCollection()) ? otherValue.type2
+					: otherValue.type1;
+			return (isArray() || isCollection()) ? this.type2.equalsIgnoreCase(otherType)
+					: this.type1.equalsIgnoreCase(otherType);
+		}
+
+		EDEFPropertyValue addPropertyValue(EDEFPropertyValue newValue) {
+			if (!hasTypeAgreement(newValue)) {
+				LogUtility.logError("addEDEFPropertyValue", DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, getClass(), //$NON-NLS-1$
+						"type disagreement between property values for old type1=" + this.type1 + ",type2=" + this.type2 //$NON-NLS-1$ //$NON-NLS-2$
+								+ ", and new type1=" + newValue.type1 + ",type2=" + newValue.type2); //$NON-NLS-1$ //$NON-NLS-2$
+				return this;
+			}
+			// get old and new values
+			Object ov = this.getValue();
+			Object nv = newValue.getValue();
+			// If we've got a collection already
+			if (isCollection()) {
+				Collection oldVs = (Collection) ov;
+				// If newValue is also collection
+				if (newValue.isCollection()) {
+					// Then addAll
+					oldVs.addAll((Collection) nv);
+				} else if (newValue.isSimpleType()) {
+					// Add single element
+					oldVs.add(nv);
+				}
+			} else if (isArray()) {
+				// Get old length
+				int oldLength = Array.getLength(ov);
+				Object newResultValue = null;
+				if (newValue.isArray()) {
+					// new value is also array...get length
+					int newLength = Array.getLength(nv);
+					// Check to make sure that the type of elements is same (type2 for arrays)
+					newResultValue = Array.newInstance(ov.getClass().getComponentType(), oldLength + newLength);
+					// copy ov contents to newResultValue
+					System.arraycopy(ov, 0, newResultValue, 0, oldLength);
+					// append nv contents to newResultValue after ov contents
+					System.arraycopy(nv, 0, newResultValue, oldLength, newLength);
+				} else if (newValue.isSimpleType()) {
+					newResultValue = Array.newInstance(ov.getClass().getComponentType(), oldLength + 1);
+					System.arraycopy(ov, 0, newResultValue, 0, oldLength);
+					Array.set(newResultValue, oldLength, nv);
+				}
+				if (newResultValue != null) {
+					this.resultValue = newResultValue;
+				}
+			}
+			return this;
+		}
+
+		synchronized static long getNextLong() {
+			if (nextLong == Long.MAX_VALUE) {
+				nextLong = 0;
+			}
+			return ++nextLong;
+		}
+
+		synchronized static short getNextShort() {
+			if (nextShort == Short.MAX_VALUE) {
+				nextShort = 0;
+			}
+			return ++nextShort;
+		}
+
+		synchronized static byte getNextByte() {
+			if (nextByte == Byte.MAX_VALUE) {
+				nextByte = 0;
+			}
+			return ++nextByte;
+		}
+
+		public EDEFPropertyValue(String value) {
+			// Default type1 is String
+			this.type1 = "String"; //$NON-NLS-1$
+			// Default type2 is String also
+			this.type2 = "String"; //$NON-NLS-1$
+			// Split value with =
+			String[] valueArr = value.split("="); //$NON-NLS-1$
+			// Split first one
+			if (valueArr.length > 1) {
+				// split second element in valueArr by :
+				String[] firstSplit = valueArr[0].split(":"); //$NON-NLS-1$
+				// If more than one then type2 is second element in firstSplit
+				if (firstSplit.length > 1) {
+					this.type2 = firstSplit[1];
+				}
+				// In either case type1 is firstSplit[0]
+				this.type1 = firstSplit[0];
+			}
+			// Now set value to the last elemtn in the valueArr
+			this.value = valueArr[valueArr.length - 1];
+		}
+
+		private Object getSimpleValue(Class<?> simpleType, Object value) {
+			try {
+				return simpleType.getDeclaredMethod("valueOf", new Class[] { String.class }).invoke(null, value); //$NON-NLS-1$
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
+					| NoSuchMethodException | SecurityException e) {
+				LogUtility.logWarning("getSimpleValue", DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, this.getClass(), //$NON-NLS-1$
+						"Cannot create instance of simpleType=" + simpleType + ", value=" + value); //$NON-NLS-1$ //$NON-NLS-2$
+				return null;
+			}
+		}
+
+		boolean isUnique() {
+			return "unique".equals(this.type2); //$NON-NLS-1$
+		}
+
+		Object getSimpleValue(String simpleType, String value) {
+			switch (simpleType) {
+			case "long": //$NON-NLS-1$
+			case "Long": //$NON-NLS-1$
+				if ("unique".equals(this.type2)) { //$NON-NLS-1$
+					return getNextLong();
+				}
+				return getSimpleValue(Long.class, value);
+			case "double": //$NON-NLS-1$
+			case "Double": //$NON-NLS-1$
+				return getSimpleValue(Double.class, value);
+			case "float": //$NON-NLS-1$
+			case "Float": //$NON-NLS-1$
+				return getSimpleValue(Float.class, value);
+			case "int": //$NON-NLS-1$
+			case "Integer": //$NON-NLS-1$
+				if ("unique".equals(this.type2)) { //$NON-NLS-1$
+					return getNextInteger();
+				}
+				return getSimpleValue(Integer.class, value);
+			case "Byte": //$NON-NLS-1$
+			case "byte": //$NON-NLS-1$
+				if ("unique".equals(this.type2)) { //$NON-NLS-1$
+					return getNextByte();
+				}
+				return getSimpleValue(Byte.class, value);
+			case "char": //$NON-NLS-1$
+			case "Character": //$NON-NLS-1$
+				return getSimpleValue(Character.class, value.toCharArray()[0]);
+			case "boolean": //$NON-NLS-1$
+			case "Boolean": //$NON-NLS-1$
+				return getSimpleValue(Boolean.class, value);
+			case "short": //$NON-NLS-1$
+			case "Short": //$NON-NLS-1$
+				if ("unique".equals(this.type2)) { //$NON-NLS-1$
+					return getNextShort();
+				}
+				return getSimpleValue(Short.class, value);
+			case "uuid": //$NON-NLS-1$
+			case "Uuid": //$NON-NLS-1$
+			case "UUID": //$NON-NLS-1$
+				// we don't care whether 'unique' is given or not
+				return UUID.randomUUID().toString();
+			case "String": //$NON-NLS-1$
+			case "string": //$NON-NLS-1$
+				return value;
+			default:
+				return null;
+			}
+		}
+
+		Object getArrayValues(String collectionValue) {
+			String[] elements = this.value.split("\\s*,\\s*"); //$NON-NLS-1$
+			Object result = null;
+			for (int i = 0; i < elements.length; i++) {
+				Object elementValue = getSimpleValue(this.type2, elements[i]);
+				if (elementValue == null) {
+					LogUtility.logWarning("getArrayValues", DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, getClass(), //$NON-NLS-1$
+							"array element=" + elements[i] + " could not be created"); //$NON-NLS-1$//$NON-NLS-2$
+					continue;
+				} else {
+					if (i == 0) {
+						result = Array.newInstance(elementValue.getClass(), elements.length);
+					}
+					Array.set(result, i, elementValue);
+				}
+			}
+			return result;
+		}
+
+		Collection<Object> getCollectionValues(Collection<Object> c, String collectionValue) {
+			String[] elements = this.value.split("\\s*,\\s*"); //$NON-NLS-1$
+			for (String element : elements) {
+				Object elementValue = getSimpleValue(this.type2, element);
+				if (elementValue == null) {
+					LogUtility.logWarning("getCollectionValues", DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, getClass(), //$NON-NLS-1$
+							"array element=" + element + " could not be created"); //$NON-NLS-1$//$NON-NLS-2$
+					continue;
+				} else {
+					c.add(elementValue);
+				}
+			}
+			return c;
+		}
+
+		public synchronized Object getValue() {
+			if (this.resultValue == null) {
+				switch (this.type1) {
+				case "array": //$NON-NLS-1$
+					this.resultValue = getArrayValues(this.value);
+					break;
+				case "list": //$NON-NLS-1$
+					this.resultValue = getCollectionValues(new ArrayList(), this.value);
+					break;
+				case "set": //$NON-NLS-1$
+					this.resultValue = getCollectionValues(new HashSet(), this.value);
+					break;
+				default:
+					this.resultValue = getSimpleValue(this.type1, this.value);
+					break;
+				}
+			}
+			return this.resultValue;
+		}
+	}
+
+	/**
+	 * @since 4.8
+	 */
+	protected Map<String, Object> processProperties(Properties props) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		if (props == null) {
+			return result;
+		}
+		props.forEach((k, v) -> {
+			String name = (String) k;
+			Object value = ((EDEFPropertyValue) v).getValue();
+			if (value != null) {
+				result.put(name, value);
+			} else {
+				LogUtility.logWarning("processProperties", DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, getClass(), //$NON-NLS-1$
+						"Invalid EDEFPropertyValue for name=" + name + ". Not added to processed properties"); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+		});
+		return result;
 	}
 
 	/**
 	 * @since 4.7
 	 */
 	protected Map<String, Object> findOverrideProperties(Bundle bundle, URL fileURL) {
+		Map<String, Object> mergedProps = new HashMap<String, Object>();
+		URL defaultPropsFileURL = getDefaultPropsURLFromEDFileURL(fileURL);
+		if (defaultPropsFileURL != null) {
+			try {
+				mergedProps = PropertiesUtil.mergeProperties(mergedProps,
+						processProperties(loadProperties(defaultPropsFileURL)));
+				LogUtility.logWarning("findOverrideProperties", DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, getClass(), //$NON-NLS-1$
+						"loaded default properties for edef file=" + fileURL.getFile() //$NON-NLS-1$
+								+ " with default properties file=" //$NON-NLS-1$
+								+ defaultPropsFileURL.getFile());
+			} catch (IOException e) {
+				LogUtility.logWarning("findOverrideProperties", DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, getClass(), //$NON-NLS-1$
+						"Could not load default properties fileUrl=" + defaultPropsFileURL + ",fileUrl=" //$NON-NLS-1$ //$NON-NLS-2$
+								+ fileURL.getFile(),
+						e);
+			}
+		}
 		URL propsFileURL = getPropsURLFromEDFileURL(fileURL);
 		if (propsFileURL != null) {
-			InputStream ins = null;
 			try {
-				ins = propsFileURL.openStream();
+				mergedProps = PropertiesUtil.mergeProperties(mergedProps,
+						processProperties(loadProperties(propsFileURL)));
+				LogUtility.logWarning("findOverrideProperties", DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, getClass(), //$NON-NLS-1$
+						"loaded override properties for edef file=" + fileURL.getFile() + " with properties file=" //$NON-NLS-1$ //$NON-NLS-2$
+								+ propsFileURL.getFile());
 			} catch (IOException e) {
-				// this means that file does not exist...and we are done
-				return null;
+				LogUtility.logWarning("findOverrideProperties", DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, getClass(), //$NON-NLS-1$
+						"Could not load properties fileUrl=" + propsFileURL + ",fileUrl=" + fileURL.getFile(), e); //$NON-NLS-1$ //$NON-NLS-2$
 			}
-			Properties props = new Properties();
-			try {
-				props.load(ins);
-				ins.close();
-			} catch (IOException e) {
-				logError("findOverrideProperties", "Could not load properties file from " + propsFileURL, e); //$NON-NLS-1$ //$NON-NLS-2$
-				return null;
-			}
-			Map<String, Object> result = new HashMap<String, Object>();
-			for (Object key : props.keySet()) {
-				if (key instanceof String) {
-					result.put((String) key, props.get(key));
-				}
-			}
-			return result;
 		}
-		return null;
+		return (!mergedProps.isEmpty()) ? mergedProps : null;
 	}
 
 	EndpointDescription findED(IServiceID serviceID) {
