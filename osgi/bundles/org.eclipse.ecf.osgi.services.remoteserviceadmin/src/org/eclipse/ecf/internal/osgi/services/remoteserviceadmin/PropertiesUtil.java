@@ -390,7 +390,15 @@ public class PropertiesUtil {
 		return mergeProperties(copyProperties(serviceReference, new HashMap()), overrides);
 	}
 
+	public static Map mergePropertiesRaw(final Map<String,Object> source, final Map<String,Object> overrides) {
+		return mergeProperties0(source, overrides, true);
+	}
+	
 	public static Map mergeProperties(final Map<String, Object> source, final Map<String, Object> overrides) {
+		return mergeProperties0(source, overrides, false);
+	}
+	
+	public static Map mergeProperties0(final Map<String, Object> source, final Map<String, Object> overrides, boolean raw) {
 
 		// copy to target from service reference
 		final Map target = copyProperties(source, new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER));
@@ -398,18 +406,16 @@ public class PropertiesUtil {
 		// now do actual merge
 		for (final String key : overrides.keySet()) {
 			// skip keys not allowed
-			if (Constants.SERVICE_ID.equals(key) || Constants.OBJECTCLASS.equals(key)) {
+			if (!raw && (Constants.SERVICE_ID.equals(key) || Constants.OBJECTCLASS.equals(key))) {
 				continue;
 			}
-			// to lower case
-			String k = key.toLowerCase();
 			// remove from target if exists
-			target.remove(k);
+			target.remove(key);
 			// get value associated with key
-			Object value = overrides.get(k);
+			Object value = overrides.get(key);
 			// if value not null then put new key->value into target
 			if (value != null) {
-				target.put(k, value);
+				target.put(key, value);
 			}
 		}
 		return target;

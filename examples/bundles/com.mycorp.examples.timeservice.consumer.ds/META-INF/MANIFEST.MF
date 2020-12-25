@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: ECF RS Example Timeservice Consumer DS
 Bundle-SymbolicName: com.mycorp.examples.timeservice.consumer.ds
 Automatic-Module-Name: com.mycorp.examples.timeservice.consumer.ds
-Bundle-Version: 1.0.300.qualifier
+Bundle-Version: 1.0.400.qualifier
 Bundle-Vendor: Eclipse.org - ECF
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Import-Package: com.mycorp.examples.timeservice;version="[2.0.0,3.0.0)",

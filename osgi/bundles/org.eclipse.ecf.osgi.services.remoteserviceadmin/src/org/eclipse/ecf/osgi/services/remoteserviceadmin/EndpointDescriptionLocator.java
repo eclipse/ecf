@@ -75,6 +75,7 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 /**
  * Implementation of EndpointDescription discovery mechanism, using any/all ECF
  * discovery providers (implementers if {@link IDiscoveryLocator}.
+ * 
  * @since 4.8
  * 
  */
@@ -949,6 +950,10 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 
 		protected org.osgi.service.remoteserviceadmin.EndpointDescription[] handleEndpointDescriptionFile(Bundle bundle,
 				URL fileURL) {
+
+			trace("handleEndpointDescriptionFile", //$NON-NLS-1$
+					"edef file detected.  BundleId=" + bundle.getBundleId() + " fileURL=" + fileURL + " found"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
 			InputStream ins = null;
 			Map<String, Object> mergeProperties = findOverrideProperties(bundle, fileURL);
 			try {
@@ -1266,8 +1271,12 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 			switch (simpleType) {
 			case "long": //$NON-NLS-1$
 			case "Long": //$NON-NLS-1$
-				if ("unique".equals(this.type2)) { //$NON-NLS-1$
+				if ("unique".equalsIgnoreCase(this.type2)) { //$NON-NLS-1$
 					return getNextLong();
+				} else if ("nanoTime".equalsIgnoreCase(this.type2)) { //$NON-NLS-1$
+					return System.nanoTime();
+				} else if ("milliTime".equalsIgnoreCase(this.type2)) { //$NON-NLS-1$
+					return System.currentTimeMillis();
 				}
 				return getSimpleValue(Long.class, value);
 			case "double": //$NON-NLS-1$
@@ -1396,31 +1405,35 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		Map<String, Object> mergedProps = new HashMap<String, Object>();
 		URL defaultPropsFileURL = getDefaultPropsURLFromEDFileURL(fileURL);
 		if (defaultPropsFileURL != null) {
+			trace("handleEndpointDescriptionFile", //$NON-NLS-1$
+					"Attempting to load default.properties.  BundleId=" + bundle.getBundleId() + " defaultPropsFileURL=" //$NON-NLS-1$ //$NON-NLS-2$
+							+ defaultPropsFileURL);
 			try {
-				mergedProps = PropertiesUtil.mergeProperties(mergedProps,
+				mergedProps = PropertiesUtil.mergePropertiesRaw(mergedProps,
 						processProperties(loadProperties(defaultPropsFileURL)));
-				LogUtility.logWarning("findOverrideProperties", DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, getClass(), //$NON-NLS-1$
-						"loaded default properties for edef file=" + fileURL.getFile() //$NON-NLS-1$
-								+ " with default properties file=" //$NON-NLS-1$
-								+ defaultPropsFileURL.getFile());
+				trace("findOverrideProperties", "loaded default.properties file=" + defaultPropsFileURL.getFile() //$NON-NLS-1$ //$NON-NLS-2$
+						+ " properties loaded=" //$NON-NLS-1$
+						+ mergedProps);
 			} catch (IOException e) {
 				LogUtility.logWarning("findOverrideProperties", DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, getClass(), //$NON-NLS-1$
-						"Could not load default properties fileUrl=" + defaultPropsFileURL + ",fileUrl=" //$NON-NLS-1$ //$NON-NLS-2$
-								+ fileURL.getFile(),
-						e);
+						"Could not load default properties file=" + defaultPropsFileURL + ",edef fileUrl=" //$NON-NLS-1$ //$NON-NLS-2$
+								+ fileURL.getFile());
 			}
 		}
 		URL propsFileURL = getPropsURLFromEDFileURL(fileURL);
 		if (propsFileURL != null) {
+			trace("handleEndpointDescriptionFile", //$NON-NLS-1$
+					"Attemping to load <file>.properties.  BundleId=" + bundle.getBundleId() + " propsFileURL=" //$NON-NLS-1$ //$NON-NLS-2$
+							+ propsFileURL);
 			try {
-				mergedProps = PropertiesUtil.mergeProperties(mergedProps,
+				mergedProps = PropertiesUtil.mergePropertiesRaw(mergedProps,
 						processProperties(loadProperties(propsFileURL)));
-				LogUtility.logWarning("findOverrideProperties", DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, getClass(), //$NON-NLS-1$
-						"loaded override properties for edef file=" + fileURL.getFile() + " with properties file=" //$NON-NLS-1$ //$NON-NLS-2$
-								+ propsFileURL.getFile());
+				trace("findOverrideProperties", //$NON-NLS-1$
+						"loaded override properties file=" + fileURL.getFile() + " merged Properties=" //$NON-NLS-1$ //$NON-NLS-2$
+								+ mergedProps);
 			} catch (IOException e) {
 				LogUtility.logWarning("findOverrideProperties", DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, getClass(), //$NON-NLS-1$
-						"Could not load properties fileUrl=" + propsFileURL + ",fileUrl=" + fileURL.getFile(), e); //$NON-NLS-1$ //$NON-NLS-2$
+						"Could not load properties fileUrl=" + propsFileURL + ",fileUrl=" + fileURL.getFile()); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 		return (!mergedProps.isEmpty()) ? mergedProps : null;

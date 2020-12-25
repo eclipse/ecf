@@ -49,13 +49,19 @@ public class EndpointDescriptionReader implements IEndpointDescriptionReader {
 		// For each one parsed, get properties and
 		for (EndpointDescriptionParser.EndpointDescription ed : parsedDescriptions) {
 			Map<String, Object> parsedProperties = ed.getProperties();
+			LogUtility.trace("readEndpointDescriptions", DebugOptions.ENDPOINT_DESCRIPTION_READER, getClass(), //$NON-NLS-1$
+					"parsed properties=" + parsedProperties); //$NON-NLS-1$
 			Map<String, Object> mergedProperties = null;
 			if (overrideProperties != null) {
+				LogUtility.trace("readEndpointDescriptions", DebugOptions.ENDPOINT_DESCRIPTION_READER, getClass(), //$NON-NLS-1$
+						"override properties=" + overrideProperties); //$NON-NLS-1$
 				mergedProperties = mergeWithParsed(parsedProperties, overrideProperties);
 			} else {
 				mergedProperties = parsedProperties;
 			}
 			try {
+				LogUtility.trace("readEndpointDescriptions", DebugOptions.ENDPOINT_DESCRIPTION_READER, getClass(), //$NON-NLS-1$
+						"endpoint description properties=" + mergedProperties); //$NON-NLS-1$
 				results.add(new EndpointDescription(mergedProperties));
 			} catch (Exception e) {
 				LogUtility.logError("readEndpointDescriptions", //$NON-NLS-1$
@@ -73,7 +79,7 @@ public class EndpointDescriptionReader implements IEndpointDescriptionReader {
 	 */
 	protected Map<String, Object> mergeWithParsed(Map<String, Object> parsedProperties,
 			Map<String, Object> mergeProperties) {
-		return PropertiesUtil.mergeProperties(parsedProperties, mergeProperties);
+		return PropertiesUtil.mergePropertiesRaw(parsedProperties, mergeProperties);
 	}
 
 }
