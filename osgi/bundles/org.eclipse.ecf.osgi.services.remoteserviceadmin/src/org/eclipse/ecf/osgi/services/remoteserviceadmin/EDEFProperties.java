@@ -52,7 +52,7 @@ public class EDEFProperties extends Properties {
 	private static short nextShort = 0;
 	private static byte nextByte = 0;
 
-	public class EDEFPropertiesValue {
+	public class Value {
 		private String type1 = "string"; //$NON-NLS-1$
 		private String type2 = "string"; //$NON-NLS-1$
 		private String valueString;
@@ -78,14 +78,14 @@ public class EDEFProperties extends Properties {
 			return !isCollection() && !isArray();
 		}
 
-		public boolean hasTypeAgreement(EDEFPropertiesValue otherValue) {
+		boolean hasTypeAgreement(Value otherValue) {
 			String otherType = (otherValue.isArray() || otherValue.isCollection()) ? otherValue.type2
 					: otherValue.type1;
 			return (isArray() || isCollection()) ? this.type2.equalsIgnoreCase(otherType)
 					: this.type1.equalsIgnoreCase(otherType);
 		}
 
-		EDEFPropertiesValue addPropertyValue(EDEFPropertiesValue newValue) {
+		Value addPropertyValue(Value newValue) {
 			if (!hasTypeAgreement(newValue)) {
 				LogUtility.logError("addEDEFPropertyValue", DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, getClass(), //$NON-NLS-1$
 						"type disagreement between property values for old type1=" + this.type1 + ",type2=" //$NON-NLS-1$ //$NON-NLS-2$
@@ -131,7 +131,7 @@ public class EDEFProperties extends Properties {
 			return this;
 		}
 
-		EDEFPropertiesValue(String value) {
+		Value(String value) {
 			// Split value with =
 			String[] valueArr = value.split("="); //$NON-NLS-1$
 			// Split first one
@@ -156,7 +156,7 @@ public class EDEFProperties extends Properties {
 			}
 		}
 
-		EDEFPropertiesValue(Object value) {
+		Value(Object value) {
 			Class<?> clazz = value.getClass();
 			if (clazz.isArray()) {
 				this.type1 = "array"; //$NON-NLS-1$
@@ -305,7 +305,7 @@ public class EDEFProperties extends Properties {
 			return this.valueObject;
 		}
 
-		public synchronized String getEDEFPropertyValueString() {
+		public synchronized String getValueString() {
 			if (this.valueString == null) {
 				StringBuffer buf = new StringBuffer();
 				if (isSimpleType()) {
@@ -372,17 +372,27 @@ public class EDEFProperties extends Properties {
 	 * @param properties must not be <code>null</code>
 	 */
 	public EDEFProperties(Map<String, Object> properties) {
-		putAllEDEFProperties(properties);
+		putEDEFProperties(properties);
 	}
 
 	@Override
 	public Object put(Object key, Object value) {
 		if (key instanceof String && value instanceof String) {
-			EDEFPropertiesValue oldValue = (EDEFPropertiesValue) this.get(key);
-			EDEFPropertiesValue newValue = new EDEFPropertiesValue((String) value);
+			Value oldValue = (Value) this.get(key);
+			Value newValue = new Value((String) value);
 			return super.put(key, (oldValue == null) ? newValue : oldValue.addPropertyValue(newValue));
 		}
 		return super.put(key, value);
+	}
+
+	/**
+	 * Get EDEF Property Value given name 
+	 * @param name the name/key of the EDEFProperty previously loaded or added.  Must not be <code>null</code>.
+	 * @return Value the value found for given name/key.  <code>Null</code> if not found.
+	 */
+	public Value getValue(String name) {
+		Object result = this.get(name);
+		return (Value) ((result instanceof Value) ? result : null);
 	}
 
 	/**
@@ -396,9 +406,9 @@ public class EDEFProperties extends Properties {
 	 * @param value array,list,set of primitive type or instance of primitive type.
 	 * @return existing Object with name/key. Null if no existing object exists.
 	 */
-	public Object putEDEFProperty(String key, Object value) {
-		if (key != null && value != null) {
-			return super.put(key, new EDEFPropertiesValue(value));
+	public Object putEDEFProperty(String name, Object value) {
+		if (name != null && value != null) {
+			return super.put(name, new Value(value));
 		}
 		return null;
 	}
@@ -412,7 +422,7 @@ public class EDEFProperties extends Properties {
 	public Map<String, Object> getEDEFPropertiesAsMap() {
 		Map<String, Object> result = new TreeMap<String, Object>();
 		this.forEach((k, v) -> {
-			result.put((String) k, ((EDEFPropertiesValue) v).getValueObject());
+			result.put((String) k, ((Value) v).getValueObject());
 		});
 		return result;
 	}
@@ -516,8 +526,8 @@ public class EDEFProperties extends Properties {
 				if (k instanceof String) {
 					String key = (String) k;
 					Object elemValue = get(key);
-					if (elemValue instanceof EDEFPropertiesValue) {
-						bufferedWriter.write(key + ((EDEFPropertiesValue) elemValue).getEDEFPropertyValueString());
+					if (elemValue instanceof Value) {
+						bufferedWriter.write(key + ((Value) elemValue).getValueString());
 						bufferedWriter.newLine();
 					}
 				}
@@ -532,7 +542,7 @@ public class EDEFProperties extends Properties {
 	 * 
 	 * @param properties the properties to put. May not be <code>null</code>
 	 */
-	public synchronized void putAllEDEFProperties(Map<String, Object> properties) {
+	public synchronized void putEDEFProperties(Map<String, Object> properties) {
 		properties.forEach((k, v) -> {
 			if (k instanceof String) {
 				putEDEFProperty((String) k, v);
