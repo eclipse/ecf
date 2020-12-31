@@ -20,6 +20,7 @@ import java.io.Writer;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
@@ -35,12 +36,16 @@ import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.DebugOptions;
 import org.eclipse.ecf.internal.osgi.services.remoteserviceadmin.LogUtility;
 
 /**
- * Class to represent EDEF properties for load from .properties file (via {@link #loadEDEFProperties(InputStream)} or
- * {@link #loadEDEFProperties(Reader)}) or via store to .properties file (via {@link #storeEDEFProperties(BufferedWriter, String)}
- * or {@link #storeEDEFProperties(Writer, String)}.  This class is used by the EndpointDescriptionLocator
- * class to load from default.properties files as well as properties edeffile.properties to override
- * the values from the edeffile.xml files specified by the Remote-Service header in manifest as per the
- * RSA specification (chap 122 in compendium spec).
+ * Class to represent EDEF properties for load from .properties file (via
+ * {@link #loadEDEFProperties(InputStream)} or
+ * {@link #loadEDEFProperties(Reader)}) or via store to .properties file (via
+ * {@link #storeEDEFProperties(BufferedWriter, String)} or
+ * {@link #storeEDEFProperties(Writer, String)}. This class is used by the
+ * EndpointDescriptionLocator class to load from default.properties files as
+ * well as properties edeffile.properties to override the values from the
+ * edeffile.xml files specified by the Remote-Service header in manifest as per
+ * the RSA specification (chap 122 in compendium spec).
+ * 
  * @since 4.8
  * 
  */
@@ -51,6 +56,14 @@ public class EDEFProperties extends Properties {
 	private static long nextLong = 0;
 	private static short nextShort = 0;
 	private static byte nextByte = 0;
+	private static final String[] typelist = { "array", "set", "list", "uuid", "string", "long", "double", "float", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
+			"short", "int", "integer", "char", "character", "byte", "char", "boolean", "short", "byte" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$//$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
+
+	private static List<String> TYPES = null;
+
+	static {
+		TYPES = Arrays.asList(typelist);
+	}
 
 	public class Value {
 		private String type1 = "string"; //$NON-NLS-1$
@@ -132,21 +145,37 @@ public class EDEFProperties extends Properties {
 		}
 
 		Value(String value) {
-			// Split value with =
+			// Split value with =. Two cases:
+			// 1) the value has array=something, Long=somethingelse or array:long=1l,2l,3l.
+			// This happens when the
+			// properties parser parses ':' as the first separator, with name values like
+			// this:
+			// name1:array=something, or name2:Long=something
+			// 2) The equals sign is somewhere in the value (as a string)
 			String[] valueArr = value.split("="); //$NON-NLS-1$
-			// Split first one
-			if (valueArr.length > 1) {
-				// split second element in valueArr by :
-				String[] firstSplit = valueArr[0].split(":"); //$NON-NLS-1$
-				// If more than one then type2 is second element in firstSplit
-				if (firstSplit.length > 1) {
-					this.type2 = firstSplit[1];
+			// To detect case 1, we split the first value by ':' and take the first array
+			// element, which for case 1 will be (e.g.) array,list,long...or one of the
+			// other supported types
+			// Here we test: If case 1, the test below returns true and the block is
+			// entered.
+			if (TYPES.contains(valueArr[0].split(":")[0].toLowerCase())) { //$NON-NLS-1$
+				// If the valueArray length > 1 then that means that
+				if (valueArr.length > 1) {
+					// split second element in valueArr by :
+					String[] firstSplit = valueArr[0].split(":"); //$NON-NLS-1$
+					// If more than one then type2 is second element in firstSplit
+					if (firstSplit.length > 1) {
+						this.type2 = firstSplit[1];
+					}
+					// In either case type1 is firstSplit[0]
+					this.type1 = firstSplit[0];
 				}
-				// In either case type1 is firstSplit[0]
-				this.type1 = firstSplit[0];
+				// Now set value to the last elemtn in the valueArr
+				this.valueString = valueArr[valueArr.length - 1];
+			} else {
+				// If case 2, we simply set the valueString equal to the given value.
+				this.valueString = value;
 			}
-			// Now set value to the last elemtn in the valueArr
-			this.valueString = valueArr[valueArr.length - 1];
 		}
 
 		private void setType2(Collection coll) {
@@ -369,6 +398,7 @@ public class EDEFProperties extends Properties {
 
 	/**
 	 * Create EDEFProperties instance initialized with all the given properties
+	 * 
 	 * @param properties must not be <code>null</code>
 	 */
 	public EDEFProperties(Map<String, Object> properties) {
@@ -386,9 +416,12 @@ public class EDEFProperties extends Properties {
 	}
 
 	/**
-	 * Get EDEF Property Value given name 
-	 * @param name the name/key of the EDEFProperty previously loaded or added.  Must not be <code>null</code>.
-	 * @return Value the value found for given name/key.  <code>Null</code> if not found.
+	 * Get EDEF Property Value given name
+	 * 
+	 * @param name the name/key of the EDEFProperty previously loaded or added. Must
+	 *             not be <code>null</code>.
+	 * @return Value the value found for given name/key. <code>Null</code> if not
+	 *         found.
 	 */
 	public Value getValue(String name) {
 		Object result = this.get(name);

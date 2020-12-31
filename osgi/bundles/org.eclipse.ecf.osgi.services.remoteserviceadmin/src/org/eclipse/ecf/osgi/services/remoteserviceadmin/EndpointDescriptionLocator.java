@@ -84,10 +84,11 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 	private static final String LOCAL_PROPERTIES_PROFILE = EndpointDescriptionLocator.class.getName()
 			+ ".localPropertiesProfile"; //$NON-NLS-1$
 
-	private static final String DEFAULT_PROPERTIES_FILE = System.getProperty(
-			EndpointDescriptionLocator.class.getName() + ".defaultPropertiesFilename", "default.properties"); //$NON-NLS-1$ //$NON-NLS-2$
-	private static final String DEFAULT_PROPERTIES_URL = System
-			.getProperty(EndpointDescriptionLocator.class.getName() + ".defaultPropertiesUrl"); //$NON-NLS-1$
+	private static final String DEFAULT_PROPERTIES_FILE = System
+			.getProperty(EndpointDescriptionLocator.class.getName() + ".defaultPropertiesFilename", "edef_defaults"); //$NON-NLS-1$ //$NON-NLS-2$
+
+	private static final String DEFAULT_PROPERTIES_FILE_SUFFIX = System
+			.getProperty(EndpointDescriptionLocator.class.getName() + ".defaultPropertiesFileSuffix", ".properties"); //$NON-NLS-1$ //$NON-NLS-2$
 
 	private BundleContext context;
 	private IExecutor executor;
@@ -900,7 +901,6 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 			if ("".equals(remoteServicesHeaderValue)) //$NON-NLS-1$
 				return;
 			Enumeration<URL> e = null;
-			// if it endswith a '/', then scan for *.xml files
 			if (remoteServicesHeaderValue.endsWith("/")) { //$NON-NLS-1$
 				e = bundle.findEntries(remoteServicesHeaderValue, XML_FILE_PATTERN, false);
 			} else {
@@ -924,8 +924,14 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 			Collection<org.osgi.service.remoteserviceadmin.EndpointDescription> endpointDescriptions = new ArrayList<org.osgi.service.remoteserviceadmin.EndpointDescription>();
 			if (e != null) {
 				while (e.hasMoreElements()) {
-					org.osgi.service.remoteserviceadmin.EndpointDescription[] eps = handleEndpointDescriptionFile(
-							bundle, e.nextElement());
+					URL url = e.nextElement();
+					String file = url.getFile();
+					org.osgi.service.remoteserviceadmin.EndpointDescription[] eps = null;
+					if (file.endsWith(DEFAULT_PROPERTIES_FILE_SUFFIX)) {
+						eps = handlePropertiesFile(bundle, url);
+					} else {
+						eps = handleEndpointDescriptionFile(bundle, url);
+					}
 					if (eps != null)
 						for (int i = 0; i < eps.length; i++)
 							endpointDescriptions.add(eps[i]);
@@ -948,38 +954,44 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 			}
 		}
 
+		protected org.osgi.service.remoteserviceadmin.EndpointDescription[] handlePropertiesFile(Bundle bundle,
+				URL propertiesFileURL) {
+			trace("handleEndpointDescriptionFile", //$NON-NLS-1$
+					"edef properties file detected.  BundleId=" + bundle.getBundleId() + " propertiesFileURL=" //$NON-NLS-1$ //$NON-NLS-2$
+							+ propertiesFileURL);
+			Map<String, Object> properties = findProperties(bundle, propertiesFileURL);
+			if (properties == null) {
+				logError("handlePropertiesFile", //$NON-NLS-1$
+						"Cannot load any properties for propertiesFileURL=" + propertiesFileURL, //$NON-NLS-1$
+						new NullPointerException());
+				return null;
+			}
+			try {
+				return new org.osgi.service.remoteserviceadmin.EndpointDescription[] {
+						new org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription(properties) };
+			} catch (Throwable e) {
+				logError("handlePropertiesFile", //$NON-NLS-1$
+						"Exception creating endpoint description from properties file=" //$NON-NLS-1$
+								+ propertiesFileURL,
+						e);
+				return null;
+			}
+		}
+
 		protected org.osgi.service.remoteserviceadmin.EndpointDescription[] handleEndpointDescriptionFile(Bundle bundle,
 				URL fileURL) {
-
 			trace("handleEndpointDescriptionFile", //$NON-NLS-1$
-					"edef file detected.  BundleId=" + bundle.getBundleId() + " fileURL=" + fileURL + " found"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-
-			InputStream ins = null;
-			Map<String, Object> mergeProperties = findOverrideProperties(bundle, fileURL);
-			try {
-				IEndpointDescriptionReader endpointDescriptionReader = getEndpointDescriptionReader();
-				if (endpointDescriptionReader == null)
-					throw new NullPointerException(
-							"No endpointDescriptionReader available for handleEndpointDescriptionFile fileURL=" //$NON-NLS-1$
-									+ fileURL);
-				ins = fileURL.openStream();
-				return endpointDescriptionReader.readEndpointDescriptions(ins, mergeProperties);
+					"edef fileURL=" + fileURL + " found in bundleId=" + bundle.getBundleId()); //$NON-NLS-1$ //$NON-NLS-2$
+			Map<String, Object> overrideProperties = findOverrideProperties(bundle, fileURL);
+			try (InputStream ins = fileURL.openStream()) {
+				return getEndpointDescriptionReader().readEndpointDescriptions(fileURL.openStream(),
+						overrideProperties);
 			} catch (Throwable e) {
 				logError("handleEndpointDescriptionFile", //$NON-NLS-1$
 						"Exception creating endpoint descriptions from fileURL=" //$NON-NLS-1$
 								+ fileURL,
 						e);
 				return null;
-			} finally {
-				if (ins != null)
-					try {
-						ins.close();
-					} catch (IOException e) {
-						logError("handleEndpointDescriptionFile", //$NON-NLS-1$
-								"Exception closing endpointDescription input fileURL=" //$NON-NLS-1$
-										+ fileURL,
-								e);
-					}
 			}
 		}
 
@@ -1028,9 +1040,6 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 	 * @since 4.7
 	 */
 	protected URL getPropsURLFromEDFileURL(URL edFileURL) {
-		String localPropertiesProfile = System.getProperty(LOCAL_PROPERTIES_PROFILE);
-		String profileSuffix = localPropertiesProfile != null ? "-" + localPropertiesProfile : ""; //$NON-NLS-1$ //$NON-NLS-2$
-
 		String edFile = edFileURL.getFile();
 		int slashIndex = edFile.lastIndexOf('/');
 		String parentPath = ""; //$NON-NLS-1$
@@ -1044,8 +1053,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		}
 		// Now combine to create new path name/filename.ext
 		try {
-			return new URL(edFileURL.getProtocol(), edFileURL.getHost(), edFileURL.getPort(),
-					parentPath + edFile + profileSuffix + ".properties"); //$NON-NLS-1$
+			return getProfiledURL(edFileURL, parentPath + edFile, DEFAULT_PROPERTIES_FILE_SUFFIX);
 		} catch (MalformedURLException e) {
 			LogUtility.logError("getPropsURLFromEDFileURL", DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, getClass(), //$NON-NLS-1$
 					"URL could not be used to load properties file"); //$NON-NLS-1$
@@ -1056,43 +1064,14 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 	/**
 	 * @since 4.8
 	 */
-	protected URL getDefaultPropsURLFromEDFileURL(URL edFileURL) {
-		try {
-			URL url = null;
-			if (DEFAULT_PROPERTIES_URL != null) {
-				url = new URL(DEFAULT_PROPERTIES_URL);
-			} else {
-				String edFile = edFileURL.getFile();
-				int slashIndex = edFile.lastIndexOf('/');
-				String parentPath = ""; //$NON-NLS-1$
-				if (slashIndex > -1) {
-					parentPath = edFile.substring(0, slashIndex) + "/"; //$NON-NLS-1$
-				}
-				url = new URL(edFileURL.getProtocol(), edFileURL.getHost(), edFileURL.getPort(),
-						parentPath + DEFAULT_PROPERTIES_FILE);
-			}
-			return url;
-		} catch (MalformedURLException e) {
-			LogUtility.logError("getDefaultPropsURLFromEDFileURL", DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, //$NON-NLS-1$
-					getClass(), "URL could not be used to load properties file"); //$NON-NLS-1$
-			return null;
-		}
-	}
-
-	/**
-	 * @since 4.8
-	 */
 	protected EDEFProperties loadProperties(URL url) throws IOException {
+		trace("loadProperties", "attempting to load properties from URL=" + url); //$NON-NLS-1$ //$NON-NLS-2$
 		EDEFProperties result = new EDEFProperties();
 		try (InputStream ins = url.openStream()) {
 			result.load(ins);
 		}
 		return result;
 	}
-
-	/**
-	 * @since 4.8
-	 */
 
 	/**
 	 * @since 4.8
@@ -1104,11 +1083,21 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 	/**
 	 * @since 4.8
 	 */
+	protected URL getProfiledURL(URL rootURL, String pathAndFile, String suffix) throws MalformedURLException {
+		String localPropertiesProfile = System.getProperty(LOCAL_PROPERTIES_PROFILE);
+		String profileSuffix = localPropertiesProfile != null ? "-" + localPropertiesProfile : ""; //$NON-NLS-1$ //$NON-NLS-2$
+		return new URL(rootURL.getProtocol(), rootURL.getHost(), rootURL.getPort(),
+				pathAndFile + profileSuffix + suffix);
+	}
+
+	/**
+	 * @since 4.8
+	 */
 	protected Map<String, Object> loadDefaultProperties(Map<String, Object> props, URL url) {
 		try {
 			props = PropertiesUtil.mergePropertiesRaw(props, processProperties(loadProperties(url)));
-			trace("loadDefaultProperties", "loaded default.properties file=" + url.getFile() //$NON-NLS-1$ //$NON-NLS-2$
-					+ " loaded properties=" //$NON-NLS-1$
+			trace("loadDefaultProperties", "loaded and merged properties from file=" + url.getFile() //$NON-NLS-1$ //$NON-NLS-2$
+					+ " properties=" //$NON-NLS-1$
 					+ props);
 		} catch (IOException e) {
 			LogUtility.logWarning("findOverrideProperties", DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, getClass(), //$NON-NLS-1$
@@ -1120,11 +1109,19 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 	/**
 	 * @since 4.8
 	 */
+	protected URL getPropsURL(URL url, String newPath) throws MalformedURLException {
+		return new URL(url.getProtocol(), url.getHost(), url.getPort(), newPath);
+	}
+
+	/**
+	 * @since 4.8
+	 */
 	protected Map<String, Object> loadAllDefaultProperties(URL url) {
 		Map<String, Object> props = new TreeMap<String, Object>();
 		URL rootUrl = null;
 		try {
-			rootUrl = new URL(url.getProtocol(), url.getHost(), url.getPort(), "/"); //$NON-NLS-1$
+			rootUrl = getPropsURL(url, "/"); //$NON-NLS-1$
+			;
 		} catch (MalformedURLException e) {
 			LogUtility.logError("loadAllDefaultProperties", DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, getClass(), //$NON-NLS-1$
 					"MalformedUrlException creating rootUrl from url=" + url); //$NON-NLS-1$
@@ -1135,7 +1132,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		do {
 			String newPath = pathSegment + "/" + DEFAULT_PROPERTIES_FILE; //$NON-NLS-1$
 			try {
-				props = loadDefaultProperties(props, new URL(rootUrl, newPath));
+				props = loadDefaultProperties(props, getProfiledURL(rootUrl, newPath, DEFAULT_PROPERTIES_FILE_SUFFIX));
 			} catch (MalformedURLException e) {
 				LogUtility.logError("loadAllDefaultProperties", DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, getClass(), //$NON-NLS-1$
 						"MalformedUrlException creating rootUrl from url=" + url); //$NON-NLS-1$
@@ -1150,26 +1147,29 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 	 * @since 4.7
 	 */
 	protected Map<String, Object> findOverrideProperties(Bundle bundle, URL fileURL) {
+		return findProperties(bundle, fileURL);
+	}
+
+	/**
+	 * @since 4.8
+	 */
+	protected Map<String, Object> findProperties(Bundle bundle, URL fileURL) {
 		Map<String, Object> defaultProperties = loadAllDefaultProperties(fileURL);
-		trace("findOverrideProperties", "merged default.properties=" + defaultProperties); //$NON-NLS-1$ //$NON-NLS-2$
-		Map<String, Object> overrideProps = new HashMap<String, Object>();
+		Map<String, Object> resultProps = new HashMap<String, Object>();
 		URL propsFileURL = getPropsURLFromEDFileURL(fileURL);
 		if (propsFileURL != null) {
-			trace("handleEndpointDescriptionFile", //$NON-NLS-1$
-					"Attemping to load <file>.properties.  BundleId=" + bundle.getBundleId() + " propsFileURL=" //$NON-NLS-1$ //$NON-NLS-2$
-							+ propsFileURL);
 			try {
-				overrideProps = PropertiesUtil.mergePropertiesRaw(defaultProperties,
+				resultProps = PropertiesUtil.mergePropertiesRaw(defaultProperties,
 						processProperties(loadProperties(propsFileURL)));
-				trace("findOverrideProperties", //$NON-NLS-1$
-						"loaded override properties file=" + fileURL.getFile() + " merged Properties=" //$NON-NLS-1$ //$NON-NLS-2$
-								+ overrideProps);
+				trace("findProperties", //$NON-NLS-1$
+						"loaded properties file=" + fileURL.getFile() + " result properties=" //$NON-NLS-1$ //$NON-NLS-2$
+								+ resultProps);
 			} catch (IOException e) {
 				LogUtility.logWarning("findOverrideProperties", DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, getClass(), //$NON-NLS-1$
 						"Could not load properties fileUrl=" + propsFileURL + ",fileUrl=" + fileURL.getFile()); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
-		return (!overrideProps.isEmpty()) ? overrideProps : null;
+		return (!resultProps.isEmpty()) ? resultProps : null;
 	}
 
 	EndpointDescription findED(IServiceID serviceID) {
