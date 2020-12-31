@@ -1037,31 +1037,6 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 	}
 
 	/**
-	 * @since 4.7
-	 */
-	protected URL getPropsURLFromEDFileURL(URL edFileURL) {
-		String edFile = edFileURL.getFile();
-		int slashIndex = edFile.lastIndexOf('/');
-		String parentPath = ""; //$NON-NLS-1$
-		if (slashIndex > -1) {
-			parentPath = edFile.substring(0, slashIndex) + "/"; //$NON-NLS-1$
-			edFile = edFile.substring(slashIndex + 1);
-		}
-		int dotIndex = edFile.lastIndexOf('.');
-		if (dotIndex > 0) {
-			edFile = edFile.substring(0, dotIndex);
-		}
-		// Now combine to create new path name/filename.ext
-		try {
-			return getProfiledURL(edFileURL, parentPath + edFile, DEFAULT_PROPERTIES_FILE_SUFFIX);
-		} catch (MalformedURLException e) {
-			LogUtility.logError("getPropsURLFromEDFileURL", DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, getClass(), //$NON-NLS-1$
-					"URL could not be used to load properties file"); //$NON-NLS-1$
-			return null;
-		}
-	}
-
-	/**
 	 * @since 4.8
 	 */
 	protected EDEFProperties loadProperties(URL url) throws IOException {
@@ -1076,32 +1051,16 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 	/**
 	 * @since 4.8
 	 */
-	protected Map<String, Object> processProperties(EDEFProperties props) {
-		return props.getEDEFPropertiesAsMap();
-	}
-
-	/**
-	 * @since 4.8
-	 */
-	protected URL getProfiledURL(URL rootURL, String pathAndFile, String suffix) throws MalformedURLException {
-		String localPropertiesProfile = System.getProperty(LOCAL_PROPERTIES_PROFILE);
-		String profileSuffix = localPropertiesProfile != null ? "-" + localPropertiesProfile : ""; //$NON-NLS-1$ //$NON-NLS-2$
-		return new URL(rootURL.getProtocol(), rootURL.getHost(), rootURL.getPort(),
-				pathAndFile + profileSuffix + suffix);
-	}
-
-	/**
-	 * @since 4.8
-	 */
-	protected Map<String, Object> loadDefaultProperties(Map<String, Object> props, URL url) {
+	protected Map<String, Object> loadAndProcessProperties(Map<String, Object> props, URL url) {
 		try {
-			props = PropertiesUtil.mergePropertiesRaw(props, processProperties(loadProperties(url)));
-			trace("loadDefaultProperties", "loaded and merged properties from file=" + url.getFile() //$NON-NLS-1$ //$NON-NLS-2$
+			props = url == null ? props
+					: PropertiesUtil.mergePropertiesRaw(props, loadProperties(url).getEDEFPropertiesAsMap());
+			trace("loadDefaultProperties", "loaded and merged properties from url=" + url //$NON-NLS-1$ //$NON-NLS-2$
 					+ " properties=" //$NON-NLS-1$
 					+ props);
 		} catch (IOException e) {
-			LogUtility.logWarning("findOverrideProperties", DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, getClass(), //$NON-NLS-1$
-					"Could not load default properties=" + url); //$NON-NLS-1$
+			LogUtility.logWarning("loadAndProcessProperties", DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, getClass(), //$NON-NLS-1$
+					"Could not load properties from url=" + url); //$NON-NLS-1$
 		}
 		return props;
 	}
@@ -1109,38 +1068,14 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 	/**
 	 * @since 4.8
 	 */
-	protected URL getPropsURL(URL url, String newPath) throws MalformedURLException {
-		return new URL(url.getProtocol(), url.getHost(), url.getPort(), newPath);
-	}
-
-	/**
-	 * @since 4.8
-	 */
-	protected Map<String, Object> loadAllDefaultProperties(URL url) {
-		Map<String, Object> props = new TreeMap<String, Object>();
-		URL rootUrl = null;
+	protected URL getPropsURL(URL url, String newPath) {
 		try {
-			rootUrl = getPropsURL(url, "/"); //$NON-NLS-1$
-			;
+			return new URL(url.getProtocol(), url.getHost(), url.getPort(), newPath);
 		} catch (MalformedURLException e) {
 			LogUtility.logError("loadAllDefaultProperties", DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, getClass(), //$NON-NLS-1$
-					"MalformedUrlException creating rootUrl from url=" + url); //$NON-NLS-1$
-			return props;
+					"MalformedUrlException creating from url=" + url); //$NON-NLS-1$
+			return null;
 		}
-		String pathSegment = ""; //$NON-NLS-1$
-		Iterator<Path> pathIterator = Paths.get(url.getPath()).iterator();
-		do {
-			String newPath = pathSegment + "/" + DEFAULT_PROPERTIES_FILE; //$NON-NLS-1$
-			try {
-				props = loadDefaultProperties(props, getProfiledURL(rootUrl, newPath, DEFAULT_PROPERTIES_FILE_SUFFIX));
-			} catch (MalformedURLException e) {
-				LogUtility.logError("loadAllDefaultProperties", DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, getClass(), //$NON-NLS-1$
-						"MalformedUrlException creating rootUrl from url=" + url); //$NON-NLS-1$
-				return props;
-			}
-			pathSegment = pathSegment + "/" + pathIterator.next(); //$NON-NLS-1$
-		} while (pathIterator.hasNext());
-		return props;
 	}
 
 	/**
@@ -1153,22 +1088,55 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 	/**
 	 * @since 4.8
 	 */
-	protected Map<String, Object> findProperties(Bundle bundle, URL fileURL) {
-		Map<String, Object> defaultProperties = loadAllDefaultProperties(fileURL);
-		Map<String, Object> resultProps = new HashMap<String, Object>();
-		URL propsFileURL = getPropsURLFromEDFileURL(fileURL);
-		if (propsFileURL != null) {
-			try {
-				resultProps = PropertiesUtil.mergePropertiesRaw(defaultProperties,
-						processProperties(loadProperties(propsFileURL)));
-				trace("findProperties", //$NON-NLS-1$
-						"loaded properties file=" + fileURL.getFile() + " result properties=" //$NON-NLS-1$ //$NON-NLS-2$
-								+ resultProps);
-			} catch (IOException e) {
-				LogUtility.logWarning("findOverrideProperties", DebugOptions.ENDPOINT_DESCRIPTION_LOCATOR, getClass(), //$NON-NLS-1$
-						"Could not load properties fileUrl=" + propsFileURL + ",fileUrl=" + fileURL.getFile()); //$NON-NLS-1$ //$NON-NLS-2$
-			}
+	protected Map<String, Object> findProperties(Bundle bundle, URL edFileURL) {
+		// load default properties first
+		Map<String, Object> resultProps = new TreeMap<String, Object>();
+		URL rootUrl = getPropsURL(edFileURL, "/"); //$NON-NLS-1$
+		if (rootUrl == null) {
+			return resultProps;
 		}
+		String localPropertiesProfile = System.getProperty(LOCAL_PROPERTIES_PROFILE);
+		String pathSegment = ""; //$NON-NLS-1$
+		Iterator<Path> pathIterator = Paths.get(edFileURL.getPath()).iterator();
+		do {
+			String newPath = pathSegment + "/" + DEFAULT_PROPERTIES_FILE; //$NON-NLS-1$
+			// create edef_defaults.properties url with newPath
+			resultProps = loadAndProcessProperties(resultProps,
+					getPropsURL(rootUrl, newPath + DEFAULT_PROPERTIES_FILE_SUFFIX));
+			// load profile props
+			// If local properties profile not null then
+			if (localPropertiesProfile != null) {
+				// Create profileProps URL
+				// and load/merge props
+				resultProps = loadAndProcessProperties(resultProps,
+						getPropsURL(rootUrl, newPath + "-" + localPropertiesProfile + DEFAULT_PROPERTIES_FILE_SUFFIX)); //$NON-NLS-1$
+			}
+			pathSegment = pathSegment + "/" + pathIterator.next(); //$NON-NLS-1$
+		} while (pathIterator.hasNext());
+		// Get full path
+		String edFile = edFileURL.getFile();
+		int slashIndex = edFile.lastIndexOf('/');
+		// get parent path and edFile name
+		String parentPath = ""; //$NON-NLS-1$
+		if (slashIndex > -1) {
+			parentPath = edFile.substring(0, slashIndex) + "/"; //$NON-NLS-1$
+			edFile = edFile.substring(slashIndex + 1);
+		}
+		int dotIndex = edFile.lastIndexOf('.');
+		if (dotIndex > 0) {
+			edFile = edFile.substring(0, dotIndex);
+		}
+		// Get default properties edFileURL, parentPath, edFile name, and
+		// .properties file suffix
+		resultProps = loadAndProcessProperties(resultProps,
+				getPropsURL(edFileURL, parentPath + "/" + edFile + DEFAULT_PROPERTIES_FILE_SUFFIX)); //$NON-NLS-1$
+		// Get profile default properties
+		if (localPropertiesProfile != null) {
+			// If we have one then
+			resultProps = loadAndProcessProperties(resultProps, getPropsURL(edFileURL,
+					parentPath + "/" + edFile + "-" + localPropertiesProfile + DEFAULT_PROPERTIES_FILE_SUFFIX)); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		// If URL can be created, then load, process and merge with default properties
 		return (!resultProps.isEmpty()) ? resultProps : null;
 	}
 
