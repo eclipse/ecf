@@ -1037,6 +1037,13 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 	}
 
 	/**
+	 * Load EDEF properties from given url. Provided url must not be
+	 * <code>null</code>.
+	 * 
+	 * @param url the URL to load the properties from.
+	 * @return EDEFProperties instance. Will not be <code>null</code>.
+	 * @throws IOException if properties cannot be read via
+	 *                     EDEFProperties.load(InputStream)
 	 * @since 4.8
 	 */
 	protected EDEFProperties loadProperties(URL url) throws IOException {
@@ -1049,6 +1056,13 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 	}
 
 	/**
+	 * Load and then process properties (merge with given props).
+	 * 
+	 * @param props the props to merge with. Should not be <code>null</code>.
+	 * @param url   the URL to load properties from via
+	 *              {@link #loadProperties(URL)}. May be <code>null</code>.
+	 * @return properties loaded and merged with provided props. Returns props
+	 *         unmodified if url is null or load exception.
 	 * @since 4.8
 	 */
 	protected Map<String, Object> loadAndProcessProperties(Map<String, Object> props, URL url) {
@@ -1066,6 +1080,14 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 	}
 
 	/**
+	 * Get props url starting with given url with newPath rather than existing path.
+	 * 
+	 * @param url     the based URL to start with. Uses proptocol, host, port. Must
+	 *                not be <code>null</code>.
+	 * @param newPath new path to use with given url to create and return new url.
+	 *                Must not be <code>null</code>.
+	 * @return url created from given url with newPath. Will be <code>null</code> if
+	 *         MalformedURLException thrown.
 	 * @since 4.8
 	 */
 	protected URL getPropsURL(URL url, String newPath) {
@@ -1079,17 +1101,36 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 	}
 
 	/**
+	 * Find all override properties for given bundle at given fileURL. Will load
+	 * edef_defaults.properties files and edef_defaults-[value of system property:
+	 * org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionLocator.localPropertiesFile].properties.
+	 * 
+	 * @param bundle    the bundle responsible for the given fileURL. Must not be
+	 *                  <code>null</code>.
+	 * @param edFileURL the file URL to load properties file(s) from. Must not be
+	 *                  <code>null</code>.
+	 * @return Map<String,Object> containing all properties to override those in xml
+	 *         from edFileURL paths and edFileURL file name with .properties suffix.
 	 * @since 4.7
 	 */
-	protected Map<String, Object> findOverrideProperties(Bundle bundle, URL fileURL) {
-		return findProperties(bundle, fileURL);
+	protected Map<String, Object> findOverrideProperties(Bundle bundle, URL edFileRUL) {
+		return findProperties(bundle, edFileRUL);
 	}
 
 	/**
+	 * Find all override properties for given bundle at given fileURL. Will load
+	 * edef_defaults.properties files and edef_defaults-[value of system property:
+	 * org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescriptionLocator.localPropertiesFile].properties.
+	 * 
+	 * @param bundle    the bundle responsible for the given fileURL. Must not be
+	 *                  <code>null</code>.
+	 * @param edFileURL the file URL to load properties file(s) from. Must not be
+	 *                  <code>null</code>.
+	 * @return Map<String,Object> containing all properties to override those in xml
+	 *         from edFileURL paths and edFileURL file name with .properties suffix.
 	 * @since 4.8
 	 */
 	protected Map<String, Object> findProperties(Bundle bundle, URL edFileURL) {
-		// load default properties first
 		Map<String, Object> resultProps = new TreeMap<String, Object>();
 		URL rootUrl = getPropsURL(edFileURL, "/"); //$NON-NLS-1$
 		if (rootUrl == null) {
@@ -1098,7 +1139,12 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		String localPropertiesProfile = System.getProperty(LOCAL_PROPERTIES_PROFILE);
 		String pathSegment = ""; //$NON-NLS-1$
 		Iterator<Path> pathIterator = Paths.get(edFileURL.getPath()).iterator();
+		// load default properties first
+		// starting from root of url path, and proceeding for each path
+		// segment/directory
+		// until down to file location
 		do {
+			// Create new path based upon current pathSegment and default properties file
 			String newPath = pathSegment + "/" + DEFAULT_PROPERTIES_FILE; //$NON-NLS-1$
 			// create edef_defaults.properties url with newPath
 			resultProps = loadAndProcessProperties(resultProps,
