@@ -18,6 +18,7 @@
 		<feature>scr</feature>
 		<feature>eventadmin</feature>
 	</feature>
+	
 	<feature name="ecf-rs-core" version="3.14.19"
 		description="ECF Core">
 		<feature version="3.14.19">ecf-rs-dependencies</feature>
