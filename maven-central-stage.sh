@@ -9,7 +9,8 @@ org.eclipse.ecf.filetransfer.feature
 org.eclipse.ecf.filetransfer.ssl.feature
 org.eclipse.ecf.filetransfer.httpclient45.feature
 org.eclipse.ecf.filetransfer.httpclient4.feature
-org.eclipse.ecf.filetransfer.httpclient4.ssl.feature"
+org.eclipse.ecf.filetransfer.httpclient4.ssl.feature
+org.eclipse.ecf.remoteservice.examples.feature"
 
 # Exclude orbit bundles, they should be done separately
 orbit_bundles="javax.servlet
