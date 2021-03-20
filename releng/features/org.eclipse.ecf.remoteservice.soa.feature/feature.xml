@@ -43,11 +43,7 @@
          id="org.eclipse.ecf.remoteservice.rosgi.feature"
          version="0.0.0"/>
 
-   <includes
-         id="org.eclipse.ecf.remoteservice.soap.feature"
-         version="0.0.0"/>
-
-   <includes
+    <includes
          id="org.eclipse.ecf.server.generic.feature"
          version="0.0.0"/>
 
