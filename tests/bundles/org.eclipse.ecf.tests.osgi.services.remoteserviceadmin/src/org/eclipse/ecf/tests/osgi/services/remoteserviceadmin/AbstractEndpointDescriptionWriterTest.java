@@ -2,7 +2,6 @@ package org.eclipse.ecf.tests.osgi.services.remoteserviceadmin;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Properties;
