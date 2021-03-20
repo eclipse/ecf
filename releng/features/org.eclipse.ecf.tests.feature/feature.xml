@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.tests.feature"
       label="Used to build and execute tests (should never appear in a product)"
-      version="3.0.201.qualifier"
+      version="3.1.0.qualifier"
       provider-name="%providerName"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
@@ -27,65 +27,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.ecf.tests.datashare"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.tests.presence"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.tests.protocol.msn"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.tests.provider.datashare.nio"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.tests.provider.xmpp"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.ecf.tests.remoteservice"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.tests.sharedobject"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.tests.storage"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.tests.sync"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -99,21 +41,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.ecf.tests.discovery"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.ecf.tests.remoteservice.generic"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.tests.remoteservice.r-osgi"
          download-size="0"
          install-size="0"
          version="0.0.0"
