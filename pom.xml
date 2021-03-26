@@ -275,6 +275,14 @@
         <artifactId>target-platform-configuration</artifactId>
         <version>${tycho-version}</version>
         <configuration>
+           <target>
+            <artifact>
+              <groupId>org.eclipse.ecf</groupId>
+              <artifactId>org.eclipse.ecf.releng.target</artifactId>
+              <classifier>ecf-${target-platform}</classifier>
+              <version>1.0.0-SNAPSHOT</version>
+            </artifact>
+          </target>
         </configuration>
       </plugin>
       <plugin>
@@ -472,6 +480,10 @@
                   <url>https://download.eclipse.org/rt/ecf/latest/site.p2/</url>
                 </repository>
               </baselineRepositories>
+              <ignoredPatterns>
+                <pattern>META-INF/ECLIPSE_.RSA</pattern>
+                <pattern>META-INF/ECLIPSE_.SF</pattern>
+              </ignoredPatterns>
             </configuration>
           </plugin>
           <plugin>
