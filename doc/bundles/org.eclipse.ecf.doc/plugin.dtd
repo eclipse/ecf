@@ -1,0 +1,11 @@
+<!ELEMENT plugin (extension+)>
+<!ELEMENT extension (toc*,index?,configExtension*)>
+<!ATTLIST extension point NMTOKEN #REQUIRED>
+<!ELEMENT toc EMPTY>
+<!ATTLIST toc file NMTOKEN #REQUIRED>
+<!ATTLIST toc primary NMTOKEN #IMPLIED>
+<!ELEMENT index EMPTY>
+<!ATTLIST index path NMTOKEN #REQUIRED>
+<!ELEMENT configExtension (#PCDATA)>
+<!ATTLIST configExtension configId NMTOKEN #REQUIRED>
+<!ATTLIST configExtension content CDATA #REQUIRED>

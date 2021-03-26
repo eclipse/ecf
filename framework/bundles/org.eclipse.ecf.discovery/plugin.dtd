@@ -1,0 +1,6 @@
+<!ELEMENT plugin (extension)>
+<!ELEMENT extension (namespace)>
+<!ATTLIST extension point NMTOKEN #REQUIRED>
+<!ELEMENT namespace (#PCDATA)>
+<!ATTLIST namespace class NMTOKEN #REQUIRED>
+<!ATTLIST namespace name NMTOKEN #REQUIRED>
