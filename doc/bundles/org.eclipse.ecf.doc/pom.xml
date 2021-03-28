@@ -50,7 +50,6 @@
                   <exclude>org.eclipse.ecf.docshare*</exclude>
                   <exclude>org.eclipse.ecf.datashare*</exclude>
                   <exclude>org.eclipse.ecf.presence*</exclude>
-                  <exclude>org.eclipse.ecf.storage</exclude>
                   <exclude>org.eclipse.ecf.sync</exclude>
                 </excludes>
               </javadocOptions>

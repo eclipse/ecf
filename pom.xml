@@ -143,10 +143,7 @@
     <module>framework/bundles/org.eclipse.ecf.remoteservice.ui</module>
     <module>framework/bundles/org.eclipse.ecf.sharedobject</module>
     <module>framework/bundles/org.eclipse.ecf.ssl</module>
-    <module>framework/bundles/org.eclipse.ecf.storage</module>
     <module>framework/bundles/org.eclipse.ecf.sync</module>
-    <module>framework/bundles/org.eclipse.ecf.telephony.call</module>
-    <module>framework/bundles/org.eclipse.ecf.telephony.call.ui</module>
     <module>framework/bundles/org.eclipse.ecf.ui.capabilities</module>
     <module>framework/bundles/org.eclipse.ecf.ui</module>
     <module>framework/bundles/org.eclipse.team.ecf.core</module>
@@ -210,7 +207,6 @@
     <module>tests/bundles/org.eclipse.ecf.tests.provider.xmpp</module>
     <module>tests/bundles/org.eclipse.ecf.tests.remoteservice</module>
     <module>tests/bundles/org.eclipse.ecf.tests.sharedobject</module>
-    <module>tests/bundles/org.eclipse.ecf.tests.storage</module>
     <module>tests/bundles/org.eclipse.ecf.tests.sync</module>
     <module>tests/bundles/org.eclipse.ecf.tests.osgi.services.distribution</module>
     <module>tests/bundles/org.eclipse.ecf.tests.discovery</module>
