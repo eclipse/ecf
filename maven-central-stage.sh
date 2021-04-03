@@ -42,7 +42,7 @@ cat << EOF > xpath.xml
 </project>
 EOF
 
-function deploy {
+deploy () {
 	local target=$1
 	mkdir -p $target
 	sed -e 's/-SNAPSHOT//' $(dirname $target)/pom.xml > $target/pom.xml
@@ -82,7 +82,7 @@ function deploy {
 }
 
 bundles=""
-function _add_bundle_to_list {
+_add_bundle_to_list() {
 	local plugin=$1
 	local match=0
 	for b in $bundles; do
@@ -107,7 +107,7 @@ function _add_bundle_to_list {
 }
 
 features=""
-function _add_feature_to_list {
+_add_feature_to_list() {
 	local feature=$1
 	local match=0
 	for f in $features ; do
@@ -122,7 +122,7 @@ function _add_feature_to_list {
 	return $match
 }
 
-function xpath_call {
+xpath_call() {
 	local xmlfile=$1
 	local xmlquery=$2
 	ant -f xpath.xml -Dxml.file=$xmlfile -Dxml.path="$xmlquery" >/dev/null
@@ -130,7 +130,7 @@ function xpath_call {
 	rm -f results
 }
 
-function parse_feature {
+parse_feature() {
 	local xml=$(find -path "*/$1/feature.xml")
 
 	# Process included plugins
@@ -187,7 +187,7 @@ function parse_feature {
 }
 
 bundles_deploy=""
-function check_maven_central {
+check_maven_central() {
 	local central_metadata="$(curl https://repo1.maven.org/maven2/org/eclipse/ecf/$1/maven-metadata.xml 2>/dev/null | grep '<latest>')"
 	local central_version=0.0.0
 	if [ -n "$central_metadata" ] ; then
