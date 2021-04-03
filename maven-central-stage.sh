@@ -71,12 +71,12 @@ deploy () {
 		props="$props -Djavadoc=$javadoc"
 	fi
 
-	local settings=/opt/public/hipp/homes/genie.ecf/.m2/settings-deploy-ossrh.xml
+	#local settings=/opt/public/hipp/homes/genie.ecf/.m2/settings-deploy-ossrh.xml
 	#local settings=~/.m2/settings.xml
-	echo "mvn -s $settings gpg:sign-and-deploy-file -DrepositoryId=ossrh " \
+	echo "mvn gpg:sign-and-deploy-file -DrepositoryId=ossrh " \
 	  "-Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/" \
 	  "$props -Dtycho.mode=maven"
-	mvn -s $settings gpg:sign-and-deploy-file -DrepositoryId=ossrh \
+	mvn gpg:sign-and-deploy-file -DrepositoryId=ossrh \
 	  -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/ \
 	  $props -Dtycho.mode=maven
 }
