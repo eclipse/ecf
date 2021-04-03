@@ -11,7 +11,7 @@
   <description>
     ECF is a set of frameworks for building communications into applications and services. It
     provides a lightweight, modular, transport-independent, fully-compliant implementation of
-    the OSGi Remote Services standard.
+    the OSGi Remote Services (chap 100) and Remote Service Admin (chap 122) standard.
   </description>
   <url>https://www.eclipse.org/ecf/</url>
   <inceptionYear>2004</inceptionYear>
