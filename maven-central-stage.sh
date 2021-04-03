@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 set -e
 
 # A space delimited list of feature IDs
