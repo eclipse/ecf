@@ -36,7 +36,7 @@ public class Win32NTLMProxyHandler extends DefaultNTLMProxyHandler {
 	@Override
 	public void handleNTLMProxy(Proxy proxy, int code) throws IncomingFileTransferException {
 		DefaultNTLMProxyHandler.setSeenNTLM();
-		if (Win32HttpClientConfigurationModifier.isWinAuthAvailable() && (code != 407 || isExplicitAllowNTLMAuthentication())) {
+		if (code != 407 || isExplicitAllowNTLMAuthentication()) {
 			return;
 		}
 		super.handleNTLMProxy(proxy, code);
@@ -44,7 +44,7 @@ public class Win32NTLMProxyHandler extends DefaultNTLMProxyHandler {
 
 	@Override
 	public void handleSPNEGOProxy(Proxy proxy, int code) throws BrowseFileTransferException {
-		if (Win32HttpClientConfigurationModifier.isWinAuthAvailable() && (code != 407 || isExplicitAllowNTLMAuthentication())) {
+		if (code != 407 || isExplicitAllowNTLMAuthentication()) {
 			return;
 		}
 		super.handleSPNEGOProxy(proxy, code);

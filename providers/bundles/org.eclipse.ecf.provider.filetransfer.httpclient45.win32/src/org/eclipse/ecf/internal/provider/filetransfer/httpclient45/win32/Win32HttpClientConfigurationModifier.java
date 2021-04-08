@@ -12,7 +12,6 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.provider.filetransfer.httpclient45.win32;
 
-import com.sun.jna.platform.win32.Sspi;
 import java.util.Map;
 import org.apache.http.auth.AuthSchemeProvider;
 import org.apache.http.client.CredentialsProvider;
@@ -45,27 +44,10 @@ public class Win32HttpClientConfigurationModifier extends HttpClientModifierAdap
 
 	public static final String SERVICE_PRINCIPAL_NAME_PROPERTY = ID + "." + SERVICE_PRINCIPAL_NAME_ATTRIBUTE; //$NON-NLS-1$
 
-	private static Boolean winAuthAvailable;
-
 	private String servicePrincipalName;
-
-	public static boolean isWinAuthAvailable() {
-		if (winAuthAvailable == null) {
-			// from org.apache.http.impl.client.WinHttpClients.isWinAuthAvailable()
-			try {
-				winAuthAvailable = Sspi.MAX_TOKEN_SIZE > 0;
-			} catch (Exception ignore) { // Likely ClassNotFound
-				winAuthAvailable = false;
-			}
-		}
-		return winAuthAvailable;
-	}
 
 	@Override
 	public HttpClientBuilder modifyClient(HttpClientBuilder builder) {
-		if (!isWinAuthAvailable()) {
-			return builder;
-		}
 		HttpClientBuilder winBuilder = builder == null ? HttpClientBuilder.create() : builder;
 		Lookup<AuthSchemeProvider> authSchemeRegistry = createAuthSchemeRegistry();
 		return winBuilder.setDefaultAuthSchemeRegistry(authSchemeRegistry);
@@ -74,7 +56,7 @@ public class Win32HttpClientConfigurationModifier extends HttpClientModifierAdap
 	@Override
 	@SuppressWarnings("restriction")
 	public CredentialsProvider modifyCredentialsProvider(CredentialsProvider credentialsProvider) {
-		if (credentialsProvider == null || !isWinAuthAvailable() || credentialsProvider instanceof WindowsCredentialsProvider) {
+		if (credentialsProvider == null || credentialsProvider instanceof WindowsCredentialsProvider) {
 			return credentialsProvider;
 		}
 
