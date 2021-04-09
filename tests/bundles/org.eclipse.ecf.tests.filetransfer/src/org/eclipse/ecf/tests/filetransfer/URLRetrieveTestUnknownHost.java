@@ -30,7 +30,7 @@ public class URLRetrieveTestUnknownHost extends AbstractRetrieveTestCase {
 	private boolean CANCEL_SUPPORTED_ON_CONNECT = Boolean.parseBoolean(
 			System.getProperty(
 					"org.eclipse.ecf.tests.filetransfer.cancelSupportedOnConnect",
-					"true"));
+					"false"));
 
 	/*
 	 * (non-Javadoc)
