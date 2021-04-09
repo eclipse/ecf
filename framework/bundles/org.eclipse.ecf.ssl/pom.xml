@@ -10,6 +10,6 @@
   </parent>
   <groupId>org.eclipse.ecf</groupId>
   <artifactId>org.eclipse.ecf.ssl</artifactId>
-  <version>1.2.400-SNAPSHOT</version>
+  <version>1.2.401-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>

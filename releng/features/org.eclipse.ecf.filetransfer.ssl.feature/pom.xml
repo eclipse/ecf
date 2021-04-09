@@ -9,6 +9,6 @@
     <relativePath>../../../</relativePath>
   </parent>
   <artifactId>org.eclipse.ecf.filetransfer.ssl.feature</artifactId>
-  <version>1.1.400-SNAPSHOT</version>
+  <version>1.1.401-SNAPSHOT</version>
   <packaging>eclipse-feature</packaging>
 </project>
