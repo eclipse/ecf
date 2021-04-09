@@ -27,19 +27,19 @@
 <unit id="org.json" version="1.0.0.v201011060100"/>
 <unit id="org.xbill.dns" version="2.0.8.v201112050911"/>
 <unit id="org.xbill.dns.source" version="2.0.8.v201112050911"/>
-<unit id="org.objectweb.asm" version="7.2.0.v20191010-1910"/>
-<unit id="org.objectweb.asm.source" version="7.2.0.v20191010-1910"/>
-<unit id="org.apache.httpcomponents.httpclient" version="4.5.10.v20200830-2311"/>
-<unit id="org.apache.httpcomponents.httpclient.source" version="4.5.10.v20200830-2311"/>
-<unit id="org.apache.httpcomponents.httpclient.win" version="4.5.10.v20200830-2311"/>
-<unit id="org.apache.httpcomponents.httpclient.win.source" version="4.5.10.v20200830-2311"/>
-<unit id="org.apache.httpcomponents.httpcore" version="4.4.12.v20200108-1212"/>
-<unit id="org.apache.httpcomponents.httpcore.source" version="4.4.12.v20200108-1212"/>
+<unit id="org.objectweb.asm" version="9.1.0.v20210209-1849"/>
+<unit id="org.objectweb.asm.source" version="9.1.0.v20210209-1849"/>
+<unit id="org.apache.httpcomponents.httpclient" version="4.5.13.v20210128-2225"/>
+<unit id="org.apache.httpcomponents.httpclient.source" version="4.5.13.v20210128-2225"/>
+<unit id="org.apache.httpcomponents.httpclient.win" version="4.5.13.v20210128-2225"/>
+<unit id="org.apache.httpcomponents.httpclient.win.source" version="4.5.13.v20210128-2225"/>
+<unit id="org.apache.httpcomponents.httpcore" version="4.4.14.v20210128-2225"/>
+<unit id="org.apache.httpcomponents.httpcore.source" version="4.4.14.v20210128-2225"/>
 <unit id="com.sun.jna" version="4.5.1.v20190425-1842"/>
 <unit id="com.sun.jna.platform" version="4.5.1.v20190425-1842"/>
 <unit id="com.sun.jna.platform.source" version="4.5.1.v20190425-1842"/>
 <unit id="com.sun.jna.source" version="4.5.1.v20190425-1842"/>
-<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20200831200620/repository"/>
+<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20210223232630/repository"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.emf.edit.ui.feature.group" version="2.19.0.v20200205-0529"/>
