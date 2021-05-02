@@ -48,7 +48,7 @@
          version="0.0.0"/>
 
    <includes
-         id="org.eclipse.ecf.filetransfer.httpclient45.feature"
+         id="org.eclipse.ecf.filetransfer.httpclient5.feature"
          version="0.0.0"/>
 
 </feature>

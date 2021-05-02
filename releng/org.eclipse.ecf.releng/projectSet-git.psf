@@ -78,6 +78,7 @@
 <project reference="1.0,https://git.eclipse.org/r/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient4.ssl"/>
 <project reference="1.0,https://git.eclipse.org/r/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient45"/>
 <project reference="1.0,https://git.eclipse.org/r/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient45.win32"/>
+<project reference="1.0,https://git.eclipse.org/r/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient5"/>
 <project reference="1.0,https://git.eclipse.org/r/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.filetransfer.scp"/>
 <project reference="1.0,https://git.eclipse.org/r/ecf/org.eclipse.ecf.git,master,providers/bundles/org.eclipse.ecf.provider.filetransfer.ssl"/>
 <project reference="1.0,https://git.eclipse.org/r/ecf/org.eclipse.ecf.git,master,releng/features/org.eclipse.ecf.provider.generic.datashare.feature"/>
@@ -279,11 +280,14 @@
 <item elementID="=org.eclipse.ecf.console" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.osgi.services.remoteserviceadmin.console" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 </workingSets>
-<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552865187486_19" label="HttpClient Filetransfer Provider" name="HttpClient Filetransfer Provider">
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552865187486_19" label="HttpClient Filetransfer Provider" name="HttpClient Filetransfer 4.5 Provider">
 <item elementID="=org.eclipse.ecf.provider.filetransfer.httpclient4" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.provider.filetransfer.httpclient4.ssl" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.provider.filetransfer.httpclient45" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.provider.filetransfer.httpclient45.win32" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSets>
+<workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552865187486_19" label="HttpClient Filetransfer Provider" name="HttpClient Filetransfer 5.0 Provider">
+<item elementID="=org.eclipse.ecf.provider.filetransfer.httpclient5" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 </workingSets>
 <workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552866220594_44" label="IRC Presence Provider" name="IRC Presence Provider">
 <item elementID="=org.eclipse.ecf.provider.irc" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
