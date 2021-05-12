@@ -98,7 +98,7 @@ public class Activator implements BundleActivator {
 	}
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.filetransfer.httpclient45"; //$NON-NLS-1$
+	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.filetransfer.httpclient5"; //$NON-NLS-1$
 
 	public static final String USE_SHARED_CLIENT = PLUGIN_ID + ".sharedClient"; //$NON-NLS-1$
 
