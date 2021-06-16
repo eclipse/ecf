@@ -78,7 +78,7 @@
                   <artifactId>org.eclipse.ant.core</artifactId>
                   <type>eclipse-plugin</type>
                 </dependency>
-                -->
+                
                 <dependency>
                   <artifactId>org.apache.ant</artifactId>
                   <type>eclipse-plugin</type>
@@ -99,6 +99,7 @@
                   <artifactId>javax.annotation</artifactId>
                   <type>eclipse-plugin</type>
                 </dependency>
+                -->
               </dependencies>
             </configuration>
           </execution>
