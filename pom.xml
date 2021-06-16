@@ -133,7 +133,6 @@
     <module>framework/bundles/org.eclipse.ecf.presence</module>
     <module>framework/bundles/org.eclipse.ecf.presence.ui</module>
     <module>framework/bundles/org.eclipse.ecf.provider</module>
-    <module>framework/bundles/org.eclipse.ecf.remoteservice.asyncproxy</module>
     <module>framework/bundles/org.eclipse.ecf.remoteservice.asyncproxy.j8</module>
     <module>framework/bundles/org.eclipse.ecf.remoteservice</module>
     <module>framework/bundles/org.eclipse.ecf.remoteservice.rest</module>

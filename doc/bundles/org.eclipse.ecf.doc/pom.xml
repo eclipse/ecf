@@ -73,10 +73,12 @@
               <appArgLine>-consolelog -data target/workspace -application org.eclipse.ant.core.antRunner -quiet -buildfile buildschemadocs.xml
               </appArgLine>
               <dependencies>
+              <!-- 
                 <dependency>
                   <artifactId>org.eclipse.ant.core</artifactId>
                   <type>eclipse-plugin</type>
                 </dependency>
+                -->
                 <dependency>
                   <artifactId>org.apache.ant</artifactId>
                   <type>eclipse-plugin</type>
