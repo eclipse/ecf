@@ -59,6 +59,7 @@
           </execution>
         </executions>
       </plugin>
+      <!-- 
       <plugin>
         <groupId>org.eclipse.tycho.extras</groupId>
         <artifactId>tycho-eclipserun-plugin</artifactId>
@@ -73,7 +74,7 @@
               <appArgLine>-consolelog -data target/workspace -application org.eclipse.ant.core.antRunner -quiet -buildfile buildschemadocs.xml
               </appArgLine>
               <dependencies>
-              <!-- 
+              
                 <dependency>
                   <artifactId>org.eclipse.ant.core</artifactId>
                   <type>eclipse-plugin</type>
@@ -99,12 +100,13 @@
                   <artifactId>javax.annotation</artifactId>
                   <type>eclipse-plugin</type>
                 </dependency>
-                -->
+                
               </dependencies>
             </configuration>
           </execution>
         </executions>
       </plugin>
+      -->
     </plugins>
   </build>
 </project>
