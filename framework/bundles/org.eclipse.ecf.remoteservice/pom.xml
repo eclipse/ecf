@@ -10,6 +10,6 @@
   </parent>
   <groupId>org.eclipse.ecf</groupId>
   <artifactId>org.eclipse.ecf.remoteservice</artifactId>
-  <version>8.13.101-SNAPSHOT</version>
+  <version>8.13.200-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>

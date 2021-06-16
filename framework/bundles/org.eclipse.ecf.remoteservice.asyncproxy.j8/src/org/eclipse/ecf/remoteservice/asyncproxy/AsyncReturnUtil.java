@@ -67,16 +67,20 @@ public class AsyncReturnUtil {
 			InvocationTargetException {
 		if (returnObject == null)
 			return null;
-		else if (asyncReturnType.isAssignableFrom(Future.class))
-			return ((Future<?>) returnObject).get(timeout, TimeUnit.MILLISECONDS);
-		else if (asyncReturnType.isAssignableFrom(CompletableFuture.class)) 
-			return ((CompletableFuture<?>) returnObject).get(timeout, TimeUnit.MILLISECONDS);
-		else if (asyncReturnType.isAssignableFrom(CompletionStage.class))
-			return ((CompletionStage<?>) returnObject).toCompletableFuture().get(timeout, TimeUnit.MILLISECONDS);
-		else if (asyncReturnType.isAssignableFrom(IFuture.class))
+		else if (asyncReturnType.isAssignableFrom(Future.class)) {
+			Future<?> f = (Future<?>) returnObject;
+			return (timeout == 0L)?f.get():f.get(timeout, TimeUnit.MILLISECONDS);
+		} else if (asyncReturnType.isAssignableFrom(CompletableFuture.class)) {
+			CompletableFuture<?> cf = (CompletableFuture<?>) returnObject;
+			return (timeout == 0L)?cf.get():cf.get(timeout, TimeUnit.MILLISECONDS);
+		} else if (asyncReturnType.isAssignableFrom(CompletionStage.class)) {
+			CompletableFuture<?> cf = ((CompletionStage<?>) returnObject).toCompletableFuture();
+			return (timeout == 0)?cf.get():cf.get(timeout, TimeUnit.MILLISECONDS);
+		} else if (asyncReturnType.isAssignableFrom(IFuture.class)) {
 			return ((IFuture<?>) returnObject).get();
-		else if (asyncReturnType.isAssignableFrom(Promise.class))
+		} else if (asyncReturnType.isAssignableFrom(Promise.class)) {
 			return ((Promise<?>) returnObject).getValue();
+		}
 		return null;
 	}
 

@@ -715,7 +715,9 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 	 * @since 8.13
 	 */
 	public Object callSync(IRemoteCall call, Callable<Object> callable) throws InterruptedException, ExecutionException, TimeoutException {
-		return callAsync(call, callable).get(call.getTimeout(), TimeUnit.MILLISECONDS);
+		long timeout = call.getTimeout();
+		Future<Object> future = callAsync(call, callable);
+		return (timeout == 0) ? future.get() : future.get(timeout, TimeUnit.MILLISECONDS);
 	}
 
 	/**
@@ -738,7 +740,9 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 		return getFutureExecutorService(call).submit(new Callable<Object>() {
 			public Object call() throws Exception {
 				try {
-					return getFutureExecutorService(call).submit(callable).get(call.getTimeout(), TimeUnit.MILLISECONDS);
+					long timeout = call.getTimeout();
+					Future<Object> future = getFutureExecutorService(call).submit(callable);
+					return (timeout == 0L) ? future.get() : future.get(timeout, TimeUnit.MILLISECONDS);
 				} catch (InterruptedException e) {
 					throw new InterruptedException("Interrupted calling remote service method=" + call.getMethod()); //$NON-NLS-1$
 				} catch (ExecutionException e) {
@@ -794,7 +798,9 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 		getFutureExecutorService(call).submit(new Runnable() {
 			public void run() {
 				try {
-					callback.handleEvent(getFutureExecutorService(call).submit(callable).get(call.getTimeout(), TimeUnit.MILLISECONDS));
+					long timeout = call.getTimeout();
+					Future<IRemoteCallCompleteEvent> future = getFutureExecutorService(call).submit(callable);
+					callback.handleEvent((timeout == 0L) ? future.get() : future.get(timeout, TimeUnit.MILLISECONDS));
 				} catch (InterruptedException e) {
 					callback.handleEvent(createRCCE(null, new InterruptedException("Interrupted calling remote service method=" + call.getMethod()))); //$NON-NLS-1$
 				} catch (ExecutionException e) {

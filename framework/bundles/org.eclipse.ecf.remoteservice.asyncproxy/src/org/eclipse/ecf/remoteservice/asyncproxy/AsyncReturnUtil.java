@@ -42,10 +42,12 @@ public class AsyncReturnUtil {
 			InvocationTargetException {
 		if (returnObject == null)
 			return null;
-		else if (asyncReturnType.isAssignableFrom(Future.class))
-			return ((Future<?>) returnObject).get(timeout, TimeUnit.MILLISECONDS);
-		else if (asyncReturnType.isAssignableFrom(IFuture.class))
+		else if (asyncReturnType.isAssignableFrom(Future.class)) {
+			Future<?> f = (Future<?>) returnObject;
+			return (timeout == 0L)?f.get():f.get(timeout, TimeUnit.MILLISECONDS);
+		} else if (asyncReturnType.isAssignableFrom(IFuture.class)) {
 			return ((IFuture<?>) returnObject).get();
+		}
 		return null;
 	}
 
