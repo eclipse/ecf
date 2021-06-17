@@ -25,7 +25,8 @@ import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.internal.remoteservice.Activator;
 import org.eclipse.ecf.remoteservice.*;
 import org.eclipse.ecf.remoteservice.client.AbstractClientService.UriRequest;
-import org.eclipse.ecf.remoteservice.events.*;
+import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
+import org.eclipse.ecf.remoteservice.events.IRemoteServiceRegisteredEvent;
 import org.eclipse.ecf.remoteservice.util.RemoteFilterImpl;
 import org.eclipse.equinox.concurrent.future.*;
 import org.osgi.framework.InvalidSyntaxException;
@@ -233,27 +234,7 @@ public abstract class AbstractClientContainer extends AbstractContainer implemen
 	}
 
 	public boolean ungetRemoteService(final IRemoteServiceReference reference) {
-		boolean result = referencesInUse.contains(reference);
-		referencesInUse.remove(reference);
-		fireRemoteServiceEvent(new IRemoteServiceUnregisteredEvent() {
-
-			public IRemoteServiceReference getReference() {
-				return reference;
-			}
-
-			public ID getLocalContainerID() {
-				return getID();
-			}
-
-			public ID getContainerID() {
-				return getID();
-			}
-
-			public String[] getClazzes() {
-				return registry.getClazzes(reference);
-			}
-		});
-		return result;
+		return referencesInUse.remove(reference);
 	}
 
 	// Implementation of IRestClientContainerAdapter
