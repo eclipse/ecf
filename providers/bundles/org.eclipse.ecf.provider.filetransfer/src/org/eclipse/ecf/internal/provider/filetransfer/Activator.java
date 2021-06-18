@@ -129,10 +129,10 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 			final IExtensionDelta retrieveDelta[] = event.getExtensionDeltas(PLUGIN_ID, RETRIEVE_FILETRANSFER_PROTOCOL_FACTORY_EPOINT_NAME);
 			for (IExtensionDelta r : retrieveDelta) {
 				switch (r.getKind()) {
-					case IExtensionDelta.ADDED:
+					case IExtensionDelta.ADDED :
 						addRetrieveExtensions(r.getExtension().getConfigurationElements());
 						break;
-					case IExtensionDelta.REMOVED:
+					case IExtensionDelta.REMOVED :
 						removeRetrieveExtensions(r.getExtension().getConfigurationElements());
 						break;
 				}
@@ -140,10 +140,10 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 			final IExtensionDelta sendDelta[] = event.getExtensionDeltas(PLUGIN_ID, SEND_FILETRANSFER_PROTOCOL_FACTORY_EPOINT_NAME);
 			for (IExtensionDelta s : sendDelta) {
 				switch (s.getKind()) {
-					case IExtensionDelta.ADDED:
+					case IExtensionDelta.ADDED :
 						addSendExtensions(s.getExtension().getConfigurationElements());
 						break;
-					case IExtensionDelta.REMOVED:
+					case IExtensionDelta.REMOVED :
 						removeSendExtensions(s.getExtension().getConfigurationElements());
 						break;
 				}
@@ -151,10 +151,10 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 			final IExtensionDelta browseDelta[] = event.getExtensionDeltas(PLUGIN_ID, BROWSE_FILETRANSFER_PROTOCOL_FACTORY_EPOINT_NAME);
 			for (IExtensionDelta b : browseDelta) {
 				switch (b.getKind()) {
-					case IExtensionDelta.ADDED:
+					case IExtensionDelta.ADDED :
 						addBrowseExtensions(b.getExtension().getConfigurationElements());
 						break;
-					case IExtensionDelta.REMOVED:
+					case IExtensionDelta.REMOVED :
 						removeBrowseExtensions(b.getExtension().getConfigurationElements());
 						break;
 				}
@@ -210,10 +210,15 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 		return null;
 	}
 
+	static boolean proxyWarningGiven = false;
+
 	public static void logNoProxyWarning(Throwable e) {
 		Activator a = getDefault();
 		if (a != null) {
-			a.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.ERROR, "Warning: Platform proxy API not available", e)); //$NON-NLS-1$
+			if (!proxyWarningGiven) {
+				a.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, "Warning: Platform proxy API not available", null)); //$NON-NLS-1$
+				proxyWarningGiven = true;
+			}
 		}
 	}
 
@@ -355,14 +360,14 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 		final Set protocols = new HashSet();
 		if (refs != null)
 			for (ServiceReference ref : refs) {
-			final Object protocol = ref.getProperty(URL_HANDLER_PROTOCOL_NAME);
-			if (protocol instanceof String) {
-				protocols.add(protocol);
-			} else if (protocol instanceof String[]) {
-				final String[] ps = (String[]) protocol;
-				protocols.addAll(Arrays.asList(ps));
+				final Object protocol = ref.getProperty(URL_HANDLER_PROTOCOL_NAME);
+				if (protocol instanceof String) {
+					protocols.add(protocol);
+				} else if (protocol instanceof String[]) {
+					final String[] ps = (String[]) protocol;
+					protocols.addAll(Arrays.asList(ps));
+				}
 			}
-		}
 		handlers.close();
 		protocols.addAll(Arrays.asList(jvmSchemes));
 		return (String[]) protocols.toArray(new String[] {});
@@ -459,7 +464,7 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 				} else {
 					Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, "Plugin " + pluginId + " excluded from contributing retrieve factory", null)); //$NON-NLS-1$ //$NON-NLS-2$
 				}
-			}catch (final CoreException e) {
+			} catch (final CoreException e) {
 				Activator.getDefault().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, NLS.bind("Error loading from {0} extension point", RETRIEVE_FILETRANSFER_PROTOCOL_FACTORY_EPOINT), e)); //$NON-NLS-1$
 			}
 		}
@@ -496,7 +501,7 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 				} else {
 					Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, "Plugin " + pluginId + " excluded from contributing send factory", null)); //$NON-NLS-1$ //$NON-NLS-2$
 				}
-			}catch (final CoreException e) {
+			} catch (final CoreException e) {
 				Activator.getDefault().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, NLS.bind("Error loading from {0} extension point", SEND_FILETRANSFER_PROTOCOL_FACTORY_EPOINT), e)); //$NON-NLS-1$
 			}
 		}
@@ -533,7 +538,7 @@ public class Activator implements BundleActivator, IFileTransferProtocolToFactor
 				} else {
 					Activator.getDefault().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.WARNING, "Plugin " + pluginId + " excluded from contributing browse factory", null)); //$NON-NLS-1$ //$NON-NLS-2$
 				}
-			}catch (final CoreException e) {
+			} catch (final CoreException e) {
 				Activator.getDefault().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, NLS.bind("Error loading from {0} extension point", BROWSE_FILETRANSFER_PROTOCOL_FACTORY_EPOINT), e)); //$NON-NLS-1$
 			}
 		}
