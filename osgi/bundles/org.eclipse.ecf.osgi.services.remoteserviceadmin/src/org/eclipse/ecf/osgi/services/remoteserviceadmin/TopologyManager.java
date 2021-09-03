@@ -21,6 +21,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.SafeRunner;
@@ -139,6 +140,19 @@ public class TopologyManager
 	protected ServiceRegistration<?> endpointListenerRegistration;
 	protected List<String> matchingFilters;
 
+	String getFrameworkUUID(BundleContext context) {
+		synchronized ("org.osgi.framework.uuid") { //$NON-NLS-1$
+			String result = context.getProperty("org.osgi.framework.uuid"); //$NON-NLS-1$
+			if (result == null) {
+				UUID newUUID = UUID.randomUUID();
+				result = newUUID.toString();
+				System.setProperty("org.osgi.framework.uuid", //$NON-NLS-1$
+						newUUID.toString());
+			}
+			return result;
+		}
+	}
+
 	protected void activate(BundleContext context, Map<String, ?> properties) throws Exception {
 		String endpointConditionalOp = (String) properties.get(ENDPOINT_CONDITIONAL_OP_PROP);
 		if (endpointConditionalOp == null)
@@ -160,13 +174,12 @@ public class TopologyManager
 		if (extraConditional == null)
 			extraConditional = ENDPOINT_EXTRA_CONDITIONAL;
 		this.matchingFilters = Collections.synchronizedList(new ArrayList<String>());
-		this.topologyManagerImpl = new TopologyManagerImpl(context);
 		StringBuffer elScope = new StringBuffer(""); //$NON-NLS-1$
 		if (endpointConditionalOp != null && !"".equals(endpointConditionalOp)) { //$NON-NLS-1$
 			elScope.append("(").append(endpointConditionalOp).append("("); //$NON-NLS-1$ //$NON-NLS-2$
 			if (!ENDPOINT_ALLOWLOCALHOST)
 				elScope.append("!(").append(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID) //$NON-NLS-1$
-						.append("=").append(topologyManagerImpl.getFrameworkUUID()).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
+						.append("=").append(getFrameworkUUID(context)).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
 			elScope.append(")"); //$NON-NLS-1$
 			elScope.append(ONLY_ECF_SCOPE);
 			if (extraConditional != null && !"".equals(extraConditional)) //$NON-NLS-1$
@@ -174,8 +187,8 @@ public class TopologyManager
 			elScope.append(")"); //$NON-NLS-1$
 		}
 		String elString = elScope.toString();
-		if (!"".equals(elString)) //$NON-NLS-1$
-			matchingFilters.add(elString);
+		matchingFilters.add(elString);
+		this.topologyManagerImpl = new TopologyManagerImpl(context, elString);
 
 		if (extraFiltersArr != null)
 			for (String filter : extraFiltersArr)

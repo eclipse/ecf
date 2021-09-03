@@ -35,10 +35,21 @@ import org.osgi.util.tracker.BundleTrackerCustomizer;
  */
 public class TopologyManagerImpl extends AbstractTopologyManager implements EndpointEventListener {
 
-	public static final int STARTUP_WAIT_TIME = Integer.getInteger("org.eclipse.ecf.osgi.services.remoteserviceadmin.startupWaitTime", 20000); //$NON-NLS-1$
+	public static final int STARTUP_WAIT_TIME = Integer
+			.getInteger("org.eclipse.ecf.osgi.services.remoteserviceadmin.startupWaitTime", 20000); //$NON-NLS-1$
+
+	private final String ecfScope;
 
 	public TopologyManagerImpl(BundleContext context) {
+		this(context, null);
+	}
+
+	/**
+	 * @since 4.9
+	 */
+	public TopologyManagerImpl(BundleContext context, String ecfScope) {
 		super(context);
+		this.ecfScope = (ecfScope == null) ? "" : ecfScope; //$NON-NLS-1$
 	}
 
 	protected String getFrameworkUUID() {
@@ -56,12 +67,24 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements Endp
 
 	protected void handleEndpointAdded(org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
 			String matchedFilter) {
-		handleECFEndpointAdded((EndpointDescription) endpoint);
+		if (matchedFilter != null && matchedFilter.equals(this.ecfScope)) {
+			handleECFEndpointAdded((EndpointDescription) endpoint);
+		} else {
+			logWarning("handleEndpointAdded", //$NON-NLS-1$
+					"matchedFilter=" + matchedFilter + " does not equal ECF topology manager filter=" + this.ecfScope //$NON-NLS-1$ //$NON-NLS-2$
+							+ " for endpoint=" + endpoint.getProperties()); //$NON-NLS-1$
+		}
 	}
 
 	protected void handleEndpointRemoved(org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
 			String matchedFilter) {
-		handleECFEndpointRemoved((EndpointDescription) endpoint);
+		if (matchedFilter != null && matchedFilter.equals(this.ecfScope)) {
+			handleECFEndpointRemoved((EndpointDescription) endpoint);
+		} else {
+			logWarning("handleEndpointRemoved", //$NON-NLS-1$
+					"matchedFilter=" + matchedFilter + " does not equal ECF topology manager filter=" + this.ecfScope //$NON-NLS-1$ //$NON-NLS-2$
+							+ " for endpoint=" + endpoint.getProperties()); //$NON-NLS-1$
+		}
 	}
 
 	// EventListenerHook impl
@@ -137,38 +160,48 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements Endp
 
 	protected void handleEndpointModified(org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
 			String matchedFilter) {
-		handleECFEndpointModified((EndpointDescription) endpoint);
+		if (matchedFilter != null && matchedFilter.equals(this.ecfScope)) {
+			handleECFEndpointModified((EndpointDescription) endpoint);
+		} else {
+			logWarning("handleEndpointModified", //$NON-NLS-1$
+					"matchedFilter=" + matchedFilter + " does not equal ECF topology manager filter=" + this.ecfScope //$NON-NLS-1$ //$NON-NLS-2$
+							+ " for endpoint=" + endpoint.getProperties()); //$NON-NLS-1$
+		}
 	}
-	
+
 	protected void exportRegisteredServices(final String exportRegisteredSvcsFilter) {
 		new Thread(new Runnable() {
 			public void run() {
 				try {
 					final CountDownLatch latch = new CountDownLatch(1);
-					BundleTracker bt = new BundleTracker<Bundle>(getContext(),Bundle.INSTALLED | Bundle.RESOLVED |
-				            Bundle.STARTING | Bundle.START_TRANSIENT | Bundle.ACTIVE , new BundleTrackerCustomizer() {
-						public Bundle addingBundle(Bundle bundle, BundleEvent event) {
-							String bsn = bundle.getSymbolicName();
-							if (bsn != null && bsn.equals(Activator.PLUGIN_ID)) {
-								if (bundle.getState() == Bundle.ACTIVE) {
-									latch.countDown();
+					BundleTracker bt = new BundleTracker<Bundle>(getContext(), Bundle.INSTALLED | Bundle.RESOLVED
+							| Bundle.STARTING | Bundle.START_TRANSIENT | Bundle.ACTIVE, new BundleTrackerCustomizer() {
+								public Bundle addingBundle(Bundle bundle, BundleEvent event) {
+									String bsn = bundle.getSymbolicName();
+									if (bsn != null && bsn.equals(Activator.PLUGIN_ID)) {
+										if (bundle.getState() == Bundle.ACTIVE) {
+											latch.countDown();
+											return null;
+										} else
+											return bundle;
+									}
 									return null;
 								}
-								else return bundle;
-							}
-							return null;
-						}
-						public void modifiedBundle(Bundle bundle, BundleEvent event, Object object) {
-							if (event != null && event.getType() == BundleEvent.STARTED) 
-								latch.countDown();
-						}
-						public void removedBundle(Bundle bundle, BundleEvent event, Object object) {}
-					});
+
+								public void modifiedBundle(Bundle bundle, BundleEvent event, Object object) {
+									if (event != null && event.getType() == BundleEvent.STARTED)
+										latch.countDown();
+								}
+
+								public void removedBundle(Bundle bundle, BundleEvent event, Object object) {
+								}
+							});
 					bt.open();
 					// wait STARTUP_WAIT_TIME for latch going to zero
 					if (!latch.await(STARTUP_WAIT_TIME, TimeUnit.MILLISECONDS)) {
 						bt.close();
-						throw new TimeoutException("RemoteServiceAdmin did not become active in "+STARTUP_WAIT_TIME+"ms"); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new TimeoutException(
+								"RemoteServiceAdmin did not become active in " + STARTUP_WAIT_TIME + "ms"); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 					// Otherwise we close bundle tracker and register remote services
 					bt.close();
