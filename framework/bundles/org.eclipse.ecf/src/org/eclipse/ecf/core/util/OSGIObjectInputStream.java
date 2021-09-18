@@ -27,15 +27,80 @@ public class OSGIObjectInputStream extends ObjectInputStream implements OSGIObje
 	protected final Bundle b;
 	protected LogService logger;
 
+	/**
+	 * @since 3.10
+	 */
+	ClassLoader classLoader;
+
+	class ReplaceableObjectInputStream extends ObjectInputStream {
+		public ReplaceableObjectInputStream(InputStream ins) throws IOException {
+			super(ins);
+			enableResolveObject(true);
+		}
+
+		@Override
+		protected Object resolveObject(Object obj) throws IOException {
+			if (obj instanceof SerVersion) {
+				return ((SerVersion) obj).toVersion();
+			}
+			if (obj instanceof SerDTO) {
+				SerDTO serDTO = (SerDTO) obj;
+				String className = serDTO.getClassname();
+				Class<?> clazz = null;
+				try {
+					clazz = loadClass(className);
+				} catch (Exception e) {
+					throw new IOException("Could not load class for instance of SerDTO with className=" + className); //$NON-NLS-1$
+				}
+				return serDTO.readObject(clazz);
+			}
+			return super.resolveObject(obj);
+		}
+
+		@Override
+		protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+			try {
+				return loadClass(desc.getName());
+			} catch (Exception e) {
+				return super.resolveClass(desc);
+			}
+		}
+	}
+
 	public OSGIObjectInputStream(Bundle b, InputStream in, LogService logger) throws IOException {
 		super();
 		this.b = b;
-		this.in = new ObjectInputStream(in);
+		this.in = new ReplaceableObjectInputStream(in);
 		this.logger = logger;
+	}
+
+	/**
+	 * @since 3.10
+	 */
+	public OSGIObjectInputStream(ClassLoader cl, Bundle b, InputStream ins, LogService logger) throws IOException {
+		super();
+		this.classLoader = cl;
+		this.b = b;
+		this.in = new ReplaceableObjectInputStream(ins);
+		this.logger = logger;
+	}
+
+	/**
+	 * @since 3.10
+	 */
+	public OSGIObjectInputStream(ClassLoader cl, Bundle b, InputStream ins) throws IOException {
+		this(cl, b, ins, null);
 	}
 
 	public OSGIObjectInputStream(Bundle b, InputStream in) throws IOException {
 		this(b, in, null);
+	}
+
+	/**
+	 * @since 3.10
+	 */
+	public void setClassLoader(ClassLoader cl) {
+		this.classLoader = cl;
 	}
 
 	public void setLogService(LogService log) {
@@ -51,7 +116,15 @@ public class OSGIObjectInputStream extends ObjectInputStream implements OSGIObje
 	}
 
 	protected Class loadClass(String classname) throws ClassNotFoundException {
+		ClassLoader cl = this.classLoader;
 		Bundle bundle = b;
+		if (cl != null) {
+			try {
+				return Class.forName(classname, false, cl);
+			} catch (Exception e) {
+				// Try bundle loading
+			}
+		}
 		return (bundle == null) ? Class.forName(classname) : bundle.loadClass(classname);
 	}
 
@@ -80,17 +153,13 @@ public class OSGIObjectInputStream extends ObjectInputStream implements OSGIObje
 		final byte type = in.readByte();
 		switch (type) {
 			case C_NULL : // null
-				trace("null"); //$NON-NLS-1$
 				return null;
 			case C_SER : // Serializable
-				trace("readSerializedObject"); //$NON-NLS-1$
 				return readSerializedObject();
 			case C_VER : // Version
-				trace("readVersion"); //$NON-NLS-1$
 				return Version.parseVersion(in.readUTF());
 			case C_ARRAY : // Object[]
 				// read array length
-				trace("readArray"); //$NON-NLS-1$
 				int ol = in.readInt();
 				// read component type and create array for that component type
 				Class<?> clazz = getClassForType(in.readUTF());
@@ -98,11 +167,7 @@ public class OSGIObjectInputStream extends ObjectInputStream implements OSGIObje
 				for (int i = 0; i < ol; i++)
 					Array.set(oresult, i, readObjectOverride());
 				return oresult;
-			case C_DTO : // DTO
-				trace("readDTO"); //$NON-NLS-1$
-				return readDTO();
 			case C_DICT : // Dictionary
-				trace("readDictionary"); //$NON-NLS-1$
 				Class<?> dictClazz = loadClass(in.readUTF());
 				Dictionary dict = null;
 				Constructor cons;
@@ -123,7 +188,6 @@ public class OSGIObjectInputStream extends ObjectInputStream implements OSGIObje
 			case C_MAP : // Map
 				// read map length
 				int ms = in.readInt();
-				trace("readMap=" + ms); //$NON-NLS-1$
 				Map mr = new HashMap();
 				for (int i = 0; i < ms; i++) {
 					Object key = readObjectOverride();
@@ -133,28 +197,24 @@ public class OSGIObjectInputStream extends ObjectInputStream implements OSGIObje
 				return mr;
 			case C_LIST : // List
 				int lsize = in.readInt();
-				trace("readList=" + lsize); //$NON-NLS-1$
 				List l = new ArrayList(lsize);
 				for (int i = 0; i < lsize; i++)
 					l.add(readObjectOverride());
 				return l;
 			case C_SET : // Set
 				int ssize = in.readInt();
-				trace("readSet=" + ssize); //$NON-NLS-1$
 				Set s = new HashSet(ssize);
 				for (int i = 0; i < ssize; i++)
 					s.add(readObjectOverride());
 				return s;
 			case C_COLL : // Collection
 				int csize = in.readInt();
-				trace("readCol=" + csize); //$NON-NLS-1$
 				Collection c = new ArrayList(csize);
 				for (int i = 0; i < csize; i++)
 					c.add(readObjectOverride());
 				return c;
 			case C_ITER : // Iterable
 				int isize = in.readInt();
-				trace("readIter=" + isize); //$NON-NLS-1$
 				List itr = new ArrayList(isize);
 				for (int i = 0; i < isize; i++)
 					itr.add(readObjectOverride());
@@ -162,67 +222,38 @@ public class OSGIObjectInputStream extends ObjectInputStream implements OSGIObje
 			case C_EXTER : // Externalizable
 				return in.readObject();
 			case C_STRING : // String
-				trace("readString"); //$NON-NLS-1$
 				return in.readUTF();
 			case C_LONG :
 			case C_OLONG :
-				trace("readLong"); //$NON-NLS-1$
 				return in.readLong();
 			case C_INT :
 			case C_OINT :
-				trace("readInt"); //$NON-NLS-1$
 				return in.readInt();
 			case C_SHORT :
 			case C_OSHORT :
-				trace("readShort"); //$NON-NLS-1$
 				return in.readShort();
 			case C_BOOL :
 			case C_OBOOL :
-				trace("readBool"); //$NON-NLS-1$
 				return in.readBoolean();
 			case C_BYTE :
 			case C_OBYTE :
-				trace("readByte"); //$NON-NLS-1$
 				return in.readByte();
 			case C_CHAR :
 			case C_OCHAR :
-				trace("readChar"); //$NON-NLS-1$
 				return in.readChar();
 			case C_DOUBLE :
 			case C_ODOUBLE :
-				trace("readDouble"); //$NON-NLS-1$
 				return in.readDouble();
 			case C_FLOAT :
 			case C_OFLOAT :
-				trace("readFloat"); //$NON-NLS-1$
 				return in.readFloat();
 			case C_ENUM :
-				trace("readEnum"); //$NON-NLS-1$
 				return Enum.valueOf(loadClass(in.readUTF()), in.readUTF());
 			case C_OBJECT :
 				return readNonSerializedObject();
 			default :
 				throw new IOException("Cannot deserialize object with type=" + type); //$NON-NLS-1$
 		}
-	}
-
-	private Object readDTO() throws IOException, ClassNotFoundException {
-		Class<?> clazz = loadClass(in.readUTF());
-		Object result = null;
-		try {
-			result = clazz.getDeclaredConstructor().newInstance();
-			for (Field f : clazz.getFields()) {
-				final int mod = f.getModifiers();
-				// If it's static or transient then ignore
-				if (Modifier.isStatic(mod) || Modifier.isTransient(mod))
-					continue;
-				// Else read and set value of field
-				f.set(result, readObjectOverride());
-			}
-		} catch (Exception e) {
-			throw new IOException("Cannot deserialize DTO because of exception: " + e.getMessage()); //$NON-NLS-1$
-		}
-		return result;
 	}
 
 	protected Object readExternalizable() throws ClassNotFoundException, IOException {

@@ -27,9 +27,27 @@ public class OSGIObjectOutputStream extends ObjectOutputStream implements OSGIOb
 	protected LogService logger;
 	protected boolean allowNonSerializable = false;
 
+	class ReplaceableObjectOutputStream extends ObjectOutputStream {
+
+		public ReplaceableObjectOutputStream(OutputStream out) throws IOException {
+			super(out);
+			enableReplaceObject(true);
+		}
+
+		@Override
+		protected Object replaceObject(Object obj) throws IOException {
+			if (obj instanceof Version) {
+				return new SerVersion(((Version) obj));
+			} else if (!(obj instanceof Serializable)) {
+				return new SerDTO(obj);
+			}
+			return super.replaceObject(obj);
+		}
+	}
+
 	public OSGIObjectOutputStream(OutputStream out, boolean allowNonSerializable, LogService log) throws IOException {
 		super();
-		this.out = new ObjectOutputStream(out);
+		this.out = new ReplaceableObjectOutputStream(out);
 		this.allowNonSerializable = allowNonSerializable;
 		this.logger = log;
 	}
@@ -51,7 +69,6 @@ public class OSGIObjectOutputStream extends ObjectOutputStream implements OSGIOb
 	}
 
 	protected void writeExternalizable(Externalizable obj, Class<?> clazz) throws IOException {
-		trace("writeExternalizable " + clazz.getName()); //$NON-NLS-1$
 		out.writeObject(obj);
 	}
 
@@ -102,8 +119,6 @@ public class OSGIObjectOutputStream extends ObjectOutputStream implements OSGIOb
 	}
 
 	protected void writeNonSerializable(Object obj, Class<?> clazz) throws IOException {
-		// lookup object stream class
-		trace("writeNonSerializable " + clazz.getName()); //$NON-NLS-1$
 		// write class name
 		out.writeObject(clazz.getName());
 		writeFields(obj, clazz);
@@ -121,7 +136,6 @@ public class OSGIObjectOutputStream extends ObjectOutputStream implements OSGIOb
 		}
 		Class<?> clazz = obj.getClass();
 		if (clazz.isArray()) {
-			trace("writing array"); //$NON-NLS-1$
 			out.writeByte(C_ARRAY);
 			int len = Array.getLength(obj);
 			// write length
@@ -133,88 +147,70 @@ public class OSGIObjectOutputStream extends ObjectOutputStream implements OSGIOb
 				writeObjectOverride(Array.get(obj, i));
 			return;
 		} else if (obj instanceof Long) {
-			trace("writing Long"); //$NON-NLS-1$
 			if (clazz.isPrimitive()) {
-				trace("writing long"); //$NON-NLS-1$
 				out.writeByte(C_LONG);
 			} else {
-				trace("writing Long"); //$NON-NLS-1$
 				out.writeByte(C_OLONG);
 			}
 			out.writeLong((Long) obj);
 			return;
 		} else if (obj instanceof Integer) {
 			if (clazz.isPrimitive()) {
-				trace("writing int"); //$NON-NLS-1$
 				out.writeByte(C_INT);
 			} else {
-				trace("writing Integer"); //$NON-NLS-1$
 				out.writeByte(C_OINT);
 			}
 			out.writeInt((Integer) obj);
 			return;
 		} else if (obj instanceof Short) {
 			if (clazz.isPrimitive()) {
-				trace("writing short"); //$NON-NLS-1$
 				out.writeByte(C_SHORT);
 			} else {
-				trace("writing Short"); //$NON-NLS-1$
 				out.writeByte(C_OSHORT);
 			}
 			out.writeShort((Short) obj);
 			return;
 		} else if (obj instanceof Boolean) {
 			if (clazz.isPrimitive()) {
-				trace("writing bool"); //$NON-NLS-1$
 				out.writeByte(C_BOOL);
 			} else {
-				trace("writing Boolean"); //$NON-NLS-1$
 				out.writeByte(C_OBOOL);
 			}
 			out.writeBoolean((Boolean) obj);
 			return;
 		} else if (obj instanceof Byte) {
 			if (clazz.isPrimitive()) {
-				trace("writing byte"); //$NON-NLS-1$
 				out.writeByte(C_BYTE);
 			} else {
-				trace("writing Byte"); //$NON-NLS-1$
 				out.writeByte(C_OBYTE);
 			}
 			out.writeByte((Byte) obj);
 			return;
 		} else if (obj instanceof Character) {
 			if (clazz.isPrimitive()) {
-				trace("writing char"); //$NON-NLS-1$
 				out.writeByte(C_CHAR);
 			} else {
-				trace("writing Character"); //$NON-NLS-1$
 				out.writeByte(C_OCHAR);
 			}
 			out.writeChar((Character) obj);
 			return;
 		} else if (obj instanceof Float) {
 			if (clazz.isPrimitive()) {
-				trace("writing float"); //$NON-NLS-1$
 				out.writeByte(C_FLOAT);
 			} else {
-				trace("writing Float"); //$NON-NLS-1$
 				out.writeByte(C_OFLOAT);
 			}
 			out.writeFloat((Float) obj);
 			return;
 		} else if (obj instanceof Double) {
 			if (clazz.isPrimitive()) {
-				trace("writing double"); //$NON-NLS-1$
 				out.writeByte(C_DOUBLE);
 			} else {
-				trace("writing Double"); //$NON-NLS-1$
 				out.writeByte(C_ODOUBLE);
 			}
 			out.writeDouble((Double) obj);
 			return;
 		} else if (obj instanceof String) {
-			trace("writing String"); //$NON-NLS-1$
 			out.writeByte(C_STRING);
 			out.writeUTF((String) obj);
 			return;
@@ -225,7 +221,6 @@ public class OSGIObjectOutputStream extends ObjectOutputStream implements OSGIOb
 			Dictionary dict = (Dictionary) obj;
 			// write size
 			int ds = dict.size();
-			trace("writing Dictionary=" + ds); //$NON-NLS-1$
 			out.writeInt(ds);
 			// for each element in Map
 			for (Enumeration e = dict.keys(); e.hasMoreElements();) {
@@ -239,7 +234,6 @@ public class OSGIObjectOutputStream extends ObjectOutputStream implements OSGIOb
 			Map map = (Map) obj;
 			// write size
 			int size = map.size();
-			trace("writing Map=" + size); //$NON-NLS-1$
 			out.writeInt(size);
 			// for each element in Map
 			for (Object key : map.keySet()) {
@@ -254,7 +248,6 @@ public class OSGIObjectOutputStream extends ObjectOutputStream implements OSGIOb
 			List list = (List) obj;
 			// write size
 			int size = list.size();
-			trace("writing List=" + size); //$NON-NLS-1$
 			out.writeInt(size);
 			// write each element
 			for (Object item : list)
@@ -265,7 +258,6 @@ public class OSGIObjectOutputStream extends ObjectOutputStream implements OSGIOb
 			Set set = (Set) obj;
 			// write size
 			int size = set.size();
-			trace("writing Set=" + size); //$NON-NLS-1$
 			out.writeInt(size);
 			// then elements
 			for (Object item : set)
@@ -276,7 +268,6 @@ public class OSGIObjectOutputStream extends ObjectOutputStream implements OSGIOb
 			Collection col = (Collection) obj;
 			// write size
 			int size = col.size();
-			trace("writing col=" + size); //$NON-NLS-1$
 			out.writeInt(size);
 			// then elements
 			for (Object item : col)
@@ -291,7 +282,6 @@ public class OSGIObjectOutputStream extends ObjectOutputStream implements OSGIOb
 			Object v : itr)
 				size++;
 			// write size
-			trace("writing Iterable=" + size); //$NON-NLS-1$
 			out.writeInt(size);
 			// write elements
 			for (Object item : itr)
@@ -311,38 +301,13 @@ public class OSGIObjectOutputStream extends ObjectOutputStream implements OSGIOb
 			writeSerializable(obj, clazz);
 			return;
 		} else if (obj instanceof Version) {
-			trace("writing Version"); //$NON-NLS-1$
-			out.writeByte(C_VER);
-			out.writeUTF(((Version) obj).toString());
-			return;
+			writeObjectOverride(new SerVersion((Version) obj));
 		} else if (obj instanceof DTO) {
-			out.writeByte(C_DTO);
-			writeDTO(obj, clazz);
+			writeObjectOverride(new SerDTO(obj));
 			return;
 		} else {
-			if (allowNonSerializable) {
-				out.writeByte(C_OBJECT);
-				writeNonSerializable(obj, clazz);
-				return;
-			}
-			throw new NotSerializableException("Cannot serialize instance of class=" + clazz.getName()); //$NON-NLS-1$
-		}
-	}
-
-	private void writeDTO(Object obj, Class<?> clazz) throws IOException {
-		trace("writing DTO"); //$NON-NLS-1$
-		// Write out class name
-		out.writeUTF(clazz.getName());
-		for (Field f : clazz.getFields()) {
-			final int mod = f.getModifiers();
-			if (Modifier.isStatic(mod) || Modifier.isTransient(mod))
-				continue;
-			try {
-				writeObjectOverride(f.get(obj));
-			} catch (Exception e) {
-				// Should not happen for DTO
-				throw new NotSerializableException(clazz.getName());
-			}
+			writeObjectOverride(new SerDTO(obj));
+			return;
 		}
 	}
 
