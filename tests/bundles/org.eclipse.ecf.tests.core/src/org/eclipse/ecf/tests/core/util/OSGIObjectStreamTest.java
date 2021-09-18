@@ -21,32 +21,41 @@ import junit.framework.TestCase;
 
 public class OSGIObjectStreamTest extends TestCase {
 
-	public static class MyDTO extends DTO {
+	public static class MyDTO {
 		public double d1;
-		public String s;
+		public String s = "";
 		public MyDTO dto;
+
+		public boolean equals(Object o) {
+			if (this == o) {
+				return true;
+			}
+			MyDTO mo = (MyDTO) o;
+			return d1 == mo.d1 && this.s.equals(mo.s)
+					&& ((this.dto != null && this.dto.equals(mo.dto)) || (this.dto == null && mo.dto == null));
+		}
 	}
-	
+
 	public static class MySerializable implements Serializable {
 		private static final long serialVersionUID = 7671873163370195115L;
 		private String first;
 		private long second;
 		private byte[] bytes;
-		
+
 		public MySerializable(String f, long s, byte[] b) {
 			this.first = f;
 			this.second = s;
 			this.bytes = b;
 		}
-		
+
 		public String getFirst() {
 			return first;
 		}
-		
+
 		public long getSecond() {
 			return second;
 		}
-		
+
 		public byte[] getBytes() {
 			return bytes;
 		}
@@ -60,7 +69,7 @@ public class OSGIObjectStreamTest extends TestCase {
 	MySerializable ser;
 	Bundle b;
 	TestEnumImpl testEnum;
-	
+
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -68,25 +77,27 @@ public class OSGIObjectStreamTest extends TestCase {
 		dto1.d1 = 1.0;
 		dto1.s = "test";
 		dto1.dto = null;
+		this.dto1 = dto1;
 
 		MyDTO dto2 = new MyDTO();
 		dto2.d1 = 2.0;
 		dto2.s = "test2";
 		dto2.dto = new MyDTO();
 		dto2.dto.s = "test3";
+		this.dto2 = dto2;
 
 		v1 = Version.valueOf("1.0.1.myfirstversion");
 		v2 = Version.valueOf("2.0.2.mysecondversion");
-		
+
 		s = "my string is as it is";
-		
+
 		ser = new MySerializable("first string", 100, new byte[] { 1, 2, 3 });
-		
+
 		b = Activator.getContext().getBundle();
-		
+
 		testEnum = new TestEnumImpl();
 	}
-	
+
 	public void testOSGIObjectOutputStream() throws Exception {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		OSGIObjectOutputStream oos = new OSGIObjectOutputStream(bos);
@@ -94,7 +105,7 @@ public class OSGIObjectStreamTest extends TestCase {
 		oos.close();
 
 		ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
-		OSGIObjectInputStream ois = new OSGIObjectInputStream(Activator.getContext().getBundle(),bis);
+		OSGIObjectInputStream ois = new OSGIObjectInputStream(Activator.getContext().getBundle(), bis);
 		Object result = ois.readObject();
 		ois.close();
 
@@ -112,26 +123,25 @@ public class OSGIObjectStreamTest extends TestCase {
 		ois.close();
 
 	}
-	
 
 	public void testDTOMap() throws Exception {
-		Map<String, DTO> dtos = new HashMap<String, DTO>();
-		dtos.put("one", dto1);
-		dtos.put("two", dto2);
+		Map<String, Object> dtos = new HashMap<String, Object>();
+		dtos.put("one", this.dto1);
+		dtos.put("two", this.dto2);
 		assertTrue(dtos.equals(serializeDeserialize(dtos)));
 	}
-	
+
 	public void testVersionArray() throws Exception {
 		Version[] versions = new Version[2];
 		versions[0] = v1;
 		versions[1] = v2;
 		assertTrue(Arrays.equals(versions, (Version[]) serializeDeserialize(versions)));
 	}
-	
+
 	public void testString() throws Exception {
 		assertEquals(s, (String) serializeDeserialize(s));
 	}
-	
+
 	private Object serializeDeserialize(Object o) throws IOException, ClassNotFoundException {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		OSGIObjectOutputStream oos = new OSGIObjectOutputStream(bos);
@@ -139,30 +149,30 @@ public class OSGIObjectStreamTest extends TestCase {
 		oos.close();
 
 		ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
-		OSGIObjectInputStream ois = new OSGIObjectInputStream(b,bis);
+		OSGIObjectInputStream ois = new OSGIObjectInputStream(b, bis);
 		Object result = ois.readObject();
 		ois.close();
 		return result;
 	}
-	
+
 	public void testSerializable() throws Exception {
 		MySerializable r = (MySerializable) serializeDeserialize(ser);
-		assertEquals(r.getFirst(),ser.getFirst());
-		assertEquals(r.getSecond(),ser.getSecond());
-		assertTrue(Arrays.equals(r.getBytes(),ser.getBytes()));
+		assertEquals(r.getFirst(), ser.getFirst());
+		assertEquals(r.getSecond(), ser.getSecond());
+		assertTrue(Arrays.equals(r.getBytes(), ser.getBytes()));
 	}
 
 	public void testEnum() throws Exception {
 		ITestEnum desTestEnum = (ITestEnum) serializeDeserialize(testEnum);
-		assertEquals(desTestEnum.getColumnType().name(),testEnum.getColumnType().name());
+		assertEquals(desTestEnum.getColumnType().name(), testEnum.getColumnType().name());
 	}
-	
+
 	public void testException() throws Exception {
 		String messageString = "test";
 		Exception except = new Exception(messageString);
 		Object deserializedExcept = serializeDeserialize(except);
 		// Same class
-		assertEquals(except.getClass(),deserializedExcept.getClass());
+		assertEquals(except.getClass(), deserializedExcept.getClass());
 		assertTrue(((Exception) deserializedExcept).getMessage().equals(messageString));
 	}
 }
