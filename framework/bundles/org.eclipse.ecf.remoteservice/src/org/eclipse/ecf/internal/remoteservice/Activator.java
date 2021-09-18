@@ -54,6 +54,8 @@ public class Activator implements BundleActivator {
 
 	private ServiceTracker<IRemoteServiceDistributionProvider, IRemoteServiceDistributionProvider> distributionProviderTracker;
 
+	static final List<String> excludeDistributionProviders = Arrays.asList(System.getProperty(PLUGIN_ID + ".excludeDistributionProviders", "").split(",")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
 	class RSDPRegistrations {
 		private ServiceRegistration<ContainerTypeDescription> ctdSR;
 		private ServiceRegistration<Namespace> nsSR;
@@ -107,7 +109,9 @@ public class Activator implements BundleActivator {
 				ContainerTypeDescription ctd = dProvider.getContainerTypeDescription();
 				if (ctd == null)
 					log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Remote Service Provider Container Type Description cannot be null")); //$NON-NLS-1$
-				else {
+				else if (excludeDistributionProviders.contains(ctd.getName())) {
+					log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, "Remote Service Provider name=" + ctd.getName() + " excluded")); //$NON-NLS-1$ //$NON-NLS-2$					
+				} else {
 					Dictionary<String, ?> ctdProps = dProvider.getContainerTypeDescriptionProperties();
 					// Register the container type description
 					ServiceRegistration<ContainerTypeDescription> ctdSR = bundleContext.registerService(ContainerTypeDescription.class, ctd, ctdProps);
