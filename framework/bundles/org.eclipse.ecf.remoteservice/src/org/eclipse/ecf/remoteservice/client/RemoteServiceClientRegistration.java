@@ -107,6 +107,7 @@ public class RemoteServiceClientRegistration implements IRemoteServiceRegistrati
 
 	public void unregister() {
 		registry.unregisterRegistration(this);
+		this.classLoader = null;
 	}
 
 	protected IRemoteCallable findDefaultRemoteCallable(String methodToFind) {

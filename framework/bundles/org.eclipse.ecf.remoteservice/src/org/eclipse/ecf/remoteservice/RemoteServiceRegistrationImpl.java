@@ -133,6 +133,7 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 		if (this.registrationListener != null) {
 			this.registrationListener.unregister(this);
 		}
+		this.classLoader = null;
 	}
 
 	/**
