@@ -150,4 +150,16 @@ public class RemoteServiceClientRegistration implements IRemoteServiceRegistrati
 		return findRemoteCallable(remoteCall);
 	}
 
+	private ClassLoader classLoader = null;
+
+	public ClassLoader getClassLoader() {
+		return this.classLoader;
+	}
+
+	/**
+	 * @since 8.14
+	 */
+	protected void setClassLoader(ClassLoader cl) {
+		this.classLoader = cl;
+	}
 }

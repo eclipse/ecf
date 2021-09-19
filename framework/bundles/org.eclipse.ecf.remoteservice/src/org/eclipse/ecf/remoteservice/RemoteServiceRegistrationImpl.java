@@ -85,6 +85,7 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 		this.service = svc;
 		this.clazzes = clzzes;
 		this.reference = new RemoteServiceReferenceImpl(this);
+		setClassLoader(this.service.getClass().getClassLoader());
 		synchronized (registry) {
 			ID containerID = registry.getContainerID();
 			if (containerID == null)
@@ -469,5 +470,18 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 	 */
 	public String[] getInterfaces() {
 		return this.clazzes;
+	}
+
+	private ClassLoader classLoader = RemoteServiceRegistrationImpl.class.getClassLoader();
+
+	public ClassLoader getClassLoader() {
+		return classLoader;
+	}
+
+	/**
+	 * @since 8.14
+	 */
+	protected void setClassLoader(ClassLoader cl) {
+		this.classLoader = cl;
 	}
 }

@@ -80,4 +80,9 @@ public interface IRemoteServiceRegistration {
 	 * 
 	 */
 	public void unregister();
+
+	/**
+	 * @since 8.14
+	 */
+	public ClassLoader getClassLoader();
 }
