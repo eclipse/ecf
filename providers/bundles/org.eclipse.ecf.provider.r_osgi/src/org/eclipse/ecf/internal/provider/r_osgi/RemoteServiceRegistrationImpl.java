@@ -51,6 +51,18 @@ final class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration 
 		this.remoteReference = new LocalRemoteServiceReferenceImpl(remoteServiceID, reg.getReference());
 	}
 
+	public RemoteServiceRegistrationImpl(final ClassLoader cl, final R_OSGiRemoteServiceContainer container, final IRemoteServiceID remoteServiceID, final ServiceRegistration reg) {
+		Assert.isNotNull(remoteServiceID);
+		Assert.isNotNull(reg);
+		Assert.isNotNull(container);
+		Assert.isNotNull(cl);
+		setClassLoader(cl);
+		this.container = container;
+		this.remoteServiceID = remoteServiceID;
+		this.reg = reg;
+		this.remoteReference = new LocalRemoteServiceReferenceImpl(remoteServiceID, reg.getReference());
+	}
+
 	/**
 	 * get the container ID.
 	 * 
@@ -117,9 +129,20 @@ final class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration 
 		} catch (IllegalStateException e) {
 			// underlying service registration already unregistered
 		}
+		this.classLoader = null;
 	}
 
 	public IRemoteServiceID getID() {
 		return remoteServiceID;
+	}
+
+	private ClassLoader classLoader = RemoteServiceRegistrationImpl.class.getClassLoader();
+
+	public ClassLoader getClassLoader() {
+		return classLoader;
+	}
+
+	protected void setClassLoader(ClassLoader cl) {
+		this.classLoader = cl;
 	}
 }

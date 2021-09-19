@@ -278,9 +278,8 @@ class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerAdapter
 				if (clazz == null) {
 					results.add(createLocalRemoteServiceReference(ref));
 				} else {
-					IRemoteFilter rf = createRemoteFilter(filter != null
-							? "(&" + filter + "(" //$NON-NLS-1$ //$NON-NLS-2$
-									+ Constants.OBJECTCLASS + "=" + clazz + "))" //$NON-NLS-1$//$NON-NLS-2$
+					IRemoteFilter rf = createRemoteFilter(filter != null ? "(&" + filter + "(" //$NON-NLS-1$ //$NON-NLS-2$
+							+ Constants.OBJECTCLASS + "=" + clazz + "))" //$NON-NLS-1$//$NON-NLS-2$
 							: "(" //$NON-NLS-1$
 									+ Constants.OBJECTCLASS + "=" + clazz + ")"); //$NON-NLS-1$//$NON-NLS-2$
 					if (rf.match(refProperties)) {
@@ -490,7 +489,7 @@ class R_OSGiRemoteServiceContainer implements IOSGiRemoteServiceContainerAdapter
 			remoteServicesRegs.put(reg.getReference(), reg);
 		}
 		// Construct a IRemoteServiceID, and provide to new registration impl instance
-		return new RemoteServiceRegistrationImpl(this, createRemoteServiceID(containerID, (Long) reg.getReference().getProperty(Constants.SERVICE_ID)), reg);
+		return new RemoteServiceRegistrationImpl(service.getClass().getClassLoader(), this, createRemoteServiceID(containerID, (Long) reg.getReference().getProperty(Constants.SERVICE_ID)), reg);
 	}
 
 	Dictionary prepareProperties(ServiceReference reference) {
