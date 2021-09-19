@@ -85,6 +85,7 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 		this.service = svc;
 		this.clazzes = clzzes;
 		this.reference = new RemoteServiceReferenceImpl(this);
+		setClassLoader(svc.getClass().getClassLoader());
 		synchronized (registry) {
 			ID containerID = registry.getContainerID();
 			if (containerID == null)
@@ -132,6 +133,7 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 		if (sharedObject != null) {
 			sharedObject.sendUnregister(this);
 		}
+		this.classLoader = null;
 	}
 
 	/**
@@ -443,6 +445,22 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 	 */
 	public IRemoteServiceID getID() {
 		return this.remoteServiceID;
+	}
+
+	private transient ClassLoader classLoader = RemoteServiceRegistrationImpl.class.getClassLoader();
+
+	/**
+	 * @since 4.5
+	 */
+	public ClassLoader getClassLoader() {
+		return classLoader;
+	}
+
+	/**
+	 * @since 4.5
+	 */
+	void setClassLoader(ClassLoader cl) {
+		this.classLoader = cl;
 	}
 
 }

@@ -87,4 +87,10 @@ public class RemoteServiceImpl extends AbstractRemoteService {
 		sharedObject.sendFireRequest(registration, call);
 	}
 
+	@Override
+	protected Object createProxy(ClassLoader cl, Class[] classes) {
+		this.registration.setClassLoader(cl);
+		return super.createProxy(cl, classes);
+	}
+
 }

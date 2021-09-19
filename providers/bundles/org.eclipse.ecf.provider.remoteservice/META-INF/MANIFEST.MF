@@ -3,11 +3,10 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.provider.remoteservice;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.provider.remoteservice
-Bundle-Version: 4.4.201.qualifier
+Bundle-Version: 4.5.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.provider.remoteservice.Activator
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Eclipse-BuddyPolicy: global
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.eclipse.ecf.internal.provider.remoteservice;x-internal:=true,
  org.eclipse.ecf.provider.remoteservice.generic;version="4.0.0"
