@@ -1,0 +1,30 @@
+# Requires
+(org.osgi.framework.BundlePermission "org.eclipse.equinox.common" "require")
+(org.osgi.framework.BundlePermission "org.eclipse.ecf" "require")
+(org.osgi.framework.BundlePermission "org.eclipse.ecf.sharedobject" "require")
+# Imports
+(org.osgi.framework.PackagePermission "org.osgi.framework" "import")
+(org.osgi.framework.PackagePermission "org.osgi.service.log" "import")
+(org.osgi.framework.PackagePermission "org.osgi.util.tracker" "import")
+# Exports
+(org.osgi.framework.PackagePermission "org.eclipse.ecf.provider.comm" "export")
+(org.osgi.framework.PackagePermission "org.eclipse.ecf.provider.comm.tcp" "export")
+(org.osgi.framework.PackagePermission "org.eclipse.ecf.provider.generic" "export")
+(org.osgi.framework.PackagePermission "org.eclipse.ecf.provider.generic.gmm" "export")
+(org.osgi.framework.PackagePermission "org.eclipse.ecf.provider.util" "export")
+(org.osgi.framework.BundlePermission "org.eclipse.ecf.provider" "provide")
+
+# services
+(org.osgi.framework.ServicePermission "*" "get,register")
+#  
+(java.io.SerializablePermission "enableSubclassImplementation")
+(java.io.SerializablePermission "enableSubstitution")
+(org.osgi.framework.AdaptPermission "*" "adapt")
+(org.osgi.framework.AdminPermission "*" "*")
+(org.eclipse.equinox.log.LogPermission "*" "log")
+(java.util.PropertyPermission "*" "read")
+(java.net.SocketPermission "*" "accept")
+(java.net.SocketPermission "*" "listen,resolve")
+(java.net.SocketPermission "*" "connect")
+(java.net.SocketPermission "*" "resolve")
+(java.lang.RuntimePermission "*")

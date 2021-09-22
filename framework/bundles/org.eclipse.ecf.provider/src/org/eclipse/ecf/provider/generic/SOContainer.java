@@ -12,8 +12,7 @@
 package org.eclipse.ecf.provider.generic;
 
 import java.io.*;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
+import java.security.*;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.*;
@@ -994,9 +993,6 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		return getSharedObjectMessageSerializer().serializeMessage(sharedObjectID, message);
 	}
 
-	private static final String SO_SERIALIZATION_OSGI = "osgi.basic"; //$NON-NLS-1$
-	private static final String SO_SERIALIZATION_DEFAULT = System.getProperty("org.eclipse.ecf.provider.soserialization", SO_SERIALIZATION_OSGI); //$NON-NLS-1$
-
 	/**
 	 * @param sharedObjectID shared object ID
 	 * @param message message
@@ -1007,13 +1003,25 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	protected byte[] defaultSerializeSharedObjectMessage(ID sharedObjectID, Object message) throws IOException {
 		if (!(message instanceof Serializable))
 			throw new NotSerializableException("shared object=" + sharedObjectID + " message=" + message + " not serializable"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		final ByteArrayOutputStream bouts = new ByteArrayOutputStream();
-		// If system property set to osgi.basic then use OSGIObjectOutputStream, if not then  
-		// use ObjectOutputStream
-		final ObjectOutputStream oos = SO_SERIALIZATION_DEFAULT.equals(SO_SERIALIZATION_OSGI) ? new OSGIObjectOutputStream(bouts) : new ObjectOutputStream(bouts);
-		oos.writeObject(message);
-		oos.close();
-		return bouts.toByteArray();
+		try {
+			return AccessController.doPrivileged((PrivilegedExceptionAction<byte[]>) () -> {
+				final ByteArrayOutputStream bouts = new ByteArrayOutputStream();
+				// If system property set to osgi.basic then use OSGIObjectOutputStream, if not then  
+				// use ObjectOutputStream
+				final ObjectOutputStream oos = new OSGIObjectOutputStream(bouts);
+				// write shared object id, so we can read it on receiver and get the classloader for the given shared object
+				oos.writeObject(sharedObjectID);
+				oos.writeObject(message);
+				oos.close();
+				return bouts.toByteArray();
+			});
+		} catch (PrivilegedActionException e) {
+			Throwable t = e.getCause();
+			if (t instanceof IOException) {
+				throw (IOException) t;
+			}
+			throw new IOException("Unexpected exception trown in defaultSerializeSharedObjectMessage ", e); //$NON-NLS-1$
+		}
 	}
 
 	/**
@@ -1024,13 +1032,30 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	 * @since 2.0
 	 */
 	protected Object defaultDeserializeSharedObjectMessage(byte[] bytes) throws IOException, ClassNotFoundException {
-		final ByteArrayInputStream bins = new ByteArrayInputStream(bytes);
-		// If system property set to osgi.basic then use OSGIObjectOutputStream, if not then  
-		// use ObjectOutputStream
-		final ObjectInputStream oins = SO_SERIALIZATION_DEFAULT.equals(SO_SERIALIZATION_OSGI) ? new OSGIObjectInputStream(ProviderPlugin.getDefault().getContext().getBundle(), bins) : new ObjectInputStream(bins);
-		Object result = oins.readObject();
-		oins.close();
-		return result;
+		try {
+			return AccessController.doPrivileged((PrivilegedExceptionAction<Object>) () -> {
+				final ByteArrayInputStream bins = new ByteArrayInputStream(bytes);
+				final OSGIObjectInputStream oins = new OSGIObjectInputStream(ProviderPlugin.getDefault().getContext().getBundle(), bins);
+				ID sharedObjectID = (ID) oins.readObject();
+				if (sharedObjectID != null) {
+					ISharedObject so = getSharedObject(sharedObjectID);
+					if (so != null) {
+						oins.setClassLoader(so.getClass().getClassLoader());
+						Object result = oins.readObject();
+						oins.close();
+						return result;
+					}
+					throw new IOException("Could not find sharedObjectID=" + sharedObjectID + " in defaultDeserializeSharedObjectMessage"); //$NON-NLS-1$//$NON-NLS-2$
+				}
+				throw new IOException("Could not find sharedObjectID=" + sharedObjectID + " in defaultDeserializeSharedObjectMessage"); //$NON-NLS-1$//$NON-NLS-2$
+			});
+		} catch (PrivilegedActionException e) {
+			Throwable t = e.getCause();
+			if (t instanceof IOException) {
+				throw (IOException) t;
+			}
+			throw new IOException("Unexpected exception trown in defaultSerializeSharedObjectMessage ", e); //$NON-NLS-1$
+		}
 	}
 
 	protected Object deserializeSharedObjectMessage(byte[] bytes) throws IOException, ClassNotFoundException {
