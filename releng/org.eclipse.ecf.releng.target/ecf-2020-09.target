@@ -51,7 +51,7 @@
 <repository location="http://download.eclipse.org/releases/2020-09"/>
 </location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/I20210429200932/repository"/>
+		<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20210825222808/repository"/>
 		<unit id="org.apache.httpcomponents.client5.httpclient5" version="5.0.2.v20201015-2258"/>
 		<unit id="org.apache.httpcomponents.client5.httpclient5.source" version="5.0.2.v20201015-2258"/>
 		<unit id="org.apache.httpcomponents.core5.httpcore5" version="5.0.2.v20201015-2258"/>
