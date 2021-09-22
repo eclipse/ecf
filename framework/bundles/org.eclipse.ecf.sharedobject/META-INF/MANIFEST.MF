@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.sharedobject;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.sharedobject
-Bundle-Version: 2.6.100.qualifier
+Bundle-Version: 2.6.200.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.core.sharedobject.Activator
 Bundle-Localization: plugin
 Bundle-Vendor: %plugin.provider

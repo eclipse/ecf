@@ -1,0 +1,32 @@
+# Requires
+(org.osgi.framework.BundlePermission "org.eclipse.equinox.common" "require")
+(org.osgi.framework.BundlePermission "org.eclipse.equinox.registry" "require")
+(org.osgi.framework.BundlePermission "org.eclipse.ecf" "require")
+(org.osgi.framework.BundlePermission "org.eclipse.ecf.sharedobject" "provide")
+# Imports
+(org.osgi.framework.PackagePermission "org.eclipse.equinox.concurrent.future" "import")
+(org.osgi.framework.PackagePermission "org.osgi.framework" "import")
+(org.osgi.framework.PackagePermission "org.osgi.service.log" "import")
+(org.osgi.framework.PackagePermission "org.osgi.util.tracker" "import")
+# Exports
+(org.osgi.framework.PackagePermission "org.eclipse.ecf.core.sharedobject" "export")
+(org.osgi.framework.PackagePermission "org.eclipse.ecf.core.sharedobject.events" "export")
+(org.osgi.framework.PackagePermission "org.eclipse.ecf.core.sharedobject.model" "export")
+(org.osgi.framework.PackagePermission "org.eclipse.ecf.core.sharedobject.provider" "export")
+(org.osgi.framework.PackagePermission "org.eclipse.ecf.core.sharedobject.security" "export")
+(org.osgi.framework.PackagePermission "org.eclipse.ecf.core.sharedobject.util" "export")
+(org.osgi.framework.PackagePermission "org.eclipse.ecf.core.user" "export")
+(org.osgi.framework.PackagePermission "org.eclipse.ecf.core.util" "export")
+(org.osgi.framework.PackagePermission "org.eclipse.ecf.core.util.reflection" "export")
+
+# services
+(org.osgi.framework.ServicePermission "*" "get,register")
+#  
+(java.io.SerializablePermission "enableSubclassImplementation")
+(java.io.SerializablePermission "enableSubstitution")
+(org.osgi.framework.AdaptPermission "*" "adapt")
+(org.osgi.framework.AdminPermission "*" "*")
+(org.eclipse.equinox.log.LogPermission "*" "log")
+(java.util.PropertyPermission "*" "read")
+(java.lang.RuntimePermission "*")
+(java.lang.reflect.ReflectPermission "suppressAccessChecks")
