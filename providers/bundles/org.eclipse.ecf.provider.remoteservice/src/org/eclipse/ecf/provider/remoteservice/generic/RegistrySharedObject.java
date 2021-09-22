@@ -1421,92 +1421,146 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
-	 * @since 4.5
+	 * @since 4.6
 	 */
 	protected byte[] serializeCallRequest(Request request) throws IOException {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream(DEFAULT_REMOTE_REQUEST_SIZE);
-		OSGIObjectOutputStream outs = new OSGIObjectOutputStream(bos);
-		outs.writeLong(request.getServiceId());
-		outs.writeObject(request);
-		outs.close();
-		return bos.toByteArray();
+		try {
+			return AccessController.doPrivileged(new PrivilegedExceptionAction<byte[]>() {
+				@Override
+				public byte[] run() throws Exception {
+					ByteArrayOutputStream bos = new ByteArrayOutputStream(DEFAULT_REMOTE_REQUEST_SIZE);
+					OSGIObjectOutputStream outs = new OSGIObjectOutputStream(bos);
+					outs.writeLong(request.getServiceId());
+					outs.writeObject(request);
+					outs.close();
+					return bos.toByteArray();
+				}
+			});
+		} catch (PrivilegedActionException e) {
+			Throwable t = e.getCause();
+			String msg = "Exception serializing Request=" + request; //$NON-NLS-1$
+			System.err.println(msg);
+			if (t != null) {
+				t.printStackTrace(System.err);
+			}
+			throw new IOException(msg, t);
+		}
 	}
 
 	/**
-	 * @since 4.5
+	 * @since 4.6
 	 */
 	protected Request deserializeCallRequest(byte[] requestBytes) throws IOException {
-		OSGIObjectInputStream oins = new OSGIObjectInputStream(Activator.getDefault().getContext().getBundle(), new ByteArrayInputStream(requestBytes));
-		long svcId = oins.readLong();
-		RemoteServiceRegistrationImpl reg = null;
-		// Find registration for this call request
-		synchronized (this.localRegistry) {
-			reg = this.localRegistry.findRegistrationForServiceId(svcId);
-			if (reg == null) {
-				oins.close();
-				throw new IOException("Remote service with id=" + svcId + " cannot be found in local registry"); //$NON-NLS-1$ //$NON-NLS-2$
-			}
-		}
-		// Use classloader assigned to registration to get classLoader
-		oins.setClassLoader(reg.getClassLoader());
 		try {
-			return (Request) oins.readObject();
-		} catch (Exception e) {
-			throw new IOException("Remote service request with id=" + svcId + " cannot load class: " + e.getLocalizedMessage()); //$NON-NLS-1$ //$NON-NLS-2$
-		} finally {
-			oins.close();
-			oins.close();
+			return AccessController.doPrivileged(new PrivilegedExceptionAction<Request>() {
+				@Override
+				public Request run() throws Exception {
+					OSGIObjectInputStream oins = new OSGIObjectInputStream(Activator.getDefault().getContext().getBundle(), new ByteArrayInputStream(requestBytes));
+					long svcId = oins.readLong();
+					RemoteServiceRegistrationImpl reg = null;
+					// Find registration for this call request
+					synchronized (localRegistry) {
+						reg = localRegistry.findRegistrationForServiceId(svcId);
+						if (reg == null) {
+							oins.close();
+							throw new IOException("Remote service with id=" + svcId + " cannot be found in local registry"); //$NON-NLS-1$ //$NON-NLS-2$
+						}
+					}
+					// Use classloader assigned to registration to get classLoader
+					oins.setClassLoader(reg.getClassLoader());
+					try {
+						return (Request) oins.readObject();
+					} catch (Exception e) {
+						throw new IOException("Remote service request with id=" + svcId + " cannot load class: " + e.getLocalizedMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+					} finally {
+						oins.close();
+						oins.close();
+					}
+				}
+			});
+		} catch (PrivilegedActionException e1) {
+			Throwable t = e1.getCause();
+			t.printStackTrace(System.err);
+			throw new IOException("Exception deserializing Request", t); //$NON-NLS-1$
 		}
 	}
 
 	/**
-	 * @since 4.5
+	 * @since 4.6
 	 */
 	protected byte[] serializeCallResponse(Response response) throws IOException {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream(DEFAULT_REMOTE_REQUEST_SIZE);
-		OSGIObjectOutputStream outs = new OSGIObjectOutputStream(bos);
-		outs.writeObject(getLocalContainerID());
-		outs.writeLong(response.getRequestId());
-		outs.writeObject(response);
-		outs.close();
-		return bos.toByteArray();
+		try {
+			return AccessController.doPrivileged(new PrivilegedExceptionAction<byte[]>() {
+				@Override
+				public byte[] run() throws Exception {
+					ByteArrayOutputStream bos = new ByteArrayOutputStream(DEFAULT_REMOTE_REQUEST_SIZE);
+					OSGIObjectOutputStream outs = new OSGIObjectOutputStream(bos);
+					outs.writeObject(getLocalContainerID());
+					outs.writeLong(response.getRequestId());
+					outs.writeObject(response);
+					outs.close();
+					return bos.toByteArray();
+				}
+			});
+		} catch (PrivilegedActionException e) {
+			Throwable t = e.getCause();
+			String msg = "Exception serializing Response=" + response; //$NON-NLS-1$
+			System.err.println(msg);
+			if (t != null) {
+				t.printStackTrace(System.err);
+			}
+			throw new IOException(msg, t);
+		}
 	}
 
 	/**
-	 * @since 4.5
+	 * @since 4.6
 	 */
 	protected Response deserializeCallResponse(byte[] responseBytes) throws IOException {
-		OSGIObjectInputStream oins = new OSGIObjectInputStream(Activator.getDefault().getContext().getBundle(), new ByteArrayInputStream(responseBytes));
 
-		ID targetContainerID;
 		try {
-			targetContainerID = (ID) oins.readObject();
-		} catch (ClassNotFoundException e1) {
-			String message = "Cannot load class for deserializing call response: " + e1.getLocalizedMessage(); //$NON-NLS-1$
-			throw new IOException(message);
+			return AccessController.doPrivileged(new PrivilegedExceptionAction<Response>() {
+				@Override
+				public Response run() throws Exception {
+					OSGIObjectInputStream oins = new OSGIObjectInputStream(Activator.getDefault().getContext().getBundle(), new ByteArrayInputStream(responseBytes));
+
+					ID targetContainerID;
+					try {
+						targetContainerID = (ID) oins.readObject();
+					} catch (ClassNotFoundException e1) {
+						String message = "Cannot load class for deserializing call response: " + e1.getLocalizedMessage(); //$NON-NLS-1$
+						throw new IOException(message);
+					}
+
+					long requestId = oins.readLong();
+					final Request request = getRequest(requestId);
+					if (request == null) {
+						log(REQUEST_NOT_FOUND_ERROR_CODE, REQUEST_NOT_FOUND_ERROR_MESSAGE, new NullPointerException());
+						return null;
+					}
+
+					RemoteServiceRegistryImpl remoteRegistry = getRemoteRegistry(targetContainerID);
+					if (remoteRegistry != null) {
+						RemoteServiceRegistrationImpl reg = remoteRegistry.findRegistrationForServiceId(request.getServiceId());
+						if (reg != null) {
+							oins.setClassLoader(reg.getClassLoader());
+						}
+					}
+					try {
+						return (Response) oins.readObject();
+					} catch (Exception e) {
+						throw new IOException("Remote service response had exception: " + e.getLocalizedMessage()); //$NON-NLS-1$
+					} finally {
+						oins.close();
+					}
+				}
+			});
+		} catch (PrivilegedActionException e1) {
+			Throwable t = e1.getCause();
+			t.printStackTrace(System.err);
+			throw new IOException("Exception deserializing Response", t); //$NON-NLS-1$
 		}
 
-		long requestId = oins.readLong();
-		final Request request = getRequest(requestId);
-		if (request == null) {
-			log(REQUEST_NOT_FOUND_ERROR_CODE, REQUEST_NOT_FOUND_ERROR_MESSAGE, new NullPointerException());
-			return null;
-		}
-
-		RemoteServiceRegistryImpl remoteRegistry = getRemoteRegistry(targetContainerID);
-		if (remoteRegistry != null) {
-			RemoteServiceRegistrationImpl reg = remoteRegistry.findRegistrationForServiceId(request.getServiceId());
-			if (reg != null) {
-				oins.setClassLoader(reg.getClassLoader());
-			}
-		}
-		try {
-			return (Response) oins.readObject();
-		} catch (Exception e) {
-			throw new IOException("Remote service response had exception: " + e.getLocalizedMessage()); //$NON-NLS-1$
-		} finally {
-			oins.close();
-		}
 	}
 
 	private IExecutor getRequestExecutor(Request request) {
@@ -1615,7 +1669,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
-	 * @since 4.5
+	 * @since 4.6
 	 */
 	protected void handleCallRequestBytes(byte[] requestBytes) {
 		// If request is null, it's bogus, give up/do not respond
@@ -1759,7 +1813,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	/**
-	 * @since 4.5
+	 * @since 4.6
 	 */
 	protected void handleCallResponseBytes(byte[] responseBytes) {
 
