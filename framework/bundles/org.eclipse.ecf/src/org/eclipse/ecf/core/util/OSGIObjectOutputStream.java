@@ -14,7 +14,6 @@ package org.eclipse.ecf.core.util;
 import java.io.*;
 import java.lang.reflect.*;
 import java.util.*;
-import org.osgi.dto.DTO;
 import org.osgi.framework.Version;
 import org.osgi.service.log.LogService;
 
@@ -302,9 +301,6 @@ public class OSGIObjectOutputStream extends ObjectOutputStream implements OSGIOb
 			return;
 		} else if (obj instanceof Version) {
 			writeObjectOverride(new SerVersion((Version) obj));
-		} else if (obj instanceof DTO) {
-			writeObjectOverride(new SerDTO(obj));
-			return;
 		} else {
 			writeObjectOverride(new SerDTO(obj));
 			return;

@@ -23,7 +23,7 @@ import org.osgi.service.log.LogService;
  */
 public class OSGIObjectInputStream extends ObjectInputStream implements OSGIObjectStreamConstants {
 
-	protected final ObjectInputStream in;
+	protected ObjectInputStream in;
 	protected final Bundle b;
 	protected LogService logger;
 
@@ -74,26 +74,26 @@ public class OSGIObjectInputStream extends ObjectInputStream implements OSGIObje
 		this.logger = logger;
 	}
 
-	/**
-	 * @since 3.10
-	 */
-	public OSGIObjectInputStream(ClassLoader cl, Bundle b, InputStream ins, LogService logger) throws IOException {
-		super();
-		this.classLoader = cl;
-		this.b = b;
-		this.in = new ReplaceableObjectInputStream(ins);
-		this.logger = logger;
-	}
-
-	/**
-	 * @since 3.10
-	 */
-	public OSGIObjectInputStream(ClassLoader cl, Bundle b, InputStream ins) throws IOException {
-		this(cl, b, ins, null);
-	}
-
 	public OSGIObjectInputStream(Bundle b, InputStream in) throws IOException {
 		this(b, in, null);
+	}
+
+	/**
+	 * @since 3.10
+	 */
+	public OSGIObjectInputStream(Bundle b) throws IOException {
+		super();
+		this.b = b;
+	}
+
+	/**
+	 * @since 3.10
+	 */
+	public synchronized void setInputStream(InputStream in) throws IOException {
+		if (this.in != null) {
+			this.in.close();
+		}
+		this.in = new ReplaceableObjectInputStream(in);
 	}
 
 	/**
