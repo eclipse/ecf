@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="org.eclipse.ecf.osgi.services.remoteserviceadmin" version="2">
+    <resource path="src/org/eclipse/ecf/osgi/services/remoteserviceadmin/ITopologyManager.java" type="org.eclipse.ecf.osgi.services.remoteserviceadmin.ITopologyManager">
+        <filter id="405864542">
+            <message_arguments>
+                <message_argument value="org.eclipse.ecf.osgi.services.remoteserviceadmin.ITopologyManager"/>
+                <message_argument value="ENDPOINT_CONDITIONAL_OP"/>
+            </message_arguments>
+        </filter>
+        <filter id="405864542">
+            <message_arguments>
+                <message_argument value="org.eclipse.ecf.osgi.services.remoteserviceadmin.ITopologyManager"/>
+                <message_argument value="ENDPOINT_CONDITIONAL_OP_PROP"/>
+            </message_arguments>
+        </filter>
+        <filter id="405864542">
+            <message_arguments>
+                <message_argument value="org.eclipse.ecf.osgi.services.remoteserviceadmin.ITopologyManager"/>
+                <message_argument value="ENDPOINT_EXTRA_CONDITIONAL"/>
+            </message_arguments>
+        </filter>
+        <filter id="405864542">
+            <message_arguments>
+                <message_argument value="org.eclipse.ecf.osgi.services.remoteserviceadmin.ITopologyManager"/>
+                <message_argument value="ENDPOINT_EXTRA_CONDITIONAL_PROP"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/eclipse/ecf/osgi/services/remoteserviceadmin/TopologyManager.java" type="org.eclipse.ecf.osgi.services.remoteserviceadmin.TopologyManager">
+        <filter id="338755678">
+            <message_arguments>
+                <message_argument value="org.eclipse.ecf.osgi.services.remoteserviceadmin.TopologyManager"/>
+                <message_argument value="matchingFilters"/>
+            </message_arguments>
+        </filter>
+    </resource>
+</component>

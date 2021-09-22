@@ -15,6 +15,7 @@ package org.eclipse.ecf.internal.osgi.services.remoteserviceadmin;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -29,7 +30,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainerManager;
-import org.eclipse.ecf.core.util.BundleStarter;
 import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.core.util.SystemLogService;
 import org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription;
@@ -57,6 +57,14 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 public class Activator implements BundleActivator {
+
+	static void startDependents(BundleContext context, String[] bundleSymbolicNames, int stateMask)
+			throws BundleException {
+		List<String> bsns = Arrays.asList(bundleSymbolicNames);
+		for (Bundle b : context.getBundles())
+			if (bsns.contains(b.getSymbolicName()) && ((b.getState() & stateMask) != 0))
+				b.start();
+	}
 
 	public static final String PLUGIN_ID = "org.eclipse.ecf.osgi.services.remoteserviceadmin"; //$NON-NLS-1$
 
@@ -229,7 +237,7 @@ public class Activator implements BundleActivator {
 
 	private void initializeDependents() {
 		try {
-			BundleStarter.startDependents(context, DEPENDENT_BUNDLES, Bundle.RESOLVED | Bundle.STARTING);
+			startDependents(context, DEPENDENT_BUNDLES, Bundle.RESOLVED | Bundle.STARTING);
 		} catch (BundleException e) {
 			LogUtility.logError("RemoteServiceAdmin.initializeDependents", DebugOptions.REMOTE_SERVICE_ADMIN, //$NON-NLS-1$
 					this.getClass(), "Cannot start RSA dependent bundle", e); //$NON-NLS-1$

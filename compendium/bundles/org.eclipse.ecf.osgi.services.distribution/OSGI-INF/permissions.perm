@@ -10,7 +10,6 @@
 (org.osgi.framework.PackagePermission "org.osgi.service.log" "import")
 (org.osgi.framework.PackagePermission "org.osgi.service.remoteserviceadmin" "import")
 (org.osgi.framework.PackagePermission "org.osgi.util.tracker" "import")
-(org.osgi.framework.PackagePermission "org.eclipse.ecf.osgi.services.remoteserviceadmin" "import")
 # Exports
 (org.osgi.framework.BundlePermission "org.eclipse.ecf.osgi.services.distribution" "provide")
 (org.osgi.framework.PackagePermission "org.eclipse.ecf.osgi.services.distribution" "export")
@@ -19,8 +18,11 @@
 (org.osgi.framework.ServicePermission "org.osgi.service.remoteserviceadmin.EndpointListener" "register,get")
 (org.osgi.framework.ServicePermission "org.osgi.service.remoteserviceadmin.EndpointEventListener" "get,register")
 (org.osgi.framework.ServicePermission "org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener" "register")
+(org.osgi.framework.ServicePermission "org.eclipse.ecf.osgi.services.remoteserviceadmin.ITopologyManager" "register")
 (org.osgi.framework.ServicePermission "org.osgi.framework.hooks.service.EventListenerHook" "register")
 (org.osgi.framework.ServicePermission "org.osgi.service.remoteserviceadmin.RemoteServiceAdmin" "get")
 #
 (java.util.PropertyPermission "*" "read")
 (java.lang.RuntimePermission "*")
+(org.osgi.framework.AdminPermission "*" "listener")
+(org.osgi.framework.CapabilityPermission "*" "provide")

@@ -20,13 +20,6 @@ public interface ITopologyManager {
 	public static final String ENDPOINT_ALLOWLOCALHOST_PROP = "allowLocalhost"; //$NON-NLS-1$
 	public static final boolean ENDPOINT_ALLOWLOCALHOST = Boolean
 			.getBoolean(ITopologyManager.class.getName() + "." + ENDPOINT_ALLOWLOCALHOST_PROP); //$NON-NLS-1$
-	public static final String ENDPOINT_CONDITIONAL_OP_PROP = "conditionalOp"; //$NON-NLS-1$
-	public static final String ENDPOINT_CONDITIONAL_OP = System
-			.getProperty(ITopologyManager.class.getName() + "." + ENDPOINT_CONDITIONAL_OP_PROP, "&"); //$NON-NLS-1$ //$NON-NLS-2$
-	public static final String ENDPOINT_EXTRA_CONDITIONAL_PROP = "conditional"; //$NON-NLS-1$
-	public static final String ENDPOINT_EXTRA_CONDITIONAL = System
-			.getProperty(ITopologyManager.class.getName() + "." + ENDPOINT_EXTRA_CONDITIONAL_PROP); //$NON-NLS-1$
-
 	public static final String ENDPOINT_EXTRA_FILTERS_PROP = "extraFilters"; //$NON-NLS-1$
 	public static final String ENDPOINT_EXTRA_FILTERS = System
 			.getProperty(ITopologyManager.class.getName() + "." + ENDPOINT_EXTRA_FILTERS_PROP); //$NON-NLS-1$

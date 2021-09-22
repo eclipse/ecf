@@ -1210,9 +1210,9 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		}
 	}
 
-	void removeED(org.osgi.service.remoteserviceadmin.EndpointDescription ed) {
+	IServiceID removeED(org.osgi.service.remoteserviceadmin.EndpointDescription ed) {
 		synchronized (edToServiceIDMap) {
-			edToServiceIDMap.remove(ed);
+			return edToServiceIDMap.remove(ed);
 		}
 	}
 
@@ -1278,6 +1278,7 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 		}
 
 		void handleService(IServiceInfo serviceInfo, boolean discovered) {
+			IDiscoveryLocator locator = this.locator;
 			if (locator == null)
 				return;
 			IServiceID serviceID = serviceInfo.getServiceID();
@@ -1287,22 +1288,12 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 				trace("handleService", "fwk=" + getFrameworkUUID() + " serviceInfo=" + serviceInfo //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 						+ ", discovered=" + discovered + ", locator=" + locator); //$NON-NLS-1$ //$NON-NLS-2$
 				synchronized (edToServiceIDMap) {
-					// Try to find ED from ServiceID, whether discovered or
-					// undiscovered
-					org.osgi.service.remoteserviceadmin.EndpointDescription ed = findED(serviceID);
 					if (discovered) {
-						// The IServiceInfo was discovered/added
-						if (ed == null) {
-							// Deserialize EndpointDescription from service
-							// properties
 							DiscoveredEndpointDescription discoveredEndpointDescription = getDiscoveredEndpointDescription(
 									serviceID, serviceInfo, true);
-							// Make sure that the discoveredEndpointDescription
-							// is non-null
 							if (discoveredEndpointDescription != null) {
-								ed = discoveredEndpointDescription.getEndpointDescription();
-								if (ed != null) {
-									EndpointDescription prevEd = isEndpointDescriptionUpdate(ed, serviceID);
+								EndpointDescription ed = discoveredEndpointDescription.getEndpointDescription();
+								EndpointDescription prevEd = isEndpointDescriptionUpdate(ed, serviceID);
 									if (prevEd == null) {
 										if (!containsED(ed)) {
 											addED(ed, serviceID);
@@ -1316,19 +1307,18 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 												"endpointDescription updated. prev=" + prevEd + ", update=" + ed); //$NON-NLS-1$ //$NON-NLS-2$
 										queueEndpointEvent(ed, EndpointEvent.MODIFIED);
 									}
-								} else
-									trace("handleService", "EndpointDescription is null for serviceID=" + serviceID); //$NON-NLS-1$ //$NON-NLS-2$
 							} else
 								trace("handleService", //$NON-NLS-1$
 										"DiscoveredEndpointDescription is null for serviceID=" + serviceID); //$NON-NLS-1$
-						} else
-							trace("handleService", "Found previous EndpointDescription with same serviceID=" + serviceID //$NON-NLS-1$ //$NON-NLS-2$
-									+ ".  Ignoring"); //$NON-NLS-1$
 					} else {
 						// It was undiscovered
+						org.osgi.service.remoteserviceadmin.EndpointDescription ed = findED(serviceID);
+
 						if (ed != null) {
-							removeED(ed);
-							handleEndpointDescription(ed, false);
+							IServiceID svcID = removeED(ed);
+							if (svcID != null) {
+								handleEndpointDescription(ed, false);
+							}
 						} else
 							trace("handleService", //$NON-NLS-1$
 									"Did not find serviceInfo with serviceID=" + serviceID + ".  Ignoring"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1339,12 +1329,12 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 
 		EndpointDescription isEndpointDescriptionUpdate(EndpointDescription endpointDescription,
 				IServiceID updateServiceID) {
+			boolean update = false;
 			if (endpointDescription instanceof org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription) {
 				org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription ed = (org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription) endpointDescription;
 				Long receivedTS = ed.getTimestamp();
 				if (receivedTS != null) {
 					String receivedId = ed.getId();
-					boolean update = false;
 					org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription ped = null;
 					for (EndpointDescription previousEndpoint : getEndpointDescriptions()) {
 						if (previousEndpoint instanceof org.eclipse.ecf.osgi.services.remoteserviceadmin.EndpointDescription) {
@@ -1363,42 +1353,23 @@ public class EndpointDescriptionLocator implements IEndpointDescriptionLocator {
 								update = true;
 						}
 					}
-					if (update) {
-						updateED(ped, ed, updateServiceID);
-						return ed;
-					}
 				}
 			} else {
-				Map<String, Object> edProperties = endpointDescription.getProperties();
-				Long receivedTS = PropertiesUtil.getOSGiEndpointModifiedValue(edProperties);
-				if (receivedTS != null) {
-					String receivedId = endpointDescription.getId();
-					boolean update = false;
-					EndpointDescription ped = null;
-					for (EndpointDescription previousEndpoint : getEndpointDescriptions()) {
-						ped = previousEndpoint;
-						// If the previously discovered endpoint id does not
-						// equal
-						// the receivedId, then we haven't found it
-						if (!previousEndpoint.getId().equals(receivedId))
-							continue;
-						// If we have found it, get the property value if
-						// present
-						Long pedTS = (Long) previousEndpoint.getProperties()
-								.get(RemoteConstants.OSGI_ENDPOINT_MODIFIED);
-						// If it wasn't there before then this is definitely an
-						// update
-						if (pedTS == null)
-							update = true;
-						else if (pedTS.longValue() == receivedTS.longValue())
-							return null;
-						else if (pedTS == null || pedTS.longValue() < receivedTS.longValue())
-							update = true;
+				EndpointDescription ped = null;
+				Map<String,?> endpointProperties = endpointDescription.getProperties();
+				for (EndpointDescription previousEndpoint : getEndpointDescriptions()) {
+					if (!previousEndpoint.getId().equals(endpointDescription.getId())) 
+						continue;
+					Map<String,?> prevProperties = previousEndpoint.getProperties();
+					if (!prevProperties.equals(endpointProperties)) {
+						update = true;
+						ped = endpointDescription;
+						break;
 					}
-					if (update) {
-						updateED(ped, endpointDescription, updateServiceID);
-						return endpointDescription;
-					}
+				}
+				if (update) {
+					updateED(ped, endpointDescription, updateServiceID);
+					return endpointDescription;
 				}
 			}
 			return null;

@@ -14,7 +14,6 @@ package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -36,14 +35,14 @@ import org.osgi.framework.hooks.service.EventListenerHook;
 import org.osgi.service.remoteserviceadmin.EndpointDescription;
 import org.osgi.service.remoteserviceadmin.EndpointEvent;
 import org.osgi.service.remoteserviceadmin.EndpointEventListener;
+import org.osgi.service.remoteserviceadmin.EndpointListener;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminListener;
 
 /**
  * @since 4.6
  */
-public class TopologyManager
-		implements EventListenerHook, RemoteServiceAdminListener, ITopologyManager {
+public class TopologyManager implements EventListenerHook, RemoteServiceAdminListener, ITopologyManager {
 
 	class EndpointEventHolder {
 		private final EndpointDescription endpointDescription;
@@ -103,9 +102,7 @@ public class TopologyManager
 
 		private void logError(String methodName, String message, Throwable e) {
 			LogUtility.logError(((methodName == null) ? "<unknown>" //$NON-NLS-1$
-					: methodName),
-					DebugOptions.TOPOLOGY_MANAGER,
-					TopologyManager.class,
+					: methodName), DebugOptions.TOPOLOGY_MANAGER, TopologyManager.class,
 					((message == null) ? "<empty>" //$NON-NLS-1$
 							: message),
 					e);
@@ -134,11 +131,86 @@ public class TopologyManager
 		}
 	}
 
+	class ProxyEndpointListener implements EndpointListener {
+
+		private final Bundle bundle;
+
+		public ProxyEndpointListener(Bundle b) {
+			this.bundle = b;
+		}
+
+		private void logError(String methodName, String message, Throwable e) {
+			LogUtility.logError(((methodName == null) ? "<unknown>" //$NON-NLS-1$
+					: methodName), DebugOptions.TOPOLOGY_MANAGER, TopologyManager.class,
+					((message == null) ? "<empty>" //$NON-NLS-1$
+							: message),
+					e);
+		}
+
+		private void deliverSafe(final EndpointDescription endpoint, final String matchingFilter, boolean added) {
+			final EndpointListener listener = topologyManagerImpl;
+			SafeRunner.run(new ISafeRunnable() {
+				public void run() throws Exception {
+					if (added) {
+						listener.endpointAdded(endpoint, matchingFilter);
+					} else {
+						listener.endpointRemoved(endpoint, matchingFilter);
+					}
+				}
+
+				public void handleException(Throwable exception) {
+					String message = "Exception in EndpointListener listener=" //$NON-NLS-1$
+							+ listener + " endpoint=" //$NON-NLS-1$
+							+ endpoint + " matchingFilter=" //$NON-NLS-1$
+							+ matchingFilter + " added=" //$NON-NLS-1$
+							+ added;
+					logError("deliverSafe", message, exception); //$NON-NLS-1$
+				};
+			});
+		}
+
+		public void deliverRemoveEventForBundle(EndpointEventHolder eventHolder) {
+			deliverSafe(eventHolder.getEndpoint(), eventHolder.getFilter(), false);
+		}
+
+		@Override
+		public void endpointAdded(EndpointDescription endpoint, String matchedFilter) {
+			synchronized (bundleEndpointEventListenerMap) {
+				List<EndpointEventHolder> endpointEventHolders = bundleEndpointEventListenerMap.get(this.bundle);
+				if (endpointEventHolders == null)
+					endpointEventHolders = new ArrayList<EndpointEventHolder>();
+				endpointEventHolders.add(new EndpointEventHolder(endpoint, matchedFilter));
+				bundleEndpointEventListenerMap.put(this.bundle, endpointEventHolders);
+			}
+			deliverSafe(endpoint, matchedFilter, true);
+		}
+
+		@Override
+		public void endpointRemoved(EndpointDescription endpoint, String matchedFilter) {
+			synchronized (bundleEndpointEventListenerMap) {
+				List<EndpointEventHolder> endpointEventHolders = bundleEndpointEventListenerMap.get(this.bundle);
+				if (endpointEventHolders != null) {
+					for (Iterator<EndpointEventHolder> i = endpointEventHolders.iterator(); i.hasNext();) {
+						EndpointEventHolder eh = i.next();
+						EndpointDescription oldEd = eh.getEndpoint();
+						EndpointDescription newEd = endpoint;
+						if (oldEd.equals(newEd))
+							i.remove();
+					}
+					if (endpointEventHolders.size() == 0)
+						bundleEndpointEventListenerMap.remove(this.bundle);
+				}
+			}
+			deliverSafe(endpoint, matchedFilter, false);
+		}
+	}
+
 	private Map<Bundle, List<EndpointEventHolder>> bundleEndpointEventListenerMap = new HashMap<Bundle, List<EndpointEventHolder>>();
 
 	protected TopologyManagerImpl topologyManagerImpl;
 	protected ServiceRegistration<?> endpointListenerRegistration;
-	protected List<String> matchingFilters;
+
+	ServiceRegistration<?> legacyEndpointListenerRegistration;
 
 	String getFrameworkUUID(BundleContext context) {
 		synchronized ("org.osgi.framework.uuid") { //$NON-NLS-1$
@@ -153,49 +225,30 @@ public class TopologyManager
 		}
 	}
 
+	/**
+	 * @since 4.9
+	 */
+	protected TopologyManagerImpl createTopologyManagerImpl(BundleContext context, boolean allowLocalhost, String[] extraFilters) {
+		return new TopologyManagerImpl(context, allowLocalhost, extraFilters);
+	}
+	
 	protected void activate(BundleContext context, Map<String, ?> properties) throws Exception {
-		String endpointConditionalOp = (String) properties.get(ENDPOINT_CONDITIONAL_OP_PROP);
-		if (endpointConditionalOp == null)
-			endpointConditionalOp = ENDPOINT_CONDITIONAL_OP;
 
-		Boolean endpointAllowLocalhost = (Boolean) properties.get(ENDPOINT_ALLOWLOCALHOST_PROP);
-		if (endpointAllowLocalhost == null)
-			endpointAllowLocalhost = ENDPOINT_ALLOWLOCALHOST;
+		Boolean allowLocalhost = (Boolean) properties.get(ENDPOINT_ALLOWLOCALHOST_PROP);
+		if (allowLocalhost == null)
+			allowLocalhost = ENDPOINT_ALLOWLOCALHOST;
 
 		String extraFilters = (String) properties.get(ENDPOINT_EXTRA_FILTERS_PROP);
-		if (extraFilters == null)
-			extraFilters = ENDPOINT_EXTRA_FILTERS;
+		extraFilters = (extraFilters != null) ? extraFilters : ENDPOINT_EXTRA_FILTERS;
 
 		String[] extraFiltersArr = null;
 		if (extraFilters != null)
 			extraFiltersArr = extraFilters.split(","); //$NON-NLS-1$
 
-		String extraConditional = (String) properties.get(ENDPOINT_EXTRA_CONDITIONAL_PROP);
-		if (extraConditional == null)
-			extraConditional = ENDPOINT_EXTRA_CONDITIONAL;
-		this.matchingFilters = Collections.synchronizedList(new ArrayList<String>());
-		StringBuffer elScope = new StringBuffer(""); //$NON-NLS-1$
-		if (endpointConditionalOp != null && !"".equals(endpointConditionalOp)) { //$NON-NLS-1$
-			elScope.append("(").append(endpointConditionalOp).append("("); //$NON-NLS-1$ //$NON-NLS-2$
-			if (!ENDPOINT_ALLOWLOCALHOST)
-				elScope.append("!(").append(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID) //$NON-NLS-1$
-						.append("=").append(getFrameworkUUID(context)).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
-			elScope.append(")"); //$NON-NLS-1$
-			elScope.append(ONLY_ECF_SCOPE);
-			if (extraConditional != null && !"".equals(extraConditional)) //$NON-NLS-1$
-				elScope.append(extraConditional);
-			elScope.append(")"); //$NON-NLS-1$
-		}
-		String elString = elScope.toString();
-		matchingFilters.add(elString);
-		this.topologyManagerImpl = new TopologyManagerImpl(context, elString);
-
-		if (extraFiltersArr != null)
-			for (String filter : extraFiltersArr)
-				if (filter != null && !"".equals(filter)) //$NON-NLS-1$
-					matchingFilters.add(filter);
-
-		Dictionary<String, Object> props = createEndpointListenerProps(matchingFilters);
+		this.topologyManagerImpl = createTopologyManagerImpl(context, allowLocalhost, extraFiltersArr);
+		
+		Dictionary<String, Object> props = createEndpointListenerProps(
+				Arrays.asList(this.topologyManagerImpl.getScope()));
 
 		endpointListenerRegistration = context.registerService(EndpointEventListener.class,
 				new ServiceFactory<EndpointEventListener>() {
@@ -219,21 +272,49 @@ public class TopologyManager
 						}
 					}
 				}, (Dictionary<String, Object>) props);
+
+		legacyEndpointListenerRegistration = context.registerService(EndpointListener.class,
+				new ServiceFactory<EndpointListener>() {
+					public EndpointListener getService(Bundle bundle,
+							ServiceRegistration<EndpointListener> registration) {
+						return new ProxyEndpointListener(bundle);
+					}
+
+					public void ungetService(Bundle bundle, ServiceRegistration<EndpointListener> registration,
+							EndpointListener service) {
+						ProxyEndpointListener peel = (service instanceof ProxyEndpointListener)
+								? (ProxyEndpointListener) service
+								: null;
+						if (peel == null)
+							return;
+						synchronized (bundleEndpointEventListenerMap) {
+							List<EndpointEventHolder> endpointEventHolders = bundleEndpointEventListenerMap.get(bundle);
+							if (endpointEventHolders != null)
+								for (EndpointEventHolder eh : endpointEventHolders)
+									peel.deliverRemoveEventForBundle(eh);
+						}
+					}
+				}, (Dictionary<String, Object>) props);
+
 		String exportRegisteredSvcsFilter = (String) properties.get(EXPORT_REGISTERED_SERVICES_FILTER_PROP);
 		if (exportRegisteredSvcsFilter == null)
 			exportRegisteredSvcsFilter = EXPORT_REGISTERED_SERVICES_FILTER;
-		
+
 		this.topologyManagerImpl.exportRegisteredServices(exportRegisteredSvcsFilter);
 	}
 
 	protected Dictionary<String, Object> createEndpointListenerProps(List<String> filters) {
 		Hashtable<String, Object> props = new Hashtable<String, Object>();
 		props.put(org.osgi.service.remoteserviceadmin.EndpointEventListener.ENDPOINT_LISTENER_SCOPE,
-				matchingFilters.toArray(new String[filters.size()]));
+				filters.toArray(new String[filters.size()]));
 		return props;
 	}
 
 	protected void deactivate() {
+		if (legacyEndpointListenerRegistration != null) {
+			legacyEndpointListenerRegistration.unregister();
+			legacyEndpointListenerRegistration = null;
+		}
 		if (endpointListenerRegistration != null) {
 			endpointListenerRegistration.unregister();
 			endpointListenerRegistration = null;
@@ -242,43 +323,25 @@ public class TopologyManager
 			this.topologyManagerImpl.close();
 			this.topologyManagerImpl = null;
 		}
-		if (this.matchingFilters != null) {
-			this.matchingFilters.clear();
-			this.matchingFilters = null;
-		}
 	}
 
 	// RemoteServiceAdminListener impl
 	public void remoteAdminEvent(RemoteServiceAdminEvent event) {
-		if (topologyManagerImpl == null)
-			return;
 		topologyManagerImpl.handleRemoteAdminEvent(event);
 	}
 
 	// EventListenerHook impl
 	public void event(ServiceEvent event, @SuppressWarnings("rawtypes") Map listeners) {
-		if (topologyManagerImpl == null)
-			return;
 		topologyManagerImpl.handleEvent(event, listeners);
 	}
 
 	public String[] getEndpointFilters() {
-		return this.matchingFilters.toArray(new String[this.matchingFilters.size()]);
+		return topologyManagerImpl.getScope();
 	}
 
 	public String[] setEndpointFilters(String[] newFilters) {
-		List<String> f = this.matchingFilters;
-		if (f == null || newFilters == null)
-			return null;
-		List<String> result = new ArrayList<String>(f);
-		synchronized (f) {
-			f.clear();
-			for (int i = 0; i < newFilters.length; i++)
-				f.add(newFilters[i]);
-		}
-		if (endpointListenerRegistration != null)
-			endpointListenerRegistration.setProperties(createEndpointListenerProps(Arrays.asList(newFilters)));
-		return result.toArray(new String[result.size()]);
+		// XXX return null for now
+		return null;
 	}
 
 }

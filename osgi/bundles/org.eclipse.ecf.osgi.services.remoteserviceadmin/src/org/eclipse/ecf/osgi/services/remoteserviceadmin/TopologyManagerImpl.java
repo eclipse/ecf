@@ -12,6 +12,10 @@
  *****************************************************************************/
 package org.eclipse.ecf.osgi.services.remoteserviceadmin;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
@@ -26,6 +30,7 @@ import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.remoteserviceadmin.EndpointEvent;
 import org.osgi.service.remoteserviceadmin.EndpointEventListener;
+import org.osgi.service.remoteserviceadmin.EndpointListener;
 import org.osgi.service.remoteserviceadmin.RemoteServiceAdminEvent;
 import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
@@ -33,23 +38,71 @@ import org.osgi.util.tracker.BundleTrackerCustomizer;
 /**
  * @since 4.6
  */
-public class TopologyManagerImpl extends AbstractTopologyManager implements EndpointEventListener {
+public class TopologyManagerImpl extends AbstractTopologyManager implements EndpointListener, EndpointEventListener {
 
 	public static final int STARTUP_WAIT_TIME = Integer
 			.getInteger("org.eclipse.ecf.osgi.services.remoteserviceadmin.startupWaitTime", 20000); //$NON-NLS-1$
 
-	private final String ecfScope;
-
-	public TopologyManagerImpl(BundleContext context) {
-		this(context, null);
-	}
+	/**
+	 * @since 4.9
+	 */
+	private static final String ECF_DEFAULT_NAMESPACE = System.getProperty(TopologyManagerImpl.class.getName() + ".defaultNamespace","org.eclipse.ecf.core.identity.StringID"); //$NON-NLS-1$ //$NON-NLS-2$
 
 	/**
 	 * @since 4.9
 	 */
-	public TopologyManagerImpl(BundleContext context, String ecfScope) {
+	private String ecfLocalEndpointListenerScope = System.getProperty(TopologyManager.class.getName() + ".ecfLocalEndpointListenerScope"); //$NON-NLS-1$
+	private String ecfNonLocalEndpointListenerScope = System.getProperty(TopologyManager.class.getName() + ".ecfNonLocalEndpointListenerScope"); //$NON-NLS-1$
+	private String nonECFLocalEndpointListenerScope  = System.getProperty(TopologyManager.class.getName() + ".nonECFLocalEndpointListenerScope"); //$NON-NLS-1$
+	private String nonECFNonLocalEndpointListenerScope  = System.getProperty(TopologyManager.class.getName() + ".nonECFNonLocalEndpointListenerScope"); //$NON-NLS-1$
+
+	private boolean nonECFTopologyManager = Boolean.valueOf(System.getProperty(TopologyManagerImpl.class.getName() + ".nonECFTopologyMananger","false")).booleanValue(); //$NON-NLS-1$ //$NON-NLS-2$
+	
+	private String processFrameworkLocal(String input) {
+		return input.replaceAll("<<LOCAL>>", getFrameworkUUID()); //$NON-NLS-1$
+	}
+	
+	private boolean allowLocalHost;
+	private List<String> otherFilters;
+	
+	public TopologyManagerImpl(BundleContext context) {
+		this(context,false, (String[]) null);
+	}
+	/**
+	 * @since 4.9
+	 */
+	public TopologyManagerImpl(BundleContext context, boolean allowLocalHost, String...otherFilters) {
 		super(context);
-		this.ecfScope = (ecfScope == null) ? "" : ecfScope; //$NON-NLS-1$
+		this.allowLocalHost = (nonECFTopologyManager)?true:allowLocalHost;
+		String frameworkUUID = getFrameworkUUID();
+		String localFrameworkFilter = new StringBuffer("(").append(org.osgi.service.remoteserviceadmin.RemoteConstants.ENDPOINT_FRAMEWORK_UUID).append("=").append(frameworkUUID).append(")").toString();  //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+		String nonLocalFrameworkFilter = new StringBuffer("(!" + localFrameworkFilter + ")").toString(); //$NON-NLS-1$ //$NON-NLS-2$
+			if (this.ecfLocalEndpointListenerScope == null) {
+			this.ecfLocalEndpointListenerScope = new StringBuffer("(&").append(localFrameworkFilter).append(ITopologyManager.ONLY_ECF_SCOPE).append(")").toString(); //$NON-NLS-1$ //$NON-NLS-2$
+		} else {
+			// replace all occurrences of '<<LOCAL>>' with frameworkUUID
+			this.ecfLocalEndpointListenerScope = processFrameworkLocal(this.ecfLocalEndpointListenerScope);
+		}
+		if (this.ecfNonLocalEndpointListenerScope == null) {
+			this.ecfNonLocalEndpointListenerScope = new StringBuffer("(&").append(nonLocalFrameworkFilter).append(ITopologyManager.ONLY_ECF_SCOPE).append(")").toString(); //$NON-NLS-1$ //$NON-NLS-2$
+		} else {
+			// replace all occurrences of '<<LOCAL>>' with frameworkUUID
+			this.ecfNonLocalEndpointListenerScope = processFrameworkLocal(this.ecfNonLocalEndpointListenerScope);
+		}
+			String nonECFScope = "(!" + ITopologyManager.ONLY_ECF_SCOPE + ")";  //$NON-NLS-1$//$NON-NLS-2$
+			if (this.nonECFLocalEndpointListenerScope == null) {
+				this.nonECFLocalEndpointListenerScope = new StringBuffer("(&").append(localFrameworkFilter).append(nonECFScope).append(")").toString(); //$NON-NLS-1$ //$NON-NLS-2$
+			} else {
+				// replace all occurrences of '<<LOCAL>>' with frameworkUUID
+				this.nonECFLocalEndpointListenerScope = processFrameworkLocal(this.nonECFLocalEndpointListenerScope);
+			}
+			if (this.nonECFNonLocalEndpointListenerScope == null) {
+				this.nonECFNonLocalEndpointListenerScope = new StringBuffer("(&").append(localFrameworkFilter).append(nonECFScope).append(")").toString(); //$NON-NLS-1$ //$NON-NLS-2$
+			} else {
+				// replace all occurrences of '<<LOCAL>>' with frameworkUUID
+				this.nonECFNonLocalEndpointListenerScope = processFrameworkLocal(this.nonECFNonLocalEndpointListenerScope);
+			}
+		this.otherFilters = otherFilters == null?new ArrayList<String>():Arrays.asList(otherFilters);
 	}
 
 	protected String getFrameworkUUID() {
@@ -65,25 +118,25 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements Endp
 		}
 	}
 
-	protected void handleEndpointAdded(org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
-			String matchedFilter) {
-		if (matchedFilter != null && matchedFilter.equals(this.ecfScope)) {
-			handleECFEndpointAdded((EndpointDescription) endpoint);
-		} else {
-			logWarning("handleEndpointAdded", //$NON-NLS-1$
-					"matchedFilter=" + matchedFilter + " does not equal ECF topology manager filter=" + this.ecfScope //$NON-NLS-1$ //$NON-NLS-2$
-							+ " for endpoint=" + endpoint.getProperties()); //$NON-NLS-1$
-		}
-	}
-
-	protected void handleEndpointRemoved(org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
-			String matchedFilter) {
-		if (matchedFilter != null && matchedFilter.equals(this.ecfScope)) {
-			handleECFEndpointRemoved((EndpointDescription) endpoint);
-		} else {
-			logWarning("handleEndpointRemoved", //$NON-NLS-1$
-					"matchedFilter=" + matchedFilter + " does not equal ECF topology manager filter=" + this.ecfScope //$NON-NLS-1$ //$NON-NLS-2$
-							+ " for endpoint=" + endpoint.getProperties()); //$NON-NLS-1$
+	String[] getScope() {
+		synchronized (this) {
+			List<String> l = new ArrayList<String>();
+			if (allowLocalHost) {
+				l.add(this.ecfLocalEndpointListenerScope);
+			}
+			l.add(this.ecfNonLocalEndpointListenerScope);
+			if (nonECFTopologyManager) {
+				if (allowLocalHost) {
+					l.add(this.nonECFLocalEndpointListenerScope);
+				}
+				l.add(this.nonECFNonLocalEndpointListenerScope);
+			}
+			if (this.otherFilters != null) {
+				for(String s: this.otherFilters) {
+					l.add(s);
+				}
+			}
+			return l.toArray(new String[l.size()]);
 		}
 	}
 
@@ -103,10 +156,14 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements Endp
 
 		switch (eventType) {
 		case RemoteServiceAdminEvent.EXPORT_REGISTRATION:
-			advertiseEndpointDescription(endpointDescription);
+			if (!nonECFTopologyManager) { 
+				advertiseEndpointDescription(endpointDescription);
+			}
 			break;
 		case RemoteServiceAdminEvent.EXPORT_UNREGISTRATION:
-			unadvertiseEndpointDescription(endpointDescription);
+			if (!nonECFTopologyManager) {
+				unadvertiseEndpointDescription(endpointDescription);
+			}
 			break;
 		case RemoteServiceAdminEvent.EXPORT_ERROR:
 			logError("handleRemoteAdminEvent.EXPORT_ERROR", "Export error with event=" + rsaEvent); //$NON-NLS-1$ //$NON-NLS-2$
@@ -115,7 +172,9 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements Endp
 			logWarning("handleRemoteAdminEvent.EXPORT_WARNING", "Export warning with event=" + rsaEvent); //$NON-NLS-1$ //$NON-NLS-2$
 			break;
 		case RemoteServiceAdminEvent.EXPORT_UPDATE:
-			advertiseModifyEndpointDescription(endpointDescription);
+			if (!nonECFTopologyManager) {
+				advertiseModifyEndpointDescription(endpointDescription);
+			}
 			break;
 		case RemoteServiceAdminEvent.IMPORT_REGISTRATION:
 			break;
@@ -152,23 +211,118 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements Endp
 		}
 	}
 
-	protected void handleEndpointModifiedEndmatch(org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
+	protected void handleEndpointAdded(org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
 			String matchedFilter) {
-		// By default do nothing for end match. subclasses may decide
-		// to change this behavior
-	}
-
-	protected void handleEndpointModified(org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
-			String matchedFilter) {
-		if (matchedFilter != null && matchedFilter.equals(this.ecfScope)) {
-			handleECFEndpointModified((EndpointDescription) endpoint);
-		} else {
-			logWarning("handleEndpointModified", //$NON-NLS-1$
-					"matchedFilter=" + matchedFilter + " does not equal ECF topology manager filter=" + this.ecfScope //$NON-NLS-1$ //$NON-NLS-2$
-							+ " for endpoint=" + endpoint.getProperties()); //$NON-NLS-1$
+		if (matchedFilter.equals(nonECFLocalEndpointListenerScope)) {
+			advertiseEndpointDescription(endpoint);
+		} else if (matchedFilter.equals(nonECFNonLocalEndpointListenerScope)) {
+			EndpointDescription ed = convertEndpointDescriptionFromOSGiToECF(endpoint);
+			if (ed != null) {
+				handleECFEndpointAdded(ed);
+			}
+		} else if (matchedFilter.equals(ecfNonLocalEndpointListenerScope) || matchedFilter.equals(ecfLocalEndpointListenerScope)) {
+			handleECFEndpointAdded((EndpointDescription) endpoint);
+		} else if (this.otherFilters.contains(matchedFilter)) {
+			handleOtherFilterEndpointAdded(endpoint, matchedFilter);
 		}
 	}
 
+	/**
+	 * @since 4.9
+	 */
+	protected void handleOtherFilterEndpointAdded(org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
+			String matchedFilter) {
+	}
+	
+	protected void handleEndpointRemoved(org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
+			String matchedFilter) {
+		if (matchedFilter.equals(nonECFLocalEndpointListenerScope)) {
+			unadvertiseEndpointDescription(endpoint);
+		} else if (matchedFilter.equals(nonECFNonLocalEndpointListenerScope)) {
+			EndpointDescription ed = convertEndpointDescriptionFromOSGiToECF(endpoint);
+			if (ed != null)
+				handleECFEndpointRemoved(ed);
+		} else if (matchedFilter.equals(ecfNonLocalEndpointListenerScope) || matchedFilter.equals(ecfLocalEndpointListenerScope)) {
+			handleECFEndpointRemoved((EndpointDescription) endpoint);
+		} else if (this.otherFilters.contains(matchedFilter)) {
+			handleOtherFilterEndpointRemoved(endpoint,matchedFilter);
+		}
+	}
+
+	/**
+	 * @since 4.9
+	 */
+	protected void handleOtherFilterEndpointRemoved(org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
+			String matchedFilter) {
+	}
+	
+	/**
+	 * @since 4.9
+	 */
+	protected EndpointDescription convertEndpointDescriptionFromOSGiToECF(
+			org.osgi.service.remoteserviceadmin.EndpointDescription ed) {
+		Map<String, Object> newProps = new HashMap<String, Object>();
+		newProps.putAll(ed.getProperties());
+
+		String ecfNS = (String) newProps.remove(RemoteConstants.OSGI_CONTAINER_ID_NS);
+		if (ecfNS == null)
+			ecfNS = ECF_DEFAULT_NAMESPACE;
+		newProps.put(RemoteConstants.ENDPOINT_CONTAINER_ID_NAMESPACE, ecfNS);
+		return new EndpointDescription(newProps);
+	}
+
+
+	protected void handleEndpointModifiedEndmatch(org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
+			String matchedFilter) {
+	}
+
+	/**
+	 * @since 4.9
+	 */
+	protected void handleOtherFilterEndpointModifiedEndmatch(
+			org.osgi.service.remoteserviceadmin.EndpointDescription endpoint, String matchedFilter) {
+	}
+	
+	private static Long getOSGiEndpointModifiedValue(Map<String, Object> properties) {
+		Object modifiedValue = properties.get(RemoteConstants.OSGI_ENDPOINT_MODIFIED);
+		if (modifiedValue != null && modifiedValue instanceof String)
+			return Long.valueOf((String) modifiedValue);
+		return null;
+	}
+
+
+	protected void handleEndpointModified(org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
+			String matchedFilter) {
+		if (matchedFilter.equals(nonECFLocalEndpointListenerScope)) {
+			Map<String, Object> edProperties = endpoint.getProperties();
+			Long modified = getOSGiEndpointModifiedValue(edProperties);
+			Map<String, Object> newEdProperties = new HashMap<String, Object>();
+			newEdProperties.putAll(endpoint.getProperties());
+			if (modified != null) {
+				newEdProperties.remove(RemoteConstants.OSGI_ENDPOINT_MODIFIED);
+				handleNonECFEndpointModified(this,
+						new org.osgi.service.remoteserviceadmin.EndpointDescription(newEdProperties));
+			} else {
+				newEdProperties.put(RemoteConstants.OSGI_ENDPOINT_MODIFIED, String.valueOf(System.currentTimeMillis()));
+				advertiseModifyEndpointDescription(
+						new org.osgi.service.remoteserviceadmin.EndpointDescription(newEdProperties));
+			}
+		} else if (matchedFilter.equals(nonECFNonLocalEndpointListenerScope)) {
+			handleNonECFEndpointModified(this, endpoint);
+		} else if (matchedFilter.equals(ecfNonLocalEndpointListenerScope) || matchedFilter.equals(ecfLocalEndpointListenerScope)) {
+			handleECFEndpointModified((EndpointDescription) endpoint);
+		} else if (this.otherFilters.contains(matchedFilter)) {
+			handleOtherFilterEndpointModified(endpoint, matchedFilter);
+		}
+	}
+
+	/**
+	 * @since 4.9
+	 */
+	protected void handleOtherFilterEndpointModified(org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
+			String matchedFilter) {
+	}
+	
 	protected void exportRegisteredServices(final String exportRegisteredSvcsFilter) {
 		new Thread(new Runnable() {
 			public void run() {
@@ -235,6 +389,17 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements Endp
 
 			}
 		}, "BasicTopologyManagerPreRegSrvExporter").start(); //$NON-NLS-1$
+	}
+
+	@Override
+	public void endpointAdded(org.osgi.service.remoteserviceadmin.EndpointDescription endpoint, String matchedFilter) {
+		handleEndpointAdded(endpoint, matchedFilter);
+	}
+
+	@Override
+	public void endpointRemoved(org.osgi.service.remoteserviceadmin.EndpointDescription endpoint,
+			String matchedFilter) {
+		handleEndpointRemoved(endpoint, matchedFilter);
 	}
 
 }
