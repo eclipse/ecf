@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.base.feature"
       label="ECF Base Feature"
-      version="2.0.501.qualifier"
+      version="2.1.0.qualifier"
       provider-name="Eclipse.org"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
