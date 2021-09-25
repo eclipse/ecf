@@ -81,24 +81,6 @@ public class OSGIObjectInputStream extends ObjectInputStream implements OSGIObje
 	/**
 	 * @since 3.10
 	 */
-	public OSGIObjectInputStream(Bundle b) throws IOException {
-		super();
-		this.b = b;
-	}
-
-	/**
-	 * @since 3.10
-	 */
-	public synchronized void setInputStream(InputStream in) throws IOException {
-		if (this.in != null) {
-			this.in.close();
-		}
-		this.in = new ReplaceableObjectInputStream(in);
-	}
-
-	/**
-	 * @since 3.10
-	 */
 	public void setClassLoader(ClassLoader cl) {
 		this.classLoader = cl;
 	}
