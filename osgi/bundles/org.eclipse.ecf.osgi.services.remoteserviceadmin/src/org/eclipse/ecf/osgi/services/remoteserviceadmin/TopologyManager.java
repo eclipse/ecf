@@ -273,29 +273,33 @@ public class TopologyManager implements EventListenerHook, RemoteServiceAdminLis
 					}
 				}, (Dictionary<String, Object>) props);
 
-		legacyEndpointListenerRegistration = context.registerService(EndpointListener.class,
-				new ServiceFactory<EndpointListener>() {
-					public EndpointListener getService(Bundle bundle,
-							ServiceRegistration<EndpointListener> registration) {
-						return new ProxyEndpointListener(bundle);
-					}
-
-					public void ungetService(Bundle bundle, ServiceRegistration<EndpointListener> registration,
-							EndpointListener service) {
-						ProxyEndpointListener peel = (service instanceof ProxyEndpointListener)
-								? (ProxyEndpointListener) service
-								: null;
-						if (peel == null)
-							return;
-						synchronized (bundleEndpointEventListenerMap) {
-							List<EndpointEventHolder> endpointEventHolders = bundleEndpointEventListenerMap.get(bundle);
-							if (endpointEventHolders != null)
-								for (EndpointEventHolder eh : endpointEventHolders)
-									peel.deliverRemoveEventForBundle(eh);
+		// Only register deprecated EndpointListener if we are in nonECFTopologyManager mode
+		if (this.topologyManagerImpl.isNonECFTopologyManager()) {
+			legacyEndpointListenerRegistration = context.registerService(EndpointListener.class,
+					new ServiceFactory<EndpointListener>() {
+						public EndpointListener getService(Bundle bundle,
+								ServiceRegistration<EndpointListener> registration) {
+							return new ProxyEndpointListener(bundle);
 						}
-					}
-				}, (Dictionary<String, Object>) props);
 
+						public void ungetService(Bundle bundle, ServiceRegistration<EndpointListener> registration,
+								EndpointListener service) {
+							ProxyEndpointListener peel = (service instanceof ProxyEndpointListener)
+									? (ProxyEndpointListener) service
+									: null;
+							if (peel == null)
+								return;
+							synchronized (bundleEndpointEventListenerMap) {
+								List<EndpointEventHolder> endpointEventHolders = bundleEndpointEventListenerMap
+										.get(bundle);
+								if (endpointEventHolders != null)
+									for (EndpointEventHolder eh : endpointEventHolders)
+										peel.deliverRemoveEventForBundle(eh);
+							}
+						}
+					}, (Dictionary<String, Object>) props);
+		}
+		
 		String exportRegisteredSvcsFilter = (String) properties.get(EXPORT_REGISTERED_SERVICES_FILTER_PROP);
 		if (exportRegisteredSvcsFilter == null)
 			exportRegisteredSvcsFilter = EXPORT_REGISTERED_SERVICES_FILTER;

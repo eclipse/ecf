@@ -58,6 +58,10 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements Endp
 
 	private boolean nonECFTopologyManager = Boolean.valueOf(System.getProperty(TopologyManagerImpl.class.getName() + ".nonECFTopologyMananger","false")).booleanValue(); //$NON-NLS-1$ //$NON-NLS-2$
 	
+	boolean isNonECFTopologyManager() {
+		return nonECFTopologyManager;
+	}
+	
 	private String processFrameworkLocal(String input) {
 		return input.replaceAll("<<LOCAL>>", getFrameworkUUID()); //$NON-NLS-1$
 	}
