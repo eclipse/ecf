@@ -69,9 +69,6 @@
    <iu id="com.sun.syndication" version="0.0.0">
       <category name="sdk"/>
    </iu>
-   <iu id="jakarta.servlet" version="0.0.0">
-      <category name="sdk"/>
-   </iu>
    <iu id="org.apache.hadoop.zookeeper" version="0.0.0">
       <category name="sdk"/>
    </iu>
