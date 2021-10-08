@@ -6,18 +6,96 @@
    <feature id="org.eclipse.ecf.core.source" version="0.0.0">
       <category name="sdk"/>
    </feature>
+   <feature id="org.eclipse.ecf.core.feature" version="0.0.0">
+      <category name="core"/>
+   </feature>
+   <feature id="org.eclipse.ecf.core.ssl.feature" version="0.0.0">
+      <category name="core"/>
+   </feature>
+   <feature id="org.eclipse.ecf.filetransfer.feature" version="0.0.0">
+      <category name="core"/>
+   </feature>
+   <feature id="org.eclipse.ecf.filetransfer.httpclient5.feature" version="0.0.0">
+      <category name="core"/>
+   </feature>
+   <feature id="org.eclipse.ecf.filetransfer.httpclient45.feature" version="0.0.0">
+      <category name="core"/>
+   </feature>
+   <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature" version="0.0.0">
+      <category name="core"/>
+   </feature>
+   <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature" version="0.0.0">
+      <category name="core"/>
+   </feature>
+   <feature id="org.eclipse.ecf.filetransfer.ssl.feature" version="0.0.0">
+      <category name="core"/>
+   </feature>
+   <feature id="org.eclipse.ecf.core.feature.source" version="0.0.0">
+      <category name="core sources"/>
+   </feature>
+   <feature id="org.eclipse.ecf.core.ssl.feature.source" version="0.0.0">
+      <category name="core sources"/>
+   </feature>
+   <feature id="org.eclipse.ecf.filetransfer.feature.source" version="0.0.0">
+      <category name="core sources"/>
+   </feature>
+   <feature id="org.eclipse.ecf.filetransfer.httpclient5.feature.source" version="0.0.0">
+      <category name="core sources"/>
+   </feature>
+   <feature id="org.eclipse.ecf.filetransfer.httpclient45.feature.source" version="0.0.0">
+      <category name="core sources"/>
+   </feature>
+   <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature.source" version="0.0.0">
+      <category name="core sources"/>
+   </feature>
+   <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature.source" version="0.0.0">
+      <category name="core sources"/>
+   </feature>
+   <feature id="org.eclipse.ecf.filetransfer.ssl.feature.source" version="0.0.0">
+      <category name="core sources"/>
+   </feature>
    <feature id="org.eclipse.ecf.remoteservice.sdk.examples.feature" version="0.0.0">
-      <category name="sdk"/>
+      <category name="remoteservices"/>
    </feature>
    <feature id="org.eclipse.ecf.remoteservice.sdk.examples.feature.source" version="0.0.0">
-      <category name="sdk"/>
+      <category name="remoteservices"/>
    </feature>
    <feature id="org.eclipse.ecf.remoteservice.sdk.feature" version="0.0.0">
-      <category name="sdk"/>
+      <category name="remoteservices"/>
    </feature>
    <feature id="org.eclipse.ecf.remoteservice.sdk.feature.source" version="0.0.0">
-      <category name="sdk"/>
+      <category name="remoteservices"/>
    </feature>
+   <iu id="com.sun.syndication" version="0.0.0">
+      <category name="sdk"/>
+   </iu>
+   <iu id="javax.servlet" version="0.0.0">
+      <category name="sdk"/>
+   </iu>
+   <iu id="org.apache.hadoop.zookeeper" version="0.0.0">
+      <category name="sdk"/>
+   </iu>
+   <iu id="org.apache.log4j" version="0.0.0">
+      <category name="sdk"/>
+   </iu>
+   <iu id="org.jdom" version="0.0.0">
+      <category name="sdk"/>
+   </iu>
+   <iu id="org.json" version="0.0.0">
+      <category name="sdk"/>
+   </iu>
+   <iu id="org.objectweb.asm" version="0.0.0">
+      <category name="sdk"/>
+   </iu>
+   <iu id="org.xbill.dns" version="0.0.0">
+      <category name="sdk"/>
+   </iu>
+   <iu id="org.apache.httpcomponents.httpclient" version="0.0.0">
+      <category name="core"/>
+   </iu>
+   <iu id="org.apache.httpcomponents.httpcore" version="0.0.0">
+      <category name="core"/>
+   </iu>
    <feature id="org.eclipse.ecf.console.feature" version="0.0.0">
       <category name="other"/>
    </feature>
@@ -85,5 +163,8 @@
       <category name="other"/>
    </feature>
    <category-def name="sdk" label="ECF SDK for Eclipse"/>
+   <category-def name="core" label="ECF Core Features"/>
+   <category-def name="core sources" label="ECF Core Source Features"/>
+   <category-def name="remoteservices" label="ECF Remote Services SDK"/>
    <category-def name="other" label="Other ECF Features"/>
 </site>
