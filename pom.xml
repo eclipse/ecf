@@ -376,6 +376,7 @@
               <generate>true</generate>
             </sourceReferences>
             <timestampProvider>jgit</timestampProvider>
+            <jgit.dirtyWorkingTree>warning</jgit.dirtyWorkingTree>
           </configuration>
         </plugin>
         <plugin>
