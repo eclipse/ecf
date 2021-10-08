@@ -43,7 +43,7 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
          unpack="false"/>
 
    <plugin
-         id="javax.servlet"
+         id="jakarta.servlet-api"
          download-size="0"
          install-size="0"
          version="0.0.0"
