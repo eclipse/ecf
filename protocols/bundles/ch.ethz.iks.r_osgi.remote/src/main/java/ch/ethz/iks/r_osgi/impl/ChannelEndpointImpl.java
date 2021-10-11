@@ -204,7 +204,7 @@ public final class ChannelEndpointImpl implements ChannelEndpoint {
 	 */
 	boolean hasRedundantLinks = false;
 	
-	boolean traceChannelEndpoint = new Boolean(System.getProperty("ch.ethz.iks.r_osgi.impl.traceChannelEndpoint","false")).booleanValue();
+	boolean traceChannelEndpoint = Boolean.parseBoolean(System.getProperty("ch.ethz.iks.r_osgi.impl.traceChannelEndpoint","false"));
 
 	void trace(String message) {
 		trace(message, null);

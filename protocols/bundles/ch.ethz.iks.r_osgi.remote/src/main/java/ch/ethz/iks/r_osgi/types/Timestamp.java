@@ -44,7 +44,7 @@ import java.util.Random;
  * attribute is generated.
  * </p>
  * 
- * @author Jan S. Rellermeyer, ETH Zürich.
+ * @author Jan S. Rellermeyer, ETH ZÃ¼rich.
  * @since 0.3
  */
 public final class Timestamp implements Comparable {
@@ -71,7 +71,7 @@ public final class Timestamp implements Comparable {
 			counterString = "0" + counterString; //$NON-NLS-1$
 		}
 		ts = ts + counterString;
-		timestamp = new Long(ts).longValue();
+		timestamp = Long.parseLong(ts);
 	}
 
 	/**
@@ -81,7 +81,7 @@ public final class Timestamp implements Comparable {
 	 *            a <code>String</code> representation of an existing timestamp.
 	 */
 	private Timestamp(final String ts) {
-		timestamp = new Long(ts).longValue();
+		timestamp = Long.parseLong(ts);
 	}
 
 	/**
@@ -179,6 +179,6 @@ public final class Timestamp implements Comparable {
 	 * @return the int value that represents the hash code.
 	 */
 	public int hashCode() {
-		return new Long(timestamp).hashCode();
+		return Long.valueOf(timestamp).hashCode();
 	}
 }

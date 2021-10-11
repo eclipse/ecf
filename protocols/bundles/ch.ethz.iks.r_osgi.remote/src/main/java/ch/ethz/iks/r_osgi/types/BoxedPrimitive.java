@@ -83,7 +83,7 @@ public final class BoxedPrimitive implements Serializable {
 	 *            the <code>boolean</code> value.
 	 */
 	public BoxedPrimitive(final boolean b) {
-		boxed = new Boolean(b);
+		boxed = Boolean.valueOf(b);
 	}
 
 	/**
@@ -93,7 +93,7 @@ public final class BoxedPrimitive implements Serializable {
 	 *            the <code>long</code> value.
 	 */
 	public BoxedPrimitive(final long l) {
-		boxed = new Long(l);
+		boxed = Long.valueOf(l);
 	}
 
 	/**
@@ -103,7 +103,7 @@ public final class BoxedPrimitive implements Serializable {
 	 *            the <code>char</code> value.
 	 */
 	public BoxedPrimitive(final char c) {
-		boxed = new Character(c);
+		boxed = Character.valueOf(c);
 	}
 
 	/**
@@ -113,7 +113,7 @@ public final class BoxedPrimitive implements Serializable {
 	 *            the <code>double</code> value.
 	 */
 	public BoxedPrimitive(final double d) {
-		boxed = new Double(d);
+		boxed = Double.valueOf(d);
 	}
 
 	/**
@@ -123,7 +123,7 @@ public final class BoxedPrimitive implements Serializable {
 	 *            the <code>float</code> value.
 	 */
 	public BoxedPrimitive(final float f) {
-		boxed = new Float(f);
+		boxed = Float.valueOf(f);
 	}
 
 	/**
@@ -133,7 +133,7 @@ public final class BoxedPrimitive implements Serializable {
 	 *            the <code>short</code> value.
 	 */
 	public BoxedPrimitive(final short s) {
-		boxed = new Short(s);
+		boxed = Short.valueOf(s);
 	}
 
 	/**
@@ -143,7 +143,7 @@ public final class BoxedPrimitive implements Serializable {
 	 *            the <code>short</code> value.
 	 */
 	public BoxedPrimitive(final byte b) {
-		boxed = new Byte(b);
+		boxed = Byte.valueOf(b);
 	}
 
 	/**

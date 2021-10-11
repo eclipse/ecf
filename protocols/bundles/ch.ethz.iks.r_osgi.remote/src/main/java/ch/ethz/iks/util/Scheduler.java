@@ -137,7 +137,7 @@ public final class Scheduler {
 				throw new IllegalStateException("Object " + object //$NON-NLS-1$
 						+ " is already scheduled."); //$NON-NLS-1$ 
 			}
-			final Long ts = new Long(timestamp);
+			final Long ts = Long.valueOf(timestamp);
 			expirationQueue.put(ts, object);
 			expirationDataIndex.put(object, ts);
 			expirationQueue.notifyAll();

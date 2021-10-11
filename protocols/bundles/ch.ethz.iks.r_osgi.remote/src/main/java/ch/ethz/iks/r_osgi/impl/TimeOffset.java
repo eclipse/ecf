@@ -40,7 +40,7 @@ import ch.ethz.iks.util.MathUtils;
  * to local time.
  * </p>
  * 
- * @author Jan S. Rellermeyer, ETH Zürich.
+ * @author Jan S. Rellermeyer, ETH ZÃ¼rich.
  * @since 0.2
  */
 final class TimeOffset {
@@ -205,7 +205,7 @@ final class TimeOffset {
 	 * @return the timestamp transformed into local time.
 	 */
 	Long transform(final Long remoteTimestamp) {
-		return new Long(remoteTimestamp.longValue() + offset);
+		return Long.valueOf(remoteTimestamp.longValue() + offset);
 	}
 
 	/**
