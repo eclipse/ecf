@@ -29,6 +29,13 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+         
+   <plugin
+         id="org.eclipse.ecf.provider.filetransfer.httpclient5.win32"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.apache.commons.codec"
@@ -46,6 +53,13 @@
 
    <plugin
          id="org.apache.httpcomponents.client5.httpclient5"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+         
+   <plugin
+         id="org.apache.httpcomponents.client5.httpclient5-win"
          download-size="0"
          install-size="0"
          version="0.0.0"
