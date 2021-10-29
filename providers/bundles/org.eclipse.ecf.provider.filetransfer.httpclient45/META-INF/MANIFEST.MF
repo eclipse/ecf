@@ -53,5 +53,5 @@ Export-Package: org.eclipse.ecf.internal.provider.filetransfer.httpclient45;vers
    org.eclipse.ecf.provider.filetransfer.retrieve,
    org.eclipse.ecf.provider.filetransfer.util"
 Service-Component: OSGI-INF/services/*.xml
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy

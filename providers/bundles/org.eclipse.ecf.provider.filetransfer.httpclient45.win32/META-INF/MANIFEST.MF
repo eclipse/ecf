@@ -7,7 +7,7 @@ Automatic-Module-Name: org.eclipse.ecf.provider.filetransfer.httpclient45.win32
 Bundle-Version: 1.0.400.qualifier
 Bundle-Localization: plugin
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Require-Bundle: org.eclipse.osgi.services;bundle-version="[3.4.0,4.0.0)",
  org.eclipse.ecf;bundle-version="[3.4.0,4.0.0)",
