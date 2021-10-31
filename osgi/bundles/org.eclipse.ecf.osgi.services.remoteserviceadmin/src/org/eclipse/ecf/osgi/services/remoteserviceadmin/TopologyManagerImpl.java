@@ -58,16 +58,16 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements Endp
 
 	private boolean nonECFTopologyManager = Boolean.valueOf(System.getProperty(TopologyManagerImpl.class.getName() + ".nonECFTopologyMananger","false")).booleanValue(); //$NON-NLS-1$ //$NON-NLS-2$
 	
-	boolean isNonECFTopologyManager() {
-		return nonECFTopologyManager;
-	}
-	
 	private String processFrameworkLocal(String input) {
 		return input.replaceAll("<<LOCAL>>", getFrameworkUUID()); //$NON-NLS-1$
 	}
 	
 	private boolean allowLocalHost;
 	private List<String> otherFilters;
+	
+	boolean isNonECFTopologyManager() {
+		return nonECFTopologyManager;
+	}
 	
 	public TopologyManagerImpl(BundleContext context) {
 		this(context,false, (String[]) null);
@@ -146,7 +146,9 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements Endp
 
 	// EventListenerHook impl
 	protected void handleEvent(ServiceEvent event, Map listeners) {
-		super.handleEvent(event, listeners);
+		if (!isNonECFTopologyManager()) {
+			super.handleEvent(event, listeners);
+		}
 	}
 
 	// RemoteServiceAdminListener impl

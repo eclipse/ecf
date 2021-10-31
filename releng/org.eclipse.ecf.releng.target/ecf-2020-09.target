@@ -63,5 +63,10 @@
 		<unit id="org.slf4j.binding.log4j12" version="1.7.30.v20201108-2042"/>
 		<unit id="org.slf4j.binding.log4j12.source" version="1.7.30.v20201108-2042"/>
 	</location>
+	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+		<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/I20211028195436/repository"/>
+		<unit id="org.apache.httpcomponents.client5.httpclient5-win" version="5.0.2.v20211020-1603"/>
+		<unit id="org.apache.httpcomponents.client5.httpclient5-win.source" version="5.0.2.v20211020-1603"/>
+	</location>
 </locations>
 </target>
