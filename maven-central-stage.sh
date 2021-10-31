@@ -8,8 +8,7 @@ org.eclipse.ecf.core.ssl.feature
 org.eclipse.ecf.filetransfer.feature
 org.eclipse.ecf.filetransfer.ssl.feature
 org.eclipse.ecf.filetransfer.httpclient45.feature
-org.eclipse.ecf.filetransfer.httpclient4.feature
-org.eclipse.ecf.filetransfer.httpclient4.ssl.feature
+org.eclipse.ecf.filetransfer.httpclient5.feature
 org.eclipse.ecf.remoteservice.examples.feature"
 
 # Exclude orbit bundles, they should be done separately
@@ -22,6 +21,8 @@ org.apache.hadoop.zookeeper
 org.apache.httpcomponents.httpclient
 org.apache.httpcomponents.httpclient.win
 org.apache.httpcomponents.httpcore
+org.apache.httpcomponents.client5.httpclient5
+org.apache.httpcomponents.client5.httpclient5-win
 org.apache.log4j
 org.json
 org.objectweb.asm"
