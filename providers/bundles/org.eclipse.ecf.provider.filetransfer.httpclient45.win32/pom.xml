@@ -12,21 +12,4 @@
   <version>1.0.500-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.eclipse.tycho</groupId>
-        <artifactId>target-platform-configuration</artifactId>
-        <configuration>
-          <environments>
-            <environment>
-              <os>win32</os>
-              <ws>*</ws>
-              <arch>*</arch>
-            </environment>
-          </environments>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>
