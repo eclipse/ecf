@@ -65,6 +65,10 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements Endp
 	private boolean allowLocalHost;
 	private List<String> otherFilters;
 	
+	boolean isNonECFTopologyManager() {
+		return nonECFTopologyManager;
+	}
+	
 	public TopologyManagerImpl(BundleContext context) {
 		this(context,false, (String[]) null);
 	}
@@ -142,7 +146,9 @@ public class TopologyManagerImpl extends AbstractTopologyManager implements Endp
 
 	// EventListenerHook impl
 	protected void handleEvent(ServiceEvent event, Map listeners) {
-		super.handleEvent(event, listeners);
+		if (!isNonECFTopologyManager()) {
+			super.handleEvent(event, listeners);
+		}
 	}
 
 	// RemoteServiceAdminListener impl
