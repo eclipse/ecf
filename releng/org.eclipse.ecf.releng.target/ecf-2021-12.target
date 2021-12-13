@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.8"?>
+<target name="2021-12" sequenceNumber="1">
+<locations>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.license.feature.group" version="2.0.2.v20181016-2210"/>
+<repository location="https://download.eclipse.org/cbi/updates/license/2.0.2.v20181016-2210"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.apache.hadoop.zookeeper" version="3.3.3.v201105210832"/>
+<unit id="org.apache.hadoop.zookeeper.source" version="3.3.3.v201105210832"/>
+<unit id="org.apache.commons.httpclient" version="3.1.0.v201012070820"/>
+<unit id="org.apache.commons.httpclient.source" version="3.1.0.v201012070820"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.emf.edit.ui.feature.group" version="2.22.0.v20210924-1718"/>
+<unit id="org.eclipse.emf.edit.ui.source.feature.group" version="2.22.0.v20210924-1718"/>
+<unit id="org.eclipse.pde.feature.group" version="3.14.1000.v20211124-1800"/>
+<unit id="org.eclipse.pde.source.feature.group" version="3.14.1000.v20211124-1800"/>
+<unit id="org.eclipse.platform.feature.group" version="4.22.0.v20211124-1800"/>
+<unit id="org.eclipse.platform.source.feature.group" version="4.22.0.v20211124-1800"/>
+<repository location="https://download.eclipse.org/releases/2021-12"/>
+</location>
+	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+		<unit id="com.sun.syndication" version="0.9.0.v200803061811"/>
+		<unit id="com.sun.syndication.source" version="0.9.0.v200803061811"/>
+		<unit id="org.apache.commons.codec" version="1.14.0.v20200818-1422"/>
+		<unit id="org.apache.commons.codec.source" version="1.14.0.v20200818-1422"/>
+		<unit id="org.apache.commons.logging" version="1.2.0.v20180409-1502"/>
+		<unit id="org.apache.commons.logging.source" version="1.2.0.v20180409-1502"/>
+		<unit id="org.apache.log4j" version="1.2.15.v201012070815"/>
+		<unit id="org.apache.log4j.source" version="1.2.15.v201012070815"/>
+		<unit id="org.jdom" version="1.1.1.v201101151400"/>
+		<unit id="org.jdom.source" version="1.1.1.v201101151400"/>
+		<unit id="org.json" version="1.0.0.v201011060100"/>
+		<unit id="org.xbill.dns" version="2.0.8.v201112050911"/>
+		<unit id="org.xbill.dns.source" version="2.0.8.v201112050911"/>
+		<unit id="org.objectweb.asm" version="9.1.0.v20210209-1849"/>
+		<unit id="org.objectweb.asm.source" version="9.1.0.v20210209-1849"/>
+		<unit id="org.apache.httpcomponents.httpclient" version="4.5.13.v20210128-2225"/>
+		<unit id="org.apache.httpcomponents.httpclient.source" version="4.5.13.v20210128-2225"/>
+		<unit id="org.apache.httpcomponents.httpclient.win" version="4.5.13.v20211010-1849"/>
+		<unit id="org.apache.httpcomponents.httpclient.win.source" version="4.5.13.v20211010-1849"/>
+		<unit id="org.apache.httpcomponents.httpcore" version="4.4.14.v20210128-2225"/>
+		<unit id="org.apache.httpcomponents.httpcore.source" version="4.4.14.v20210128-2225"/>
+		<unit id="com.sun.jna" version="4.5.1.v20210503-0343"/>
+		<unit id="com.sun.jna.platform" version="4.5.1.v20190425-1842"/>
+		<unit id="com.sun.jna.platform.source" version="4.5.1.v20190425-1842"/>
+		<unit id="com.sun.jna.source" version="4.5.1.v20210503-0343"/>
+		<unit id="com.sun.jna" version="5.8.0.v20210503-0343"/>
+		<unit id="com.sun.jna.platform" version="5.8.0.v20210406-1004"/>
+		<unit id="com.sun.jna.platform.source" version="5.8.0.v20210406-1004"/>
+		<unit id="com.sun.jna.source" version="5.8.0.v20210503-0343"/>
+		<unit id="org.apache.httpcomponents.client5.httpclient5" version="5.0.2.v20201015-2258"/>
+		<unit id="org.apache.httpcomponents.client5.httpclient5.source" version="5.0.2.v20201015-2258"/>
+		<unit id="org.apache.httpcomponents.client5.httpclient5-win" version="5.0.2.v20211029-0612"/>
+		<unit id="org.apache.httpcomponents.client5.httpclient5-win.source" version="5.0.2.v20211029-0612"/>
+		<unit id="org.apache.httpcomponents.core5.httpcore5" version="5.0.2.v20201015-2258"/>
+		<unit id="org.apache.httpcomponents.core5.httpcore5.source" version="5.0.2.v20201015-2258"/>
+		<unit id="org.apache.httpcomponents.core5.httpcore5-h2" version="5.0.2.v20210429-1809"/>
+		<unit id="org.apache.httpcomponents.core5.httpcore5-h2.source" version="5.0.2.v20210429-1809"/>
+		<unit id="org.conscrypt.conscrypt-openjdk-uber" version="2.5.1.v20210923-1401"/>
+		<unit id="org.conscrypt.conscrypt-openjdk-uber.source" version="2.5.1.v20210923-1401"/>
+		<unit id="org.slf4j.binding.log4j12" version="1.7.30.v20201108-2042"/>
+		<unit id="org.slf4j.binding.log4j12.source" version="1.7.30.v20201108-2042"/>
+		<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20211122181901/repository"/>
+	</location>
+</locations>
+	<targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11"/>
+</target>
