@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpHeaders;
 import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.HttpStatus;
@@ -614,8 +615,10 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 				EntityUtils.consume(httpResponse.getEntity());
 				throw new IncomingFileTransferException(Messages.HttpClientRetrieveFileTransfer_Proxy_Auth_Required, code);
 			} else {
-				Trace.trace(Activator.PLUGIN_ID, EntityUtils.toString(httpResponse.getEntity()));
-				// EntityUtils.consume(httpResponse.getEntity());
+				HttpEntity httpResponseEntity = httpResponse.getEntity();
+				if (httpResponseEntity != null) {
+					Trace.trace(Activator.PLUGIN_ID, EntityUtils.toString(httpResponseEntity));
+				}
 				throw new IncomingFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, Integer.valueOf(code)), code);
 			}
 		} catch (final Exception e) {
