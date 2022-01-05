@@ -10,5 +10,5 @@
   </parent>
   <artifactId>org.eclipse.ecf.filetransfer.httpclient5.feature</artifactId>
   <packaging>eclipse-feature</packaging>
-  <version>1.1.100-SNAPSHOT</version>
+  <version>1.1.200-SNAPSHOT</version>
 </project>
