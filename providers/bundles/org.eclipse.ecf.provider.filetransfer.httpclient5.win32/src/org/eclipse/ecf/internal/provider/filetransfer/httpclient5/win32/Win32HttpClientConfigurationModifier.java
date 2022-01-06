@@ -32,6 +32,7 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
+// Note that this depends upon HttpClientContext class which is from org.apache.httpcomponents.client5.httpclient5 bundle
 @Component
 public class Win32HttpClientConfigurationModifier extends HttpClientModifierAdapter {
 
