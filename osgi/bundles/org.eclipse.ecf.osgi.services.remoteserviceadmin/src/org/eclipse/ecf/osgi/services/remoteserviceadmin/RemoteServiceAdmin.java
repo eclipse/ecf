@@ -265,20 +265,23 @@ public class RemoteServiceAdmin implements org.osgi.service.remoteserviceadmin.R
 		// verifyExportedInterfaces
 		if (!validExportedInterfaces(serviceReference, exportedInterfaces))
 			return Collections.EMPTY_LIST;
+
+		// Get all intents (service.intents, service.exported.intents,
+		// service.exported.intents.extra)
+		final String[] serviceIntents = PropertiesUtil.getServiceIntents(serviceReference, overridingProperties);
+
 		// Get optional exported configs
 		String[] ecs = PropertiesUtil.getStringArrayFromPropertyValue(
 				overridingProperties.get(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_CONFIGS));
 		if (ecs == null) {
 			ecs = PropertiesUtil.getStringArrayFromPropertyValue(serviceReference
 					.getProperty(org.osgi.service.remoteserviceadmin.RemoteConstants.SERVICE_EXPORTED_CONFIGS));
-			if (ecs == null) {
+			// we only set service exported configs to a default if there are no service intents specified
+			if (ecs == null && (serviceIntents == null || serviceIntents.length == 0)) {
 				ecs = DEFAULT_SERVICE_EXPORTED_CONFIGS;
 			}
 		}
 		final String[] exportedConfigs = ecs;
-		// Get all intents (service.intents, service.exported.intents,
-		// service.exported.intents.extra)
-		final String[] serviceIntents = PropertiesUtil.getServiceIntents(serviceReference, overridingProperties);
 
 		// Create result registrations. This collection will be returned
 		Collection<ExportRegistration> resultRegistrations = new ArrayList<ExportRegistration>();
