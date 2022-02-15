@@ -197,7 +197,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			try {
 				httpResponse.close();
 			} catch (final IOException e) {
-				Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "hardClose", e)); //$NON-NLS-1$
+				Activator.getDefault().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, String.format("hardClose httpResponse.close() exception. url=%s", remoteFileURL), e)); //$NON-NLS-1$
 			}
 		}
 
@@ -206,7 +206,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			if (localFileContents != null && closeOutputStream)
 				localFileContents.close();
 		} catch (final IOException e) {
-			Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "hardClose", e)); //$NON-NLS-1$
+			Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, String.format("hardClose localFileContents.close() exception. url=%s",remoteFileURL), e)); //$NON-NLS-1$
 		}
 		// clear input and output streams
 		remoteFileContents = null;

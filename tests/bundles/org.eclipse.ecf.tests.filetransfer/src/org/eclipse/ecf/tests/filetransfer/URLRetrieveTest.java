@@ -206,17 +206,23 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 		testReceive(url);
 	}
 
+	// Invalid test as double-slash is not a legal in the path section of a URI (see RFC2396, sections 3.2, 3.4). 
+	/*
 	public void testReceiveNonCanonicalURLPath() throws Exception {
 		//addProxy("composent.com",3129,"foo\\bar","password");
 		testReceive(HTTP_RETRIEVE_NON_CANONICAL_URL);
 	}
+	*/
 
-	public void testReceiveNonCanonicalURLPathLocalHost() throws Exception {
+	// Invalid test as double-slash is not a legal in the path section of a URI (see RFC2396, sections 3.2, 3.4). 
+	/*
+ 	void testReceiveNonCanonicalURLPathLocalHost() throws Exception {
 		String url = server.getServerURL() + "//foo";
 		assertTrue(url, url.matches("\\Ahttp://localhost:[0-9]+//foo\\Z"));
 		testReceive(url);
 	}
-
+	*/
+	
 	public void testFTPReceiveFile() throws Exception {
 		testReceive(FTP_RETRIEVE);
 	}

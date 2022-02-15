@@ -10,6 +10,6 @@
   </parent>
   <groupId>org.eclipse.ecf</groupId>
   <artifactId>org.eclipse.ecf.provider.filetransfer</artifactId>
-  <version>3.2.700-SNAPSHOT</version>
+  <version>3.2.800-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>

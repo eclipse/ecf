@@ -159,13 +159,13 @@ public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTrans
 			if (remoteFileContents != null)
 				remoteFileContents.close();
 		} catch (final IOException e) {
-			Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "hardClose", e)); //$NON-NLS-1$
+			Activator.getDefault().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, String.format("hardClose url=%s", remoteFileURL), e)); //$NON-NLS-1$
 		}
 		try {
 			if (localFileContents != null)
 				localFileContents.close();
 		} catch (final IOException e) {
-			Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "hardClose", e)); //$NON-NLS-1$
+			Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, String.format("hardClose url=%s", remoteFileURL), e)); //$NON-NLS-1$
 		}
 		job = null;
 		remoteFileContents = null;

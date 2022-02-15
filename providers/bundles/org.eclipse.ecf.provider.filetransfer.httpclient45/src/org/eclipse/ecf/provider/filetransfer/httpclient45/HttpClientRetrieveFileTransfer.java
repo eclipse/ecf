@@ -193,7 +193,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			try {
 				httpResponse.close();
 			} catch (final IOException e) {
-				Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "hardClose", e)); //$NON-NLS-1$
+				Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, String.format("hardClose url=%s", remoteFileURL), e)); //$NON-NLS-1$
 			}
 		}
 
