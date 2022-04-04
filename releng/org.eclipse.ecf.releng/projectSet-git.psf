@@ -20,7 +20,6 @@
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,releng/features/org.eclipse.ecf.console.feature"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,releng/features/org.eclipse.ecf.core"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,releng/features/org.eclipse.ecf.core.feature"/>
-<project reference="1.0,https://github.com/eclipse/ecf.git,master,releng/features/org.eclipse.ecf.core.featurepatch"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,releng/features/org.eclipse.ecf.core.ssl.feature"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,framework/bundles/org.eclipse.ecf.datashare"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,releng/features/org.eclipse.ecf.datashare.feature"/>
