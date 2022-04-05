@@ -10,6 +10,6 @@
   </parent>
   <groupId>org.eclipse.ecf</groupId>
   <artifactId>ch.ethz.iks.r_osgi.remote</artifactId>
-  <version>1.2.400-SNAPSHOT</version>
+  <version>1.2.500-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>
