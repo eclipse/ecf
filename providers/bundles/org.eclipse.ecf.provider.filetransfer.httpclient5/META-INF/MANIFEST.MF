@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.provider.filetransfer.httpclient5;singleton:=true
 Bundle-Version: 1.0.300.qualifier
-Bundle-Vendor: %plugin.vendor
+Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
 Automatic-Module-Name: org.eclipse.ecf.provider.filetransfer.httpclient5
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
