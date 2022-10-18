@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2019 EclipseSource and others.
+ * Copyright (c) 2019, 2022 EclipseSource and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -9,16 +9,12 @@
  *   EclipseSource - initial API and implementation
  *   Thomas Joiner - changed to work with HttpClient 4.1 and added SPNEGO detection
  *   Yatta Solutions - HttpClient 4.5 implementation
+ *   Christoph Läubrich - adapt to http java client
  *
  * SPDX-License-Identifier: EPL-2.0
  *****************************************************************************/
 package org.eclipse.ecf.internal.provider.filetransfer.httpclientjava;
 
-import org.apache.hc.client5.http.auth.AuthScheme;
-import org.apache.hc.client5.http.protocol.HttpClientContext;
-import org.apache.hc.core5.http.protocol.HttpContext;
-
-@SuppressWarnings("unused")
 public class NTLMProxyDetector {
 
 	private static final String PROXY_SPNEGO_VALUE = "NEGOTIATE"; //$NON-NLS-1$
@@ -33,11 +29,11 @@ public class NTLMProxyDetector {
 	 * @return true if it connected to an NTLM proxy
 	 * @since 5.0
 	 */
-	public static boolean detectNTLMProxy(HttpContext context) {
+	public static boolean detectNTLMProxy(IHttpClientContext context) {
 		return isProxyType(context, PROXY_NTLM_VALUE);
 	}
 
-	private static boolean isProxyType(HttpContext context, String scheme) {
+	private static boolean isProxyType(IHttpClientContext context, String scheme) {
 		if (context == null)
 			return false;
 //      AuthState authState = (AuthState) context.getAttribute(HttpClientContext.PROXY_AUTH_STATE);
@@ -62,7 +58,7 @@ public class NTLMProxyDetector {
 	 * @return true if it connected to an SPNEGO proxy
 	 * @since 5.0
 	 */
-	public static boolean detectSPNEGOProxy(HttpContext context) {
+	public static boolean detectSPNEGOProxy(IHttpClientContext context) {
 		return isProxyType(context, PROXY_SPNEGO_VALUE);
 	}
 }

@@ -14,14 +14,13 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.provider.filetransfer.httpclientjava;
 
+import java.net.Authenticator;
 import java.net.InetAddress;
+import java.net.PasswordAuthentication;
 import java.net.UnknownHostException;
-import org.apache.hc.client5.http.auth.AuthScope;
-import org.apache.hc.client5.http.auth.Credentials;
-import org.apache.hc.client5.http.auth.NTCredentials;
-import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
-import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
-import org.apache.hc.core5.http.protocol.HttpContext;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.core.util.ProxyAddress;
 import org.eclipse.ecf.core.util.Trace;
@@ -30,7 +29,7 @@ import org.eclipse.ecf.provider.filetransfer.httpclientjava.HttpClientRetrieveFi
 import org.osgi.framework.FrameworkUtil;
 
 @SuppressWarnings("restriction")
-public class HttpClientProxyCredentialProvider extends BasicCredentialsProvider {
+public class HttpClientProxyCredentialProvider extends Authenticator {
 	private static final String COMPUTERNAME_ENV = "COMPUTERNAME"; //$NON-NLS-1$
 	private static final String HOSTNAME_ENV = "HOSTNAME"; //$NON-NLS-1$
 	private static final String LOGONSERVER_ENV = "LOGONSERVER"; //$NON-NLS-1$
@@ -44,6 +43,8 @@ public class HttpClientProxyCredentialProvider extends BasicCredentialsProvider 
 	private static final String OSGI_OS_WIN32 = "win32"; //$NON-NLS-1$
 
 	private static final String NTLM_DOMAIN_PROPERTY = "http.auth.ntlm.domain"; //$NON-NLS-1$
+
+	private Map<AuthScope, Credentials> credentialsMap = new HashMap<>();
 
 	protected Proxy getECFProxy() {
 		return null;
@@ -71,12 +72,22 @@ public class HttpClientProxyCredentialProvider extends BasicCredentialsProvider 
 	}
 
 	@Override
-	public Credentials getCredentials(AuthScope authscope, HttpContext httpContext) {
+	protected PasswordAuthentication getPasswordAuthentication() {
+		if (getRequestorType() == RequestorType.PROXY) {
+			Credentials credential = getCredentials(null); // TODO
+			if (credential != null) {
+				return new PasswordAuthentication(credential.getUserName(), credential.getPassword());
+			}
+		}
+		return null;
+	}
+
+	public Credentials getCredentials(AuthScope authscope) {
 		Trace.entering(Activator.PLUGIN_ID, DebugOptions.METHODS_ENTERING, HttpClientProxyCredentialProvider.class, "getCredentials " + authscope); //$NON-NLS-1$
 
 		// First check to see whether given authscope matches any authscope
 		// already cached.
-		Credentials result = super.getCredentials(authscope, httpContext);
+		Credentials result = credentialsMap.get(authscope);
 		// If we have a match, return credentials
 		if (result != null) {
 			if ("ntlm".equalsIgnoreCase(authscope.getSchemeName())) { //$NON-NLS-1$
@@ -308,6 +319,10 @@ public class HttpClientProxyCredentialProvider extends BasicCredentialsProvider 
 			return userName.substring(pos + 1);
 		}
 		return userName;
+	}
+
+	public void setCredentials(AuthScope authScope, Credentials credentials) {
+		credentialsMap.put(authScope, credentials);
 	}
 
 }

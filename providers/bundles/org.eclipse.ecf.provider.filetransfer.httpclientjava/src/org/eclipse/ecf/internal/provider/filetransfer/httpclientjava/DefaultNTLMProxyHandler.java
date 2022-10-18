@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2019 Yatta Solutions and others.
+ * Copyright (c) 2019, 2022 Yatta Solutions and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -7,13 +7,15 @@
  *
  * Contributors:
  *   Yatta Solutions - initial API and implementation
+ *   Christoph Läubrich - adapt to java http client
  *
  * SPDX-License-Identifier: EPL-2.0
  *****************************************************************************/
 package org.eclipse.ecf.internal.provider.filetransfer.httpclientjava;
 
+import java.net.HttpURLConnection;
 import java.util.Map;
-import org.apache.hc.core5.http.HttpStatus;
+
 import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.filetransfer.BrowseFileTransferException;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
@@ -46,7 +48,7 @@ public class DefaultNTLMProxyHandler implements INTLMProxyHandler {
 	@Override
 	public void handleNTLMProxy(Proxy proxy, int code) throws IncomingFileTransferException {
 		seenNTLM = true;
-		if (code >= HttpStatus.SC_BAD_REQUEST) {
+		if (code >= HttpURLConnection.HTTP_BAD_REQUEST) {
 			throw new IncomingFileTransferException("HttpClient Provider is not configured to support NTLM proxy authentication.", //$NON-NLS-1$
 					HttpClientOptions.NTLM_PROXY_RESPONSE_CODE);
 		}
@@ -54,7 +56,7 @@ public class DefaultNTLMProxyHandler implements INTLMProxyHandler {
 
 	@Override
 	public void handleSPNEGOProxy(Proxy proxy, int code) throws BrowseFileTransferException {
-		if (code >= HttpStatus.SC_BAD_REQUEST) {
+		if (code >= HttpURLConnection.HTTP_BAD_REQUEST) {
 			throw new BrowseFileTransferException("HttpClient Provider does not support the use of SPNEGO proxy authentication."); //$NON-NLS-1$
 		}
 	}

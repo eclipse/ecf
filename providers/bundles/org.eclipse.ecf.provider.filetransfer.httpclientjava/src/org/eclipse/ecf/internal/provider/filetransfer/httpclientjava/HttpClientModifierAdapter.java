@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2019 Yatta Solutions and others.
+ * Copyright (c) 2019, 2022 Yatta Solutions and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -7,37 +7,37 @@
  *
  * Contributors:
  *   Yatta Solutions - initial API and implementation
+ *   Christoph Läubrich - adapt to java http client
  *
  * SPDX-License-Identifier: EPL-2.0
  *****************************************************************************/
 package org.eclipse.ecf.internal.provider.filetransfer.httpclientjava;
 
+import java.net.Authenticator;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
 import java.util.Map;
-import org.apache.hc.client5.http.auth.CredentialsProvider;
-import org.apache.hc.client5.http.config.RequestConfig.Builder;
-import org.apache.hc.client5.http.protocol.HttpClientContext;
-import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 
-@SuppressWarnings("restriction")
 public class HttpClientModifierAdapter implements IHttpClientModifier {
 
 	@Override
-	public HttpClientBuilder modifyClient(HttpClientBuilder builder) {
+	public HttpClient.Builder modifyClient(HttpClient.Builder builder) {
 		return builder;
 	}
 
 	@Override
-	public CredentialsProvider modifyCredentialsProvider(CredentialsProvider credentialsProvider) {
+	public Authenticator modifyCredentialsProvider(Authenticator credentialsProvider) {
 		return credentialsProvider;
 	}
 
 	@Override
-	public HttpClientContext modifyContext(HttpClientContext context) {
+	public IHttpClientContext modifyContext(IHttpClientContext context) {
 		return context;
 	}
 
 	@Override
-	public Builder modifyRequestConfig(Builder config, HttpClientContext context, Map<?, ?> options) {
+	public HttpRequest.Builder modifyRequestConfig(HttpRequest.Builder config, IHttpClientContext context,
+			Map<?, ?> options) {
 		return config;
 	}
 

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2021 IBM, Composent Inc. and others.
+ * Copyright (c) 2021, 2022 IBM, Composent Inc. and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -8,11 +8,13 @@
  * Contributors:
  *    Chris Aniszczyk - initial API and implementation
  *    Yatta Solutions - HttpClient 4.5 implementation
+ *    Christoph Läubrich - adapt for java http client
  *
  * SPDX-License-Identifier: EPL-2.0
  *****************************************************************************/
 package org.eclipse.ecf.internal.provider.filetransfer.httpclientjava;
 
+import java.net.http.HttpClient;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,9 +23,9 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+
 import javax.net.ssl.SSLSocketFactory;
-import org.apache.hc.client5.http.classic.HttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.util.ECFRuntimeException;
@@ -48,7 +50,7 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 @SuppressWarnings("restriction")
 public class Activator implements BundleActivator {
 
-	private static final class ScopedHttpClientCustomizer implements ServiceTrackerCustomizer<HttpClient, CloseableHttpClient> {
+	private static final class ScopedHttpClientCustomizer implements ServiceTrackerCustomizer<HttpClient, HttpClient> {
 		private final String neededScope;
 		private final BundleContext context;
 
@@ -58,16 +60,11 @@ public class Activator implements BundleActivator {
 		}
 
 		@Override
-		public CloseableHttpClient addingService(ServiceReference<HttpClient> reference) {
+		public HttpClient addingService(ServiceReference<HttpClient> reference) {
 			if (!hasScope(reference, neededScope)) {
 				return null;
 			}
-			HttpClient service = context.getService(reference);
-			if (service instanceof CloseableHttpClient) {
-				return (CloseableHttpClient) service;
-			}
-			context.ungetService(reference);
-			return null;
+			return context.getService(reference);
 		}
 
 		private boolean hasScope(ServiceReference<HttpClient> reference, String neededScope) {
@@ -85,20 +82,20 @@ public class Activator implements BundleActivator {
 		}
 
 		@Override
-		public void modifiedService(ServiceReference<HttpClient> reference, CloseableHttpClient service) {
+		public void modifiedService(ServiceReference<HttpClient> reference, HttpClient service) {
 			if (!hasScope(reference, neededScope)) {
 				context.ungetService(reference);
 			}
 		}
 
 		@Override
-		public void removedService(ServiceReference<HttpClient> reference, CloseableHttpClient service) {
+		public void removedService(ServiceReference<HttpClient> reference, HttpClient service) {
 			context.ungetService(reference);
 		}
 	}
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.filetransfer.httpclient5"; //$NON-NLS-1$
+	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.filetransfer.httpclientjava"; //$NON-NLS-1$
 
 	public static final String USE_SHARED_CLIENT = PLUGIN_ID + ".sharedClient"; //$NON-NLS-1$
 
@@ -116,9 +113,9 @@ public class Activator implements BundleActivator {
 
 	private ServiceTracker<IHttpClientFactory, IHttpClientFactory> httpClientFactoryTracker;
 
-	private ServiceTracker<HttpClient, CloseableHttpClient> browseClientTracker;
+	private ServiceTracker<HttpClient, HttpClient> browseClientTracker;
 
-	private ServiceTracker<HttpClient, CloseableHttpClient> retrieveClientTracker;
+	private ServiceTracker<HttpClient, HttpClient> retrieveClientTracker;
 
 	private boolean useSharedClient;
 
@@ -252,11 +249,12 @@ public class Activator implements BundleActivator {
 		return service;
 	}
 
-	public synchronized CloseableHttpClient getBrowseHttpClient() {
-		CloseableHttpClient service;
+	public synchronized HttpClient getBrowseHttpClient() {
+		HttpClient service;
 		if (isUseSharedClient()) {
 			if (browseClientTracker == null) {
-				browseClientTracker = new ServiceTracker<HttpClient, CloseableHttpClient>(context, HttpClient.class, new ScopedHttpClientCustomizer(context, IRemoteFileSystemBrowser.class.getName()));
+				browseClientTracker = new ServiceTracker<HttpClient, HttpClient>(context, HttpClient.class,
+						new ScopedHttpClientCustomizer(context, IRemoteFileSystemBrowser.class.getName()));
 				browseClientTracker.open();
 			}
 			service = browseClientTracker.getService();
@@ -269,11 +267,12 @@ public class Activator implements BundleActivator {
 		return service;
 	}
 
-	public synchronized CloseableHttpClient getRetrieveHttpClient() {
-		CloseableHttpClient service;
+	public synchronized HttpClient getRetrieveHttpClient() {
+		HttpClient service;
 		if (isUseSharedClient()) {
 			if (retrieveClientTracker == null) {
-				retrieveClientTracker = new ServiceTracker<HttpClient, CloseableHttpClient>(context, HttpClient.class, new ScopedHttpClientCustomizer(context, IRetrieveFileTransfer.class.getName()));
+				retrieveClientTracker = new ServiceTracker<HttpClient, HttpClient>(context, HttpClient.class,
+						new ScopedHttpClientCustomizer(context, IRetrieveFileTransfer.class.getName()));
 				retrieveClientTracker.open();
 			}
 			service = retrieveClientTracker.getService();
@@ -286,13 +285,13 @@ public class Activator implements BundleActivator {
 		return service;
 	}
 
-	private CloseableHttpClient registerHttpClient() {
-		CloseableHttpClient client = getHttpClientFactory().newClient().build();
+	private HttpClient registerHttpClient() {
+		HttpClient client = getHttpClientFactory().newClient().build();
 
 		Dictionary<String, Object> serviceProperties = new Hashtable<String, Object>();
 		serviceProperties.put(Constants.SERVICE_RANKING, Integer.MIN_VALUE);
 		serviceProperties.put("http.client.scope", "org.eclipse.ecf.filetransfer.service.*");
-		context.registerService(new String[] {HttpClient.class.getName(), CloseableHttpClient.class.getName()}, client, serviceProperties);
+		context.registerService(new String[] { HttpClient.class.getName() }, client, serviceProperties);
 
 		return client;
 	}
