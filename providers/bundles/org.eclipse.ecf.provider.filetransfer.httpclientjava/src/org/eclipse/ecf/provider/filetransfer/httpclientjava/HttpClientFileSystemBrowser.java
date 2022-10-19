@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2019 Composent, Inc., IBM and others.
+ * Copyright (c) 2019, 2022 Composent, Inc., IBM and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,6 +10,7 @@
  *    Henrich Kraemer - bug 263869, testHttpsReceiveFile fails using HTTP proxy
  *    Thomas Joiner - HttpClient 4 implementation
  *    Yatta Solutions - HttpClient 4.5 implementation
+ *    Christoph Läubrich - Java HTTP client implementation
  *
  * SPDX-License-Identifier: EPL-2.0
  *****************************************************************************/
@@ -17,25 +18,23 @@
 package org.eclipse.ecf.provider.filetransfer.httpclientjava;
 
 import java.io.IOException;
+import java.net.Authenticator;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
-import java.util.concurrent.TimeUnit;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.util.List;
+import java.util.OptionalLong;
+import java.util.concurrent.CompletableFuture;
 
-import org.apache.hc.client5.http.auth.AuthScope;
-import org.apache.hc.client5.http.auth.Credentials;
-import org.apache.hc.client5.http.auth.CredentialsProvider;
-import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
-import org.apache.hc.client5.http.classic.HttpClient;
-import org.apache.hc.client5.http.classic.methods.HttpHead;
-import org.apache.hc.client5.http.config.RequestConfig;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
-import org.apache.hc.client5.http.protocol.HttpClientContext;
-import org.apache.hc.client5.http.utils.DateUtils;
-import org.apache.hc.core5.http.Header;
-import org.apache.hc.core5.http.HttpHeaders;
-import org.apache.hc.core5.http.HttpHost;
-import org.apache.hc.core5.http.protocol.HttpContext;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.security.Callback;
 import org.eclipse.ecf.core.security.CallbackHandler;
@@ -53,13 +52,18 @@ import org.eclipse.ecf.filetransfer.IRemoteFileSystemRequest;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.provider.filetransfer.DebugOptions;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclientjava.Activator;
+import org.eclipse.ecf.internal.provider.filetransfer.httpclientjava.AuthScope;
+import org.eclipse.ecf.internal.provider.filetransfer.httpclientjava.Credentials;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclientjava.DefaultNTLMProxyHandler;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclientjava.ECFHttpClientFactory;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclientjava.HttpClientProxyCredentialProvider;
+import org.eclipse.ecf.internal.provider.filetransfer.httpclientjava.HttpHost;
+import org.eclipse.ecf.internal.provider.filetransfer.httpclientjava.IHttpClientContext;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclientjava.IHttpClientFactory;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclientjava.INTLMProxyHandler;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclientjava.Messages;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclientjava.NTLMProxyDetector;
+import org.eclipse.ecf.internal.provider.filetransfer.httpclientjava.UsernamePasswordCredentials;
 import org.eclipse.ecf.provider.filetransfer.browse.AbstractFileSystemBrowser;
 import org.eclipse.ecf.provider.filetransfer.browse.URLRemoteFile;
 import org.eclipse.ecf.provider.filetransfer.util.JREProxyHelper;
@@ -72,7 +76,19 @@ import org.eclipse.osgi.util.NLS;
 @SuppressWarnings("restriction")
 public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 
-	private static final String CONTENT_LENGTH_HEADER = "Content-Length"; //$NON-NLS-1$
+	// see https://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3
+	// per RFC there are three different formats:
+	private static final List<ThreadLocal<DateFormat>> DATE_PATTERNS = List.of(//
+			ThreadLocal.withInitial(() -> new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz")), // RFC 1123
+			ThreadLocal.withInitial(() -> new SimpleDateFormat("EEE, dd-MMM-yy HH:mm:ss zzz")), // RFC 1036
+			ThreadLocal.withInitial(() -> new SimpleDateFormat("EEE MMMd HH:mm:ss yyyy")) // ANSI C's asctime() format
+	);
+
+	public static final String LAST_MODIFIED_HEADER = "Last-Modified"; //$NON-NLS-1$
+
+	public static final String CACHE_CONTROL_HEADER = "Cache-Control"; //$NON-NLS-1$
+
+	public static final String CONTENT_LENGTH_HEADER = "Content-Length"; //$NON-NLS-1$
 
 	protected static final int DEFAULT_CONNECTION_TIMEOUT = HttpClientOptions.BROWSE_DEFAULT_CONNECTION_TIMEOUT;
 
@@ -84,38 +100,31 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 
 	protected String password = null;
 
-	protected CloseableHttpClient httpClient = null;
-
-	private RequestConfig.Builder requestConfigBuilder;
+	protected HttpClient httpClient = null;
 
 	private HttpClientProxyCredentialProvider credentialsProvider;
 
-	protected volatile HttpHead headMethod;
-
 	/**
-	 * This is the response returned by {@link HttpClient} when it executes
-	 * {@link #headMethod}.
+	 * This is the context used to retain information about the request that the
+	 * {@link HttpClient} gathers during the request.
+	 * 
 	 * @since 5.0
 	 */
-	protected volatile CloseableHttpResponse httpResponse;
+	protected volatile IHttpClientContext httpContext;
+
+	private volatile CompletableFuture<HttpResponse<Void>> asyncRequest;
 
 	/**
-	 * This is the context used to retain information about the request that
-	 * the {@link HttpClient} gathers during the request.
-	 * @since 5.0
-	 */
-	protected volatile HttpClientContext httpContext;
-
-	/**
-	 * @param httpClient http client
-	 * @param directoryOrFileID directory or file id
-	 * @param listener listener
+	 * @param httpClient         http client
+	 * @param directoryOrFileID  directory or file id
+	 * @param listener           listener
 	 * @param directoryOrFileURL directory or file id
-	 * @param connectContext connect context
-	 * @param proxy proxy
+	 * @param connectContext     connect context
+	 * @param proxy              proxy
 	 * @since 5.0
 	 */
-	public HttpClientFileSystemBrowser(CloseableHttpClient httpClient, IFileID directoryOrFileID, IRemoteFileSystemListener listener, URL directoryOrFileURL, IConnectContext connectContext, Proxy proxy) {
+	public HttpClientFileSystemBrowser(HttpClient httpClient, IFileID directoryOrFileID,
+			IRemoteFileSystemListener listener, URL directoryOrFileURL, IConnectContext connectContext, Proxy proxy) {
 		super(directoryOrFileID, listener, directoryOrFileURL, connectContext, proxy);
 		Assert.isNotNull(httpClient);
 		this.httpClient = httpClient;
@@ -135,7 +144,7 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 
 		};
 		IHttpClientFactory httpClientFactory = Activator.getDefault().getHttpClientFactory();
-		CredentialsProvider contextCredentialsProvider = ECFHttpClientFactory.modifyCredentialsProvider(credentialsProvider);
+		Authenticator contextCredentialsProvider = ECFHttpClientFactory.modifyCredentialsProvider(credentialsProvider);
 		httpContext = httpClientFactory.newClientContext();
 		httpContext.setCredentialsProvider(contextCredentialsProvider);
 		this.proxyHelper = new JREProxyHelper();
@@ -175,10 +184,8 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 		}
 		setCanceled(getException());
 		super.cancel();
-		if (headMethod != null) {
-			if (!headMethod.isAborted()) {
-				headMethod.abort();
-			}
+		if (asyncRequest != null) {
+			asyncRequest.cancel(true);
 		}
 	}
 
@@ -187,7 +194,8 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 		// If it's been set directly (via ECF API) then this overrides platform settings
 		if (proxy == null) {
 			try {
-				// give SOCKS priority see https://bugs.eclipse.org/bugs/show_bug.cgi?id=295030#c61
+				// give SOCKS priority see
+				// https://bugs.eclipse.org/bugs/show_bug.cgi?id=295030#c61
 				proxy = ProxySetupHelper.getSocksProxy(directoryOrFile);
 				if (proxy == null) {
 					proxy = ProxySetupHelper.getProxy(directoryOrFile.toExternalForm());
@@ -206,14 +214,15 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 	@Override
 	protected void cleanUp() {
 		clearProxy();
-		headMethod = null;
-		requestConfigBuilder = null;
-
+		asyncRequest = null;
 		super.cleanUp();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.filetransfer.browse.AbstractFileSystemBrowser#runRequest()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.provider.filetransfer.browse.AbstractFileSystemBrowser#
+	 * runRequest()
 	 */
 	@Override
 	protected void runRequest() throws Exception {
@@ -221,40 +230,40 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 
 		String urlString = directoryOrFile.toString();
 
-		requestConfigBuilder = Activator.getDefault().getHttpClientFactory().newRequestConfig(httpContext, null);
-		requestConfigBuilder.setConnectionRequestTimeout(DEFAULT_CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
-
+		HttpRequest.Builder requestConfigBuilder = Activator.getDefault().getHttpClientFactory()
+				.newRequestConfig(httpContext, null);
+		requestConfigBuilder.timeout(Duration.ofMillis(DEFAULT_CONNECTION_TIMEOUT));
+		requestConfigBuilder.uri(new URI(urlString));
+		requestConfigBuilder.method("HEAD", BodyPublishers.noBody());
 		setupProxies();
 
 		// setup authentication
 		setupAuthentication(urlString);
 
-		headMethod = new HttpHead(urlString);
-		headMethod.setConfig(requestConfigBuilder.build());
-
 		int maxAge = Integer.getInteger("org.eclipse.ecf.http.cache.max-age", 0).intValue(); //$NON-NLS-1$
-		// set max-age for cache control to 0 for bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=249990
+		// set max-age for cache control to 0 for bug
+		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=249990
 		// fix the fix for bug 249990 with bug 410813
-		if (maxAge == 0) {
-			headMethod.addHeader(HttpHeaders.CACHE_CONTROL, "max-age=0"); //$NON-NLS-1$
-		} else if (maxAge > 0) {
-			headMethod.addHeader(HttpHeaders.CACHE_CONTROL, "max-age=" + maxAge); //$NON-NLS-1$
-		}
+		requestConfigBuilder.header(CACHE_CONTROL_HEADER, "max-age=" + maxAge);
+
+		HttpRequest request = requestConfigBuilder.build();
 
 		long lastModified = 0;
-		long fileLength = -1;
+		OptionalLong fileLength = OptionalLong.empty();
 
 		int code = -1;
 		try {
 			Trace.trace(Activator.PLUGIN_ID, "browse=" + urlString); //$NON-NLS-1$
 
-			httpResponse = httpClient.execute(headMethod, httpContext);
-			code = httpResponse.getCode();
+			asyncRequest = httpClient.sendAsync(request, BodyHandlers.discarding());
+			HttpResponse<Void> response = asyncRequest.join();
+			code = response.statusCode();
 
 			Trace.trace(Activator.PLUGIN_ID, "browse resp=" + code); //$NON-NLS-1$
 
 			// Check for NTLM proxy in response headers
-			// This check is to deal with bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=252002
+			// This check is to deal with bug
+			// https://bugs.eclipse.org/bugs/show_bug.cgi?id=252002
 			boolean ntlmProxyFound = NTLMProxyDetector.detectNTLMProxy(httpContext);
 			if (ntlmProxyFound)
 				getNTLMProxyHandler(httpContext).handleNTLMProxy(getProxy(), code);
@@ -263,12 +272,8 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 				getNTLMProxyHandler(httpContext).handleSPNEGOProxy(getProxy(), code);
 
 			if (code == HttpURLConnection.HTTP_OK) {
-				Header contentLength = httpResponse.getLastHeader(CONTENT_LENGTH_HEADER);
-				if (contentLength != null) {
-					fileLength = Integer.parseInt(contentLength.getValue());
-				}
-
-				lastModified = getLastModifiedTimeFromHeader();
+				fileLength = response.headers().firstValueAsLong(CONTENT_LENGTH_HEADER);
+				lastModified = getLastModifiedTimeFromHeader(response.headers());
 			} else if (code == HttpURLConnection.HTTP_NOT_FOUND) {
 				throw new BrowseFileTransferException(NLS.bind("File not found: {0}", urlString), code); //$NON-NLS-1$
 			} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED) {
@@ -276,24 +281,28 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 			} else if (code == HttpURLConnection.HTTP_FORBIDDEN) {
 				throw new BrowseFileTransferException("Forbidden", code); //$NON-NLS-1$
 			} else if (code == HttpURLConnection.HTTP_PROXY_AUTH) {
-				throw new BrowseFileTransferException(Messages.HttpClientRetrieveFileTransfer_Proxy_Auth_Required, code);
+				throw new BrowseFileTransferException(Messages.HttpClientRetrieveFileTransfer_Proxy_Auth_Required,
+						code);
 			} else {
-				throw new BrowseFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE, Integer.valueOf(code)), code);
+				throw new BrowseFileTransferException(
+						NLS.bind(Messages.HttpClientRetrieveFileTransfer_ERROR_GENERAL_RESPONSE_CODE,
+								Integer.valueOf(code)),
+						code);
 			}
 			remoteFiles = new IRemoteFile[1];
-			remoteFiles[0] = new URLRemoteFile(lastModified, fileLength, fileID);
+			remoteFiles[0] = new URLRemoteFile(lastModified, fileLength.orElse(-1), fileID);
 		} catch (Exception e) {
 			Trace.throwing(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_THROWING, this.getClass(), "runRequest", e); //$NON-NLS-1$
-			BrowseFileTransferException ex = (BrowseFileTransferException) ((e instanceof BrowseFileTransferException) ? e : new BrowseFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, urlString), e, code));
+			BrowseFileTransferException ex = (BrowseFileTransferException) ((e instanceof BrowseFileTransferException)
+					? e
+					: new BrowseFileTransferException(
+							NLS.bind(Messages.HttpClientRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, urlString), e,
+							code));
 			throw ex;
-		} finally {
-			if (httpResponse != null) {
-				httpResponse.close();
-			}
 		}
 	}
 
-	private INTLMProxyHandler getNTLMProxyHandler(HttpContext httpContext) {
+	private INTLMProxyHandler getNTLMProxyHandler(IHttpClientContext httpContext) {
 		Object value = httpContext.getAttribute(ECFHttpClientFactory.NTLM_PROXY_HANDLER_ATTR);
 		if (value instanceof INTLMProxyHandler) {
 			return (INTLMProxyHandler) value;
@@ -301,20 +310,24 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 		return Activator.getDefault().getNTLMProxyHandler();
 	}
 
-	private long getLastModifiedTimeFromHeader() throws IOException {
-		Header lastModifiedHeader = httpResponse.getLastHeader(HttpHeaders.LAST_MODIFIED);
+	public static long getLastModifiedTimeFromHeader(java.net.http.HttpHeaders httpHeaders) throws IOException {
+		String lastModifiedHeader = httpHeaders.firstValue(LAST_MODIFIED_HEADER).orElse(null);
 		if (lastModifiedHeader == null)
 			return 0L;
-		String lastModifiedString = lastModifiedHeader.getValue();
-		long lastModified = 0;
-		if (lastModifiedString != null) {
+		// first check if there are any quotes around and remove them
+		if (lastModifiedHeader.length() > 1 && lastModifiedHeader.startsWith("'") && lastModifiedHeader.endsWith("'")) {
+			lastModifiedHeader = lastModifiedHeader.substring(1, lastModifiedHeader.length() - 1);
+		}
+		// no check all date formats
+		for (final ThreadLocal<DateFormat> dateFormat : DATE_PATTERNS) {
 			try {
-				lastModified = DateUtils.parseDate(lastModifiedString).getTime();
-			} catch (Exception e) {
-				throw new IOException(Messages.HttpClientRetrieveFileTransfer_EXCEPITION_INVALID_LAST_MODIFIED_FROM_SERVER);
+				return dateFormat.get().parse(lastModifiedHeader).getTime();
+			} catch (ParseException e) {
+				// try next one...
 			}
 		}
-		return lastModified;
+		// nothing found or exception...
+		throw new IOException(Messages.HttpClientRetrieveFileTransfer_EXCEPITION_INVALID_LAST_MODIFIED_FROM_SERVER);
 	}
 
 	Proxy getProxy() {
@@ -323,9 +336,10 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 
 	/**
 	 * Retrieves the credentials for requesting the file.
+	 * 
 	 * @return the {@link Credentials} necessary to retrieve the file
 	 * @throws UnsupportedCallbackException if the callback fails
-	 * @throws IOException if IO fails
+	 * @throws IOException                  if IO fails
 	 * @since 5.0
 	 */
 	protected Credentials getFileRequestCredentials() throws UnsupportedCallbackException, IOException {
@@ -336,10 +350,10 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 			return null;
 		final NameCallback usernameCallback = new NameCallback(USERNAME_PREFIX);
 		final ObjectCallback passwordCallback = new ObjectCallback();
-		callbackHandler.handle(new Callback[] {usernameCallback, passwordCallback});
+		callbackHandler.handle(new Callback[] { usernameCallback, passwordCallback });
 		username = usernameCallback.getName();
 		password = (String) passwordCallback.getObject();
-		return new UsernamePasswordCredentials(username, password==null?null:password.toCharArray());
+		return new UsernamePasswordCredentials(username, password == null ? null : password.toCharArray());
 	}
 
 	protected void setupAuthentication(String urlString) throws UnsupportedCallbackException, IOException {
@@ -349,7 +363,8 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 		}
 
 		if (credentials != null && username != null) {
-			final AuthScope authScope = new AuthScope(HttpClientRetrieveFileTransfer.getHostFromURL(urlString), HttpClientRetrieveFileTransfer.getPortFromURL(urlString));
+			final AuthScope authScope = new AuthScope(HttpClientRetrieveFileTransfer.getHostFromURL(urlString),
+					HttpClientRetrieveFileTransfer.getPortFromURL(urlString));
 			Trace.trace(Activator.PLUGIN_ID, "browse credentials=" + credentials); //$NON-NLS-1$
 			credentialsProvider.setCredentials(authScope, credentials);
 		}
@@ -359,23 +374,22 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 	protected void setupProxy(Proxy proxy) {
 		if (proxy.getType().equals(Proxy.Type.HTTP)) {
 			final ProxyAddress address = proxy.getAddress();
-			requestConfigBuilder.setProxy(new HttpHost(address.getHostName(), address.getPort()));
+			httpContext.setProxy(new HttpHost(address.getHostName(), address.getPort()));
 		} else if (proxy.getType().equals(Proxy.Type.SOCKS)) {
 			Trace.trace(Activator.PLUGIN_ID, "browse socksproxy=" + proxy.getAddress()); //$NON-NLS-1$
-			requestConfigBuilder.setProxy(null);
+			httpContext.setProxy(null);
 			proxyHelper.setupProxy(proxy);
 		}
 	}
 
 	/**
-	 * This method will clear out the proxy information (so that if this is
-	 * reused for a request without a proxy, it will work correctly).
+	 * This method will clear out the proxy information (so that if this is reused
+	 * for a request without a proxy, it will work correctly).
+	 * 
 	 * @since 5.0
 	 */
 	protected void clearProxy() {
-		if (requestConfigBuilder != null) {
-			requestConfigBuilder.setProxy(null);
-		}
+		httpContext.setProxy(null);
 	}
 
 }

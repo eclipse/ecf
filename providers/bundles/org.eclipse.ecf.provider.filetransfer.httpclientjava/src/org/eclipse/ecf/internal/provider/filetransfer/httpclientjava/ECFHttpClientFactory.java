@@ -17,6 +17,7 @@ import java.net.Authenticator;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpRequest;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -41,39 +42,10 @@ public class ECFHttpClientFactory implements IHttpClientFactory {
 
 	public static final String NTLM_PROXY_HANDLER_ATTR = INTLMProxyHandler.class.getName();
 
-//	private static final Registry<AuthSchemeFactory> DEFAULT_AUTH_SCHEME_REGISTRY = RegistryBuilder.<AuthSchemeFactory> create().register("Basic", BasicSchemeFactory.INSTANCE).register("Digest", DigestSchemeFactory.INSTANCE).register("NTLM", NTLMSchemeFactory.INSTANCE).build();
-//
-//	private static final SocketConfig DEFAULT_SOCKET_CONFIG = SocketConfig.copy(SocketConfig.DEFAULT).setSoTimeout(DEFAULT_READ_TIMEOUT, TimeUnit.MILLISECONDS).setTcpNoDelay(true)// Disable Nagle - see
-//			// https://en.wikipedia.org/wiki/Nagle%27s_algorithm#Negative_effect_on_larger_writes
-//			// TODO is it safe to set this to 0? This will forcefully terminate sockets on
-//			// close instead of waiting for graceful close
-//			// See
-//			// http://docs.oracle.com/javase/6/docs/api/java/net/SocketOptions.html?is-external=true#SO_LINGER
-//			// and https://issues.apache.org/jira/browse/HTTPCLIENT-1497
-//			// .setSoLinger(0)
-//			.build();
-
 	@Override
 	public HttpClient.Builder newClient() {
 
 		HttpClient.Builder builder = HttpClient.newBuilder().followRedirects(Redirect.NORMAL);
-//        .connectTimeout(Duration.ofSeconds(20))
-//        .proxy(ProxySelector.of(new InetSocketAddress("proxy.example.com", 80)))
-//        .authenticator(Authenticator.getDefault())
-		// TODO
-//		HttpClientBuilder builder = createHttpClientBuilder();
-//		builder.setDefaultCredentialsProvider(new HttpClientProxyCredentialProvider());
-//		builder.setDefaultRequestConfig(newRequestConfig(null, System.getProperties()).build());
-//		PoolingHttpClientConnectionManagerBuilder cmBuilder = PoolingHttpClientConnectionManagerBuilder.create()
-//				.setMaxConnPerRoute(100)
-//				.setMaxConnTotal(300)
-//				.setConnectionTimeToLive(TimeValue.ofMilliseconds(DEFAULT_CONNECTION_TTL))
-//				.setDefaultSocketConfig(DEFAULT_SOCKET_CONFIG)
-//		        .setPoolConcurrencyPolicy(PoolConcurrencyPolicy.STRICT)
-//		        .setConnPoolPolicy(PoolReusePolicy.LIFO);
-//		configureSSLSocketFactory(cmBuilder);
-//		builder.setConnectionManager(cmBuilder.build());
-//		builder.setDefaultAuthSchemeRegistry(DEFAULT_AUTH_SCHEME_REGISTRY);
 		builder = Activator.getDefault().runModifiers(builder, new ModifierRunner<HttpClient.Builder>() {
 			@Override
 			public HttpClient.Builder run(IHttpClientModifier modifier, HttpClient.Builder value) {
@@ -115,7 +87,6 @@ public class ECFHttpClientFactory implements IHttpClientFactory {
 		};
 		INTLMProxyHandler ntlmProxyHandler = Activator.getDefault().getNTLMProxyHandler();
 		context.setAttribute(NTLM_PROXY_HANDLER_ATTR, ntlmProxyHandler);
-//		context.setAuthSchemeRegistry(DEFAULT_AUTH_SCHEME_REGISTRY);
 
 		context = Activator.getDefault().runModifiers(context, new ModifierRunner<IHttpClientContext>() {
 
@@ -132,25 +103,17 @@ public class ECFHttpClientFactory implements IHttpClientFactory {
 	@Override
 	public HttpRequest.Builder newRequestConfig(final IHttpClientContext context, final Map<?, ?> localOptions) {
 		HttpRequest.Builder builder = HttpRequest.newBuilder();
-//		        .uri(URI.create("https://foo.com/"))
-//		        .timeout(Duration.ofMinutes(2))
-//		        .header("Content-Type", "application/json")
-//		        .POST(BodyPublishers.ofFile(Paths.get("file.json")))
-		// TODO
-//		int connectionRequestTimeout = DEFAULT_CONNECTION_REQUEST_TIMEOUT;
-//		int connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
-//		int readTimeout = DEFAULT_READ_TIMEOUT;
-//		if (localOptions != null) {
-//			connectionRequestTimeout = getIntOption(HttpClientOptions.RETRIEVE_CONNECTION_TIMEOUT_PROP, localOptions, connectionRequestTimeout);
-//			connectionTimeout = getIntOption(HttpClientOptions.RETRIEVE_CONNECTION_TIMEOUT_PROP, localOptions, connectionTimeout);
-//			readTimeout = getIntOption(HttpClientOptions.RETRIEVE_READ_TIMEOUT_PROP, localOptions, readTimeout);
-//		}
-//		builder.setConnectionRequestTimeout(connectionRequestTimeout,TimeUnit.MILLISECONDS).setConnectTimeout(connectionTimeout,TimeUnit.MILLISECONDS);
-//
-//		boolean allowNTLMAuthentication = getNTLMProxyHandler(context).allowNTLMAuthentication(localOptions);
-//		Collection<String> preferredAuthSchemes = allowNTLMAuthentication ? DEFAULT_PREFERRED_AUTH_SCHEMES : DEFAULT_PREFERRED_AUTH_SCHEMES_NO_NTLM;
-//		builder.setProxyPreferredAuthSchemes(preferredAuthSchemes);
-//		builder.setTargetPreferredAuthSchemes(preferredAuthSchemes);
+		int connectionRequestTimeout = DEFAULT_CONNECTION_REQUEST_TIMEOUT;
+		int connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
+		int readTimeout = DEFAULT_READ_TIMEOUT;
+		if (localOptions != null) {
+			connectionRequestTimeout = getIntOption(HttpClientOptions.RETRIEVE_CONNECTION_TIMEOUT_PROP, localOptions,
+					connectionRequestTimeout);
+			connectionTimeout = getIntOption(HttpClientOptions.RETRIEVE_CONNECTION_TIMEOUT_PROP, localOptions,
+					connectionTimeout);
+			readTimeout = getIntOption(HttpClientOptions.RETRIEVE_READ_TIMEOUT_PROP, localOptions, readTimeout);
+		}
+		builder.timeout(Duration.ofMillis(connectionRequestTimeout));
 
 		builder = Activator.getDefault().runModifiers(builder, new ModifierRunner<HttpRequest.Builder>() {
 
@@ -180,67 +143,6 @@ public class ECFHttpClientFactory implements IHttpClientFactory {
 		}
 		return defaultValue;
 	}
-
-//	private static void configureSSLSocketFactory(PoolingHttpClientConnectionManagerBuilder cm) {
-//		SSLSocketFactory sslSocketFactory = Activator.getDefault().getSSLSocketFactory();
-//		if (sslSocketFactory == null) {
-//			try {
-//				sslSocketFactory = new HttpClientDefaultSSLSocketFactoryModifier().getSSLSocketFactory();
-//			} catch (IOException e) {
-//				Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING, HttpClientDefaultSSLSocketFactoryModifier.class, "getSSLSocketFactory()", e); //$NON-NLS-1$
-//				throw new ECFRuntimeException("Unable to instantiate schemes for HttpClient.", e); //$NON-NLS-1$
-//			}
-//		}
-//		if (sslSocketFactory == SSLSocketFactory.getDefault()) {
-//			sslSocketFactory = null;
-//		}
-//		if (sslSocketFactory != null) {
-//			PublicSuffixMatcher publicSuffixMatcherCopy = PublicSuffixMatcherLoader.getDefault();
-//			String systemHttpsProtocols = System.getProperty("https.protocols");
-//			String systemCipherSuites = System.getProperty("https.cipherSuites");
-//			String[] supportedProtocols = split(systemHttpsProtocols);
-//			String[] supportedCipherSuites = split(systemCipherSuites);
-//			HostnameVerifier hostnameVerifierCopy = new DefaultHostnameVerifier(publicSuffixMatcherCopy);
-//			SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(sslSocketFactory, supportedProtocols, supportedCipherSuites, hostnameVerifierCopy);
-//			cm.setSSLSocketFactory(sslConnectionSocketFactory);
-//		}
-//	}
-//
-//	private synchronized void track(CloseableHttpClient client) {
-//		clearCollectedClients();
-//		if (collectedClients == null) {
-//			collectedClients = new ReferenceQueue<CloseableHttpClient>();
-//			trackedClients = new LinkedList<WeakReference<CloseableHttpClient>>();
-//		}
-//		trackedClients.add(new WeakReference<CloseableHttpClient>(client, collectedClients));
-//	}
-//
-//	private synchronized void clearCollectedClients() {
-//		if (collectedClients == null) {
-//			return;
-//		}
-//		for (Reference<? extends CloseableHttpClient> collectedReference = collectedClients.poll(); collectedReference != null; collectedReference = collectedClients.poll()) {
-//			trackedClients.remove(collectedReference);
-//		}
-//	}
-//
-//	public synchronized void close() {
-//		if (trackedClients != null) {
-//			for (WeakReference<CloseableHttpClient> clientRef : trackedClients) {
-//				CloseableHttpClient client = clientRef.get();
-//				if (client == null) {
-//					continue;
-//				}
-//				try {
-//					client.close();
-//				} catch (IOException ex) {
-//					Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING, ECFHttpClientFactory.class, "close", ex); //$NON-NLS-1$
-//				}
-//			}
-//			trackedClients = null;
-//			collectedClients = null;
-//		}
-//	}
 
 	private static String[] split(final String s) {
 		if (s == null || s.isBlank()) {
