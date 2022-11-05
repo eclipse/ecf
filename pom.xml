@@ -112,7 +112,6 @@
     <module>examples/bundles/org.eclipse.ecf.examples.remoteservices.hello.ds.consumer</module>
     <module>examples/bundles/org.eclipse.ecf.examples.remoteservices.hello.host</module>
     <module>examples/bundles/org.eclipse.ecf.examples.remoteservices.hello</module>
-    <module>examples/bundles/org.eclipse.ecf.examples.remoteservices.rest.rss</module>
 
     <module>framework/bundles/org.eclipse.ecf.console</module>
     <module>framework/bundles/org.eclipse.ecf.datashare</module>
