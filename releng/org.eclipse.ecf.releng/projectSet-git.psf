@@ -109,7 +109,6 @@
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,releng/features/org.eclipse.ecf.remoteservice.feature"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,framework/bundles/org.eclipse.ecf.remoteservice.rest"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,releng/features/org.eclipse.ecf.remoteservice.rest.feature"/>
-<project reference="1.0,https://github.com/eclipse/ecf.git,master,releng/features/org.eclipse.ecf.remoteservice.rest.synd.feature"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,releng/features/org.eclipse.ecf.remoteservice.rosgi.feature"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,releng/features/org.eclipse.ecf.remoteservice.rpc.feature"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,releng/features/org.eclipse.ecf.remoteservice.sdk.examples.feature"/>
@@ -225,7 +224,6 @@
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.eventadmin.examples.feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.filetransfer.ssl.feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.provider.generic.feature" type="4"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.remoteservice.rest.synd.feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.datashare.feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.sharedobject.feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.filetransfer.p2.feature" type="4"/>

@@ -62,7 +62,6 @@
             <topic href="html/reference/api/org/eclipse/ecf/remoteservice/rest/package-summary.html" label="org.eclipse.ecf.remoteservice.rest"/>
             <topic href="html/reference/api/org/eclipse/ecf/remoteservice/rest/client/package-summary.html" label="org.eclipse.ecf.remoteservice.rest.client"/>
             <topic href="html/reference/api/org/eclipse/ecf/remoteservice/rest/identity/package-summary.html" label="org.eclipse.ecf.remoteservice.rest.identity"/>
-            <topic href="html/reference/api/org/eclipse/ecf/remoteservice/rest/synd/package-summary.html" label="org.eclipse.ecf.remoteservice.rest.synd"/>
             <topic href="html/reference/api/org/eclipse/ecf/remoteservice/rest/util/package-summary.html" label="org.eclipse.ecf.remoteservice.rest.util"/>
             <topic href="html/reference/api/org/eclipse/ecf/remoteservice/servlet/package-summary.html" label="org.eclipse.ecf.remoteservice.servlet"/>
             <topic href="html/reference/api/org/eclipse/ecf/remoteservice/util/package-summary.html" label="org.eclipse.ecf.remoteservice.util"/>
