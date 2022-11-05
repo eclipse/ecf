@@ -4,7 +4,7 @@ Bundle-Name: %plugin.name
 Bundle-Vendor: %plugin.provider
 Bundle-SymbolicName: org.eclipse.ecf.provider.filetransfer.httpclient5.win32;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.provider.filetransfer.httpclient5.win32
-Bundle-Version: 1.0.500.qualifier
+Bundle-Version: 1.0.501.qualifier
 Bundle-Localization: plugin
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-11
