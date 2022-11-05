@@ -137,7 +137,6 @@
     <module>framework/bundles/org.eclipse.ecf.remoteservice.asyncproxy.j8</module>
     <module>framework/bundles/org.eclipse.ecf.remoteservice</module>
     <module>framework/bundles/org.eclipse.ecf.remoteservice.rest</module>
-    <module>framework/bundles/org.eclipse.ecf.remoteservice.rest.synd</module>
     <module>framework/bundles/org.eclipse.ecf.remoteservice.servlet</module>
     <module>framework/bundles/org.eclipse.ecf.remoteservice.soap</module>
     <module>framework/bundles/org.eclipse.ecf.remoteservice.ui</module>
@@ -246,7 +245,6 @@
     <module>releng/features/org.eclipse.ecf.remoteservice.examples.feature</module>
     <module>releng/features/org.eclipse.ecf.remoteservice.feature</module>
     <module>releng/features/org.eclipse.ecf.remoteservice.rest.feature</module>
-    <module>releng/features/org.eclipse.ecf.remoteservice.rest.synd.feature</module>
     <module>releng/features/org.eclipse.ecf.remoteservice.rosgi.feature</module>
     <module>releng/features/org.eclipse.ecf.remoteservice.sdk.examples.feature</module>
     <module>releng/features/org.eclipse.ecf.remoteservice.sdk.feature</module>

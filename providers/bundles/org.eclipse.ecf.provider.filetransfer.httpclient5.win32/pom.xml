@@ -9,7 +9,7 @@
     <relativePath>../../../</relativePath>
   </parent>
    <artifactId>org.eclipse.ecf.provider.filetransfer.httpclient5.win32</artifactId>
-  <version>1.0.400-SNAPSHOT</version>
+  <version>1.0.500-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 
 </project>
