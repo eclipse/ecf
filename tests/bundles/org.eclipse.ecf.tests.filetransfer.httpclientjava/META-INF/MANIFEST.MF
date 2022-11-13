@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %plugin.name
+Bundle-Vendor: %plugin.provider
+Bundle-SymbolicName: org.eclipse.ecf.tests.filetransfer.httpclientjava
+Automatic-Module-Name: org.eclipse.ecf.tests.filetransfer.httpclientjava
+Bundle-Version: 1.0.0.qualifier
+Fragment-Host: org.eclipse.ecf.tests.filetransfer;bundle-version="2.0.400"
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-Localization: fragment
+Require-Bundle: org.eclipse.ecf.provider.filetransfer.httpclientjava;bundle-version="1.0.0"
+Import-Package: javax.net.ssl
+

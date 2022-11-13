@@ -34,6 +34,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.security.Callback;
@@ -292,11 +293,15 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 			remoteFiles = new IRemoteFile[1];
 			remoteFiles[0] = new URLRemoteFile(lastModified, fileLength.orElse(-1), fileID);
 		} catch (Exception e) {
-			Trace.throwing(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_THROWING, this.getClass(), "runRequest", e); //$NON-NLS-1$
-			BrowseFileTransferException ex = (BrowseFileTransferException) ((e instanceof BrowseFileTransferException)
-					? e
+			Throwable t = e;
+			if (e instanceof CompletionException) {
+				t = e.getCause();
+			}
+			Trace.throwing(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_THROWING, this.getClass(), "runRequest", t); //$NON-NLS-1$
+			BrowseFileTransferException ex = (BrowseFileTransferException) ((t instanceof BrowseFileTransferException)
+					? t
 					: new BrowseFileTransferException(
-							NLS.bind(Messages.HttpClientRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, urlString), e,
+							NLS.bind(Messages.HttpClientRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, urlString), t,
 							code));
 			throw ex;
 		}

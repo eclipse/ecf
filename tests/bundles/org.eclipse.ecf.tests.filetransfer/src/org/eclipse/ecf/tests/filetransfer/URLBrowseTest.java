@@ -14,12 +14,14 @@
 
 package org.eclipse.ecf.tests.filetransfer;
 
+import java.net.ConnectException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.filetransfer.BrowseFileTransferException;
 import org.eclipse.ecf.filetransfer.IRemoteFile;
 import org.eclipse.ecf.filetransfer.IRemoteFileAttributes;
@@ -98,7 +100,8 @@ public class URLBrowseTest extends AbstractBrowseTestCase {
 		assertNotNull(e);
 		if (e instanceof BrowseFileTransferException) {
 			BrowseFileTransferException ifte = (BrowseFileTransferException) e;
-			assertTrue(ifte.getCause() instanceof UnknownHostException);
+			Throwable ex = ifte.getStatus().getException();
+			assertTrue(ex instanceof UnknownHostException || ex instanceof ConnectException);
 		} else fail("Event exception is not instance of BrowseFileTransferException");
 	}
 	

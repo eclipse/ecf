@@ -200,7 +200,8 @@
     <module>tests/bundles/org.eclipse.ecf.tests.apache.httpclient.server</module>
     <module>tests/bundles/org.eclipse.ecf.tests.datashare</module>
     <module>tests/bundles/org.eclipse.ecf.tests.filetransfer</module>
-    <module>tests/bundles/org.eclipse.ecf.tests.filetransfer.httpclient45</module>
+    <module>tests/bundles/org.eclipse.ecf.tests.filetransfer.httpclient5</module>
+    <module>tests/bundles/org.eclipse.ecf.tests.filetransfer.httpclientjava</module>
     <module>tests/bundles/org.eclipse.ecf.tests.filetransfer.httpserver</module>
     <module>tests/bundles/org.eclipse.ecf.tests.presence</module>
     <module>tests/bundles/org.eclipse.ecf.tests.protocol.msn</module>
@@ -236,6 +237,7 @@
     <module>releng/features/org.eclipse.ecf.filetransfer.httpclient45.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.httpclient4.ssl.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.httpclient5.feature</module>
+    <module>releng/features/org.eclipse.ecf.filetransfer.httpclientjava.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.ssl.feature</module>
     <module>releng/features/org.eclipse.ecf.osgi.services.feature</module>
     <module>releng/features/org.eclipse.ecf.presence.feature</module>

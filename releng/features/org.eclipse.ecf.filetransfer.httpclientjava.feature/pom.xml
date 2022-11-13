@@ -8,8 +8,7 @@
     <version>1.0.0-SNAPSHOT</version>
     <relativePath>../../../</relativePath>
   </parent>
-  <groupId>org.eclipse.ecf</groupId>
-  <artifactId>org.eclipse.ecf.remoteservice.sdk.feature</artifactId>
-  <version>3.14.35-SNAPSHOT</version>
+  <artifactId>org.eclipse.ecf.filetransfer.httpclientjava.feature</artifactId>
   <packaging>eclipse-feature</packaging>
+  <version>1.0.0-SNAPSHOT</version>
 </project>
