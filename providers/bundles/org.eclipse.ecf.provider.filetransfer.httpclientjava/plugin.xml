@@ -6,12 +6,12 @@
       <retrieveFileTransferProtocolFactory
             class="org.eclipse.ecf.provider.filetransfer.httpclientjava.HttpClientRetrieveFileTransferFactory"
             protocol="http"
-            priority="43">
+            priority="42">
       </retrieveFileTransferProtocolFactory>
       <retrieveFileTransferProtocolFactory
             class="org.eclipse.ecf.provider.filetransfer.httpclientjava.HttpClientRetrieveFileTransferFactory"
             protocol="https"
-            priority="43">
+            priority="42">
       </retrieveFileTransferProtocolFactory>
    </extension>
 
@@ -20,12 +20,12 @@
       <browseFileTransferProtocolFactory
             class="org.eclipse.ecf.provider.filetransfer.httpclientjava.HttpClientBrowseFileTransferFactory"
             protocol="http"
-            priority="43">
+            priority="42">
       </browseFileTransferProtocolFactory>
       <browseFileTransferProtocolFactory
             class="org.eclipse.ecf.provider.filetransfer.httpclientjava.HttpClientBrowseFileTransferFactory"
             protocol="https"
-            priority="43">
+            priority="42">
       </browseFileTransferProtocolFactory>
     </extension>
 

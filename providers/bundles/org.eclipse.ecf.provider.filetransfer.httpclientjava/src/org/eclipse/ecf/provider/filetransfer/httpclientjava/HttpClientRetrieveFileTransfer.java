@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
 import org.eclipse.core.runtime.Assert;
@@ -1001,6 +1002,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			if (monitor.isCanceled())
 				throw newUserCancelledException();
 			httpResponse = httpClient.sendAsync(httpRequest, BodyHandlers.ofInputStream());
+			responseCode = httpResponse.get(getConnectTimeout(),TimeUnit.MILLISECONDS).statusCode();
 		} catch (final Exception e) {
 			Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "performConnect", e); //$NON-NLS-1$
 			if (!isDone()) {

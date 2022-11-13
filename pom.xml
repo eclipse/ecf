@@ -236,6 +236,7 @@
     <module>releng/features/org.eclipse.ecf.filetransfer.httpclient45.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.httpclient4.ssl.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.httpclient5.feature</module>
+    <module>releng/features/org.eclipse.ecf.filetransfer.httpclientjava.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.ssl.feature</module>
     <module>releng/features/org.eclipse.ecf.osgi.services.feature</module>
     <module>releng/features/org.eclipse.ecf.presence.feature</module>
