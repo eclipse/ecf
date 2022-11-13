@@ -68,7 +68,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.ecf.tests.filetransfer.httpclient45"
+         id="org.eclipse.ecf.tests.filetransfer.httpclient5"
          download-size="0"
          install-size="0"
          version="0.0.0"
