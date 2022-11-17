@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.provider.filetransfer.httpclient4;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.provider.filetransfer.httpclient4
-Bundle-Version: 1.1.501.qualifier
+Bundle-Version: 1.1.502.qualifier
 Bundle-Localization: plugin
 Bundle-Activator: org.eclipse.ecf.internal.provider.filetransfer.httpclient4.Activator
 Require-Bundle: org.eclipse.equinox.common;bundle-version="[3.0.0,4.0.0)",

@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.filetransfer.ui;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.filetransfer.ui
-Bundle-Version: 1.5.200.qualifier
+Bundle-Version: 1.5.201.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.filetransfer.ui.Activator
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,

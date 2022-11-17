@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.protocol.bittorrent
 Automatic-Module-Name: org.eclipse.ecf.protocol.bittorrent
-Bundle-Version: 0.3.201.qualifier
+Bundle-Version: 0.3.202.qualifier
 Bundle-Localization: plugin
 Export-Package: org.eclipse.ecf.protocol.bittorrent;version="1.0.0",
  org.eclipse.ecf.protocol.bittorrent.internal.encode;x-internal:=true,

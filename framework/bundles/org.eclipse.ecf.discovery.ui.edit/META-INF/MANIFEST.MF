@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.discovery.ui.edit;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.discovery.ui.edit
-Bundle-Version: 3.0.200.qualifier
+Bundle-Version: 3.0.201.qualifier
 Bundle-ClassPath: .
 Bundle-Activator: org.eclipse.ecf.discovery.ui.model.provider.DiscoveryEditPlugin$Implementation
 Bundle-Vendor: %providerName

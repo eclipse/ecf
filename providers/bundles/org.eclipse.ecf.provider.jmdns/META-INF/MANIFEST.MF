@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.provider.jmdns;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.provider.jmdns
-Bundle-Version: 4.3.301.qualifier
+Bundle-Version: 4.3.302.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.provider.jmdns.JMDNSPlugin
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
