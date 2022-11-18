@@ -42,7 +42,11 @@
 			<unit id="org.slf4j.binding.log4j12" version="1.7.30.v20221112-0806"/>
 			<unit id="org.slf4j.binding.log4j12.source" version="1.7.30.v20221112-0806"/>
 			<unit id="com.sun.jna" version="5.8.0.v20210503-0343"/>
-			<unit id="com.sun.jna.source" version="5.8.0.v20210503-0343"/>
+			<unit id="com.sun.jna.source" version="5.8.0.v20210503-0343"/>			
+			<unit id="com.sun.jna" version="4.5.1.v20210503-0343"/>
+			<unit id="com.sun.jna.platform" version="4.5.1.v20221112-0806"/>
+			<unit id="com.sun.jna.platform.source" version="4.5.1.v20221112-0806"/>
+			<unit id="com.sun.jna.source" version="4.5.1.v20210503-0343"/>
 			<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/S20221115203712/repository/"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
@@ -59,12 +63,6 @@
 			<unit id="org.apache.httpcomponents.httpclient.win.source" version="4.5.13.v20211010-1849"/>
 			<unit id="org.apache.httpcomponents.httpcore" version="4.4.15.v20220209-2345"/>
 			<unit id="org.apache.httpcomponents.httpcore.source" version="4.4.15.v20220209-2345"/>
-			<unit id="com.sun.jna" version="4.5.1.v20210503-0343"/>
-			<unit id="com.sun.jna.platform" version="4.5.1.v20190425-1842"/>
-			<unit id="com.sun.jna.platform.source" version="4.5.1.v20190425-1842"/>
-			<unit id="com.sun.jna.source" version="4.5.1.v20210503-0343"/>
-			<unit id="com.sun.jna.platform" version="5.8.0.v20210406-1004"/>
-			<unit id="com.sun.jna.platform.source" version="5.8.0.v20210406-1004"/>
 			<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20220302172233/repository"/>
 		</location>
 	</locations>
