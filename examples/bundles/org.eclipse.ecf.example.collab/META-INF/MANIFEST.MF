@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.example.collab;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.example.collab
-Bundle-Version: 2.0.201.qualifier
+Bundle-Version: 2.0.202.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.example.collab.ClientPlugin
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin

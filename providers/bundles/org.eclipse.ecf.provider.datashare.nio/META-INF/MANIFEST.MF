@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.provider.datashare.nio
 Automatic-Module-Name: org.eclipse.ecf.provider.datashare.nio
-Bundle-Version: 0.9.300.qualifier
+Bundle-Version: 0.9.301.qualifier
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
