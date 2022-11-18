@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.jivesoftware.smack
 Automatic-Module-Name: org.jivesoftware.smack
-Bundle-Version: 3.3.300.qualifier
+Bundle-Version: 3.3.301.qualifier
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin

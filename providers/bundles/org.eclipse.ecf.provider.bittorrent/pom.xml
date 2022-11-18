@@ -10,6 +10,6 @@
   </parent>
   <groupId>org.eclipse.ecf</groupId>
   <artifactId>org.eclipse.ecf.provider.bittorrent</artifactId>
-  <version>0.3.400-SNAPSHOT</version>
+  <version>0.3.401-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>

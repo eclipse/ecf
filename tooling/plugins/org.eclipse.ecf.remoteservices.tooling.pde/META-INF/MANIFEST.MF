@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.remoteservices.tooling.pde;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.remoteservices.tooling.pde
-Bundle-Version: 1.0.200.qualifier
+Bundle-Version: 1.0.201.qualifier
 Bundle-Activator: org.eclipse.ecf.remoteservices.internal.tooling.pde.Activator
 Bundle-Vendor: %plugin.provider
 Require-Bundle: org.eclipse.ui,

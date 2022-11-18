@@ -10,6 +10,6 @@
   </parent>
   <groupId>org.eclipse.ecf</groupId>
   <artifactId>org.jivesoftware.smack</artifactId>
-  <version>3.3.300-SNAPSHOT</version>
+  <version>3.3.301-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>

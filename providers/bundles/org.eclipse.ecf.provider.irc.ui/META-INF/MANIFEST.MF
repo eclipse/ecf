@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.provider.irc.ui;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.provider.irc.ui
-Bundle-Version: 1.3.200.qualifier
+Bundle-Version: 1.3.201.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.irc.ui.Activator
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,

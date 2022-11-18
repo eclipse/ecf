@@ -10,6 +10,6 @@
   </parent>
   <groupId>org.eclipse.ecf</groupId>
   <artifactId>org.eclipse.osgi.services.remoteserviceadmin</artifactId>
-  <version>1.6.300-SNAPSHOT</version>
+  <version>1.6.301-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>

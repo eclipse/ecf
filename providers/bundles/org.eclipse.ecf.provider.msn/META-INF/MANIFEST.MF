@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.provider.msn;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.provider.msn
-Bundle-Version: 1.2.200.qualifier
+Bundle-Version: 1.2.201.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.provider.msn.Activator
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin

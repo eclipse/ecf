@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.provider.jslp;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.provider.jslp
-Bundle-Version: 3.2.301.qualifier
+Bundle-Version: 3.2.302.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.provider.jslp.Activator
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
