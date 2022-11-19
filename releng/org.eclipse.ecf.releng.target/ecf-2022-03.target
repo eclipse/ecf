@@ -44,9 +44,11 @@
 			<unit id="com.sun.jna" version="5.8.0.v20210503-0343"/>
 			<unit id="com.sun.jna.source" version="5.8.0.v20210503-0343"/>			
 			<unit id="com.sun.jna" version="4.5.1.v20210503-0343"/>
+			<unit id="com.sun.jna.source" version="4.5.1.v20210503-0343"/>
 			<unit id="com.sun.jna.platform" version="4.5.1.v20221112-0806"/>
 			<unit id="com.sun.jna.platform.source" version="4.5.1.v20221112-0806"/>
-			<unit id="com.sun.jna.source" version="4.5.1.v20210503-0343"/>
+			<unit id="com.sun.jna.platform" version="5.8.0.v20221112-0806"/>
+			<unit id="com.sun.jna.platform.source" version="5.8.0.v20221112-0806"/>
 			<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/S20221115203712/repository/"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
@@ -76,10 +78,10 @@
 		<plugin id="com.sun.el.source"/>
 		<plugin id="com.sun.jna" version="4.5.1.v20210503-0343"/>
 		<plugin id="com.sun.jna" version="5.8.0.v20210503-0343"/>
-		<plugin id="com.sun.jna.platform" version="4.5.1.v20190425-1842"/>
-		<plugin id="com.sun.jna.platform" version="5.8.0.v20210406-1004"/>
-		<plugin id="com.sun.jna.platform.source" version="5.8.0.v20210406-1004"/>
-		<plugin id="com.sun.jna.platform.source" version="4.5.1.v20190425-1842"/>
+		<plugin id="com.sun.jna.platform" version="4.5.1.v20221112-0806"/>
+		<plugin id="com.sun.jna.platform" version="5.8.0.v20221112-0806"/>
+		<plugin id="com.sun.jna.platform.source" version="5.8.0.v20221112-0806"/>
+		<plugin id="com.sun.jna.platform.source" version="4.5.1.v20221112-0806"/>
 		<plugin id="com.sun.jna.source" version="5.8.0.v20210503-0343"/>
 		<plugin id="com.sun.jna.source" version="4.5.1.v20210503-0343"/>
 		<plugin id="com.sun.syndication"/>
