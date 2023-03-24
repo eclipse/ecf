@@ -30,7 +30,7 @@ public class HttpClientDefaultSSLSocketFactoryModifier {
 
 	private String defaultProtocolNames = System.getProperty(DEFAULT_SSL_PROTOCOL);
 
-	private static final String[] jreProtocols = new String[] {"TLSv1.2", "TLSv1.1", "TLSv1", "SSLv3"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+	private static final String[] jreProtocols = new String[] {"TLSv1.3", "TLSv1.2", "TLSv1.1", "TLSv1", "SSLv3"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
 	public HttpClientDefaultSSLSocketFactoryModifier() {
 		// empty
