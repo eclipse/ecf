@@ -16,7 +16,8 @@ import javax.net.ssl.TrustManager;
 
 public class SSLContextHelper {
 
-	private static final String[] jreProtocols = new String[] { "TLSv1.2", "TLSv1.1", "TLSv1", "SSLv3" };
+	private static final String[] jreProtocols = new String[] { "TLSv1.3", "TLSv1.2", "TLSv1.2", "TLSv1.1", "TLSv1",
+			"SSLv3" };
 
 	public static SSLContext getSSLContext(String protocols) {
 		SSLContext resultContext = null;
