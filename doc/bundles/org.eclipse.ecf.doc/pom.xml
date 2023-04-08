@@ -72,8 +72,7 @@
               <goal>eclipse-run</goal>
             </goals>
             <configuration>
-              <appArgLine>-consolelog -data target/workspace -application org.eclipse.ant.core.antRunner -quiet -buildfile buildschemadocs.xml
-              </appArgLine>
+              <applicationsArgs>-consolelog -data target/workspace -application org.eclipse.ant.core.antRunner -quiet -buildfile buildschemadocs.xml</applicationsArgs>
               <dependencies>
               
                 <dependency>
