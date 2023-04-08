@@ -21,6 +21,7 @@ import org.eclipse.ecf.tests.discovery.DiscoveryContainerTest;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.FrameworkUtil;
 
 public class JSLPDiscoveryTest extends DiscoveryContainerTest {
 
