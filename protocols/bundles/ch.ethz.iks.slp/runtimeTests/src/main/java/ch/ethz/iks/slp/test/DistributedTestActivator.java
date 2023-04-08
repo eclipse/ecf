@@ -39,7 +39,7 @@ public class DistributedTestActivator extends TestActivator implements ServiceLi
 		context.addServiceListener(this, filter);
 		
 		// get the previously active services
-		ServiceReference[] serviceReferences = context.getServiceReferences(null, filter);
+		ServiceReference[] serviceReferences = context.getServiceReferences((String) null, filter);
 		for (int i = 0; i < serviceReferences.length; i++) {
 			handleServiceAdded(serviceReferences[i]);
 		}
