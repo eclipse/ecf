@@ -3,9 +3,9 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.ssl
 Automatic-Module-Name: org.eclipse.ecf.ssl
-Bundle-Version: 1.2.500.qualifier
+Bundle-Version: 1.3.0.qualifier
 Fragment-Host: org.eclipse.ecf
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Import-Package: javax.net,
  javax.net.ssl,
  org.eclipse.osgi.service.security
