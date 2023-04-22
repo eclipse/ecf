@@ -8,4 +8,3 @@ Bundle-Vendor: %plugin.provider
 Fragment-Host: org.eclipse.ecf.provider.filetransfer;bundle-version="2.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-Localization: plugin
-Import-Package: javax.net.ssl

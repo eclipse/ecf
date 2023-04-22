@@ -31,9 +31,9 @@
             <configuration>
               <artifacts>
                  <artifact>
-                  <file>ecf-2021-09.target</file>
+                  <file>ecf-2022-12.target</file>
                   <type>target</type>
-                  <classifier>ecf-2021-09</classifier>
+                  <classifier>ecf-2022-12</classifier>
                 </artifact>
               </artifacts>
             </configuration>

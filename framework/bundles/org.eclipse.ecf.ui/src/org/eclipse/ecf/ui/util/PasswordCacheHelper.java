@@ -13,12 +13,8 @@
 
 package org.eclipse.ecf.ui.util;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.internal.ui.Activator;
+import org.eclipse.equinox.security.storage.*;
 
 /**
  * Helper for caching password via
@@ -26,37 +22,18 @@ import org.eclipse.ecf.internal.ui.Activator;
  */
 public class PasswordCacheHelper {
 
-	public static final URL FAKE_URL;
-	public static final String AUTH_SCHEME = ""; //$NON-NLS-1$
+	private static final String TOP_NODE = "org.eclipse.ecf.ui"; //$NON-NLS-1$
 	public static final String INFO_PASSWORD = "org.eclipse.ecf.ui.password"; //$NON-NLS-1$
-	private String targetAuthority;
-
-	static {
-		URL temp = null;
-		try {
-			temp = new URL("http://org.eclipse.ecf.ui"); //$NON-NLS-1$
-		} catch (MalformedURLException e) {
-			// Never happens
-		}
-		FAKE_URL = temp;
-	}
+	private ISecurePreferences securePrefs;
 
 	public PasswordCacheHelper(String targetID) {
-		this.targetAuthority = targetID;
-		Assert.isNotNull(this.targetAuthority);
+		this.securePrefs = SecurePreferencesFactory.getDefault().node(TOP_NODE).node(targetID);
 	}
 
 	public boolean savePassword(String password) {
-		Map map = Platform.getAuthorizationInfo(FAKE_URL, targetAuthority, AUTH_SCHEME);
-		if (map == null) {
-			map = new HashMap(10);
-		}
-		if (password != null)
-			map.put(INFO_PASSWORD, password);
-
 		try {
-			Platform.addAuthorizationInfo(FAKE_URL, targetAuthority, AUTH_SCHEME, map);
-		} catch (CoreException e) {
+			this.securePrefs.put(INFO_PASSWORD, password, true);
+		} catch (StorageException e) {
 			Activator.log("savePassword", e); //$NON-NLS-1$
 			return false;
 		}
@@ -64,10 +41,11 @@ public class PasswordCacheHelper {
 	}
 
 	public String retrievePassword() {
-		Map map = Platform.getAuthorizationInfo(FAKE_URL, targetAuthority, AUTH_SCHEME);
-		if (map != null) {
-			return (String) map.get(INFO_PASSWORD);
+		try {
+			return this.securePrefs.get(INFO_PASSWORD, null);
+		} catch (StorageException e) {
+			Activator.log("savePassword", e); //$NON-NLS-1$
+			return null;
 		}
-		return null;
 	}
 }
