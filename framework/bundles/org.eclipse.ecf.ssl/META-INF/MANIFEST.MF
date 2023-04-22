@@ -6,9 +6,7 @@ Automatic-Module-Name: org.eclipse.ecf.ssl
 Bundle-Version: 1.3.0.qualifier
 Fragment-Host: org.eclipse.ecf
 Bundle-RequiredExecutionEnvironment: JavaSE-17
-Import-Package: javax.net,
- javax.net.ssl,
- org.eclipse.osgi.service.security
+Import-Package: org.eclipse.osgi.service.security
 Bundle-Localization: plugin
 Export-Package: org.eclipse.ecf.internal.ssl;x-internal:=true
 Bundle-Vendor: %plugin.provider
