@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.8"?>
-<target name="2022-12" sequenceNumber="1">
+<target name="2022-06" sequenceNumber="1">
 	<locations>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 			<unit id="org.eclipse.license.feature.group" version="2.0.2.v20181016-2210"/>
@@ -20,7 +20,7 @@
 			<unit id="org.eclipse.pde.source.feature.group" version="0.0.0"/>
 			<unit id="org.eclipse.platform.feature.group" version="0.0.0"/>
 			<unit id="org.eclipse.platform.source.feature.group" version="0.0.0"/>
-			<repository location="https://download.eclipse.org/releases/2022-12"/>
+			<repository location="https://download.eclipse.org/releases/2022-06"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 			<unit id="org.apache.commons.codec" version="1.14.0.v20221112-0806"/>
