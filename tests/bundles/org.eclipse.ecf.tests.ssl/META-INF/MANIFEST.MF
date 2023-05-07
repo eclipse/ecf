@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %plugin.name
+Bundle-SymbolicName: org.eclipse.ecf.tests.ssl
+Automatic-Module-Name: org.eclipse.ecf.tests.ssl
+Bundle-Version: 1.0.101.qualifier
+Bundle-Activator: org.eclipse.ecf.internal.tests.ssl.TestsSSLActivator
+Bundle-Vendor: %plugin.provider
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Import-Package: org.eclipse.ecf.internal.ssl,
+ org.eclipse.osgi.internal.service.security,
+ org.eclipse.osgi.service.security,
+ org.osgi.framework
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.junit,
+ org.eclipse.equinox.common
+Bundle-Localization: plugin
