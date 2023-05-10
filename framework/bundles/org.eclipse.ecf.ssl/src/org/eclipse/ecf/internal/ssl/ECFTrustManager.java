@@ -21,6 +21,8 @@ import org.osgi.util.tracker.ServiceTracker;
 
 public class ECFTrustManager implements X509TrustManager, BundleActivator {
 
+	public static final String SORT_CERTS_EXPERIMENTAL_FLAG = "org.eclipse.ecf.internal.ssl.ECFTrustManager.experimental.sortCerts";
+
 	private static volatile BundleContext context;
 	private volatile ServiceTracker trustEngineTracker = null;
 	private ServiceRegistration socketFactoryRegistration;
@@ -28,6 +30,11 @@ public class ECFTrustManager implements X509TrustManager, BundleActivator {
 
 	public void checkServerTrusted(X509Certificate[] certs, String authType)
 			throws CertificateException {
+
+		if (Boolean.getBoolean(SORT_CERTS_EXPERIMENTAL_FLAG)) {
+			certs = CertificateChainSorter.sortCertificates(certs);
+		}
+
 		// verify the cert chain
 		verify(certs, authType);
 
