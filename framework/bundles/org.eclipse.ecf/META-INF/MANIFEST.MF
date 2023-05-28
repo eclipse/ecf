@@ -7,6 +7,7 @@ Bundle-Activator: org.eclipse.ecf.internal.core.ECFPlugin
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
 Eclipse-LazyStart: true
+Eclipse-ExtensibleAPI: true
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: org.eclipse.ecf.core;version="3.0.0",
