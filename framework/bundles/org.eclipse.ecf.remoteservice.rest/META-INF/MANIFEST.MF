@@ -4,12 +4,12 @@ Bundle-Name: %plugin.name
 Bundle-Vendor: %plugin.provider
 Bundle-SymbolicName: org.eclipse.ecf.remoteservice.rest;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.remoteservice.rest
-Bundle-Version: 2.7.302.qualifier
+Bundle-Version: 2.8.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.remoteservice.rest.Activator
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global
 DynamicImport-Package: *
-Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Export-Package: org.eclipse.ecf.internal.remoteservice.rest;x-internal:=true,
  org.eclipse.ecf.remoteservice.rest;version="2.5",
  org.eclipse.ecf.remoteservice.rest.client;version="2.6",

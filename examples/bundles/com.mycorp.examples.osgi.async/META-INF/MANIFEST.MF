@@ -8,3 +8,4 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: org.osgi.util.promise
 Export-Package: com.mycorp.examples.osgi.async;version="1.0.0"
 Bundle-ActivationPolicy: lazy
+Automatic-Module-Name: com.mycorp.examples.osgi.async

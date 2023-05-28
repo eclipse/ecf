@@ -13,3 +13,4 @@ Service-Component: OSGI-INF/hello.xml
 Bundle-Localization: bundle
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.equinox.common
+Automatic-Module-Name: org.eclipse.ecf.examples.remoteservices.hello.ds.host

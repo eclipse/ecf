@@ -1,8 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
+Automatic-Module-Name: com.mycorp.examples.osgi.async.consumer
 Bundle-Name: ECF Consumer
 Bundle-SymbolicName: com.mycorp.examples.osgi.async.consumer
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.0.1.qualifier
 Bundle-Vendor: Eclipse.org - ECF
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: com.mycorp.examples.osgi.async,

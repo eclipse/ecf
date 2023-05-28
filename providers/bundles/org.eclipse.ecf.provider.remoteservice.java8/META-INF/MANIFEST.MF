@@ -17,4 +17,5 @@ Import-Package: org.eclipse.equinox.concurrent.future;version="1.1.0",
 Bundle-Localization: plugin
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.eclipse.ecf.provider.internal.remoteservice.java8.Activator
+Automatic-Module-Name: org.eclipse.ecf.provider.remoteservice.java8
 

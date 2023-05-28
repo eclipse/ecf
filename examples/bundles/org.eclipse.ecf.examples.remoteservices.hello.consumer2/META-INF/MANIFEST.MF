@@ -15,3 +15,4 @@ Import-Package: org.eclipse.ecf.examples.remoteservices.hello;version="3.0.0",
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: bundle
 Require-Bundle: org.eclipse.equinox.common
+Automatic-Module-Name: org.eclipse.ecf.examples.remoteservices.hello.consumer2
