@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.remoteservice.rosgi.feature"
       label="ECF Remote Services R-OSGi Provider"
-      version="1.2.2.qualifier"
+      version="1.3.0.qualifier"
       provider-name="%providerName"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
@@ -24,6 +24,7 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
    <requires>
       <import feature="org.eclipse.ecf.provider.generic.feature" version="1.0" match="compatible"/>
       <import feature="org.eclipse.ecf.remoteservice.feature" version="2.1" match="compatible"/>
+      <import plugin="org.objectweb.asm.tree" version="9" match="compatible"/>
    </requires>
 
    <plugin

@@ -17,4 +17,5 @@ Import-Package: ch.ethz.iks.slp;version="1.0",
  junit.textui,
  org.apache.tools.ant.taskdefs.optional.junit,
  org.osgi.framework;version="1.2"
+Automatic-Module-Name: ch.ethz.iks.slp.test
 

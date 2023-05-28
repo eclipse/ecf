@@ -18,3 +18,4 @@ Import-Package: org.eclipse.ecf.core,
  org.eclipse.ecf.remoteservice.events,
  org.osgi.framework;version="1.5.0",
  org.osgi.util.tracker
+Automatic-Module-Name: org.eclipse.ecf.examples.remoteservices.hello.consumer.rs
