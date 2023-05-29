@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.remoteservice.examples.feature"
       label="ECF Remote Services Examples"
-      version="1.5.600.qualifier"
+      version="1.6.0.qualifier"
       provider-name="%providerName"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
@@ -32,7 +32,7 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
       <import feature="org.eclipse.ecf.osgi.services.feature" version="2.6.1" match="compatible"/>
       <import feature="org.eclipse.ecf.provider.generic.feature" version="1.0" match="compatible"/>
       <import feature="org.eclipse.ecf.provider.generic.remoteservice.feature" version="1.0" match="compatible"/>
-      <import feature="org.eclipse.ecf.remoteservice.rosgi.feature" version="1.0" match="compatible"/>
+      <import feature="org.eclipse.ecf.remoteservice.rosgi.feature" version="2.0" match="compatible"/>
       <import feature="org.eclipse.ecf.discovery.jmdns.feature" version="1.0" match="compatible"/>
    </requires>
 
