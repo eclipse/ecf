@@ -41,10 +41,10 @@
 			<unit id="org.apache.httpcomponents.core5.httpcore5-h2.source" version="5.1.4.v20221013-1742"/>
 			<unit id="org.slf4j.binding.log4j12" version="1.7.30.v20221112-0806"/>
 			<unit id="org.slf4j.binding.log4j12.source" version="1.7.30.v20221112-0806"/>
-			<unit id="com.sun.jna" version="5.8.0.v20210503-0343"/>
-			<unit id="com.sun.jna.source" version="5.8.0.v20210503-0343"/>			
 			<unit id="com.sun.jna" version="4.5.1.v20210503-0343"/>
-			<unit id="com.sun.jna.source" version="4.5.1.v20210503-0343"/>
+			<unit id="com.sun.jna.source" version="4.5.1.v20210503-0343"/>			
+			<unit id="com.sun.jna" version="5.8.0.v20210503-0343"/>
+			<unit id="com.sun.jna.source" version="5.8.0.v20210503-0343"/>
 			<unit id="com.sun.jna.platform" version="4.5.1.v20221112-0806"/>
 			<unit id="com.sun.jna.platform.source" version="4.5.1.v20221112-0806"/>
 			<unit id="com.sun.jna.platform" version="5.8.0.v20221112-0806"/>
@@ -59,41 +59,43 @@
 			<unit id="org.json" version="1.0.0.v201011060100"/>
 			<unit id="org.xbill.dns" version="2.0.8.v201112050911"/>
 			<unit id="org.xbill.dns.source" version="2.0.8.v201112050911"/>
-			<unit id="org.objectweb.asm" version="9.1.0.v20210209-1849"/>
-			<unit id="org.objectweb.asm.source" version="9.1.0.v20210209-1849"/>
 			<unit id="org.apache.httpcomponents.httpclient.win" version="4.5.13.v20211010-1849"/>
 			<unit id="org.apache.httpcomponents.httpclient.win.source" version="4.5.13.v20211010-1849"/>
 			<unit id="org.apache.httpcomponents.httpcore" version="4.4.15.v20220209-2345"/>
 			<unit id="org.apache.httpcomponents.httpcore.source" version="4.4.15.v20220209-2345"/>
 			<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20220302172233/repository"/>
 		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+			<repository location="https://download.eclipse.org/oomph/simrel-maven/2023-06"/>
+			<unit id="org.eclipse.oomph.maven.all.feature.group" version="4.28.0"/>
+		</location>
 	</locations>
 	<targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17"/>
 	<includeBundles>
-		<plugin id="com.ibm.icu"/>
-		<plugin id="com.ibm.icu.source"/>
+		<plugin id="com.ibm.icu" version="73.1"/>
+		<plugin id="com.ibm.icu.source" version="73.1.0"/>
 		<plugin id="com.jcraft.jsch"/>
 		<plugin id="com.jcraft.jsch.source"/>
 		<plugin id="com.sun.el"/>
 		<plugin id="com.sun.el.source"/>
 		<plugin id="com.sun.jna" version="4.5.1.v20210503-0343"/>
 		<plugin id="com.sun.jna" version="5.8.0.v20210503-0343"/>
-		<plugin id="com.sun.jna.platform" version="4.5.1.v20221112-0806"/>
 		<plugin id="com.sun.jna.platform" version="5.8.0.v20221112-0806"/>
+		<plugin id="com.sun.jna.platform" version="4.5.1.v20221112-0806"/>
 		<plugin id="com.sun.jna.platform.source" version="5.8.0.v20221112-0806"/>
 		<plugin id="com.sun.jna.platform.source" version="4.5.1.v20221112-0806"/>
 		<plugin id="com.sun.jna.source" version="5.8.0.v20210503-0343"/>
 		<plugin id="com.sun.jna.source" version="4.5.1.v20210503-0343"/>
 		<plugin id="com.sun.syndication"/>
 		<plugin id="com.sun.syndication.source"/>
-		<plugin id="jakarta.servlet-api"/>
-		<plugin id="jakarta.servlet-api.source"/>
+		<plugin id="jakarta.servlet-api" version="4.0.0"/>
+		<plugin id="jakarta.servlet-api.source" version="4.0.0"/>
 		<plugin id="javax.annotation"/>
 		<plugin id="javax.annotation.source"/>
-		<plugin id="javax.el"/>
-		<plugin id="javax.el.source"/>
-		<plugin id="javax.inject"/>
-		<plugin id="javax.inject.source"/>
+		<plugin id="javax.el" version="2.2.0.v201303151357"/>
+		<plugin id="javax.el.source" version="2.2.0.v201303151357"/>
+		<plugin id="javax.inject" version="1.0.0.v20091030"/>
+		<plugin id="javax.inject.source" version="1.0.0.v20091030"/>
 		<plugin id="javax.servlet.jsp"/>
 		<plugin id="javax.servlet.jsp.source"/>
 		<plugin id="org.apache.ant"/>
@@ -110,20 +112,20 @@
 		<plugin id="org.apache.commons.codec.source" version="1.14.0.v20200818-1422"/>
 		<plugin id="org.apache.commons.httpclient"/>
 		<plugin id="org.apache.commons.httpclient.source"/>
-		<plugin id="org.apache.commons.io"/>
-		<plugin id="org.apache.commons.io.source"/>
+		<plugin id="org.apache.commons.io" version="2.8.0.v20210415-0900"/>
+		<plugin id="org.apache.commons.io.source" version="2.8.0.v20210415-0900"/>
 		<plugin id="org.apache.commons.jxpath"/>
 		<plugin id="org.apache.commons.jxpath.source"/>
 		<plugin id="org.apache.commons.logging" version="1.2.0.v20180409-1502"/>
 		<plugin id="org.apache.commons.logging.source" version="1.2.0.v20180409-1502"/>
-		<plugin id="org.apache.felix.gogo.command"/>
-		<plugin id="org.apache.felix.gogo.command.source"/>
-		<plugin id="org.apache.felix.gogo.runtime"/>
-		<plugin id="org.apache.felix.gogo.runtime.source"/>
-		<plugin id="org.apache.felix.gogo.shell"/>
-		<plugin id="org.apache.felix.gogo.shell.source"/>
-		<plugin id="org.apache.felix.scr"/>
-		<plugin id="org.apache.felix.scr.source"/>
+		<plugin id="org.apache.felix.gogo.command" version="1.1.2.v20210111-1007"/>
+		<plugin id="org.apache.felix.gogo.command.source" version="1.1.2.v20210111-1007"/>
+		<plugin id="org.apache.felix.gogo.runtime" version="1.1.6"/>
+		<plugin id="org.apache.felix.gogo.runtime.source" version="1.1.6"/>
+		<plugin id="org.apache.felix.gogo.shell" version="1.1.4.v20210111-1007"/>
+		<plugin id="org.apache.felix.gogo.shell.source" version="1.1.4.v20210111-1007"/>
+		<plugin id="org.apache.felix.scr" version="2.2.6"/>
+		<plugin id="org.apache.felix.scr.source" version="2.2.6"/>
 		<plugin id="org.apache.hadoop.zookeeper"/>
 		<plugin id="org.apache.hadoop.zookeeper.source"/>
 		<plugin id="org.apache.httpcomponents.client5.httpclient5" version="5.1.3.v20221013-1742"/>
@@ -134,12 +136,12 @@
 		<plugin id="org.apache.httpcomponents.core5.httpcore5-h2" version="5.1.4.v20221013-1742"/>
 		<plugin id="org.apache.httpcomponents.core5.httpcore5-h2.source" version="5.1.4.v20221013-1742"/>
 		<plugin id="org.apache.httpcomponents.core5.httpcore5.source" version="5.1.4.v20221013-1742"/>
-		<plugin id="org.apache.httpcomponents.httpclient"/>
-		<plugin id="org.apache.httpcomponents.httpclient.source"/>
+		<plugin id="org.apache.httpcomponents.httpclient" version="4.5.14.v20221207-1049"/>
+		<plugin id="org.apache.httpcomponents.httpclient.source" version="4.5.14.v20221207-1049"/>
 		<plugin id="org.apache.httpcomponents.httpclient.win"/>
 		<plugin id="org.apache.httpcomponents.httpclient.win.source"/>
-		<plugin id="org.apache.httpcomponents.httpcore"/>
-		<plugin id="org.apache.httpcomponents.httpcore.source"/>
+		<plugin id="org.apache.httpcomponents.httpcore" version="4.4.16.v20221207-1049"/>
+		<plugin id="org.apache.httpcomponents.httpcore.source" version="4.4.16.v20221207-1049"/>
 		<plugin id="org.apache.jasper.glassfish"/>
 		<plugin id="org.apache.jasper.glassfish.source"/>
 		<plugin id="org.apache.log4j" version="1.2.24.v20221221-2012"/>
@@ -404,8 +406,8 @@
 		<plugin id="org.eclipse.jdt"/>
 		<plugin id="org.eclipse.jdt.annotation" version="2.2.600.v20200408-1511"/>
 		<plugin id="org.eclipse.jdt.annotation" version="1.2.0.v20210519-0438"/>
-		<plugin id="org.eclipse.jdt.annotation.source" version="1.2.0.v20210519-0438"/>
 		<plugin id="org.eclipse.jdt.annotation.source" version="2.2.600.v20200408-1511"/>
+		<plugin id="org.eclipse.jdt.annotation.source" version="1.2.0.v20210519-0438"/>
 		<plugin id="org.eclipse.jdt.apt.core"/>
 		<plugin id="org.eclipse.jdt.apt.core.source"/>
 		<plugin id="org.eclipse.jdt.apt.pluggable.core"/>
@@ -474,11 +476,11 @@
 		<plugin id="org.eclipse.osgi" version="3.17.200.v20220215-2237"/>
 		<plugin id="org.eclipse.osgi.compatibility.state"/>
 		<plugin id="org.eclipse.osgi.compatibility.state.source"/>
-		<plugin id="org.eclipse.osgi.services"/>
-		<plugin id="org.eclipse.osgi.services.source"/>
+		<plugin id="org.eclipse.osgi.services" version="3.10.200.v20210723-0643"/>
+		<plugin id="org.eclipse.osgi.services.source" version="3.10.200.v20210723-0643"/>
 		<plugin id="org.eclipse.osgi.source" version="3.17.200.v20220215-2237"/>
-		<plugin id="org.eclipse.osgi.util"/>
-		<plugin id="org.eclipse.osgi.util.source"/>
+		<plugin id="org.eclipse.osgi.util" version="3.6.100.v20210723-1119"/>
+		<plugin id="org.eclipse.osgi.util.source" version="3.6.100.v20210723-1119"/>
 		<plugin id="org.eclipse.pde"/>
 		<plugin id="org.eclipse.pde.api.tools"/>
 		<plugin id="org.eclipse.pde.api.tools.annotations"/>
@@ -495,8 +497,8 @@
 		<plugin id="org.eclipse.pde.ds.annotations.source"/>
 		<plugin id="org.eclipse.pde.ds.core"/>
 		<plugin id="org.eclipse.pde.ds.core.source"/>
-		<plugin id="org.eclipse.pde.ds.lib"/>
-		<plugin id="org.eclipse.pde.ds.lib.source"/>
+		<plugin id="org.eclipse.pde.ds.lib" version="1.1.500.v20210209-1250"/>
+		<plugin id="org.eclipse.pde.ds.lib.source" version="1.1.500.v20210209-1250"/>
 		<plugin id="org.eclipse.pde.ds.ui"/>
 		<plugin id="org.eclipse.pde.ds.ui.source"/>
 		<plugin id="org.eclipse.pde.ds1_2.lib"/>
@@ -605,12 +607,12 @@
 		<plugin id="org.eclipse.update.configurator.source"/>
 		<plugin id="org.eclipse.urischeme"/>
 		<plugin id="org.eclipse.urischeme.source"/>
-		<plugin id="org.hamcrest.core"/>
-		<plugin id="org.hamcrest.core.source"/>
+		<plugin id="org.hamcrest.core" version="1.3.0.v20180420-1519"/>
+		<plugin id="org.hamcrest.core.source" version="1.3.0.v20180420-1519"/>
 		<plugin id="org.jdom"/>
 		<plugin id="org.jdom.source"/>
 		<plugin id="org.json"/>
-		<plugin id="org.junit"/>
+		<plugin id="org.junit" version="4.13.2.v20211018-1956"/>
 		<plugin id="org.junit.jupiter.api"/>
 		<plugin id="org.junit.jupiter.api.source"/>
 		<plugin id="org.junit.jupiter.engine"/>
@@ -633,25 +635,23 @@
 		<plugin id="org.junit.platform.suite.commons.source"/>
 		<plugin id="org.junit.platform.suite.engine"/>
 		<plugin id="org.junit.platform.suite.engine.source"/>
-		<plugin id="org.junit.source"/>
+		<plugin id="org.junit.source" version="4.13.2.v20211018-1956"/>
 		<plugin id="org.junit.vintage.engine"/>
 		<plugin id="org.junit.vintage.engine.source"/>
-		<plugin id="org.objectweb.asm" version="9.2.0.v20210813-1119"/>
-		<plugin id="org.objectweb.asm" version="9.1.0.v20210209-1849"/>
-		<plugin id="org.objectweb.asm.source" version="9.2.0.v20210813-1119"/>
-		<plugin id="org.objectweb.asm.source" version="9.1.0.v20210209-1849"/>
-		<plugin id="org.objectweb.asm.tree"/>
-		<plugin id="org.objectweb.asm.tree.source"/>
-		<plugin id="org.opentest4j"/>
-		<plugin id="org.opentest4j.source"/>
-		<plugin id="org.sat4j.core"/>
-		<plugin id="org.sat4j.pb"/>
+		<plugin id="org.objectweb.asm" version="9.5"/>
+		<plugin id="org.objectweb.asm.source" version="9.5.0"/>
+		<plugin id="org.objectweb.asm.tree" version="9.5"/>
+		<plugin id="org.objectweb.asm.tree.source" version="9.5.0"/>
+		<plugin id="org.opentest4j" version="1.2.0.v20211018-1956"/>
+		<plugin id="org.opentest4j.source" version="1.2.0.v20211018-1956"/>
+		<plugin id="org.sat4j.core" version="2.3.6.v20201214"/>
+		<plugin id="org.sat4j.pb" version="2.3.6.v20201214"/>
 		<plugin id="org.slf4j.api" version="1.7.30.v20200204-2150"/>
 		<plugin id="org.slf4j.api.source" version="1.7.30.v20200204-2150"/>
-		<plugin id="org.slf4j.binding.log4j12"/>
-		<plugin id="org.slf4j.binding.log4j12.source"/>
-		<plugin id="org.tukaani.xz"/>
-		<plugin id="org.tukaani.xz.source"/>
+		<plugin id="org.slf4j.binding.log4j12" version="1.7.30.v20221112-0806"/>
+		<plugin id="org.slf4j.binding.log4j12.source" version="1.7.30.v20221112-0806"/>
+		<plugin id="org.tukaani.xz" version="1.9.0.v20210624-1259"/>
+		<plugin id="org.tukaani.xz.source" version="1.9.0.v20210624-1259"/>
 		<plugin id="org.w3c.css.sac"/>
 		<plugin id="org.w3c.css.sac.source"/>
 		<plugin id="org.w3c.dom.events"/>
@@ -662,9 +662,5 @@
 		<plugin id="org.w3c.dom.svg.source"/>
 		<plugin id="org.xbill.dns"/>
 		<plugin id="org.xbill.dns.source"/>
-		<plugin id="org.apache.httpcomponents.core5.httpcore5.source" version="5.1.4.v20221013-1742"/>
-		<plugin id="org.apache.httpcomponents.core5.httpcore5" version="5.1.4.v20221013-1742"/>
-		<plugin id="org.apache.httpcomponents.core5.httpcore5-h2.source" version="5.1.4.v20221013-1742"/>
-		<plugin id="org.apache.httpcomponents.core5.httpcore5-h2" version="5.1.4.v20221013-1742"/>
 	</includeBundles>
 </target>
