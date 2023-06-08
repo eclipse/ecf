@@ -32,6 +32,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.List;
+import java.util.Locale;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -80,9 +81,9 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 	// see https://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3
 	// per RFC there are three different formats:
 	private static final List<ThreadLocal<DateFormat>> DATE_PATTERNS = List.of(//
-			ThreadLocal.withInitial(() -> new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz")), // RFC 1123
-			ThreadLocal.withInitial(() -> new SimpleDateFormat("EEE, dd-MMM-yy HH:mm:ss zzz")), // RFC 1036
-			ThreadLocal.withInitial(() -> new SimpleDateFormat("EEE MMMd HH:mm:ss yyyy")) // ANSI C's asctime() format
+			ThreadLocal.withInitial(() -> new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH)), // RFC 1123
+			ThreadLocal.withInitial(() -> new SimpleDateFormat("EEE, dd-MMM-yy HH:mm:ss zzz", Locale.ENGLISH)), // RFC 1036
+			ThreadLocal.withInitial(() -> new SimpleDateFormat("EEE MMMd HH:mm:ss yyyy", Locale.ENGLISH)) // ANSI C's asctime() format
 	);
 
 	public static final String LAST_MODIFIED_HEADER = "Last-Modified"; //$NON-NLS-1$
