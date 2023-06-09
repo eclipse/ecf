@@ -10,6 +10,6 @@
   </parent>
   <groupId>org.eclipse.ecf</groupId>
   <artifactId>org.eclipse.ecf.core</artifactId>
-  <version>3.14.39-SNAPSHOT</version>
+  <version>3.14.40-SNAPSHOT</version>
   <packaging>eclipse-feature</packaging>
 </project>
