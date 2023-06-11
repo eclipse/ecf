@@ -26,6 +26,7 @@ import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.core5.http.config.Lookup;
 import org.apache.hc.core5.http.config.RegistryBuilder;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclient5.HttpClientModifierAdapter;
+import org.eclipse.ecf.internal.provider.filetransfer.httpclient5.IHttpClientModifier;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -33,7 +34,7 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
 // Note that this depends upon HttpClientContext class which is from org.apache.httpcomponents.client5.httpclient5 bundle
-@Component
+@Component(service = { IHttpClientModifier.class })
 public class Win32HttpClientConfigurationModifier extends HttpClientModifierAdapter {
 
 	public static final String ID = "org.eclipse.ecf.provider.filetransfer.httpclients5.win32"; //$NON-NLS-1$
