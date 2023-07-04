@@ -17,7 +17,8 @@ import org.eclipse.ecf.core.util.LogHelper;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.log.LogService;
-import org.osgi.service.url.*;
+import org.osgi.service.url.URLConstants;
+import org.osgi.service.url.URLStreamHandlerService;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
@@ -32,8 +33,6 @@ public class Activator implements BundleActivator {
 			+ "urlStreamHandlerService"; //$NON-NLS-1$
 
 	private static final String PROTOCOL_ATTRIBUTE = "protocol"; //$NON-NLS-1$
-
-	private static final String SERVICE_CLASS_ATTRIBUTE = "serviceClass"; //$NON-NLS-1$
 
 	private ServiceTracker extensionRegistryTracker = null;
 
@@ -95,18 +94,11 @@ public class Activator implements BundleActivator {
 			IConfigurationElement[] configurationElements = extensionPoint.getConfigurationElements();
 
 			for (IConfigurationElement configurationElement : configurationElements) {
-				AbstractURLStreamHandlerService svc = null;
-				String protocol = null;
-				try {
-					svc = (AbstractURLStreamHandlerService) configurationElement.createExecutableExtension(SERVICE_CLASS_ATTRIBUTE);
-					protocol = configurationElement.getAttribute(PROTOCOL_ATTRIBUTE);
-				}catch (CoreException e) {
-					log(e.getStatus());
-				}
-				if (svc != null && protocol != null) {
+				String protocol = configurationElement.getAttribute(PROTOCOL_ATTRIBUTE);
+				if (protocol != null) {
 					Hashtable properties = new Hashtable();
 					properties.put(URLConstants.URL_HANDLER_PROTOCOL, new String[] {protocol});
-					context.registerService(URLStreamHandlerService.class.getName(), svc, properties);
+					context.registerService(URLStreamHandlerService.class.getName(), new ProxyURLStreamHandlerService(configurationElement), properties);
 				}
 			}
 		}
