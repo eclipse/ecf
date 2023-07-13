@@ -755,7 +755,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	}
 
 	protected boolean isConnected() {
-		return (httpResponse != null && !httpResponse.isCancelled());
+		return (httpRequest != null && httpResponse != null && !httpResponse.isCancelled());
 	}
 
 	/*
