@@ -45,6 +45,9 @@
    <feature id="org.eclipse.ecf.filetransfer.httpclient5.feature.source" version="0.0.0">
       <category name="core sources"/>
    </feature>
+   <feature id="org.eclipse.ecf.filetransfer.httpclientjava.feature.source" version="0.0.0">
+      <category name="core sources"/>
+   </feature>
    <feature id="org.eclipse.ecf.filetransfer.httpclient45.feature.source" version="0.0.0">
       <category name="core sources"/>
    </feature>
