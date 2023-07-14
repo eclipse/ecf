@@ -10,7 +10,7 @@
   </parent>
   <groupId>org.eclipse.ecf</groupId>
   <artifactId>org.eclipse.ecf.doc</artifactId>
-  <version>1.3.400-SNAPSHOT</version>
+  <version>1.3.500-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 
   <build>
