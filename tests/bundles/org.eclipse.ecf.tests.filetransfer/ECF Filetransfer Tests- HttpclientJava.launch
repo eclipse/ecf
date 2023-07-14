@@ -16,6 +16,7 @@
     <setAttribute key="deselected_workspace_bundles"/>
     <booleanAttribute key="includeOptional" value="false"/>
     <stringAttribute key="location" value="${workspace_loc}/../runtime-workspace-collab1"/>
+    <booleanAttribute key="org.eclipse.debug.core.ATTR_FORCE_SYSTEM_CONSOLE_ENCODING" value="false"/>
     <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
         <listEntry value="/org.eclipse.ecf.tests.filetransfer"/>
     </listAttribute>
@@ -39,10 +40,8 @@
     <booleanAttribute key="run_in_ui_thread" value="true"/>
     <setAttribute key="selected_target_bundles">
         <setEntry value="com.ibm.icu@default:default"/>
-        <setEntry value="com.sun.jna*4.5.1.v20210503-0343@default:default"/>
         <setEntry value="com.sun.jna*5.8.0.v20210503-0343@default:default"/>
-        <setEntry value="com.sun.jna.platform*4.5.1.v20190425-1842@default:default"/>
-        <setEntry value="com.sun.jna.platform*5.8.0.v20210406-1004@default:default"/>
+        <setEntry value="com.sun.jna.platform*5.8.0.v20221112-0806@default:default"/>
         <setEntry value="javax.annotation@default:default"/>
         <setEntry value="javax.inject@default:default"/>
         <setEntry value="org.apache.batik.constants@default:default"/>
@@ -58,13 +57,6 @@
         <setEntry value="org.apache.felix.gogo.runtime@default:default"/>
         <setEntry value="org.apache.felix.gogo.shell@default:default"/>
         <setEntry value="org.apache.felix.scr@1:true"/>
-        <setEntry value="org.apache.httpcomponents.client5.httpclient5-win@default:default"/>
-        <setEntry value="org.apache.httpcomponents.client5.httpclient5@default:default"/>
-        <setEntry value="org.apache.httpcomponents.core5.httpcore5-h2@default:default"/>
-        <setEntry value="org.apache.httpcomponents.core5.httpcore5@default:default"/>
-        <setEntry value="org.apache.httpcomponents.httpclient.win@default:default"/>
-        <setEntry value="org.apache.httpcomponents.httpclient@default:default"/>
-        <setEntry value="org.apache.httpcomponents.httpcore@default:default"/>
         <setEntry value="org.apache.log4j@default:default"/>
         <setEntry value="org.apache.xmlgraphics@default:default"/>
         <setEntry value="org.bouncycastle.bcpg@default:default"/>
@@ -167,11 +159,10 @@
     <setAttribute key="selected_workspace_bundles">
         <setEntry value="org.eclipse.ecf.filetransfer@default:true"/>
         <setEntry value="org.eclipse.ecf.identity@default:default"/>
-        <setEntry value="org.eclipse.ecf.provider.filetransfer.httpclient5.win32@default:default"/>
-        <setEntry value="org.eclipse.ecf.provider.filetransfer.httpclient5@default:default"/>
+        <setEntry value="org.eclipse.ecf.provider.filetransfer.httpclientjava@default:default"/>
         <setEntry value="org.eclipse.ecf.provider.filetransfer@default:default"/>
         <setEntry value="org.eclipse.ecf.tests.apache.httpclient.server@default:default"/>
-        <setEntry value="org.eclipse.ecf.tests.filetransfer.httpclient5@default:false"/>
+        <setEntry value="org.eclipse.ecf.tests.filetransfer.httpclientjava@default:default"/>
         <setEntry value="org.eclipse.ecf.tests.filetransfer.httpserver@default:default"/>
         <setEntry value="org.eclipse.ecf.tests.filetransfer@default:default"/>
         <setEntry value="org.eclipse.ecf.tests@default:default"/>
