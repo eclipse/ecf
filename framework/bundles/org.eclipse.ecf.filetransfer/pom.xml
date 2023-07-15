@@ -9,6 +9,6 @@
     <relativePath>../../../</relativePath>
   </parent>
   <artifactId>org.eclipse.ecf.filetransfer</artifactId>
-  <version>5.1.102-SNAPSHOT</version>
+  <version>5.1.103-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>
