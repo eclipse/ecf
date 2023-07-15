@@ -14,7 +14,10 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.provider.filetransfer.httpclientjava;
 
+import java.net.CookieHandler;
+import java.net.CookieManager;
 import java.net.http.HttpClient;
+import java.net.http.HttpClient.Builder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -101,6 +104,10 @@ public class Activator implements BundleActivator {
 
 	private static final String USE_SHARED_CLIENT_DEFAULT = "true"; //$NON-NLS-1$
 
+	public static final String USE_COOKIE_STORE = PLUGIN_ID + ".cookieStore"; //$NON-NLS-1$
+
+	private static final String USE_COOKIE_STORE_DEFAULT = "true"; //$NON-NLS-1$
+
 	// The shared instance
 	private static Activator plugin;
 	private BundleContext context = null;
@@ -119,6 +126,8 @@ public class Activator implements BundleActivator {
 
 	private boolean useSharedClient;
 
+	private boolean useCookieStore;
+
 	/**
 	 * The constructor
 	 */
@@ -135,6 +144,7 @@ public class Activator implements BundleActivator {
 		plugin = this;
 		this.context = ctxt;
 		useSharedClient = Boolean.parseBoolean(System.getProperty(USE_SHARED_CLIENT, USE_SHARED_CLIENT_DEFAULT));
+		useCookieStore = Boolean.parseBoolean(System.getProperty(USE_COOKIE_STORE, USE_COOKIE_STORE_DEFAULT));
 		applyDebugOptions(ctxt);
 	}
 
@@ -206,6 +216,10 @@ public class Activator implements BundleActivator {
 		return useSharedClient;
 	}
 
+	public boolean isUseCookieStore() {
+		return useCookieStore;
+	}
+
 	public void log(IStatus status) {
 		LogService logService = getLogService();
 		if (logService != null) {
@@ -262,7 +276,7 @@ public class Activator implements BundleActivator {
 				service = registerHttpClient();
 			}
 		} else {
-			service = getHttpClientFactory().newClient().build();
+			service = buildHttpClient();
 		}
 		return service;
 	}
@@ -280,13 +294,13 @@ public class Activator implements BundleActivator {
 				service = registerHttpClient();
 			}
 		} else {
-			service = getHttpClientFactory().newClient().build();
+			service = buildHttpClient();
 		}
 		return service;
 	}
 
 	private HttpClient registerHttpClient() {
-		HttpClient client = getHttpClientFactory().newClient().build();
+		HttpClient client = buildHttpClient();
 
 		Dictionary<String, Object> serviceProperties = new Hashtable<String, Object>();
 		serviceProperties.put(Constants.SERVICE_RANKING, Integer.MIN_VALUE);
@@ -294,6 +308,18 @@ public class Activator implements BundleActivator {
 		context.registerService(new String[] { HttpClient.class.getName() }, client, serviceProperties);
 
 		return client;
+	}
+
+	private HttpClient buildHttpClient() {
+		Builder builder = getHttpClientFactory().newClient();
+		if (isUseCookieStore()) {
+			CookieHandler cookieHandler = CookieHandler.getDefault();
+			if (cookieHandler == null) {
+				cookieHandler = new CookieManager();
+			}
+			builder.cookieHandler(cookieHandler);
+		}
+		return builder.build();
 	}
 
 	public static void logNoProxyWarning(Throwable e) {
