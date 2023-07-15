@@ -98,16 +98,73 @@ public class URLRetrievePauseResumeTest extends ContainerAbstractTestCase {
 			}
 		}
 	}
+	class Waiter implements IFileTransferListener {
 
+		private static final long serialVersionUID = -5569329800222556575L;
+		
+		private final AtomicBoolean wasStarted = new AtomicBoolean(false);
+		private final AtomicBoolean wasPaused = new AtomicBoolean(false);
+		private final AtomicBoolean wasResumed = new AtomicBoolean(false);
+		
+		private final IFileTransferListener delegateListener;
+		
+		boolean waitForEvent(long waittime, AtomicBoolean ab) {
+			synchronized (ab) {
+				if (ab.get())
+					return true;
+				long interval = waittime / 10;
+				long donetime = System.currentTimeMillis() + waittime;
+				try {
+					while (System.currentTimeMillis() < donetime) {
+						ab.wait(interval);
+					}
+				} catch (InterruptedException e) {
+					return false;
+				}
+				return ab.get();
+			}
+		}
+		
+		public boolean waitForStarted(long waittime) {
+			return waitForEvent(waittime, this.wasStarted);
+		}
+		public boolean waitForPaused(long waittime) {
+			return waitForEvent(waittime, this.wasPaused);
+		}
+		public boolean waitForResumed(long waittime) {
+			return waitForEvent(waittime, this.wasResumed);
+		}
+		
+		public Waiter(IFileTransferListener delegateListener) {
+			this.delegateListener = delegateListener;
+		}
+
+		public void handleTransferEvent(IFileTransferEvent event) {
+			this.delegateListener.handleTransferEvent(event);
+			if (event instanceof IIncomingFileTransferReceiveResumedEvent) {
+				synchronized (wasResumed) {
+					wasResumed.set(true);
+					wasResumed.notify();
+				}
+			} else if (event instanceof IIncomingFileTransferReceiveStartEvent) {
+				synchronized (wasStarted) {
+					wasStarted.set(true);
+					wasStarted.notify();
+				}
+			} else if (event instanceof IIncomingFileTransferReceivePausedEvent) {
+				synchronized (wasPaused) {
+					wasPaused.set(true);
+					wasPaused.notify();
+				}
+			}
+		}
+	}
 	protected void testReceiveHttp(String url) throws Exception {
 		assertNotNull(transferInstance);
-		final AtomicBoolean wasPaused = new AtomicBoolean(false);
-		final AtomicBoolean wasResumed = new AtomicBoolean(false);
 		final AtomicLong downloaded = new AtomicLong(0);
 		final IFileTransferListener listener = new IFileTransferListener() {
 			public void handleTransferEvent(IFileTransferEvent event) {
 				if (event instanceof IIncomingFileTransferReceiveResumedEvent) {
-					wasResumed.set(true);
 					try {
 						IIncomingFileTransferReceiveResumedEvent rse = (IIncomingFileTransferReceiveResumedEvent) event;
 						session = rse.receive(outs);
@@ -129,7 +186,6 @@ public class URLRetrievePauseResumeTest extends ContainerAbstractTestCase {
 					System.out.println("data=" + event);
 				} else if (event instanceof IIncomingFileTransferReceivePausedEvent) {
 					System.out.println("paused=" + event);
-					wasPaused.set(true);
 				} else if (event instanceof IIncomingFileTransferReceiveDoneEvent) {
 					closeOutputStream();
 					System.out.println("done=" + event);
@@ -144,16 +200,27 @@ public class URLRetrievePauseResumeTest extends ContainerAbstractTestCase {
 			}
 		};
 
-		transferInstance.sendRetrieveRequest(FileIDFactory.getDefault().createFileID(transferInstance.getRetrieveNamespace(), url), listener, null);
+		Waiter waiter = new Waiter(listener);
+		
+		transferInstance.sendRetrieveRequest(FileIDFactory.getDefault().createFileID(transferInstance.getRetrieveNamespace(), url), waiter, null);
 
-		// Now if we can do pausing, then pause, wait a while and resume
 		Thread.sleep(500);
+		
+		if (!waiter.waitForStarted(2000)) {
+			fail("Download never started");
+		}
+		
 		assertNotNull("pausable is null", pausable);
 		System.out.println("pausable.pause()");
 		boolean paused = pausable.pause();
 		assertTrue("Pause failed", paused);
+		
 		Thread.sleep(500);
-		assertTrue(wasPaused.get());
+		
+		if (!waiter.waitForPaused(2000)) {
+			fail("Download could not be paused");
+		}
+		
 		long downloadedUntilPause = downloaded.get();
 		System.out.println("Pausing " + PAUSE_TIME / 1000 + " seconds");
 		Thread.sleep(PAUSE_TIME - 500);
@@ -170,8 +237,11 @@ public class URLRetrievePauseResumeTest extends ContainerAbstractTestCase {
 			System.out.println("  isDone=" + session.isDone());
 			fail("Resume failed");
 		}
-		Thread.sleep(500);
-		assertTrue("Resume event was not received", wasResumed.get());
+		
+		if (!waiter.waitForResumed(2000)) {
+			fail("Never resumed");
+		}
+
 		long downloadedAfterResume = downloaded.get();
 		assertTrue("Download continued before resume", downloadedAfterResume < (1+RESUMED_DOWNLOAD_AMOUNT_THRESHOLD) * downloadedUntilPause);  
 		System.out.println();
