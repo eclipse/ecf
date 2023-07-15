@@ -44,6 +44,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;
+import org.osgi.service.log.Logger;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
@@ -104,6 +105,9 @@ public class Activator implements BundleActivator {
 
 	private static final String USE_SHARED_CLIENT_DEFAULT = "true"; //$NON-NLS-1$
 
+	/**
+	 * @since 2.0
+	 */
 	public static final String USE_COOKIE_STORE = PLUGIN_ID + ".cookieStore"; //$NON-NLS-1$
 
 	private static final String USE_COOKIE_STORE_DEFAULT = "true"; //$NON-NLS-1$
@@ -216,6 +220,9 @@ public class Activator implements BundleActivator {
 		return useSharedClient;
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	public boolean isUseCookieStore() {
 		return useCookieStore;
 	}
@@ -223,7 +230,20 @@ public class Activator implements BundleActivator {
 	public void log(IStatus status) {
 		LogService logService = getLogService();
 		if (logService != null) {
-			logService.log(LogHelper.getLogCode(status), LogHelper.getLogMessage(status), status.getException());
+			Logger logger = logService.getLogger((String) null);
+			int code = status.getSeverity();
+			String message = LogHelper.getLogMessage(status);
+			Throwable e = status.getException();
+			switch (code) {
+			case IStatus.ERROR:
+				if (logger.isErrorEnabled()) logger.error(message,e);
+				break;
+			case IStatus.WARNING:
+				if (logger.isWarnEnabled()) logger.warn(message,e);
+				break;
+			default:
+				if (logger.isInfoEnabled()) logger.warn(message,e);
+			}
 		}
 	}
 
