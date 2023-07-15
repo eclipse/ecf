@@ -1,4 +1,4 @@
-## Eclipse Communication Framework
+## Eclipse Communications Framework
 
 ECF is a set of frameworks for building communication into applications. 
 
