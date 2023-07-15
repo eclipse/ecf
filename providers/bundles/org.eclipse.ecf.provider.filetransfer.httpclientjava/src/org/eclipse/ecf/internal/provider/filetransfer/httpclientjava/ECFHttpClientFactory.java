@@ -32,7 +32,9 @@ import org.osgi.service.component.annotations.Component;
 @SuppressWarnings({ "restriction" })
 @Component
 public class ECFHttpClientFactory implements IHttpClientFactory {
+	@SuppressWarnings("unused")
 	private static final List<String> DEFAULT_PREFERRED_AUTH_SCHEMES_NO_NTLM = Arrays.asList("Basic","Digest");
+	@SuppressWarnings("unused")
 	private static final List<String> DEFAULT_PREFERRED_AUTH_SCHEMES = Arrays.asList("Basic", "Digest", "NTLM");
 	public static final int DEFAULT_CONNECTION_TIMEOUT = HttpClientOptions.RETRIEVE_DEFAULT_CONNECTION_TIMEOUT;
 	public static final int DEFAULT_CONNECTION_TTL = HttpClientOptions.RETRIEVE_DEFAULT_CONNECTION_TTL;
@@ -62,7 +64,9 @@ public class ECFHttpClientFactory implements IHttpClientFactory {
 		IHttpClientContext context = new IHttpClientContext() {
 
 			private Map<String, Object> values = new HashMap<>();
+			@SuppressWarnings("unused")
 			private Authenticator authenticator;
+			@SuppressWarnings("unused")
 			private HttpHost httpHost;
 
 			@Override
@@ -142,13 +146,6 @@ public class ECFHttpClientFactory implements IHttpClientFactory {
 			return value;
 		}
 		return defaultValue;
-	}
-
-	private static String[] split(final String s) {
-		if (s == null || s.isBlank()) {
-			return null;
-		}
-		return s.split(" *, *");
 	}
 
 	public static Authenticator modifyCredentialsProvider(Authenticator credentialsProvider) {

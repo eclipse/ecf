@@ -14,7 +14,9 @@ package org.eclipse.ecf.internal.provider.filetransfer.httpclientjava;
 
 public class HttpHost {
 
+	@SuppressWarnings("unused")
 	private String hostName;
+	@SuppressWarnings("unused")
 	private int port;
 
 	public HttpHost(String hostName, int port) {
