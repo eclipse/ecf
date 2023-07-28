@@ -1,6 +1,6 @@
 ## Eclipse Communications Framework
 
-ECF is a set of frameworks for building communication into applications. 
+ECF is a set of frameworks for building communications into applications. 
 
 ### Remote Services
 ECF provides a lightweight, modular, transport-independent, fully-compliant implementation of the OSGi Remote Services standard.
