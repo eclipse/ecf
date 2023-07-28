@@ -1,0 +1,1 @@
+ECF/bndtools.workspace;name=ECF Bndtools Workspace Template;branch=main
