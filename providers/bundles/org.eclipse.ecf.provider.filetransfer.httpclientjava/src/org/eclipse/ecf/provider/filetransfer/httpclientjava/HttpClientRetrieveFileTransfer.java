@@ -30,7 +30,9 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.Builder;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -304,6 +306,11 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		// fix the fix for bug 249990 with bug 410813
 		builder.header(HttpClientFileSystemBrowser.CACHE_CONTROL_HEADER, "max-age=" + maxAge); //$NON-NLS-1$
 		setRequestHeaderValuesFromOptions(builder);
+		// Setup Basic Authentication
+		if (username != null) {
+			byte[] credentials = Base64.getEncoder().encode((username + ":" + password).getBytes(StandardCharsets.UTF_8));
+			requestConfigBuilder.header("Authorization", "Basic " + new String(credentials, StandardCharsets.UTF_8));
+		}
 	}
 
 	private void setRangeHeader(final IFileRangeSpecification rangeSpec, final long resumePosition, Builder builder)

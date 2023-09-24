@@ -25,12 +25,15 @@ import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpRequest.Builder;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
 import java.util.OptionalLong;
@@ -247,6 +250,9 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=249990
 		// fix the fix for bug 249990 with bug 410813
 		requestConfigBuilder.header(CACHE_CONTROL_HEADER, "max-age=" + maxAge);
+		
+		// Add Basic Authentication to request config builder
+		setupBasicAuthentication(requestConfigBuilder);
 
 		HttpRequest request = requestConfigBuilder.build();
 
@@ -305,6 +311,13 @@ public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 							NLS.bind(Messages.HttpClientRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, urlString), t,
 							code));
 			throw ex;
+		}
+	}
+
+	private void setupBasicAuthentication(Builder requestConfigBuilder) {
+		if (username != null) {
+			byte[] credentials = Base64.getEncoder().encode((username + ":" + password).getBytes(StandardCharsets.UTF_8));
+			requestConfigBuilder.header("Authorization", "Basic " + new String(credentials, StandardCharsets.UTF_8));
 		}
 	}
 
