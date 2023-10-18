@@ -30,6 +30,8 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -92,6 +94,13 @@ public class VCardProvider implements IQProvider {
         VCard vCard = new VCard();
 
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        String FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
+        try {
+            documentBuilderFactory.setFeature(FEATURE, true);
+        } catch (ParserConfigurationException e) {
+            throw new IllegalStateException("ParserConfigurationException was thrown. The feature '"
+                    + FEATURE + "' is not supported by your XML processor.", e);
+        }
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
         Document document = documentBuilder.parse(
                 new ByteArrayInputStream(xml.getBytes(PREFERRED_ENCODING)));

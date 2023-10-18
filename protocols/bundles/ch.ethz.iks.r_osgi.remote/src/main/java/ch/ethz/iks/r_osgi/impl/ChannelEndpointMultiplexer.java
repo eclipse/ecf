@@ -28,6 +28,7 @@
  */
 package ch.ethz.iks.r_osgi.impl;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -232,7 +233,7 @@ final class ChannelEndpointMultiplexer implements ChannelEndpoint,
 	 */
 	private class Mapping {
 
-		private final Random random = new Random(System.currentTimeMillis());
+		private final Random random = new SecureRandom();
 		private final List redundant = new ArrayList(0);
 		private final Map uriMapping = new HashMap(0);
 

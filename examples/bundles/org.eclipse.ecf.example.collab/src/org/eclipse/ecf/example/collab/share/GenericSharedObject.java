@@ -15,6 +15,7 @@ package org.eclipse.ecf.example.collab.share;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.security.SecureRandom;
 import java.util.Hashtable;
 import java.util.Random;
 
@@ -424,6 +425,6 @@ public class GenericSharedObject implements ISharedObject {
 	}
 
 	public String getUniqueString() {
-		return String.valueOf((new Random()).nextLong());
+		return String.valueOf((new SecureRandom()).nextLong());
 	}
 }

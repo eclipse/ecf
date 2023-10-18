@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.Map;
 
 import org.apache.commons.httpclient.server.HttpRequestHandler;
@@ -60,7 +61,7 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
-		tmpFile = File.createTempFile("ECFTest", "");
+		tmpFile = Files.createTempFile("ECFTest", "").toFile();
 		server = new SimpleServer(getName());
 		SimpleHttpServer simple = server.getSimpleHttpServer();
 		simple.setRequestHandler(new HttpRequestHandler() {
@@ -259,7 +260,7 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 	public static final String HTTP_RETRIEVE_GZFILE_MIRROR = "http://mirrors.xmission.com/eclipse/eclipse/updates/3.4//plugins/javax.servlet.jsp_2.0.0.v200806031607.jar.pack.gz";
 
 	public void testReceiveGzipWithGZFile() throws Exception {
-		tmpFile = File.createTempFile("foo", "something.pack.gz");
+		tmpFile = Files.createTempFile("foo", "something.pack.gz").toFile();
 		testReceive(HTTP_RETRIEVE_GZFILE);
 		if (tmpFile != null) {
 			System.out.println(tmpFile.length());
@@ -268,7 +269,7 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 	}
 	
 	public void testReceiveGzipWithGZFileFromMirror() throws Exception {
-		tmpFile = File.createTempFile("foo", "something.pack.gz");
+		tmpFile = Files.createTempFile("foo", "something.pack.gz").toFile();
 		testReceive(HTTP_RETRIEVE_GZFILE_MIRROR);
 		if (tmpFile != null) {
 			System.out.println(tmpFile.length());

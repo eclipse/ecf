@@ -16,6 +16,7 @@ package org.eclipse.ecf.tests.filetransfer;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
@@ -36,7 +37,7 @@ public class GetRemoteFileNameTest extends AbstractRetrieveTestCase {
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
-		tmpFile = File.createTempFile("ECFTest", "");
+		tmpFile = Files.createTempFile("ECFTest", "").toFile();
 	}
 
 	/*

@@ -13,6 +13,7 @@
 package org.eclipse.ecf.tests.discovery;
 
 import java.net.URI;
+import java.security.SecureRandom;
 import java.util.Comparator;
 import java.util.Properties;
 import java.util.Random;
@@ -51,7 +52,7 @@ public abstract class AbstractDiscoveryTest extends TestCase {
 	public AbstractDiscoveryTest(String name) {
 		super();
 		this.containerUnderTest = name;
-		this.random = new Random();
+		this.random = new SecureRandom();
 	}
 	
 	public String getTestId() {

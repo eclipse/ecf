@@ -21,6 +21,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -326,7 +327,7 @@ public class Utils
 			// create a temp file and write the contents to it.
 			//
 			File parent = file.getParentFile();
-			File temp = File.createTempFile("tempfile", null, parent);
+			File temp = Files.createTempFile(parent.toPath(), "tempfile", null).toFile();
 			Utils.writeFile(temp, contents);
 
 			//

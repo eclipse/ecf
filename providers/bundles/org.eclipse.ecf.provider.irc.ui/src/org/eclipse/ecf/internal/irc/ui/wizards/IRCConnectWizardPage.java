@@ -13,6 +13,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.irc.ui.wizards;
 
+import java.security.SecureRandom;
 import java.util.*;
 import java.util.List;
 import org.eclipse.ecf.internal.irc.ui.Activator;
@@ -167,7 +168,7 @@ final class IRCConnectWizardPage extends WizardPage {
 	}
 
 	private String getRandomNumber() {
-		Random random = new Random();
+		Random random = new SecureRandom();
 		return String.valueOf(random.nextInt(100000));
 	}
 

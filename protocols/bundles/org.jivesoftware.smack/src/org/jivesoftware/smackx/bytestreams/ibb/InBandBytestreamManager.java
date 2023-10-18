@@ -13,6 +13,7 @@
  */
 package org.jivesoftware.smackx.bytestreams.ibb;
 
+import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -126,7 +127,7 @@ public class InBandBytestreamManager implements BytestreamManager {
     private static final String SESSION_ID_PREFIX = "jibb_";
 
     /* random generator to create session IDs */
-    private final static Random randomGenerator = new Random();
+    private final static Random randomGenerator = new SecureRandom();
 
     /* stores one InBandBytestreamManager for each XMPP connection */
     private final static Map<Connection, InBandBytestreamManager> managers = new HashMap<Connection, InBandBytestreamManager>();

@@ -16,6 +16,7 @@ import java.io.*;
 import java.net.*;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.security.SecureRandom;
 import java.util.*;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.ID;
@@ -421,7 +422,7 @@ public final class Client implements ISynchAsynchConnection {
 
 	private Thread setupPing() {
 		debug("setupPing()"); //$NON-NLS-1$
-		final int pingStartWait = (new Random()).nextInt(keepAlive / 2);
+		final int pingStartWait = (new SecureRandom()).nextInt(keepAlive / 2);
 		return new Thread(new Runnable() {
 			public void run() {
 				final Thread me = Thread.currentThread();

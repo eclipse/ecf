@@ -15,6 +15,7 @@ package org.jivesoftware.smackx.bytestreams.socks5;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -115,7 +116,7 @@ public final class Socks5BytestreamManager implements BytestreamManager {
     private static final String SESSION_ID_PREFIX = "js5_";
 
     /* random generator to create session IDs */
-    private final static Random randomGenerator = new Random();
+    private final static Random randomGenerator = new SecureRandom();
 
     /* stores one Socks5BytestreamManager for each XMPP connection */
     private final static Map<Connection, Socks5BytestreamManager> managers = new HashMap<Connection, Socks5BytestreamManager>();

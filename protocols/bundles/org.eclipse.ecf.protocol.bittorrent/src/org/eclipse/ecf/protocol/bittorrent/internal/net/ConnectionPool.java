@@ -15,6 +15,7 @@ package org.eclipse.ecf.protocol.bittorrent.internal.net;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.nio.channels.SocketChannel;
+import java.security.SecureRandom;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Vector;
@@ -29,7 +30,7 @@ class ConnectionPool {
 	 * A shared <code>Random</code> instance to randomly select a piece to
 	 * request from peers.
 	 */
-	static final Random RANDOM = new Random();
+	static final Random RANDOM = new SecureRandom();
 
 	/**
 	 * The number of seconds to wait before rotating optimistic unchokes.
