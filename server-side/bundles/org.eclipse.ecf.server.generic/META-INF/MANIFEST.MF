@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.server.generic;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.server.generic
-Bundle-Version: 8.1.102.qualifier
+Bundle-Version: 8.2.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.server.generic.Activator
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
@@ -25,5 +25,5 @@ Import-Package: javax.xml.parsers,
  org.osgi.service.log,
  org.osgi.util.tracker,
  org.w3c.dom
-Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy

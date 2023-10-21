@@ -17,24 +17,13 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.security.SecureRandom;
 import java.util.Hashtable;
-import java.util.Random;
-
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.sharedobject.ISharedObject;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectConfig;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerTransaction;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectContext;
-import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
-import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
-import org.eclipse.ecf.core.sharedobject.events.ISharedObjectActivatedEvent;
-import org.eclipse.ecf.core.sharedobject.events.ISharedObjectCreateResponseEvent;
-import org.eclipse.ecf.core.sharedobject.events.ISharedObjectDeactivatedEvent;
-import org.eclipse.ecf.core.sharedobject.events.ISharedObjectMessageEvent;
-import org.eclipse.ecf.core.sharedobject.events.RemoteSharedObjectEvent;
+import org.eclipse.ecf.core.sharedobject.*;
+import org.eclipse.ecf.core.sharedobject.events.*;
 import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
 import org.eclipse.ecf.core.sharedobject.util.QueueException;
 import org.eclipse.ecf.core.util.Event;
@@ -96,8 +85,7 @@ public class GenericSharedObject implements ISharedObject {
 	}
 
 	public void destroySelfLocal() {
-		getContext().getSharedObjectManager().removeSharedObject(
-				getConfig().getSharedObjectID());
+		getContext().getSharedObjectManager().removeSharedObject(getConfig().getSharedObjectID());
 	}
 
 	/*
@@ -112,8 +100,7 @@ public class GenericSharedObject implements ISharedObject {
 		try {
 			MsgMap m = null;
 			synchronized (msgMapLock) {
-				m = (MsgMap) ((msgMap == null) ? null : (msgMap.get(msg
-						.getMethodName())));
+				m = (MsgMap) ((msgMap == null) ? null : (msgMap.get(msg.getMethodName())));
 			}
 			Object o = this;
 			String methName = null;
@@ -126,8 +113,7 @@ public class GenericSharedObject implements ISharedObject {
 				}
 			}
 			if (methName != null) {
-				msg = SharedObjectMsg.createMsg(msg.getClassName(), methName,
-						msg.getArgs());
+				msg = SharedObjectMsg.createMsg(msg.getClassName(), methName, msg.getArgs());
 			}
 			if (currentMsgFromObjID == null)
 				currentMsgFromObjID = getID();
@@ -142,9 +128,9 @@ public class GenericSharedObject implements ISharedObject {
 		}
 	}
 
-	protected void execMsgInvoke(SharedObjectMsg msg, ID fromID, Object o)
-			throws Exception {
-		if (msg == null || fromID == null || o == null) return;
+	protected void execMsgInvoke(SharedObjectMsg msg, ID fromID, Object o) throws Exception {
+		if (msg == null || fromID == null || o == null)
+			return;
 		try {
 			msg.invoke(o);
 		} catch (NoSuchMethodException e) {
@@ -156,10 +142,8 @@ public class GenericSharedObject implements ISharedObject {
 		forwardMsgTo(config.getHomeContainerID(), msg);
 	}
 
-	protected void forwardMsgTo(ID toID, SharedObjectMsg msg)
-			throws IOException {
-		getContext().sendMessage(toID,
-				new RemoteSharedObjectMsgEvent(getID(), toID, msg));
+	protected void forwardMsgTo(ID toID, SharedObjectMsg msg) throws IOException {
+		getContext().sendMessage(toID, new RemoteSharedObjectMsgEvent(getID(), toID, msg));
 	}
 
 	/*
@@ -168,8 +152,7 @@ public class GenericSharedObject implements ISharedObject {
 	 * @see org.eclipse.ecf.core.ISharedObject#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class clazz) {
-		if (clazz.equals(ISharedObjectContainerTransaction.class)
-				&& (this instanceof ISharedObjectContainerTransaction)) {
+		if (clazz.equals(ISharedObjectContainerTransaction.class) && (this instanceof ISharedObjectContainerTransaction)) {
 			return this;
 		}
 		return null;
@@ -192,9 +175,7 @@ public class GenericSharedObject implements ISharedObject {
 	}
 
 	protected ReplicaSharedObjectDescription getReplicaDescription(ID receiver) {
-		return new ReplicaSharedObjectDescription(getClass(), getID(),
-				getHomeContainerID(), getConfig().getProperties(),
-				getNextReplicateID());
+		return new ReplicaSharedObjectDescription(getClass(), getID(), getHomeContainerID(), getConfig().getProperties(), getNextReplicateID());
 	}
 
 	protected void handleCreateResponse(ID fromID, Throwable t, Long identifier) {
@@ -212,8 +193,7 @@ public class GenericSharedObject implements ISharedObject {
 			if (myID == null)
 				return;
 			if (myID.equals(ae.getActivatedID())) {
-				activated(getContext().getSharedObjectManager()
-						.getSharedObjectIDs());
+				activated(getContext().getSharedObjectManager().getSharedObjectIDs());
 			} else {
 				otherActivated(ae.getActivatedID());
 			}
@@ -236,16 +216,14 @@ public class GenericSharedObject implements ISharedObject {
 		}
 	}
 
-	protected void handleSharedObjectMessageEvent(
-			ISharedObjectMessageEvent event) {
+	protected void handleSharedObjectMessageEvent(ISharedObjectMessageEvent event) {
 		if (event instanceof RemoteSharedObjectEvent) {
 			if (event instanceof ISharedObjectCreateResponseEvent) {
 				handleCreateResponseMessageEvent((ISharedObjectCreateResponseEvent) event);
 			} else if (event instanceof RemoteSharedObjectMsgEvent) {
 				handleSelfSendMessageEvent((RemoteSharedObjectMsgEvent) event);
 			} else {
-				RemoteSharedObjectMsgEvent me = (RemoteSharedObjectMsgEvent) event
-						.getData();
+				RemoteSharedObjectMsgEvent me = (RemoteSharedObjectMsgEvent) event.getData();
 				SharedObjectMsg msg = me.getMsg();
 				execMsg(me.getRemoteContainerID(), msg);
 			}
@@ -256,10 +234,8 @@ public class GenericSharedObject implements ISharedObject {
 		execMsg(event.getRemoteContainerID(), event.getMsg());
 	}
 
-	protected void handleCreateResponseMessageEvent(
-			ISharedObjectCreateResponseEvent event) {
-		handleCreateResponse(event.getRemoteContainerID(),
-				event.getException(), new Long(event.getSequence()));
+	protected void handleCreateResponseMessageEvent(ISharedObjectCreateResponseEvent event) {
+		handleCreateResponse(event.getRemoteContainerID(), event.getException(), new Long(event.getSequence()));
 	}
 
 	/*
@@ -295,8 +271,7 @@ public class GenericSharedObject implements ISharedObject {
 	 * 
 	 * @see org.eclipse.ecf.core.ISharedObject#init(org.eclipse.ecf.core.ISharedObjectConfig)
 	 */
-	public void init(ISharedObjectConfig initData)
-			throws SharedObjectInitException {
+	public void init(ISharedObjectConfig initData) throws SharedObjectInitException {
 		this.config = initData;
 		this.localContainerID = getContext().getLocalContainerID();
 	}
@@ -352,9 +327,8 @@ public class GenericSharedObject implements ISharedObject {
 			if (msgMap == null)
 				msgMap = new Hashtable();
 			else if (msgMap.containsKey(msg))
-				throw new IllegalArgumentException(
-						"registerProxy:  proxy already registered for " //$NON-NLS-1$
-								+ method + " by " + target); //$NON-NLS-1$
+				throw new IllegalArgumentException("registerProxy:  proxy already registered for " //$NON-NLS-1$
+						+ method + " by " + target); //$NON-NLS-1$
 			// Then put entry into table with msg as key
 			msgMap.put(msg, new MsgMap(target, method));
 		}
@@ -381,8 +355,7 @@ public class GenericSharedObject implements ISharedObject {
 	protected void sendSelf(SharedObjectMsg msg) {
 		IQueueEnqueue queue = getContext().getQueue();
 		try {
-			queue.enqueue(new RemoteSharedObjectMsgEvent(getID(), getContext()
-					.getLocalContainerID(), msg));
+			queue.enqueue(new RemoteSharedObjectMsgEvent(getID(), getContext().getLocalContainerID(), msg));
 		} catch (QueueException e) {
 			log("QueueException enqueing message to self", e); //$NON-NLS-1$
 		}
@@ -405,23 +378,19 @@ public class GenericSharedObject implements ISharedObject {
 		ClientPlugin.log(msg, t);
 	}
 
-	public ID createObject(ID target, ReplicaSharedObjectDescription desc)
-			throws Exception {
+	public ID createObject(ID target, ReplicaSharedObjectDescription desc) throws Exception {
 		if (target == null) {
 			if (desc.getID() == null) {
-				desc.setID(IDFactory.getDefault().createStringID(
-						getUniqueString()));
+				desc.setID(IDFactory.getDefault().createStringID(getUniqueString()));
 			}
 			try {
-				return getContext().getSharedObjectManager()
-						.createSharedObject(desc);
+				return getContext().getSharedObjectManager().createSharedObject(desc);
 			} catch (Exception e) {
 				log("Exception creating replicated object", e); //$NON-NLS-1$
 				throw e;
 			}
 		} else
-			throw new Exception(
-					"Cannot send object creation request direct to target"); //$NON-NLS-1$
+			throw new Exception("Cannot send object creation request direct to target"); //$NON-NLS-1$
 	}
 
 	public String getUniqueString() {

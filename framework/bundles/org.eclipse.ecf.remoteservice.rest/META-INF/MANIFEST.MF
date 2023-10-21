@@ -4,7 +4,7 @@ Bundle-Name: %plugin.name
 Bundle-Vendor: %plugin.provider
 Bundle-SymbolicName: org.eclipse.ecf.remoteservice.rest;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.remoteservice.rest
-Bundle-Version: 2.8.0.qualifier
+Bundle-Version: 2.8.1.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.remoteservice.rest.Activator
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global
