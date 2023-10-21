@@ -139,8 +139,6 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	private FileTransferJob connectJob;
 
-	private boolean contentCompressionEnabled;
-
 	private HttpRequest httpRequest;
 
 	public HttpClientRetrieveFileTransfer(HttpClient client) {
@@ -547,14 +545,17 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			// Set request header for possible gzip encoding, but only if
 			// 1) The file range specification is null (we want the whole file)
 			// 2) The target remote file does *not* end in .gz (see bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=280205)
+			boolean contentCompressionEnabled;
 			if (getFileRangeSpecification() == null && !targetHasGzSuffix(super.getRemoteFileName())) {
 				// The interceptors to provide gzip are always added and are enabled by default
 				Trace.trace(Activator.PLUGIN_ID, "Accept-Encoding: gzip,deflate added to request header"); //$NON-NLS-1$
 				setContentCompressionEnabled(rcfgBuilder, true);
+				contentCompressionEnabled = true;
 			} else {
 				// Disable the interceptors to provide gzip
 				Trace.trace(Activator.PLUGIN_ID, "Accept-Encoding NOT added to header"); //$NON-NLS-1$
 				setContentCompressionEnabled(rcfgBuilder, false);
+				contentCompressionEnabled = false;
 			}
 			httpRequest = rcfgBuilder.build();
 
@@ -647,7 +648,6 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	}
 
 	private void setContentCompressionEnabled(Builder builder, boolean value) {
-		this.contentCompressionEnabled = value;
 		if (value) {
 			builder.setHeader(ACCEPT_ENCODING_HEADER, GZIP_ENCODING);
 		} else {
