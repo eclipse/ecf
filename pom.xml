@@ -309,14 +309,14 @@
       </plugin>
       <plugin>
         <groupId>org.eclipse.tycho.extras</groupId>
-        <artifactId>tycho-source-feature-plugin</artifactId>
+        <artifactId>tycho-source-plugin</artifactId>
         <version>${tycho-version}</version>
         <configuration>
           <includeBinaryFeature>false</includeBinaryFeature>
         </configuration>
         <executions>
           <execution>
-            <id>source-feature</id>
+            <id>feature-source</id>
             <phase>package</phase>
             <goals>
               <goal>source-feature</goal>
