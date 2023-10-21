@@ -1,5 +1,6 @@
 package org.eclipse.ecf.tests.sync;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 import org.eclipse.ecf.sync.IModelChange;
@@ -23,7 +24,7 @@ public class SharedDocClient extends Thread {
 
 	private IModelSynchronizationStrategy syncStrategy;
 
-	private Random random = new Random();
+	private Random random = new SecureRandom();
 
 	public SharedDocClient(String name,
 			IModelSynchronizationStrategy syncStrategy, String startText) {

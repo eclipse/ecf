@@ -116,6 +116,13 @@ public class ServerConfigParser {
 
 	public List load(InputStream ins) throws ParserConfigurationException, SAXException, IOException {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		String FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
+		try {
+			dbf.setFeature(FEATURE, true);
+		} catch (ParserConfigurationException e) {
+			throw new IllegalStateException("ParserConfigurationException was thrown. The feature '"
+		+ FEATURE + "' is not supported by your XML processor.", e);
+		}
 		DocumentBuilder db = dbf.newDocumentBuilder();
 		Document doc = db.parse(ins);
 		return loadConnectors(doc);

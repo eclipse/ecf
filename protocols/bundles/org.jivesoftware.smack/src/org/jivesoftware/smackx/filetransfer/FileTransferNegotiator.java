@@ -20,6 +20,7 @@
 package org.jivesoftware.smackx.filetransfer;
 
 import java.net.URLConnection;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -69,7 +70,7 @@ public class FileTransferNegotiator {
 
     protected static final String STREAM_DATA_FIELD_NAME = "stream-method";
 
-    private static final Random randomGenerator = new Random();
+    private static final Random randomGenerator = new SecureRandom();
 
     /**
      * A static variable to use only offer IBB for file transfer. It is generally recommend to only

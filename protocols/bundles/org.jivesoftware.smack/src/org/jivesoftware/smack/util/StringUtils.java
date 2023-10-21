@@ -23,6 +23,7 @@ package org.jivesoftware.smack.util;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -727,7 +728,7 @@ public class StringUtils {
      * The Random class is not considered to be cryptographically secure, so
      * only use these random Strings for low to medium security applications.
      */
-    private static Random randGen = new Random();
+    private static Random randGen = new SecureRandom();
 
     /**
      * Array of numbers and letters of mixed case. Numbers appear in the list

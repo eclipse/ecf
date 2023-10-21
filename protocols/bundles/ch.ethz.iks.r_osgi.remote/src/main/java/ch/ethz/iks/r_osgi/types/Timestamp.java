@@ -28,6 +28,7 @@
  */
 package ch.ethz.iks.r_osgi.types;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 /**
@@ -53,7 +54,7 @@ public final class Timestamp implements Comparable {
 	 * the offset of the logical clock. Initialized by a pseudo- random number
 	 * to simplify causal ordering among different peers.
 	 */
-	private static int counter = new Random().nextInt(1000);
+	private static int counter = new SecureRandom().nextInt(1000);
 
 	/**
 	 * the actual timestamp, stored as <code>long</code>.

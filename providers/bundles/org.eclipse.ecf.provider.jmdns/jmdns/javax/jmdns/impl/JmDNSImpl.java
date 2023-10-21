@@ -6,6 +6,7 @@ package javax.jmdns.impl;
 
 import java.io.IOException;
 import java.net.*;
+import java.security.SecureRandom;
 import java.util.*;
 import javax.jmdns.*;
 import javax.jmdns.impl.tasks.*;
@@ -106,7 +107,7 @@ public class JmDNSImpl extends JmDNS {
 	 * The source for random values. This is used to introduce random delays in
 	 * responses. This reduces the potential for collisions on the network.
 	 */
-	private final static Random random = new Random();
+	private final static Random random = new SecureRandom();
 
 	/**
 	 * This lock is used to coordinate processing of incoming and outgoing

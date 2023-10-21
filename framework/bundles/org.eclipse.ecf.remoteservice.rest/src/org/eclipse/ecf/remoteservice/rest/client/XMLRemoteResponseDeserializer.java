@@ -17,6 +17,7 @@ import java.io.StringReader;
 import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.client.IRemoteCallable;
 import org.eclipse.ecf.remoteservice.client.IRemoteResponseDeserializer;
@@ -32,6 +33,13 @@ public class XMLRemoteResponseDeserializer implements IRemoteResponseDeserialize
 
 	public Object deserializeResponse(String uri, IRemoteCall call, IRemoteCallable callable, Map responseHeaders, byte[] responseBody) throws NotSerializableException {
 		DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
+		String FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
+		try {
+			documentFactory.setFeature(FEATURE, true);
+		} catch (ParserConfigurationException e) {
+			throw new IllegalStateException("ParserConfigurationException was thrown. The feature '"
+		+ FEATURE + "' is not supported by your XML processor.", e);
+		}
 		String errorMsg = "XML response can't be parsed: "; //$NON-NLS-1$
 		try {
 			DocumentBuilder builder = documentFactory.newDocumentBuilder();

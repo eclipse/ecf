@@ -11,6 +11,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.server.generic.app;
 
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Random;
 import org.eclipse.ecf.core.ContainerTypeDescription;
@@ -56,7 +57,7 @@ public class ClientApplication {
 	ID[] sharedObjects = null;
 
 	static ContainerTypeDescription contd = null;
-	static Random aRan = new Random();
+	static Random aRan = new SecureRandom();
 
 	public ClientApplication() {
 		super();

@@ -18,7 +18,10 @@
 package org.jivesoftware.smack;
 
 import org.jivesoftware.smack.packet.StreamError;
+
+import java.security.SecureRandom;
 import java.util.Random;
+
 /**
  * Handles the automatic reconnection process. Every time a connection is dropped without
  * the application explictly closing it, the manager automatically tries to reconnect to
@@ -38,7 +41,7 @@ public class ReconnectionManager implements ConnectionListener {
     // Holds the connection to the server
     private Connection connection;
     private Thread reconnectionThread;
-    private int randomBase = new Random().nextInt(11) + 5; // between 5 and 15 seconds
+    private int randomBase = new SecureRandom().nextInt(11) + 5; // between 5 and 15 seconds
     
     // Holds the state of the reconnection
     boolean done = false;

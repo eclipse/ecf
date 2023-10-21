@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
 
 /**
  *
@@ -32,7 +33,7 @@ public class FileSendTest extends AbstractSendTestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		URL url = this.getClass().getResource("/test.txt");
-		inputFile = File.createTempFile("ECFTest", "input.txt");
+		inputFile = Files.createTempFile("ECFTest", "input.txt").toFile();
 		FileOutputStream fos = new FileOutputStream(inputFile);
 		InputStream ins = url.openStream();
 		byte [] buf = new byte[1024];
@@ -40,7 +41,7 @@ public class FileSendTest extends AbstractSendTestCase {
 		while ((l = ins.read(buf)) != -1) fos.write(buf);
 		fos.close();
 		ins.close();
-		outputFile = File.createTempFile("ECFTest", "test.txt");
+		outputFile = Files.createTempFile("ECFTest", "test.txt").toFile();
 	}
 
 	/* (non-Javadoc)

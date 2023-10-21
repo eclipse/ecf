@@ -35,6 +35,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.BadLocationException;
+import javax.xml.XMLConstants;
 import javax.xml.transform.*;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -872,6 +873,9 @@ public class EnhancedDebugger implements SmackDebugger {
         try {
             // Use a Transformer for output
             TransformerFactory tFactory = TransformerFactory.newInstance();
+            tFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            tFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+            tFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             // Surround this setting in a try/catch for compatibility with Java 1.4. This setting is required
             // for Java 1.5
             try {

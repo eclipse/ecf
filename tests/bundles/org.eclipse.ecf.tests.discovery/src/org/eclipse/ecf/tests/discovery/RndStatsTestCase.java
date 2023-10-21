@@ -12,6 +12,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.tests.discovery;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -80,7 +81,7 @@ public abstract class RndStatsTestCase extends TestCase {
 		
 		// shuffle the list to create randomized test order
 		System.out.println("Seed used for test ordering: " + SEED);
-		Collections.shuffle(tests, new Random(SEED));
+		Collections.shuffle(tests, new SecureRandom());
 
 		// Create empty test suite and add tests in order of shuffeled list
 		suite = new MyTestSuite(RndStatsTestCase.class.getName());
