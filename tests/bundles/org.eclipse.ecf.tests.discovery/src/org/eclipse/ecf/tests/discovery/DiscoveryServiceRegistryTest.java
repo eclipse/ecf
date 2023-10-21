@@ -12,6 +12,8 @@
  *****************************************************************************/
 package org.eclipse.ecf.tests.discovery;
 
+import java.util.Dictionary;
+
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.ServiceInfo;
@@ -58,7 +60,7 @@ public abstract class DiscoveryServiceRegistryTest extends DiscoveryServiceTest 
 
 	protected synchronized void registerService() {
 		BundleContext context = Activator.getDefault().getContext();
-		registerService = context.registerService(IServiceInfo.class, genericServiceInfo, null);
+		registerService = context.registerService(IServiceInfo.class, genericServiceInfo, (Dictionary) null);
 	}
 
 	protected synchronized void unregisterService() {

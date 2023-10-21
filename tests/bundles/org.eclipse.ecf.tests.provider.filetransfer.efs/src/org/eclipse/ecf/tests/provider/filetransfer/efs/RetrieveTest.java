@@ -37,7 +37,7 @@ public class RetrieveTest extends AbstractRetrieveTestCase {
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
-		tmpFile = Files.createTempFile("ECFTest", "").toFile();
+		tmpFile = Files.createTempFile("ECFTest", "", null).toFile();
 	}
 
 	protected void handleStartEvent(IIncomingFileTransferReceiveStartEvent event) {
