@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.eventadmin.examples.feature"
       label="ECF Distributed EventAdmin Examples"
-      version="1.0.201.qualifier"
+      version="1.0.202.qualifier"
       provider-name="%providerName"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">

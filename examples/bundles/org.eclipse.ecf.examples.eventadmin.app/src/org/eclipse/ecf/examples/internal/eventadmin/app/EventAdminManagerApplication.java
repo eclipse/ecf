@@ -12,6 +12,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.examples.internal.eventadmin.app;
 
+import java.util.Dictionary;
 import java.util.Properties;
 
 import org.eclipse.equinox.app.IApplication;
@@ -32,7 +33,7 @@ public class EventAdminManagerApplication extends AbstractEventAdminApplication
 		Properties props = new Properties();
 		props.put(EventConstants.EVENT_TOPIC, "*");
 		testEventHandlerRegistration = bundleContext.registerService(
-				EventHandler.class.getName(), new TestEventHandler("Server"), props);
+				EventHandler.class.getName(), new TestEventHandler("Server"), (Dictionary) props);
 
 		// XXX for testing, setup a test sender
 		testSender = new TestSender(eventAdminImpl, topics, container.getID()

@@ -109,7 +109,7 @@ public class TestPartsNoHost extends TestCase {
      * written to.
      */
     private File createTempTestFile() throws IOException {
-        File file = Files.createTempFile("FilePartTest", ".txt").toFile();
+        File file = Files.createTempFile("FilePartTest", ".txt",null).toFile();
         PrintWriter out = new PrintWriter(new FileWriter(file));
         out.println(PART_DATA);
         out.flush();

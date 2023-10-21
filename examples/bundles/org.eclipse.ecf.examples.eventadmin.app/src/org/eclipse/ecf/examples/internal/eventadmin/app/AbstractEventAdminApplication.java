@@ -13,6 +13,7 @@
 package org.eclipse.ecf.examples.internal.eventadmin.app;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.List;
 import java.util.Properties;
 
@@ -59,12 +60,12 @@ public abstract class AbstractEventAdminApplication implements IApplication {
 		// register a serialization handler for the topic that sends
 		// non-serializable event properties
 		bundleContext.registerService(SerializationHandler.class,
-				new ExampleSerializationHandler(DEFAULT_TOPIC), null);
+				new ExampleSerializationHandler(DEFAULT_TOPIC), (Dictionary) null);
 
 		// register a serialization handler for the topic that sends
 		// non-serializable event properties
 		bundleContext.registerService(SerializationHandler.class,
-				new ExampleSerializationHandler(DEFAULT_TOPIC), null);
+				new ExampleSerializationHandler(DEFAULT_TOPIC), (Dictionary) null);
 
 		// Process Arguments
 		final String[] args = mungeArguments((String[]) context.getArguments()
@@ -83,7 +84,7 @@ public abstract class AbstractEventAdminApplication implements IApplication {
 		Properties props = new Properties();
 		props.put(EventConstants.EVENT_TOPIC, topics);
 		eventAdminRegistration = bundleContext.registerService(
-				"org.osgi.service.event.EventAdmin", eventAdminImpl, props);
+				"org.osgi.service.event.EventAdmin", eventAdminImpl, (Dictionary) props);
 
 		return IApplication.EXIT_OK;
 	}

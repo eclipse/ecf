@@ -12,6 +12,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.provider.jmdns;
 
+import java.util.Dictionary;
 import java.util.Properties;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.SafeRunner;
@@ -70,6 +71,7 @@ public class JMDNSPlugin implements BundleActivator {
 	/**
 	 * This method is called upon plug-in activation
 	 */
+	@SuppressWarnings("unchecked")
 	public void start(final BundleContext ctxt) throws Exception {
 		this.context = ctxt;
 
@@ -77,7 +79,7 @@ public class JMDNSPlugin implements BundleActivator {
 		props.put(IDiscoveryService.CONTAINER_NAME, NAME);
 		props.put(Constants.SERVICE_RANKING, Integer.valueOf(750));
 		String[] clazzes = new String[] {IDiscoveryService.class.getName(), IDiscoveryLocator.class.getName(), IDiscoveryAdvertiser.class.getName()};
-		serviceRegistration = context.registerService(clazzes, serviceFactory, props);
+		serviceRegistration = context.registerService(clazzes, serviceFactory, (Dictionary) props);
 		SafeRunner.run(new ExtensionRegistryRunnable(ctxt) {
 			protected void runWithoutRegistry() throws Exception {
 				ctxt.registerService(Namespace.class, new JMDNSNamespace("JMDNS Discovery Namespace"), null);
