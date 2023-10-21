@@ -298,9 +298,6 @@
         <groupId>org.eclipse.tycho</groupId>
         <artifactId>tycho-source-plugin</artifactId>
         <version>${tycho-version}</version>
-        <configuration>
-          <includeBinaryFeature>false</includeBinaryFeature>
-        </configuration>
         <executions>
           <execution>
             <id>plugin-source</id>
@@ -308,20 +305,23 @@
               <goal>plugin-source</goal>
             </goals>
           </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.eclipse.tycho.extras</groupId>
+        <artifactId>tycho-source-feature-plugin</artifactId>
+        <version>${tycho-version}</version>
+        <configuration>
+          <includeBinaryFeature>false</includeBinaryFeature>
+        </configuration>
+        <executions>
           <execution>
-            <id>feature-source</id>
+            <id>source-feature</id>
             <phase>package</phase>
             <goals>
               <goal>source-feature</goal>
             </goals>
           </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.eclipse.tycho</groupId>
-        <artifactId>tycho-source-plugin</artifactId>
-        <version>${tycho-version}</version>
-        <executions>
         </executions>
       </plugin>
       <plugin>
