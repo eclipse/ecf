@@ -13,7 +13,6 @@ package org.eclipse.ecf.core.identity;
 
 /**
  * A unique ID class based upon Long/long
- * 
  */
 public class LongID extends BaseID {
 	private static final long serialVersionUID = 4049072748317914423L;

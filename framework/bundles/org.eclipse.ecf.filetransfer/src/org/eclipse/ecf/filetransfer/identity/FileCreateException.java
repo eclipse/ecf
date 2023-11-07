@@ -17,7 +17,6 @@ import org.eclipse.ecf.core.util.ECFException;
 /**
  * Exception class for creation of {@link IFileID} instances via
  * {@link FileIDFactory}
- * 
  */
 public class FileCreateException extends ECFException {
 

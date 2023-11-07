@@ -717,7 +717,6 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 			}
 
 			/**
-			 * @param streamToStore
 			 * @return incoming file transfer instance.
 			 * @throws IOException
 			 *             not thrown in this implementation.
@@ -789,7 +788,6 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 			}
 
 			/**
-			 * @param streamToStore
 			 * @return incoming file transfer instance.
 			 * @throws IOException
 			 *             not thrown in this implementation.

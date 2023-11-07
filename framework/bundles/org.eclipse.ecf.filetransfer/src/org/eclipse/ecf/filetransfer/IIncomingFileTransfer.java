@@ -18,7 +18,6 @@ import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEven
  * Incoming file transfer request. Instance implementing this interface are
  * provided via calling the
  * {@link IIncomingFileTransferReceiveStartEvent#receive(java.io.File)} method.
- * 
  */
 public interface IIncomingFileTransfer extends IFileTransfer {
 	/**

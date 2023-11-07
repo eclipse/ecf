@@ -15,9 +15,6 @@ package org.eclipse.ecf.filetransfer.events;
 
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 
-/**
- *
- */
 public interface IRemoteFileSystemEvent {
 
 	public Exception getException();

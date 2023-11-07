@@ -17,7 +17,6 @@ import org.eclipse.ecf.core.identity.ID;
 /**
  * Container ejected event. This event is received when a local container has
  * been ejected from a remote group
- * 
  */
 public interface IContainerEjectedEvent extends IContainerEvent {
 	/**

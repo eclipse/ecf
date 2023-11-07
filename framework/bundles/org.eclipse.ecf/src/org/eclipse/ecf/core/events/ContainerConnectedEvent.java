@@ -15,7 +15,6 @@ import org.eclipse.ecf.core.identity.ID;
 
 /**
  * Container connected event
- * 
  */
 public class ContainerConnectedEvent implements IContainerConnectedEvent {
 	private final ID joinedContainerID;

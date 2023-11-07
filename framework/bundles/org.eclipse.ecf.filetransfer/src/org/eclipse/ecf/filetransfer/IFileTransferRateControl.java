@@ -26,7 +26,6 @@ package org.eclipse.ecf.filetransfer;
  *      ... does not support rate control
  *   }
  * </pre>
- * 
  */
 public interface IFileTransferRateControl {
 	/**

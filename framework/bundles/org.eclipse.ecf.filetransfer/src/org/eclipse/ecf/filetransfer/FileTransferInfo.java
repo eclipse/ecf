@@ -23,7 +23,6 @@ import org.eclipse.ecf.filetransfer.events.IFileTransferRequestEvent;
  * File transfer information delivered to
  * {@link IIncomingFileTransferRequestListener} via an event implementing
  * {@link IFileTransferRequestEvent#getFileTransferInfo()}
- * 
  */
 public class FileTransferInfo implements IFileTransferInfo, Serializable {
 

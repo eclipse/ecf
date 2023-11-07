@@ -15,7 +15,6 @@ import java.io.IOException;
 
 /**
  * Helper class for creating instances of IConnectContext
- * 
  */
 public class ConnectContextFactory {
 	private ConnectContextFactory() {
@@ -37,7 +36,6 @@ public class ConnectContextFactory {
 			public CallbackHandler getCallbackHandler() {
 				return new CallbackHandler() {
 					/**
-					 * @param callbacks
 					 * @throws IOException not thrown by this implementation.
 					 * @throws UnsupportedCallbackException not thrown by this implementation.
 					 */
@@ -78,7 +76,6 @@ public class ConnectContextFactory {
 			public CallbackHandler getCallbackHandler() {
 				return new CallbackHandler() {
 					/**
-					 * @param callbacks
 					 * @throws IOException not thrown by this implementation.
 					 * @throws UnsupportedCallbackException not thrown by this implementation.
 					 */

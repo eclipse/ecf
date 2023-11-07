@@ -15,7 +15,6 @@ import org.eclipse.ecf.filetransfer.IOutgoingFileTransfer;
 
 /**
  * Super interface for outgoing file transfer events
- * 
  */
 public interface IOutgoingFileTransferEvent extends IFileTransferEvent {
 	/**

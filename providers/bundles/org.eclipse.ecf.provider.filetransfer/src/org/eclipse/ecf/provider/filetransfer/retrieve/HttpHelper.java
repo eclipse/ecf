@@ -15,9 +15,6 @@ package org.eclipse.ecf.provider.filetransfer.retrieve;
 
 import java.util.StringTokenizer;
 
-/**
- *
- */
 public class HttpHelper {
 
 	public static final String CONTENT_DISPOSITION_HEADER = "Content-Disposition"; //$NON-NLS-1$

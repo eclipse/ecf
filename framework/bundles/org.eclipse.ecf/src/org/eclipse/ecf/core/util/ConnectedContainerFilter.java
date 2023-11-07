@@ -16,9 +16,6 @@ package org.eclipse.ecf.core.util;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 
-/**
- *
- */
 public class ConnectedContainerFilter implements IContainerFilter {
 
 	private ID result;

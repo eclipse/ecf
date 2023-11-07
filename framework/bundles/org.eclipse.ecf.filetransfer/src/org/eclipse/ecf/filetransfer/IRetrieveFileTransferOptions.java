@@ -25,7 +25,6 @@ public interface IRetrieveFileTransferOptions {
 	 * This constant defines a key in options Map passed to {@link IRetrieveFileTransferContainerAdapter#sendRetrieveRequest(org.eclipse.ecf.filetransfer.identity.IFileID, IFileTransferListener, java.util.Map)}.
 	 * Supporting providers will use this key to look for a value of type Map, and if found the String key/value pairs in the 
 	 * Map will be used as request headers.  The expected type of the value associated with this key is of type {@link Map}.
-	 * 
 	 */
 	public static final String REQUEST_HEADERS = IRetrieveFileTransferOptions.class.getName() + ".requestHeaders"; //$NON-NLS-1$
 

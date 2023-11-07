@@ -52,7 +52,6 @@ import org.eclipse.ecf.core.security.IConnectContext;
  * // Disconnect
  * container.disconnect();
  * </pre>
- * 
  */
 public interface IContainer extends IAdaptable, IIdentifiable {
 
@@ -166,7 +165,6 @@ public interface IContainer extends IAdaptable, IIdentifiable {
 	 * Dispose this IContainer instance. The container instance will be made
 	 * inactive after the completion of this method and will be unavailable for
 	 * subsequent usage.
-	 * 
 	 */
 	public void dispose();
 

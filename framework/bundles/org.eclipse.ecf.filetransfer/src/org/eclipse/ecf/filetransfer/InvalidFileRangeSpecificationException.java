@@ -15,9 +15,6 @@ package org.eclipse.ecf.filetransfer;
 
 import org.eclipse.core.runtime.IStatus;
 
-/**
- *
- */
 public class InvalidFileRangeSpecificationException extends IncomingFileTransferException {
 
 	private static final long serialVersionUID = 532923607480972210L;

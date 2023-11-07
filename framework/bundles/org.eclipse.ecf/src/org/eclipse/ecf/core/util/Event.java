@@ -14,7 +14,6 @@ package org.eclipse.ecf.core.util;
 /**
  * Event 'tag' interface. This is a super-interface for all ECF event
  * interfaces/classes
- * 
  */
 public interface Event {
 	// No methods. This is a 'tag' interface

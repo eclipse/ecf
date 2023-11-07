@@ -16,16 +16,10 @@ package org.eclipse.ecf.filetransfer;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.util.ECFException;
 
-/**
- *
- */
 public class RemoteFileSystemException extends ECFException {
 
 	private static final long serialVersionUID = -2199951600347999396L;
 
-	/**
-	 * 
-	 */
 	public RemoteFileSystemException() {
 		super();
 	}

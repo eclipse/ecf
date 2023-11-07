@@ -22,9 +22,6 @@ import org.eclipse.ecf.internal.provider.filetransfer.IURLConnectionModifier;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 
-/**
- *
- */
 public class ECFURLConnectionModifier implements IURLConnectionModifier {
 
 	private BundleContext context;

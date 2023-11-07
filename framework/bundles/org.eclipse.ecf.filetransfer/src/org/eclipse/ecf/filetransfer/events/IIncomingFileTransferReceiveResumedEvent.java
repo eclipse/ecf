@@ -20,7 +20,6 @@ import org.eclipse.ecf.filetransfer.identity.IFileID;
 /**
  * Event sent to {@link IFileTransferListener} associated with
  * {@link IIncomingFileTransfer} instances when file transfer is resumed.
- * 
  */
 public interface IIncomingFileTransferReceiveResumedEvent extends IIncomingFileTransferEvent {
 

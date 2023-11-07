@@ -16,9 +16,6 @@ package org.eclipse.ecf.internal.provider.filetransfer;
 import java.net.URLConnection;
 import org.osgi.framework.BundleContext;
 
-/**
- *
- */
 public interface IURLConnectionModifier {
 
 	public void init(BundleContext context);

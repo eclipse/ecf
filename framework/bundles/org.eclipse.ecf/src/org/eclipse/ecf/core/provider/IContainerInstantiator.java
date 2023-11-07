@@ -15,7 +15,6 @@ import org.eclipse.ecf.core.*;
 
 /**
  * Interface that must be implemented by ECF provider implementations.
- * 
  */
 public interface IContainerInstantiator {
 	/**

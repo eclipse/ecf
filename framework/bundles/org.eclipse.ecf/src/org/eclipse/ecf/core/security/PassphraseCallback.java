@@ -13,7 +13,6 @@ package org.eclipse.ecf.core.security;
 
 /**
  * Callback that handles passphrases
- * 
  */
 public class PassphraseCallback implements Callback, java.io.Serializable {
 

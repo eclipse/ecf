@@ -16,7 +16,6 @@ import org.eclipse.ecf.core.util.ECFException;
 
 /**
  * Exception class for user cancellation
- * 
  */
 public class UserCancelledException extends ECFException {
 

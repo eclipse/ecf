@@ -23,9 +23,6 @@ import org.eclipse.ecf.filetransfer.IRemoteFileInfo;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.provider.filetransfer.Activator;
 
-/**
- *
- */
 public class URLRemoteFile implements IRemoteFile {
 
 	IFileID fileID;

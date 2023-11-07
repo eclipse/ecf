@@ -15,7 +15,6 @@ import org.eclipse.ecf.core.identity.ID;
 
 /**
  * Container disconnected event
- * 
  */
 public interface IContainerDisconnectedEvent extends IContainerEvent {
 	/**

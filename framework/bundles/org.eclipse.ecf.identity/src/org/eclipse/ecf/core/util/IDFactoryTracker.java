@@ -21,7 +21,6 @@ import org.osgi.util.tracker.ServiceTracker;
  * (singleton).
  * 
  * @since 3.1
- * 
  */
 @SuppressWarnings("rawtypes")
 public class IDFactoryTracker extends ServiceTracker {

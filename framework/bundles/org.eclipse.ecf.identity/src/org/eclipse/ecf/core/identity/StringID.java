@@ -13,7 +13,6 @@ package org.eclipse.ecf.core.identity;
 
 /**
  * A string-based identity
- * 
  */
 public class StringID extends BaseID {
 	private static final long serialVersionUID = 3256437019155446068L;

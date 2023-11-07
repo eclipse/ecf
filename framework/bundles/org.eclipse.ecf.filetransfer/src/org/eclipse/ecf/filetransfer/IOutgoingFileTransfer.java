@@ -13,7 +13,6 @@ package org.eclipse.ecf.filetransfer;
 
 /**
  * Outgoing file transfer.
- * 
  */
 public interface IOutgoingFileTransfer extends IFileTransfer {
 	/**

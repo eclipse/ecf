@@ -17,7 +17,6 @@ import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
 /**
  * Event sent to {@link IFileTransferListener} associated with
  * {@link IIncomingFileTransfer} instances data are received
- * 
  */
 public interface IIncomingFileTransferReceiveDataEvent extends IIncomingFileTransferEvent {
 	// no methods for interface

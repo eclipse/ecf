@@ -75,9 +75,6 @@ import org.eclipse.ecf.provider.filetransfer.util.JREProxyHelper;
 import org.eclipse.ecf.provider.filetransfer.util.ProxySetupHelper;
 import org.eclipse.osgi.util.NLS;
 
-/**
- *
- */
 @SuppressWarnings("restriction")
 public class HttpClientFileSystemBrowser extends AbstractFileSystemBrowser {
 

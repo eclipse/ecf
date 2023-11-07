@@ -16,7 +16,6 @@ import org.eclipse.ecf.core.util.Event;
 
 /**
  * An event received by a container
- * 
  */
 public interface IContainerEvent extends Event {
 	/**

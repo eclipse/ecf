@@ -19,9 +19,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;
 
-/**
- *
- */
 public class SystemLogService implements LogService {
 
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("Z yyyy.MM.dd HH:mm:ss:S"); //$NON-NLS-1$

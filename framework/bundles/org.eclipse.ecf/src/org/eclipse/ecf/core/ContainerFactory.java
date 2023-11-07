@@ -468,9 +468,6 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 		return container;
 	}
 
-	/**
-	 * @param result
-	 */
 	private void fireContainerAdded(IContainer result) {
 		List toNotify = null;
 		synchronized (managerListeners) {
@@ -510,7 +507,6 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	}
 
 	/**
-	 * @param result
 	 */
 	private void fireContainerRemoved(IContainer result) {
 		List toNotify = null;

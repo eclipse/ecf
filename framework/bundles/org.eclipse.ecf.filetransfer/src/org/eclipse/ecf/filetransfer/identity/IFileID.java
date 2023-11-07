@@ -16,7 +16,6 @@ import org.eclipse.ecf.core.identity.ID;
 
 /**
  * ID for a remote file.
- * 
  */
 public interface IFileID extends ID {
 

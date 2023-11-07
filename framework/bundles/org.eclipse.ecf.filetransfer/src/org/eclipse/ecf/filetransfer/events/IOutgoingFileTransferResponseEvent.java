@@ -18,7 +18,6 @@ import org.eclipse.ecf.filetransfer.*;
  * Asynchronous event sent to {@link IFileTransferListener} associated with
  * {@link IOutgoingFileTransfer} instances when a response is received from the
  * remote target (or provider times out).
- * 
  */
 public interface IOutgoingFileTransferResponseEvent extends IOutgoingFileTransferEvent {
 	/**

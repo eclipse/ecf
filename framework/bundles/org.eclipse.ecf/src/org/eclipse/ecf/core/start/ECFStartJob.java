@@ -18,7 +18,6 @@ import org.eclipse.core.runtime.jobs.Job;
 
 /**
  * Start job for running extensions of the org.eclipse.ecf.start extension point
- * 
  */
 public class ECFStartJob extends Job {
 
