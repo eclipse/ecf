@@ -75,6 +75,7 @@
     <tycho-version>2.7.5</tycho-version>
     <cbi-version>1.3.2</cbi-version>
     <target-platform>2022-03</target-platform>
+    <execution-environment>JavaSE-17</execution-environment>
     <eclipserun-repo>https://download.eclipse.org/eclipse/updates/latest/</eclipserun-repo>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
     <project.resources.sourceEncoding>ISO-8859-1</project.resources.sourceEncoding>
@@ -285,6 +286,7 @@
               <version>1.0.0-SNAPSHOT</version>
             </artifact>
           </target>
+          <executionEnvironment>${execution-environment}</executionEnvironment>
           <environments>
             <environment>
               <os>win32</os>
@@ -405,7 +407,7 @@
                 <url>${eclipserun-repo}</url>
               </repository>
             </repositories>
-            <executionEnvironment>JavaSE-11</executionEnvironment>
+            <executionEnvironment>${execution-environment}</executionEnvironment>
           </configuration>
         </plugin>
         <plugin>

@@ -74,7 +74,7 @@ public class HttpClientProxyCredentialProvider extends Authenticator {
 	@Override
 	protected PasswordAuthentication getPasswordAuthentication() {
 		if (getRequestorType() == RequestorType.PROXY) {
-			Credentials credential = getCredentials(null); // TODO
+			Credentials credential = getCredentials(new AuthScope(getRequestingHost(), getRequestingPort()));
 			if (credential != null) {
 				return new PasswordAuthentication(credential.getUserName(), credential.getPassword());
 			}
