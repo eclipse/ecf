@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="TimeServiceHost XmlRpc Zeroconf Discovery" uid="com.mycorp.examples.timeservice.xmlrpc.j8.product" version="1.1.0.qualifier" useFeatures="false" includeLaunchers="false">
+<product name="TimeServiceHost XmlRpc Zeroconf Discovery" uid="com.mycorp.examples.timeservice.xmlrpc.j8.product" version="1.1.1.qualifier" useFeatures="false" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>
@@ -37,7 +37,7 @@
       <plugin id="com.mycorp.examples.timeservice.async"/>
       <plugin id="com.mycorp.examples.timeservice.host"/>
       <plugin id="javax.servlet"/>
-      <plugin id="org.apache.commons.codec"/>
+      <plugin id="org.apache.commons.commons-codec"/>
       <plugin id="org.apache.commons.logging"/>
       <plugin id="org.apache.felix.gogo.command"/>
       <plugin id="org.apache.felix.gogo.runtime"/>
@@ -86,7 +86,7 @@
    <configurations>
       <plugin id="com.mycorp.examples.timeservice.host" autoStart="true" startLevel="0" />
       <plugin id="javax.servlet" autoStart="true" startLevel="0" />
-      <plugin id="org.apache.commons.codec" autoStart="true" startLevel="0" />
+      <plugin id="org.apache.commons.commons-codec" autoStart="true" startLevel="0" />
       <plugin id="org.apache.commons.logging" autoStart="true" startLevel="0" />
       <plugin id="org.apache.felix.gogo.command" autoStart="true" startLevel="0" />
       <plugin id="org.apache.felix.gogo.runtime" autoStart="true" startLevel="0" />

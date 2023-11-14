@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.filetransfer.httpclient4.feature"
       label="%featureName"
-      version="3.14.32.qualifier"
+      version="3.14.33.qualifier"
       provider-name="%providerName"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
@@ -31,7 +31,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.apache.commons.codec"
+         id="org.apache.commons.commons-codec"
          download-size="0"
          install-size="0"
          version="0.0.0"
