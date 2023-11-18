@@ -445,7 +445,7 @@
     <setupTask
         xsi:type="setup:EclipseIniTask"
         option="-Doomph.redirection.ecf"
-        value="=https://raw.githubusercontent.com/eclipse/ecf/master/releng/org.eclipse.ecf.releng/ECF.setup->${git.clone.ecf.location|uri}/releng/org.eclipse.ecf.releng/ECF.setup"
+        value="=https://raw.githubusercontent.com/eclipse/ecf/master/releng/org.eclipse.ecf.releng/ECF.setup->${github.clone.ecf.location|uri}/releng/org.eclipse.ecf.releng/ECF.setup"
         vm="true">
       <description>
         Set an Oomph redirection system property to redirect the logical location of this setup to its physical location in the Git clone.
