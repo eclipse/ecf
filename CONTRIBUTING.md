@@ -12,6 +12,14 @@ contribution process.
 [1]: http://eclipse.org/contribute/
 [2]: http://wiki.eclipse.org/Gerrit
 
+
+Creating an Eclipse Development Environment
+-------------------------------------------
+
+You can set up a pre-configured IDE for the development of the Eclipse Communications Framework using the following link:
+
+[![Create Eclipse Development Environment for ECF](https://download.eclipse.org/oomph/www/setups/svg/ECF.svg)](https://www.eclipse.org/setups/installer/?url=https://raw.githubusercontent.com/eclipse/ecf/master/releng/org.eclipse.ecf.releng/ECFConfiguration.setup&show=true "Click to open Eclipse-Installer Auto Launch or drag onto your running installer's title area")
+
 Building the SDK from Source
 ----------------------------
 
