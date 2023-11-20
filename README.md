@@ -15,3 +15,8 @@ To contribute or find out what's going on right now, please join the [ecf-dev ma
 
 ### Services, Training and Support
 For Remote Services training, support, or expert OSGi or Eclipse development please contact slewis@composent.com via email or bring it up on the ECF dev mailing list. 
+
+### Contributing to ECF
+
+Contributions are always welcome!
+See [CONTRIBUTING.md](CONTRIBUTING.md).
