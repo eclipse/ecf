@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.provider.irc; singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.provider.irc
-Bundle-Version: 1.3.401.qualifier
+Bundle-Version: 1.3.500.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.provider.irc.Activator
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin

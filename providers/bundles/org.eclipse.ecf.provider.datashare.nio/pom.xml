@@ -10,6 +10,6 @@
   </parent>
   <groupId>org.eclipse.ecf</groupId>
   <artifactId>org.eclipse.ecf.provider.datashare.nio</artifactId>
-  <version>0.9.301-SNAPSHOT</version>
+  <version>0.9.400-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>

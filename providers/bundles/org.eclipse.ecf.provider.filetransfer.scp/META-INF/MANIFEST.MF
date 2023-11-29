@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.provider.filetransfer.scp;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.provider.filetransfer.scp
-Bundle-Version: 2.1.201.qualifier
+Bundle-Version: 2.1.300.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.provider.filetransfer.scp.Activator
 Bundle-Vendor: %plugin.provider
 Import-Package: com.jcraft.jsch,

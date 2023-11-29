@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.server.generic.feature"
       label="%featureName"
-      version="1.2.103.qualifier"
+      version="1.2.200.qualifier"
       provider-name="%providerName"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
@@ -25,16 +25,10 @@
 
    <plugin
          id="org.eclipse.ecf.server"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.eclipse.ecf.server.generic"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
 </feature>

@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.docshare.feature"
       label="ECF Docshare"
-      version="1.0.201.qualifier"
+      version="1.0.300.qualifier"
       provider-name="%providerName"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
@@ -41,16 +41,10 @@ https://wiki.eclipse.org/Extending_Real-Time_Shared_Editing_for_Use_with_Other_E
 
    <plugin
          id="org.eclipse.ecf.docshare"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.eclipse.ecf.sync"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
 </feature>
