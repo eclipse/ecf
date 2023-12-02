@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0" activate="activate" immediate="true" name="org.eclipse.ecf.remoteservices.tooling.bndtools.PreferencesComponent">
-   <reference cardinality="1..1" field="prefs" interface="org.eclipse.core.runtime.preferences.IPreferencesService" name="prefs"/>
+   <reference cardinality="1..1" field="workspace" interface="org.eclipse.core.resources.IWorkspace" name="workspace"/>
    <implementation class="org.eclipse.ecf.remoteservices.tooling.bndtools.PreferencesComponent"/>
 </scr:component>
