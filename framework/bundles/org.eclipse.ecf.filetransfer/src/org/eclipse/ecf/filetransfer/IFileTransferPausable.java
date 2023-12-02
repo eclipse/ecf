@@ -26,7 +26,6 @@ package org.eclipse.ecf.filetransfer;
  *      ... does not support pausing
  *   }
  * </pre>
- * 
  */
 public interface IFileTransferPausable {
 

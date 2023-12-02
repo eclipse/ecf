@@ -21,7 +21,6 @@ import org.eclipse.ecf.filetransfer.events.IFileTransferRequestEvent;
  * File transfer information delivered to
  * {@link IIncomingFileTransferRequestListener} via an event implementing
  * {@link IFileTransferRequestEvent#getFileTransferInfo()}
- * 
  */
 public interface IFileTransferInfo extends IAdaptable {
 	/**

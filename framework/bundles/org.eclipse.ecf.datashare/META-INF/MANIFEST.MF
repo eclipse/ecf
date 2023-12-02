@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.datashare;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.datashare
-Bundle-Version: 3.0.301.qualifier
+Bundle-Version: 3.0.400.qualifier
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
 Export-Package: org.eclipse.ecf.datashare;version="3.1.0",

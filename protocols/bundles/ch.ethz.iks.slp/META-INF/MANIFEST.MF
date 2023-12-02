@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Service Location Protocol (RFC 2608) Implementation
 Bundle-SymbolicName: ch.ethz.iks.slp
 Automatic-Module-Name: ch.ethz.iks.slp
-Bundle-Version: 1.4.1.qualifier
+Bundle-Version: 1.4.100.qualifier
 Export-Package: ch.ethz.iks.slp;version="1.0.0"
 Bundle-Activator: ch.ethz.iks.slp.impl.Activator
 Bundle-Vendor: Eclipse.org - ECF

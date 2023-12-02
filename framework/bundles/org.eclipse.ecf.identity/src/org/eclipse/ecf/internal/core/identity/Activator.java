@@ -248,7 +248,6 @@ public class Activator implements BundleActivator {
 
 	/**
 	 * Setup identity namespace extension point
-	 * 
 	 */
 	public void setupNamespaceExtensionPoint() {
 		SafeRunner.run(new ExtensionRegistryRunnable(context) {

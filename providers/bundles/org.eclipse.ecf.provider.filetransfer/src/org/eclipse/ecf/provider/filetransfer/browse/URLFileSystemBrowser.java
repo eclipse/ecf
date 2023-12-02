@@ -39,9 +39,6 @@ import org.eclipse.ecf.internal.provider.filetransfer.Messages;
 import org.eclipse.ecf.provider.filetransfer.util.JREProxyHelper;
 import org.eclipse.osgi.util.NLS;
 
-/**
- *
- */
 public class URLFileSystemBrowser extends AbstractFileSystemBrowser {
 
 	private static final String USERNAME_PREFIX = Messages.UrlConnectionRetrieveFileTransfer_USERNAME_PROMPT;

@@ -19,9 +19,6 @@ import java.util.Iterator;
 import java.util.List;
 import org.eclipse.ecf.filetransfer.IRemoteFileAttributes;
 
-/**
- *
- */
 public class URLRemoteFileAttributes implements IRemoteFileAttributes {
 
 	static String[] fileAttributes = {IRemoteFileAttributes.READ_ATTRIBUTE, IRemoteFileAttributes.WRITE_ATTRIBUTE, IRemoteFileAttributes.HIDDEN_ATTRIBUTE, IRemoteFileAttributes.EXEC_ATTRIBUTE, IRemoteFileAttributes.ARCHIVE_ATTRIBUTE};

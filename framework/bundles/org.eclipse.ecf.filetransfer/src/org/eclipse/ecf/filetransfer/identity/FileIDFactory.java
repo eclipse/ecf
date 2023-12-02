@@ -22,7 +22,6 @@ import org.eclipse.ecf.internal.filetransfer.FileTransferDebugOptions;
 
 /**
  * Factory class entry point for creating IFileID instances.
- * 
  */
 public class FileIDFactory implements IFileIDFactory {
 

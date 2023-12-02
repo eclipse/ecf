@@ -19,7 +19,6 @@ import org.eclipse.osgi.service.debug.DebugOptions;
 /**
  * A utility for tracing debug information. Provides a simple interface for
  * filtering and generating trace output.
- * 
  */
 public class Trace {
 
@@ -51,91 +50,76 @@ public class Trace {
 
 	/**
 	 * String containing an open parenthesis.
-	 * 
 	 */
 	protected static final String PARENTHESIS_OPEN = "("; //$NON-NLS-1$
 
 	/**
 	 * String containing a close parenthesis.
-	 * 
 	 */
 	protected static final String PARENTHESIS_CLOSE = ")"; //$NON-NLS-1$
 
 	/**
 	 * String containing TRACE
-	 * 
 	 */
 	protected static final String TRACE_STR = "TRACE"; //$NON-NLS-1$
 
 	/**
 	 * Prefix for tracing the changing of values.
-	 * 
 	 */
 	protected static final String PREFIX_TRACING = "TRACING "; //$NON-NLS-1$
 
 	/**
 	 * Prefix for tracing the changing of values.
-	 * 
 	 */
 	protected static final String PREFIX_CHANGING = "CHANGING "; //$NON-NLS-1$
 
 	/**
 	 * Prefix for tracing the catching of throwables.
-	 * 
 	 */
 	protected static final String PREFIX_CATCHING = "CAUGHT "; //$NON-NLS-1$
 
 	/**
 	 * Prefix for tracing the throwing of throwables.
-	 * 
 	 */
 	protected static final String PREFIX_THROWING = "THROWN "; //$NON-NLS-1$
 
 	/**
 	 * Prefix for tracing the entering of methods.
-	 * 
 	 */
 	protected static final String PREFIX_ENTERING = "ENTERING "; //$NON-NLS-1$
 
 	/**
 	 * Prefix for tracing the exiting of methods.
-	 * 
 	 */
 	protected static final String PREFIX_EXITING = "EXITING "; //$NON-NLS-1$
 
 	/**
 	 * Separator for methods.
-	 * 
 	 */
 	protected static final String SEPARATOR_METHOD = "#"; //$NON-NLS-1$
 
 	/**
 	 * Separator for parameters.
-	 * 
 	 */
 	protected static final String SEPARATOR_PARAMETER = ", "; //$NON-NLS-1$
 
 	/**
 	 * Separator for return values.
-	 * 
 	 */
 	protected static final String SEPARATOR_RETURN = ":"; //$NON-NLS-1$
 
 	/**
 	 * Separator containing a space.
-	 * 
 	 */
 	protected static final String SEPARATOR_SPACE = " "; //$NON-NLS-1$
 
 	/**
 	 * Label indicating old value.
-	 * 
 	 */
 	protected static final String LABEL_OLD_VALUE = "old="; //$NON-NLS-1$
 
 	/**
 	 * Label indicating new value.
-	 * 
 	 */
 	protected static final String LABEL_NEW_VALUE = "new="; //$NON-NLS-1$
 
@@ -151,7 +135,6 @@ public class Trace {
 	 * @return Whether tracing is enabled for the plug-in.
 	 * @param pluginId The symbolic plugin id for which to determine trace
 	 * enablement.
-	 * 
 	 */
 	protected static boolean shouldTrace(String pluginId) {
 		return shouldTrace0(pluginId + "/debug"); //$NON-NLS-1$
@@ -177,7 +160,6 @@ public class Trace {
 	 * @return Whether tracing is enabled for the debug option of the plug-in.
 	 * @param pluginId The plug-in for which to determine trace enablement.
 	 * @param option The debug option for which to determine trace enablement.
-	 * 
 	 */
 	public static boolean shouldTrace(String pluginId, String option) {
 		if (pluginId == null)
@@ -207,7 +189,6 @@ public class Trace {
 	 * @return A textual representation of the specified argument.
 	 * @param argument The argument for which to retrieve a textual
 	 * representation.
-	 * 
 	 */
 	public static String getArgumentString(Object argument) {
 		if (argument == null)
@@ -237,7 +218,6 @@ public class Trace {
 	 * @return A textual representation of the specified arguments.
 	 * @param arguments The arguments for which to retrieve a textual
 	 * representation.
-	 * 
 	 */
 	public static String getArgumentsString(Object[] arguments) {
 		if (arguments == null)
@@ -258,7 +238,6 @@ public class Trace {
 	 * Traces the specified message.
 	 * 
 	 * @param message The message to be traced.
-	 * 
 	 */
 	protected static void trace(String message) {
 		StringBuilder buf = new StringBuilder(PARENTHESIS_OPEN);
@@ -282,7 +261,6 @@ public class Trace {
 	 * 
 	 * @param pluginId The plug-in from which to trace.
 	 * @param message The message to be traced.
-	 * 
 	 */
 	public static void trace(String pluginId, String message) {
 		if (shouldTrace(pluginId))
@@ -296,7 +274,6 @@ public class Trace {
 	 * @param pluginId The plug-in from which to trace.
 	 * @param option The debug option for which to trace.
 	 * @param message The message to be traced.
-	 * 
 	 */
 	public static void trace(String pluginId, String option, String message) {
 		if (shouldTrace(pluginId, option))
@@ -312,7 +289,6 @@ public class Trace {
 	 * @param clazz The class whose method is being entered.
 	 * @param methodName The name of method that is being entered.
 	 * @param message The message to be traced.
-	 * 
 	 */
 	public static void trace(String pluginId, String option, @SuppressWarnings("rawtypes") Class clazz,
 			String methodName, String message) {
@@ -378,7 +354,6 @@ public class Trace {
 	 * @param methodName The name of the method in which the throwable is being
 	 * caught.
 	 * @param throwable The throwable that is being caught.
-	 * 
 	 */
 	public static void catching(String pluginId, String option, @SuppressWarnings("rawtypes") Class clazz,
 			String methodName, Throwable throwable) {
@@ -409,7 +384,6 @@ public class Trace {
 	 * @param methodName The name of the method from which the throwable is
 	 * being thrown.
 	 * @param throwable The throwable that is being thrown.
-	 * 
 	 */
 	public static void throwing(String pluginId, String option, @SuppressWarnings("rawtypes") Class clazz,
 			String methodName, Throwable throwable) {
@@ -435,7 +409,6 @@ public class Trace {
 	 * @param option The debug option for which to trace.
 	 * @param clazz The class whose method is being entered.
 	 * @param methodName The name of method that is being entered.
-	 * 
 	 */
 	public static void entering(String pluginId, String option, @SuppressWarnings("rawtypes") Class clazz,
 			String methodName) {
@@ -456,7 +429,6 @@ public class Trace {
 	 * @param clazz The class whose method is being entered.
 	 * @param methodName The name of method that is being entered.
 	 * @param parameter The parameter to the method being entered.
-	 * 
 	 */
 	public static void entering(String pluginId, String option, @SuppressWarnings("rawtypes") Class clazz,
 			String methodName, Object parameter) {
@@ -479,7 +451,6 @@ public class Trace {
 	 * @param clazz The class whose method is being entered.
 	 * @param methodName The name of method that is being entered.
 	 * @param parameters The parameters to the method being entered.
-	 * 
 	 */
 	public static void entering(String pluginId, String option, @SuppressWarnings("rawtypes") Class clazz,
 			String methodName, Object[] parameters) {
@@ -500,7 +471,6 @@ public class Trace {
 	 * @param option The debug option for which to trace.
 	 * @param clazz The class whose method is being exited.
 	 * @param methodName The name of method that is being exited.
-	 * 
 	 */
 	public static void exiting(String pluginId, String option, @SuppressWarnings("rawtypes") Class clazz,
 			String methodName) {
@@ -521,7 +491,6 @@ public class Trace {
 	 * @param clazz The class whose method is being exited.
 	 * @param methodName The name of method that is being exited.
 	 * @param returnValue The return value of the method being exited.
-	 * 
 	 */
 	public static void exiting(String pluginId, String option, @SuppressWarnings("rawtypes") Class clazz,
 			String methodName, Object returnValue) {

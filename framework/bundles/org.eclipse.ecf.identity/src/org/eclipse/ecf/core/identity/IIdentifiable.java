@@ -13,7 +13,6 @@ package org.eclipse.ecf.core.identity;
 
 /**
  * Defines implementing classes as being identifiable with an ECF ID.
- * 
  */
 public interface IIdentifiable {
 	/**

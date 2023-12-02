@@ -15,7 +15,6 @@ import org.eclipse.ecf.core.identity.ID;
 
 /**
  * Container connecting event
- * 
  */
 public interface IContainerConnectingEvent extends IContainerEvent {
 	/**

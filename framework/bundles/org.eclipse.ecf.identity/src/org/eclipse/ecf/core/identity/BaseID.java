@@ -21,7 +21,6 @@ import org.eclipse.ecf.internal.core.identity.Activator;
  * Extensions for the <b>org.eclipse.ecf.namespace</b> extension point that
  * expose new Namespace subclasses and their own ID implementations are
  * recommended (but not required) to use this class as a superclass.
- * 
  */
 public abstract class BaseID implements ID {
 

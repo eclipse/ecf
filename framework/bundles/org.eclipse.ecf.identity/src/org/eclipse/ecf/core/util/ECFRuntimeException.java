@@ -46,10 +46,6 @@ public class ECFRuntimeException extends RuntimeException {
 		this(cause.getMessage(), cause);
 	}
 
-	/**
-	 * @param message
-	 * @param cause
-	 */
 	public ECFRuntimeException(String message, Throwable cause) {
 		this(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0,
 				((message == null) ? "" : message), cause)); //$NON-NLS-1$

@@ -16,9 +16,6 @@ package org.eclipse.ecf.core.util;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.IContainer;
 
-/**
- *
- */
 public class AdapterContainerFilter implements IContainerFilter {
 
 	private Class clazz;

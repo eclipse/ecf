@@ -20,7 +20,6 @@ import org.eclipse.ecf.internal.core.identity.Activator;
 /**
  * A factory class for creating ID instances. This is the factory for plugins to
  * manufacture ID instances.
- * 
  */
 public class IDFactory implements IIDFactory {
 	public static final String SECURITY_PROPERTY = IDFactory.class.getName() + ".security"; //$NON-NLS-1$

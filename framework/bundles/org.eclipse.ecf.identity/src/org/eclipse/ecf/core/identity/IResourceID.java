@@ -20,7 +20,6 @@ import java.net.URI;
  * {@link URI}.
  * 
  * @since 3.0
- * 
  */
 public interface IResourceID extends ID {
 

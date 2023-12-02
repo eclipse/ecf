@@ -16,7 +16,6 @@ import org.eclipse.ecf.core.identity.ID;
 
 /**
  * Policy handler for connect initiator (clients).
- *
  */
 public interface IConnectInitiatorPolicy extends IContainerPolicy {
 

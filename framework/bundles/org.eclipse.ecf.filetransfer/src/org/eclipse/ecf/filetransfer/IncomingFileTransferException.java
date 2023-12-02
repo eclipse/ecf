@@ -17,7 +17,6 @@ import org.eclipse.ecf.core.util.ECFException;
 
 /**
  * Exception thrown upon incoming file transfer problem
- * 
  */
 public class IncomingFileTransferException extends ECFException {
 

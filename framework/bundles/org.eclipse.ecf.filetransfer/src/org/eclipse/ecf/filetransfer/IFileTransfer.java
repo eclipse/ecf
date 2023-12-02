@@ -28,7 +28,6 @@ public interface IFileTransfer extends IAdaptable, IIdentifiable {
 	 * {@link IFileTransferEvent} being delivered to the
 	 * {@link IFileTransferListener} indicating that transfer is done ({@link #isDone()}
 	 * returns true), and some exception will be made available
-	 * 
 	 */
 	public void cancel();
 

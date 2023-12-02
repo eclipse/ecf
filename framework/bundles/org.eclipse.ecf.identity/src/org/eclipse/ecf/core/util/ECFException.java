@@ -39,10 +39,6 @@ public class ECFException extends CoreException {
 		this(null, cause);
 	}
 
-	/**
-	 * @param message
-	 * @param cause
-	 */
 	public ECFException(String message, Throwable cause) {
 		this(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, ((message == null) ? "" : message), cause)); //$NON-NLS-1$
 	}

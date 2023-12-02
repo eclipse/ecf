@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.provider.dnssd;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.provider.dnssd
-Bundle-Version: 1.2.302.qualifier
+Bundle-Version: 1.2.400.qualifier
 Bundle-Activator: org.eclipse.ecf.provider.dnssd.Activator
 Bundle-Vendor: %pluginProvider
 Bundle-RequiredExecutionEnvironment: J2SE-1.4

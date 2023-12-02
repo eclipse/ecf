@@ -30,7 +30,6 @@ import org.eclipse.core.runtime.IAdaptable;
  * <p>
  * 
  * @see Namespace
- * 
  */
 @SuppressWarnings("rawtypes")
 public interface ID extends java.io.Serializable, java.lang.Comparable,

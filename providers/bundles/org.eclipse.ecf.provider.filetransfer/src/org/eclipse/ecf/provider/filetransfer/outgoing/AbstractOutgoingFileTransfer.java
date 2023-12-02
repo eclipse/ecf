@@ -52,9 +52,6 @@ import org.eclipse.ecf.provider.filetransfer.identity.FileTransferNamespace;
 import org.eclipse.ecf.provider.filetransfer.util.ProxySetupHelper;
 import org.eclipse.osgi.util.NLS;
 
-/**
- *
- */
 public abstract class AbstractOutgoingFileTransfer implements IOutgoingFileTransfer, ISendFileTransfer {
 
 	public static final int DEFAULT_BUF_LENGTH = 4096;

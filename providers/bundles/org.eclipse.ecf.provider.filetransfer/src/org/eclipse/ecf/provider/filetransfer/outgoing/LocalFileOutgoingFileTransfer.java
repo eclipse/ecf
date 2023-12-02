@@ -27,9 +27,6 @@ import org.eclipse.ecf.filetransfer.SendFileTransferException;
 import org.eclipse.ecf.internal.provider.filetransfer.Messages;
 import org.eclipse.osgi.util.NLS;
 
-/**
- *
- */
 public class LocalFileOutgoingFileTransfer extends AbstractOutgoingFileTransfer {
 
 	public LocalFileOutgoingFileTransfer() {

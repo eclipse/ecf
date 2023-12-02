@@ -25,7 +25,6 @@ import java.util.ArrayList;
  * based on the delimiter and does not perform any regular expression matching
  * like the split methods provided in J2SE-1.4.
  * </p>
- * 
  */
 public final class StringUtils {
 

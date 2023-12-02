@@ -20,7 +20,6 @@ package org.eclipse.ecf.core;
  * {@link #containerAdded(IContainer)} method will be called. When container
  * removals occur, {@link #containerRemoved(IContainer)}. Note that these
  * methods will be called by arbitrary threads.
- * 
  */
 public interface IContainerManagerListener {
 

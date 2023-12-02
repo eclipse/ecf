@@ -17,9 +17,6 @@ import org.eclipse.ecf.core.AbstractContainerAdapterFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter;
 
-/**
- * 
- */
 public class MultiProtocolRetrieveAdapterFactory extends AbstractContainerAdapterFactory {
 
 	/*

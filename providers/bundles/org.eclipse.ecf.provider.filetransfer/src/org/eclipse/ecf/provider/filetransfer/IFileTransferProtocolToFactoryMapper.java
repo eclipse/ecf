@@ -19,7 +19,6 @@ import org.eclipse.ecf.filetransfer.service.ISendFileTransferFactory;
 /**
  * 
  * @since 3.0.1
- *
  */
 public interface IFileTransferProtocolToFactoryMapper {
 

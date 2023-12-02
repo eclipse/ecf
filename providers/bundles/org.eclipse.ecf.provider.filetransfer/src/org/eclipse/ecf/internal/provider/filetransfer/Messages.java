@@ -15,9 +15,6 @@ package org.eclipse.ecf.internal.provider.filetransfer;
 
 import org.eclipse.osgi.util.NLS;
 
-/**
- * 
- */
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.provider.filetransfer.messages"; //$NON-NLS-1$
 	public static String AbstractOutgoingFileTransfer_EXCEPTION_FILE_TRANSFER_INFO_NOT_NULL;

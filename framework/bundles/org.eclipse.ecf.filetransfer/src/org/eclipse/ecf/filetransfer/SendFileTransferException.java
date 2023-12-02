@@ -16,7 +16,6 @@ import org.eclipse.ecf.core.util.ECFException;
 
 /**
  * Outgoing file transfer exception
- * 
  */
 public class SendFileTransferException extends ECFException {
 

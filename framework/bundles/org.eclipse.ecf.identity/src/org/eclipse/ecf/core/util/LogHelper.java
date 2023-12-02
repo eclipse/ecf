@@ -38,7 +38,6 @@ public class LogHelper {
 	}
 
 	/**
-	 * @param status
 	 * @return String the string version of the status
 	 */
 	public static String getLogMessage(IStatus status) {

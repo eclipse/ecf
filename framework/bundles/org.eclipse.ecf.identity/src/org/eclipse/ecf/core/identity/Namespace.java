@@ -179,7 +179,6 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	 * @return String name of Namespace instance. Must not return <code>null</code>,
 	 *         and the returned value should be a globally unique name for this
 	 *         Namespace subclass.
-	 * 
 	 */
 	public String getName() {
 		return name;

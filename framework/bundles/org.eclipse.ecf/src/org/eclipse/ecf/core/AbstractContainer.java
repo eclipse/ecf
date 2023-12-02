@@ -22,7 +22,6 @@ import org.eclipse.ecf.internal.core.ECFPlugin;
  * Abstract implementation of IContainer. Provides implementations of listener
  * methods that subsclasses may use to avoid having to implement them
  * themselves. This class may be subclassed as needed.
- * 
  */
 public abstract class AbstractContainer implements IContainer {
 

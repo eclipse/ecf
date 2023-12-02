@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: ECF RS Example Timeservice Host
 Bundle-SymbolicName: com.mycorp.examples.timeservice.host
 Automatic-Module-Name: com.mycorp.examples.timeservice.host
-Bundle-Version: 1.1.400.qualifier
+Bundle-Version: 1.1.500.qualifier
 Bundle-Vendor: Eclipse.org - ECF
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy

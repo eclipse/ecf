@@ -16,7 +16,6 @@ import org.eclipse.ecf.core.identity.ID;
 
 /**
  * Connect policy typically implemented by servers
- * 
  */
 public interface IConnectHandlerPolicy extends IContainerPolicy {
 	/**

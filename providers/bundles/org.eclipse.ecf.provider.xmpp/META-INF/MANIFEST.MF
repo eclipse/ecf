@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.provider.xmpp;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.provider.xmpp
-Bundle-Version: 3.2.402.qualifier
+Bundle-Version: 3.2.500.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.provider.xmpp.XmppPlugin
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin

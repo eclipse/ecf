@@ -87,7 +87,6 @@ public interface IFileTransferRequestEvent extends IFileTransferEvent {
 	 * Reject the file transfer request. This method should be called if the
 	 * receiver of the IFileTransferRequestEvent would like to reject the file
 	 * transfer request
-	 * 
 	 */
 	public void reject();
 

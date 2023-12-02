@@ -89,7 +89,6 @@ public interface IFileTransferConnectStartEvent extends IAdaptable, IFileTransfe
 	 *            NOTE: the given job should *not* be
 	 *            scheduled/started prior to being provided as a parameter to
 	 *            this method.
-	 * 
 	 */
 	void connectUsingJob(FileTransferJob connectJob);
 }
