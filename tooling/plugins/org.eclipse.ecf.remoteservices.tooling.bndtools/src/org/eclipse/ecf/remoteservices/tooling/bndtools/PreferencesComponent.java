@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.osgi.framework.Bundle;
@@ -36,8 +36,8 @@ import org.osgi.service.component.annotations.Reference;
 public class PreferencesComponent {
 
 	@Reference
-	org.eclipse.core.runtime.preferences.IPreferencesService prefs;
-
+	IWorkspace workspace;
+	
 	static class Attrs extends HashMap<String,String> {
 
 		private static final long serialVersionUID = -4017513476270109969L;
@@ -161,13 +161,13 @@ public class PreferencesComponent {
 					// Ignore if can't read it
 				}
 			}
-		}
-		Repo ecfRepos = getRepoParameters(Activator.class.getResourceAsStream("ecfrepos.txt"));
-		if (ecfRepos.size() > 0) {
-			ScopedPreferenceStore store = new ScopedPreferenceStore(InstanceScope.INSTANCE, "org.bndtools.templating.gitrepo");
-			store.setDefault("githubRepos", bndtoolsRepos.toString());
-			bndtoolsRepos.mergeWith(ecfRepos);
-			store.setValue("githubRepos", bndtoolsRepos.toString());
+			Repo ecfRepos = getRepoParameters(Activator.class.getResourceAsStream("ecfrepos.txt"));
+			if (ecfRepos.size() > 0) {
+				ScopedPreferenceStore store = new ScopedPreferenceStore(InstanceScope.INSTANCE, "org.bndtools.templating.gitrepo");
+				store.setDefault("githubRepos", bndtoolsRepos.toString());
+				bndtoolsRepos.mergeWith(ecfRepos);
+				store.setValue("githubRepos", bndtoolsRepos.toString());
+			}
 		}
 	}
 }
