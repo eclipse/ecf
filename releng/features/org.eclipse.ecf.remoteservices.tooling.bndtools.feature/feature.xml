@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.remoteservices.tooling.bndtools.feature"
       label="ECF Bndtools Support"
-      version="1.0.0.qualifier"
+      version="1.1.0.qualifier"
       provider-name="%featureProvider">
 
    <description url="http://www.example.com/description">
