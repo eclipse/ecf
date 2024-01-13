@@ -66,6 +66,8 @@
             <topic href="html/reference/api/org/eclipse/ecf/remoteservice/servlet/package-summary.html" label="org.eclipse.ecf.remoteservice.servlet"/>
             <topic href="html/reference/api/org/eclipse/ecf/remoteservice/util/package-summary.html" label="org.eclipse.ecf.remoteservice.util"/>
             <topic href="html/reference/api/org/eclipse/ecf/remoteservice/util/tracker/package-summary.html" label="org.eclipse.ecf.remoteservice.util.tracker"/>
+            <topic href="html/reference/api/org/eclipse/ecf/remoteservices/tooling/package-summary.html" label="org.eclipse.ecf.remoteservice.tooling"/>
+            <topic href="html/reference/api/org/eclipse/ecf/remoteservices/tooling/package-summary.html" label="org.eclipse.ecf.remoteservice.tooling"/>
             <topic href="html/reference/api/org/osgi/service/remoteserviceadmin/package-summary.html" label="org.osgi.service.remoteserviceadmin"/>
             <topic href="html/reference/api/org/osgi/service/remoteserviceadmin/namespace/package-summary.html" label="org.osgi.service.remoteserviceadmin.namespace"/>
         </topic>
