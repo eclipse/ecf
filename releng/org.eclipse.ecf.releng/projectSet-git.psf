@@ -120,6 +120,8 @@
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,framework/bundles/org.eclipse.ecf.remoteservice.ui"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,framework/bundles/org.eclipse.ecf.remoteservice.ui.dosgi"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,tooling/plugins/org.eclipse.ecf.remoteservices.tooling.pde"/>
+<project reference="1.0,https://github.com/eclipse/ecf.git,master,tooling/plugins/org.eclipse.ecf.remoteservices.tooling.bndtools"/>
+<project reference="1.0,https://github.com/eclipse/ecf.git,master,tooling/features/org.eclipse.ecf.remoteservices.tooling.bndtools.feature"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,releng/features/org.eclipse.ecf.sdk"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,server-side/bundles/org.eclipse.ecf.server"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,server-side/features/org.eclipse.ecf.server.feature"/>
@@ -366,6 +368,7 @@
 <item elementID="=org.eclipse.ecf.remoteservice.ui/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.remoteservice.ui.dosgi/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.remoteservices.tooling.pde/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.eclipse.ecf.remoteservices.tooling.bndtools/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.server/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.server.generic/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.sharedobject/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
@@ -438,6 +441,7 @@
 <item elementID="=org.eclipse.ecf.remoteservice.servlet" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 </workingSets>
 <workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552872660789_68" label="Tooling" name="Tooling">
+<item elementID="=org.eclipse.ecf.remoteservices.tooling.bndtools" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.remoteservices.tooling.pde" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 </workingSets>
 <workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552873248719_73" label="UI" name="UI">
