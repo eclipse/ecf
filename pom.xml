@@ -221,7 +221,6 @@
 
     <module>tooling/plugins/org.eclipse.ecf.remoteservices.tooling.pde</module>
     <module>tooling/plugins/org.eclipse.ecf.remoteservices.tooling.bndtools</module>
-    <module>tooling/plugins/org.eclipse.ecf.remoteservices.tooling.bndtools.feature</module>
 
     <module>releng/features/org.eclipse.ecf.console.feature</module>
     <module>releng/features/org.eclipse.ecf.core</module>
