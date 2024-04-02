@@ -158,8 +158,6 @@
     <module>protocols/bundles/ch.ethz.iks.slp</module>
     <module>protocols/bundles/org.jivesoftware.smack</module>
 
-    <module>providers/bundles/org.eclipse.ecf.provider.bittorrent</module>
-    <module>providers/bundles/org.eclipse.ecf.provider.bittorrent.ui</module>
     <module>providers/bundles/org.eclipse.ecf.provider.datashare</module>
     <module>providers/bundles/org.eclipse.ecf.provider.datashare.nio</module>
     <module>providers/bundles/org.eclipse.ecf.provider.discovery</module>

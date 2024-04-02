@@ -73,11 +73,7 @@
         <setEntry value="org.eclipse.ecf.presence.bot"/>
         <setEntry value="org.eclipse.ecf.presence.collab.ui"/>
         <setEntry value="org.eclipse.ecf.presence.ui"/>
-        <setEntry value="org.eclipse.ecf.protocol.bittorrent"/>
-        <setEntry value="org.eclipse.ecf.protocol.msn"/>
         <setEntry value="org.eclipse.ecf.provider"/>
-        <setEntry value="org.eclipse.ecf.provider.bittorrent"/>
-        <setEntry value="org.eclipse.ecf.provider.bittorrent.ui"/>
         <setEntry value="org.eclipse.ecf.provider.datashare"/>
         <setEntry value="org.eclipse.ecf.provider.datashare.nio"/>
         <setEntry value="org.eclipse.ecf.provider.discovery"/>
@@ -95,8 +91,6 @@
         <setEntry value="org.eclipse.ecf.provider.jmdns"/>
         <setEntry value="org.eclipse.ecf.provider.jslp"/>
         <setEntry value="org.eclipse.ecf.provider.local"/>
-        <setEntry value="org.eclipse.ecf.provider.msn"/>
-        <setEntry value="org.eclipse.ecf.provider.msn.ui"/>
         <setEntry value="org.eclipse.ecf.provider.r_osgi"/>
         <setEntry value="org.eclipse.ecf.provider.remoteservice"/>
         <setEntry value="org.eclipse.ecf.provider.remoteservice.java8"/>

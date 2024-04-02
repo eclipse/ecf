@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.core"
       label="ECF SDK for Eclipse"
-      version="3.14.42.qualifier"
+      version="3.15.0.qualifier"
       provider-name="%providerName"
       plugin="org.eclipse.ecf"
       license-feature="org.eclipse.license"
@@ -82,21 +82,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.ecf.provider.bittorrent"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.ecf.filetransfer.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.provider.msn"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -132,13 +118,6 @@
 
    <plugin
          id="org.eclipse.ecf.remoteservice.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.protocol.bittorrent"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -239,13 +218,6 @@
 
    <plugin
          id="org.eclipse.ecf.protocol.msn"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.provider.msn"
          download-size="0"
          install-size="0"
          version="0.0.0"
