@@ -31,21 +31,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.ecf.tests.apache.httpclient.server"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.ecf.tests.filetransfer"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.tests.filetransfer.httpserver"
          download-size="0"
          install-size="0"
          version="0.0.0"

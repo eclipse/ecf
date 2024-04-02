@@ -45,7 +45,7 @@ public class URLBrowseTest extends AbstractBrowseTestCase {
 		events = new ArrayList();
 		testURLs = new URL[3];
 		testURLs[0] = new URL("https://www.eclipse.org/ecf/ip_log.html");
-		testURLs[1] = new URL("http://www.eclipse.org/ecf/ip_log.html");
+		testURLs[1] = new URL("https://www.eclipse.org/ecf/ip_log.html");
 		testURLs[2] = new URL("http://google.com:80");
 	}
 

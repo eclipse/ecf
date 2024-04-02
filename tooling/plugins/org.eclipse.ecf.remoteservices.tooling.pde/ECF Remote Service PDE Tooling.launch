@@ -86,11 +86,9 @@
         <setEntry value="org.eclipse.ecf.telephony.call"/>
         <setEntry value="org.eclipse.ecf.telephony.call.ui"/>
         <setEntry value="org.eclipse.ecf.tests"/>
-        <setEntry value="org.eclipse.ecf.tests.apache.httpclient.server"/>
         <setEntry value="org.eclipse.ecf.tests.datashare"/>
         <setEntry value="org.eclipse.ecf.tests.discovery"/>
         <setEntry value="org.eclipse.ecf.tests.filetransfer"/>
-        <setEntry value="org.eclipse.ecf.tests.filetransfer.httpserver"/>
         <setEntry value="org.eclipse.ecf.tests.osgi.services.distribution"/>
         <setEntry value="org.eclipse.ecf.tests.osgi.services.distribution.generic"/>
         <setEntry value="org.eclipse.ecf.tests.osgi.services.distribution.r-osgi"/>
@@ -110,7 +108,6 @@
         <setEntry value="org.eclipse.ecf.tests.remoteservice"/>
         <setEntry value="org.eclipse.ecf.tests.remoteservice.generic"/>
         <setEntry value="org.eclipse.ecf.tests.remoteservice.r-osgi"/>
-        <setEntry value="org.eclipse.ecf.tests.remoteservice.rest"/>
         <setEntry value="org.eclipse.ecf.tests.server.generic"/>
         <setEntry value="org.eclipse.ecf.tests.sharedobject"/>
         <setEntry value="org.eclipse.ecf.ui"/>
@@ -312,7 +309,6 @@
         <setEntry value="org.eclipse.ui@default:default"/>
         <setEntry value="org.eclipse.update.configurator@3:true"/>
         <setEntry value="org.hamcrest.core@default:default"/>
-        <setEntry value="org.jdom@default:default"/>
         <setEntry value="org.junit@default:default"/>
         <setEntry value="org.objectweb.asm*9.4.0.v20221107-1714@default:default"/>
         <setEntry value="org.sat4j.core@default:default"/>

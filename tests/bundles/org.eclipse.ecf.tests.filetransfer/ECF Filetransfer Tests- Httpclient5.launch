@@ -170,9 +170,7 @@
         <setEntry value="org.eclipse.ecf.provider.filetransfer.httpclient5.win32@default:default"/>
         <setEntry value="org.eclipse.ecf.provider.filetransfer.httpclient5@default:default"/>
         <setEntry value="org.eclipse.ecf.provider.filetransfer@default:default"/>
-        <setEntry value="org.eclipse.ecf.tests.apache.httpclient.server@default:default"/>
         <setEntry value="org.eclipse.ecf.tests.filetransfer.httpclient5@default:false"/>
-        <setEntry value="org.eclipse.ecf.tests.filetransfer.httpserver@default:default"/>
         <setEntry value="org.eclipse.ecf.tests.filetransfer@default:default"/>
         <setEntry value="org.eclipse.ecf.tests@default:default"/>
         <setEntry value="org.eclipse.ecf@default:true"/>

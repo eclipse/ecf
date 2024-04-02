@@ -140,10 +140,6 @@
           <value>org.apache.log4j,jakarta.servlet-api</value>
         </detail>
         <detail
-            key="generateVersions">
-          <value>org.apache.hadoop.zookeeper</value>
-        </detail>
-        <detail
             key="singleLocation">
           <value>false</value>
         </detail>

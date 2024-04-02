@@ -35,7 +35,6 @@
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,framework/bundles/org.eclipse.ecf.discovery.ui.properties"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,framework/bundles/org.eclipse.ecf.discovery.ui.properties.tabbed"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,framework/bundles/org.eclipse.ecf.discovery.ui.userinput"/>
-<project reference="1.0,https://github.com/eclipse/ecf.git,master,releng/features/org.eclipse.ecf.discovery.zookeeper.feature"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,doc/bundles/org.eclipse.ecf.doc"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,framework/bundles/org.eclipse.ecf.docshare"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,releng/features/org.eclipse.ecf.docshare.feature"/>
@@ -96,7 +95,6 @@
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,providers/bundles/org.eclipse.ecf.provider.xmpp.datashare"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,providers/bundles/org.eclipse.ecf.provider.xmpp.remoteservice"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,providers/bundles/org.eclipse.ecf.provider.xmpp.ui"/>
-<project reference="1.0,https://github.com/eclipse/ecf.git,master,providers/bundles/org.eclipse.ecf.provider.zookeeper"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,releng/org.eclipse.ecf.releng"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,releng/org.eclipse.ecf.releng.bm"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,releng/org.eclipse.ecf.releng.repository"/>
@@ -232,7 +230,6 @@
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.sdk" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.provider.generic.remoteservice.feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.osgi.services.feature" type="4"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.discovery.zookeeper.feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.examples" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.remoteservice.soa.feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.discovery.feature" type="4"/>
@@ -357,7 +354,6 @@
 <item elementID="=org.eclipse.ecf.provider.xmpp/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.provider.xmpp.remoteservice/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.provider.xmpp.ui/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=org.eclipse.ecf.provider.zookeeper/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.remoteservice/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.remoteservice.asyncproxy/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.remoteservice.asyncproxy.j8/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
@@ -461,6 +457,5 @@
 <item elementID="=org.eclipse.ecf.provider.jmdns" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 </workingSets>
 <workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552865700938_38" label="Zookeeper Discovery Provider" name="Zookeeper Discovery Provider">
-<item elementID="=org.eclipse.ecf.provider.zookeeper" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 </workingSets>
 </psf>
