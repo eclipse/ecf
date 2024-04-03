@@ -60,7 +60,6 @@
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,framework/bundles/org.eclipse.ecf.presence.collab.ui"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,releng/features/org.eclipse.ecf.presence.feature"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,framework/bundles/org.eclipse.ecf.presence.ui"/>
-<project reference="1.0,https://github.com/eclipse/ecf.git,master,protocols/bundles/org.eclipse.ecf.protocol.msn"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,framework/bundles/org.eclipse.ecf.provider"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,providers/bundles/org.eclipse.ecf.provider.datashare"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,providers/bundles/org.eclipse.ecf.provider.datashare.nio"/>
@@ -142,7 +141,6 @@
 <item elementID="=org.eclipse.ecf.provider.filetransfer.scp" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 </workingSets>
 <workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552871937294_56" label="Alt Providers" name="Alt Providers">
-<item elementID="=org.eclipse.ecf.protocol.msn" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.provider.rss" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.provider.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.provider.local" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
