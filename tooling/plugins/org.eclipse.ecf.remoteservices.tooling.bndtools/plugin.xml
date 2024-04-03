@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="org.eclipse.ecf.remoteservices.category"
+            name=" ECF Remote Services"
+            parentCategory="bndtools.serviceWizardCategory">
+      </category>
+
+      <wizard
+            category="bndtools.serviceWizardCategory/org.eclipse.ecf.remoteservices.category"
+            finalPerspective="bndtools.perspective"
+            class="org.bndtools.core.ui.wizards.service.NewBndTemplateBasedServiceWizard:rs"
+            icon="platform:/plugin/bndtools.core/icons/service.png"
+            id="org.eclipse.ecf.bndtools.template.wizard.rs"
+            name="Synchronous Remote Service (api, impl, consumer)"
+            preferredPerspectives="bndtools.perspective"
+            project="true">
+      </wizard>
+
+      <wizard
+            category="bndtools.serviceWizardCategory/org.eclipse.ecf.remoteservices.category"
+            finalPerspective="bndtools.perspective"
+            class="org.bndtools.core.ui.wizards.service.NewBndTemplateBasedServiceWizard:rsasync"
+            icon="platform:/plugin/bndtools.core/icons/service.png"
+            id="org.eclipse.ecf.bndtools.template.wizard.rsasync"
+            name="Asynchronous Remote Service (api, impl, consumer)"
+            preferredPerspectives="bndtools.perspective"
+            project="true">
+      </wizard>
+
+      <wizard
+            category="bndtools.serviceWizardCategory/org.eclipse.ecf.remoteservices.category"
+            finalPerspective="bndtools.perspective"
+            class="org.bndtools.core.ui.wizards.service.NewBndTemplateBasedServiceWizard:grpc"
+            icon="icons/grpc16x16.gif"
+            id="org.eclipse.ecf.bndtools.grpc.ui.grpc"
+            name="gRPC HealthCheck Example Service (generated api, impl, consumer)"
+            preferredPerspectives="bndtools.perspective"
+            project="true">
+      </wizard>
+      
+   </extension>
+
+
+</plugin>
