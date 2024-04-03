@@ -39,7 +39,7 @@ set RUNTIME="..\lib\org.eclipse.equinox.registry_3.2.100.v20061023.jar;..\lib\or
 set JMS=jar:%RP%\org.eclipse.ecf.provider.jms_0.9.4.jar
 set JMSL=%JMS%!lib\activemq3.1M5
 
-set JMSLIB=%JMSL%\activeio-1.1.jar;%JMSL%\activemq-core-3.1-M5.jar;%JMSL%\commons-logging-1.0.3.jar;%JMSL%\concurrent-1.3.4.jar;%JMSL%\geronimo-spec-j2ee-jacc-1.0-rc4.jar;%JMSL%\geronimo-spec-j2ee-management-1.0-rc4.jar;%JMSL%\geronimo-spec-jms-1.1-rc4.jar;%JMSL%\geronimo-spec-jta-1.0.1B-rc4.jar;%JMSL%\log4j-1.2.8.jar;%JMSL%\spring-1.2.2.jar
+set JMSLIB=%JMSL%\activeio-1.1.jar;%JMSL%\activemq-core-3.1-M5.jar;%JMSL%\commons-logging-1.0.3.jar;%JMSL%\concurrent-1.3.4.jar;%JMSL%\geronimo-spec-j2ee-jacc-1.0-rc4.jar;%JMSL%\geronimo-spec-j2ee-management-1.0-rc4.jar;%JMSL%\geronimo-spec-jms-1.1-rc4.jar;%JMSL%\geronimo-spec-jta-1.0.1B-rc4.jar;%JMSL%\spring-1.2.2.jar
 
 set CP=".;%JMSLIB%;%RUNTIME%;%CORE%;%EXAMPLES%"
 

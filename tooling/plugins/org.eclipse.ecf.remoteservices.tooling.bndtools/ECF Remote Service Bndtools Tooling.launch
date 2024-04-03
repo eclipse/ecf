@@ -73,11 +73,7 @@
         <setEntry value="org.eclipse.ecf.presence.bot"/>
         <setEntry value="org.eclipse.ecf.presence.collab.ui"/>
         <setEntry value="org.eclipse.ecf.presence.ui"/>
-        <setEntry value="org.eclipse.ecf.protocol.bittorrent"/>
-        <setEntry value="org.eclipse.ecf.protocol.msn"/>
         <setEntry value="org.eclipse.ecf.provider"/>
-        <setEntry value="org.eclipse.ecf.provider.bittorrent"/>
-        <setEntry value="org.eclipse.ecf.provider.bittorrent.ui"/>
         <setEntry value="org.eclipse.ecf.provider.datashare"/>
         <setEntry value="org.eclipse.ecf.provider.datashare.nio"/>
         <setEntry value="org.eclipse.ecf.provider.discovery"/>
@@ -95,8 +91,6 @@
         <setEntry value="org.eclipse.ecf.provider.jmdns"/>
         <setEntry value="org.eclipse.ecf.provider.jslp"/>
         <setEntry value="org.eclipse.ecf.provider.local"/>
-        <setEntry value="org.eclipse.ecf.provider.msn"/>
-        <setEntry value="org.eclipse.ecf.provider.msn.ui"/>
         <setEntry value="org.eclipse.ecf.provider.r_osgi"/>
         <setEntry value="org.eclipse.ecf.provider.remoteservice"/>
         <setEntry value="org.eclipse.ecf.provider.remoteservice.java8"/>
@@ -105,7 +99,6 @@
         <setEntry value="org.eclipse.ecf.provider.xmpp.datashare"/>
         <setEntry value="org.eclipse.ecf.provider.xmpp.remoteservice"/>
         <setEntry value="org.eclipse.ecf.provider.xmpp.ui"/>
-        <setEntry value="org.eclipse.ecf.provider.zookeeper"/>
         <setEntry value="org.eclipse.ecf.remoteservice"/>
         <setEntry value="org.eclipse.ecf.remoteservice.asyncproxy"/>
         <setEntry value="org.eclipse.ecf.remoteservice.eventadmin"/>
@@ -125,14 +118,12 @@
         <setEntry value="org.eclipse.ecf.telephony.call"/>
         <setEntry value="org.eclipse.ecf.telephony.call.ui"/>
         <setEntry value="org.eclipse.ecf.tests"/>
-        <setEntry value="org.eclipse.ecf.tests.apache.httpclient.server"/>
         <setEntry value="org.eclipse.ecf.tests.core"/>
         <setEntry value="org.eclipse.ecf.tests.datashare"/>
         <setEntry value="org.eclipse.ecf.tests.discovery"/>
         <setEntry value="org.eclipse.ecf.tests.filetransfer"/>
         <setEntry value="org.eclipse.ecf.tests.filetransfer.httpclient5"/>
         <setEntry value="org.eclipse.ecf.tests.filetransfer.httpclientjava"/>
-        <setEntry value="org.eclipse.ecf.tests.filetransfer.httpserver"/>
         <setEntry value="org.eclipse.ecf.tests.osgi.services.distribution"/>
         <setEntry value="org.eclipse.ecf.tests.osgi.services.distribution.generic"/>
         <setEntry value="org.eclipse.ecf.tests.osgi.services.distribution.r-osgi"/>
@@ -150,12 +141,10 @@
         <setEntry value="org.eclipse.ecf.tests.provider.jslp"/>
         <setEntry value="org.eclipse.ecf.tests.provider.local"/>
         <setEntry value="org.eclipse.ecf.tests.provider.xmpp"/>
-        <setEntry value="org.eclipse.ecf.tests.provider.zookeeper"/>
         <setEntry value="org.eclipse.ecf.tests.remoteserivce.eventadmin"/>
         <setEntry value="org.eclipse.ecf.tests.remoteservice"/>
         <setEntry value="org.eclipse.ecf.tests.remoteservice.generic"/>
         <setEntry value="org.eclipse.ecf.tests.remoteservice.r-osgi"/>
-        <setEntry value="org.eclipse.ecf.tests.remoteservice.rest"/>
         <setEntry value="org.eclipse.ecf.tests.server.generic"/>
         <setEntry value="org.eclipse.ecf.tests.sharedobject"/>
         <setEntry value="org.eclipse.ecf.ui"/>

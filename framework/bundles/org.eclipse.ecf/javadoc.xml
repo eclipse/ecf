@@ -53,7 +53,6 @@
 	        	<exclude name="**/org/eclipse/ecf/examples/**"/>
 	        	<exclude name="**/org/eclipse/ecf/example/**"/>
 	        	<exclude name="**/org/eclipse/ecf/presence/**"/>
-	        	<exclude name="**/org/eclipse/ecf/protocol/bittorrent/**"/>
 	        	<exclude name="**/org/eclipse/ecf/protocol/msn/**"/>
 	        	<exclude name="**/org/eclipse/ecf/provider/irc/**"/>
         		<exclude name="**/org/eclipse/ecf/provider/datashare/**"/>

@@ -27,11 +27,6 @@
                 <id>org.eclipse.ecf.provider.r_osgi</id>
                 <versionRange>0.0.0</versionRange>
               </requirement>
-              <requirement>
-                <type>eclipse-plugin</type>
-                <id>org.eclipse.ecf.provider.zookeeper</id>
-                <versionRange>0.0.0</versionRange>
-              </requirement>
             </extraRequirements>
           </dependency-resolution>
         </configuration>

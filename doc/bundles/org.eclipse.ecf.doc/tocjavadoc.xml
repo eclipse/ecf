@@ -35,7 +35,6 @@
             <topic href="html/reference/api/org/eclipse/ecf/provider/filetransfer/package-summary.html" label="org.eclipse.ecf.provider.filetransfer"/>
             <topic href="html/reference/api/org/eclipse/ecf/provider/filetransfer/browse/package-summary.html" label="org.eclipse.ecf.provider.filetransfer.browse"/>
             <topic href="html/reference/api/org/eclipse/ecf/provider/filetransfer/events/socket/package-summary.html" label="org.eclipse.ecf.provider.filetransfer.events.socket"/>
-            <topic href="html/reference/api/org/eclipse/ecf/provider/filetransfer/httpclient4/package-summary.html" label="org.eclipse.ecf.provider.filetransfer.httpclient4"/>
             <topic href="html/reference/api/org/eclipse/ecf/provider/filetransfer/httpclient45/package-summary.html" label="org.eclipse.ecf.provider.filetransfer.httpclient45"/>
             <topic href="html/reference/api/org/eclipse/ecf/provider/filetransfer/httpclient5/package-summary.html" label="org.eclipse.ecf.provider.filetransfer.httpclient5"/>
             <topic href="html/reference/api/org/eclipse/ecf/provider/filetransfer/identity/package-summary.html" label="org.eclipse.ecf.provider.filetransfer.identity"/>
@@ -49,9 +48,6 @@
             <topic href="html/reference/api/org/eclipse/ecf/provider/r_osgi/identity/package-summary.html" label="org.eclipse.ecf.provider.r_osgi.identity"/>
             <topic href="html/reference/api/org/eclipse/ecf/provider/remoteservice/generic/package-summary.html" label="org.eclipse.ecf.provider.remoteservice.generic"/>
             <topic href="html/reference/api/org/eclipse/ecf/provider/util/package-summary.html" label="org.eclipse.ecf.provider.util"/>
-            <topic href="html/reference/api/org/eclipse/ecf/provider/zookeeper/package-summary.html" label="org.eclipse.ecf.provider.zookeeper"/>
-            <topic href="html/reference/api/org/eclipse/ecf/provider/zookeeper/core/package-summary.html" label="org.eclipse.ecf.provider.zookeeper.core"/>
-            <topic href="html/reference/api/org/eclipse/ecf/provider/zookeeper/util/package-summary.html" label="org.eclipse.ecf.provider.zookeeper.util"/>
             <topic href="html/reference/api/org/eclipse/ecf/remoteservice/package-summary.html" label="org.eclipse.ecf.remoteservice"/>
             <topic href="html/reference/api/org/eclipse/ecf/remoteservice/asyncproxy/package-summary.html" label="org.eclipse.ecf.remoteservice.asyncproxy"/>
             <topic href="html/reference/api/org/eclipse/ecf/remoteservice/client/package-summary.html" label="org.eclipse.ecf.remoteservice.client"/>
@@ -66,8 +62,6 @@
             <topic href="html/reference/api/org/eclipse/ecf/remoteservice/servlet/package-summary.html" label="org.eclipse.ecf.remoteservice.servlet"/>
             <topic href="html/reference/api/org/eclipse/ecf/remoteservice/util/package-summary.html" label="org.eclipse.ecf.remoteservice.util"/>
             <topic href="html/reference/api/org/eclipse/ecf/remoteservice/util/tracker/package-summary.html" label="org.eclipse.ecf.remoteservice.util.tracker"/>
-            <topic href="html/reference/api/org/eclipse/ecf/remoteservices/tooling/package-summary.html" label="org.eclipse.ecf.remoteservice.tooling"/>
-            <topic href="html/reference/api/org/eclipse/ecf/remoteservices/tooling/package-summary.html" label="org.eclipse.ecf.remoteservice.tooling"/>
             <topic href="html/reference/api/org/osgi/service/remoteserviceadmin/package-summary.html" label="org.osgi.service.remoteserviceadmin"/>
             <topic href="html/reference/api/org/osgi/service/remoteserviceadmin/namespace/package-summary.html" label="org.osgi.service.remoteserviceadmin.namespace"/>
         </topic>

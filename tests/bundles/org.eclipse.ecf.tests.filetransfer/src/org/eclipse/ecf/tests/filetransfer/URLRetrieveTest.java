@@ -21,23 +21,17 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.Map;
 
-import org.apache.commons.httpclient.server.HttpRequestHandler;
-import org.apache.commons.httpclient.server.ResponseWriter;
-import org.apache.commons.httpclient.server.SimpleHttpServer;
-import org.apache.commons.httpclient.server.SimpleHttpServerConnection;
-import org.apache.commons.httpclient.server.SimpleRequest;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.events.IFileTransferConnectStartEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
-import org.eclipse.ecf.internal.tests.filetransfer.httpserver.SimpleServer;
 
 public class URLRetrieveTest extends AbstractRetrieveTestCase {
 
 	public static final String HTTP_RETRIEVE = "http://www.eclipse.org/ecf/ip_log.html";
 	public static final String HTTP_RETRIEVE1 = "http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops/R-3.4.2-200902111700/jarprocessor.jar&url=http://ftp.osuosl.org/pub/eclipse/eclipse/downloads/drops/R-3.6.1-201009090800/jarprocessor.jar&mirror_id=272";
-	public static final String HTTP_RETRIEVE_PORT = "http://www.eclipse.org:80/ecf/ip_log.html";
+	public static final String HTTP_RETRIEVE_PORT = "https://www.eclipse.org:443/ecf/ip_log.html";
 	private static final String HTTP_RETRIEVE_HOST_ONLY = "http://www.google.com";
 
 	public static final String HTTPS_RETRIEVE = "https://www.eclipse.org";
@@ -46,13 +40,12 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 	public static final String HTTP_MALFORMED_URL = "http://malformed:-1";
 	public static final String HTTP_RETRIEVE_NON_CANONICAL_URL = "http://www.eclipse.org:80///ecf////ip_log.html";
 	
-	private static final String FTP_RETRIEVE = "http://ftp.osuosl.org/pub/eclipse/rt/ecf/3.14.0/org.eclipse.ecf.sdk_3.14.0.v20180518-0149.zip";
+	private static final String FTP_RETRIEVE = "https://ftp.osuosl.org/pub/eclipse/rt/ecf/3.14.0/org.eclipse.ecf.sdk_3.14.0.v20180518-0149.zip";
 	
 	// See bug 237936
-	private static final String BUG_237936_URL = "http://www.eclipse.org/downloads/download.php?file=/webtools/updates/site.xml&format=xml&countryCode=us&timeZone=-5&responseType=xml";
+	private static final String BUG_237936_URL = "https://www.eclipse.org/downloads/download.php?file=/webtools/updates/site.xml&format=xml&countryCode=us&timeZone=-5&responseType=xml";
 
 	File tmpFile = null;
-	private SimpleServer server;
 
 	/*
 	 * (non-Javadoc)
@@ -62,28 +55,6 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		tmpFile = Files.createTempFile("ECFTest", "").toFile();
-		server = new SimpleServer(getName());
-		SimpleHttpServer simple = server.getSimpleHttpServer();
-		simple.setRequestHandler(new HttpRequestHandler() {
-
-			public boolean processRequest(SimpleHttpServerConnection conn,
-					SimpleRequest request) throws IOException {
-				trace("Responding to request "
-						+ request.getRequestLine());
-				ResponseWriter w = conn.getWriter();
-				writeLines(w, new String[] { "HTTP/1.0 200 OK",
-						"Content-Length: 2",
-						"Content-Type: text/plain; charset=UTF-8", "" });
-				w.flush();
-				for (int i = 0; i < 2; i++) {
-					w.write("x");
-				}
-				w.flush();
-				conn.setKeepAlive(true);
-				return true;
-			}
-
-		});
 	}
 
 	/*
@@ -93,10 +64,6 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 	 */
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		if (server != null) {
-			server.shutdown();
-		} 
-		server = null;
 		if (tmpFile != null)
 			tmpFile.delete();
 		tmpFile = null;
@@ -181,32 +148,6 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 		testReceive(HTTP_RETRIEVE_PORT);
 	}
 	
-	private static void writeLines(ResponseWriter w, String[] lines)
-			throws IOException {
-		for (int i = 0; i < lines.length; i++) {
-			w.println(lines[i]);
-		}
-	}
-	
-
-	public void testReceiveFilePort2() throws Exception {
-		String url = server.getServerURL();
-		assertTrue(url, url.matches("\\Ahttp://localhost:[0-9]+\\Z"));
-		testReceive(url);
-	}
-
-	public void testReceiveFilePort3() throws Exception {
-		String url = server.getServerURL() + "/";
-		assertTrue(url, url.matches("\\Ahttp://localhost:[0-9]+/\\Z"));
-		testReceive(url);
-	}
-	
-	public void testReceiveFilePort4() throws Exception {
-		String url = server.getServerURL() + "/index.html";
-		assertTrue(url, url.matches("\\Ahttp://localhost:[0-9]+/index.html\\Z"));
-		testReceive(url);
-	}
-
 	// Invalid test as double-slash is not a legal in the path section of a URI (see RFC2396, sections 3.2, 3.4). 
 	/*
 	public void testReceiveNonCanonicalURLPath() throws Exception {
@@ -256,7 +197,7 @@ public class URLRetrieveTest extends AbstractRetrieveTestCase {
 		testReceive(BUG_237936_URL);
 	}
 
-	public static final String HTTP_RETRIEVE_GZFILE = "http://download.eclipse.org/releases/2018-09/201809191002/content.xml.xz";
+	public static final String HTTP_RETRIEVE_GZFILE = "https://download.eclipse.org/releases/2018-09/201809191002/content.xml.xz";
 	public static final String HTTP_RETRIEVE_GZFILE_MIRROR = "http://mirrors.xmission.com/eclipse/eclipse/updates/3.4//plugins/javax.servlet.jsp_2.0.0.v200806031607.jar.pack.gz";
 
 	public void testReceiveGzipWithGZFile() throws Exception {

@@ -18,13 +18,11 @@ com.sun.jna
 com.sun.jna.platform
 org.apache.commons.codec
 org.apache.commons.logging
-org.apache.hadoop.zookeeper
 org.apache.httpcomponents.httpclient
 org.apache.httpcomponents.httpclient.win
 org.apache.httpcomponents.httpcore
 org.apache.httpcomponents.client5.httpclient5
 org.apache.httpcomponents.client5.httpclient5-win
-org.apache.log4j
 org.json
 org.objectweb.asm"
 

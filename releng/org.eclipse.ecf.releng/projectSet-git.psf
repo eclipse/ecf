@@ -35,7 +35,6 @@
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,framework/bundles/org.eclipse.ecf.discovery.ui.properties"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,framework/bundles/org.eclipse.ecf.discovery.ui.properties.tabbed"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,framework/bundles/org.eclipse.ecf.discovery.ui.userinput"/>
-<project reference="1.0,https://github.com/eclipse/ecf.git,master,releng/features/org.eclipse.ecf.discovery.zookeeper.feature"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,doc/bundles/org.eclipse.ecf.doc"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,framework/bundles/org.eclipse.ecf.docshare"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,releng/features/org.eclipse.ecf.docshare.feature"/>
@@ -61,11 +60,7 @@
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,framework/bundles/org.eclipse.ecf.presence.collab.ui"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,releng/features/org.eclipse.ecf.presence.feature"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,framework/bundles/org.eclipse.ecf.presence.ui"/>
-<project reference="1.0,https://github.com/eclipse/ecf.git,master,protocols/bundles/org.eclipse.ecf.protocol.bittorrent"/>
-<project reference="1.0,https://github.com/eclipse/ecf.git,master,protocols/bundles/org.eclipse.ecf.protocol.msn"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,framework/bundles/org.eclipse.ecf.provider"/>
-<project reference="1.0,https://github.com/eclipse/ecf.git,master,providers/bundles/org.eclipse.ecf.provider.bittorrent"/>
-<project reference="1.0,https://github.com/eclipse/ecf.git,master,providers/bundles/org.eclipse.ecf.provider.bittorrent.ui"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,providers/bundles/org.eclipse.ecf.provider.datashare"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,providers/bundles/org.eclipse.ecf.provider.datashare.nio"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,providers/bundles/org.eclipse.ecf.provider.dnssd"/>
@@ -86,8 +81,6 @@
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,providers/bundles/org.eclipse.ecf.provider.jmdns"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,providers/bundles/org.eclipse.ecf.provider.jslp"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,providers/bundles/org.eclipse.ecf.provider.local"/>
-<project reference="1.0,https://github.com/eclipse/ecf.git,master,providers/bundles/org.eclipse.ecf.provider.msn"/>
-<project reference="1.0,https://github.com/eclipse/ecf.git,master,providers/bundles/org.eclipse.ecf.provider.msn.ui"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,providers/bundles/org.eclipse.ecf.provider.r_osgi"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,providers/bundles/org.eclipse.ecf.provider.remoteservice"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,providers/bundles/org.eclipse.ecf.provider.rss"/>
@@ -96,7 +89,6 @@
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,providers/bundles/org.eclipse.ecf.provider.xmpp.datashare"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,providers/bundles/org.eclipse.ecf.provider.xmpp.remoteservice"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,providers/bundles/org.eclipse.ecf.provider.xmpp.ui"/>
-<project reference="1.0,https://github.com/eclipse/ecf.git,master,providers/bundles/org.eclipse.ecf.provider.zookeeper"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,releng/org.eclipse.ecf.releng"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,releng/org.eclipse.ecf.releng.bm"/>
 <project reference="1.0,https://github.com/eclipse/ecf.git,master,releng/org.eclipse.ecf.releng.repository"/>
@@ -149,15 +141,9 @@
 <item elementID="=org.eclipse.ecf.provider.filetransfer.scp" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 </workingSets>
 <workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552871937294_56" label="Alt Providers" name="Alt Providers">
-<item elementID="=org.eclipse.ecf.protocol.msn" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.provider.rss" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.provider.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=org.eclipse.ecf.provider.msn" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.provider.local" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=org.eclipse.ecf.provider.bittorrent" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=org.eclipse.ecf.provider.bittorrent.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=org.eclipse.ecf.provider.msn.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=org.eclipse.ecf.protocol.bittorrent" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.remoteservice.ui" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.remoteservice.ui.dosgi" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 </workingSets>
@@ -232,7 +218,6 @@
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.sdk" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.provider.generic.remoteservice.feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.osgi.services.feature" type="4"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.discovery.zookeeper.feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.examples" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.remoteservice.soa.feature" type="4"/>
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.eclipse.ecf.discovery.feature" type="4"/>
@@ -328,11 +313,7 @@
 <item elementID="=org.eclipse.ecf.presence.bot/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.presence.collab.ui/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.presence.ui/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=org.eclipse.ecf.protocol.bittorrent/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=org.eclipse.ecf.protocol.msn/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.provider/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=org.eclipse.ecf.provider.bittorrent/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=org.eclipse.ecf.provider.bittorrent.ui/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.provider.datashare/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.provider.datashare.nio/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.provider.dnssd/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
@@ -348,8 +329,6 @@
 <item elementID="=org.eclipse.ecf.provider.jmdns/jmdns" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.provider.jslp/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.provider.local/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=org.eclipse.ecf.provider.msn/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=org.eclipse.ecf.provider.msn.ui/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.provider.r_osgi/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.provider.remoteservice/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.provider.rss/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
@@ -357,7 +336,6 @@
 <item elementID="=org.eclipse.ecf.provider.xmpp/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.provider.xmpp.remoteservice/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.provider.xmpp.ui/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
-<item elementID="=org.eclipse.ecf.provider.zookeeper/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.remoteservice/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.remoteservice.asyncproxy/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 <item elementID="=org.eclipse.ecf.remoteservice.asyncproxy.j8/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
@@ -461,6 +439,5 @@
 <item elementID="=org.eclipse.ecf.provider.jmdns" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 </workingSets>
 <workingSets editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" id="1552865700938_38" label="Zookeeper Discovery Provider" name="Zookeeper Discovery Provider">
-<item elementID="=org.eclipse.ecf.provider.zookeeper" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 </workingSets>
 </psf>

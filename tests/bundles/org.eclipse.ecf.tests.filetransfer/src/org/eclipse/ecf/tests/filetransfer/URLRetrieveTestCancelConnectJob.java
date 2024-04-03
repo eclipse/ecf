@@ -38,7 +38,6 @@
  * org.eclipse.ecf.filetransfer.events.socket.ISocketEventSource; import
  * org.eclipse.ecf.filetransfer.events.socket.ISocketListener; import
  * org.eclipse.ecf.filetransfer.identity.IFileID; import
- * org.eclipse.ecf.internal.tests.filetransfer.httpserver.SimpleServer; import
  * org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer;
  * import
  * org.eclipse.ecf.tests.filetransfer.SocketEventTestUtil.SocketInReadWrapper;

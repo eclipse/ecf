@@ -74,7 +74,7 @@
   <properties>
     <tycho-version>2.7.5</tycho-version>
     <cbi-version>1.3.2</cbi-version>
-    <target-platform>2022-03</target-platform>
+    <target-platform>2022-03A</target-platform>
     <execution-environment>JavaSE-17</execution-environment>
     <eclipserun-repo>https://download.eclipse.org/eclipse/updates/latest/</eclipserun-repo>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
@@ -156,21 +156,15 @@
 
     <module>protocols/bundles/ch.ethz.iks.r_osgi.remote</module>
     <module>protocols/bundles/ch.ethz.iks.slp</module>
-    <module>protocols/bundles/org.eclipse.ecf.protocol.bittorrent</module>
-    <module>protocols/bundles/org.eclipse.ecf.protocol.msn</module>
     <module>protocols/bundles/org.jivesoftware.smack</module>
 
-    <module>providers/bundles/org.eclipse.ecf.provider.bittorrent</module>
-    <module>providers/bundles/org.eclipse.ecf.provider.bittorrent.ui</module>
     <module>providers/bundles/org.eclipse.ecf.provider.datashare</module>
     <module>providers/bundles/org.eclipse.ecf.provider.datashare.nio</module>
     <module>providers/bundles/org.eclipse.ecf.provider.discovery</module>
     <module>providers/bundles/org.eclipse.ecf.provider.dnssd</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.efs</module>
-    <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient4</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient45</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient45.win32</module>
-    <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient4.ssl</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient5</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient5.win32</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclientjava</module>
@@ -181,8 +175,6 @@
     <module>providers/bundles/org.eclipse.ecf.provider.irc.ui</module>
     <module>providers/bundles/org.eclipse.ecf.provider.jmdns</module>
     <module>providers/bundles/org.eclipse.ecf.provider.jslp</module>
-    <module>providers/bundles/org.eclipse.ecf.provider.msn</module>
-    <module>providers/bundles/org.eclipse.ecf.provider.msn.ui</module>
     <module>providers/bundles/org.eclipse.ecf.provider.remoteservice</module>
     <module>providers/bundles/org.eclipse.ecf.provider.r_osgi</module>
     <module>providers/bundles/org.eclipse.ecf.provider.ui</module>
@@ -190,7 +182,6 @@
     <module>providers/bundles/org.eclipse.ecf.provider.xmpp</module>
     <module>providers/bundles/org.eclipse.ecf.provider.xmpp.remoteservice</module>
     <module>providers/bundles/org.eclipse.ecf.provider.xmpp.ui</module>
-    <module>providers/bundles/org.eclipse.ecf.provider.zookeeper</module>
 
     <module>server-side/bundles/org.eclipse.ecf.remoteservice.eventadmin</module>
     <module>server-side/bundles/org.eclipse.ecf.server.generic</module>
@@ -198,14 +189,11 @@
     <module>server-side/features/org.eclipse.ecf.server.generic.feature</module>
 
     <module>tests/bundles/org.eclipse.ecf.tests</module>
-    <module>tests/bundles/org.eclipse.ecf.tests.apache.httpclient.server</module>
     <module>tests/bundles/org.eclipse.ecf.tests.datashare</module>
     <module>tests/bundles/org.eclipse.ecf.tests.filetransfer</module>
     <module>tests/bundles/org.eclipse.ecf.tests.filetransfer.httpclient5</module>
     <module>tests/bundles/org.eclipse.ecf.tests.filetransfer.httpclientjava</module>
-    <module>tests/bundles/org.eclipse.ecf.tests.filetransfer.httpserver</module>
     <module>tests/bundles/org.eclipse.ecf.tests.presence</module>
-    <module>tests/bundles/org.eclipse.ecf.tests.protocol.msn</module>
     <module>tests/bundles/org.eclipse.ecf.tests.provider.datashare.nio</module>
     <module>tests/bundles/org.eclipse.ecf.tests.provider.xmpp</module>
     <module>tests/bundles/org.eclipse.ecf.tests.remoteservice</module>
@@ -231,14 +219,11 @@
     <module>releng/features/org.eclipse.ecf.discovery.feature</module>
     <module>releng/features/org.eclipse.ecf.discovery.jmdns.feature</module>
     <module>releng/features/org.eclipse.ecf.discovery.slp.feature</module>
-    <module>releng/features/org.eclipse.ecf.discovery.zookeeper.feature</module>
     <module>releng/features/org.eclipse.ecf.docshare.feature</module>
     <module>releng/features/org.eclipse.ecf.eventadmin.examples.feature</module>
     <module>releng/features/org.eclipse.ecf.eventadmin.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.feature</module>
-    <module>releng/features/org.eclipse.ecf.filetransfer.httpclient4.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.httpclient45.feature</module>
-    <module>releng/features/org.eclipse.ecf.filetransfer.httpclient4.ssl.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.httpclient5.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.httpclientjava.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.ssl.feature</module>
