@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.ecf.remoteservices.tooling.bndtools.feature"
-      label="ECF Bndtools Support"
-      version="1.1.0.qualifier"
+      label="ECF Remote Services Bndtools Support"
+      version="1.2.0.qualifier"
       provider-name="%featureProvider">
 
    <description url="http://www.example.com/description">
@@ -16,6 +16,10 @@
    <license url="http://www.example.com/license">
       [Enter License Description here.]
    </license>
+
+   <requires>
+      <import feature="bndtools.main.feature" version="7.1.0" match="compatible"/>
+   </requires>
 
    <plugin
          id="org.eclipse.ecf.remoteservices.tooling.bndtools"

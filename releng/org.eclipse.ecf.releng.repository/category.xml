@@ -129,13 +129,13 @@
    <feature id="org.eclipse.ecf.xmpp.feature.source" version="0.0.0">
       <category name="other"/>
    </feature>
-   <feature id="org.eclipse.ecf.remoteservices.tooling.bndtools.feature">
+<!--   <feature id="org.eclipse.ecf.remoteservices.tooling.bndtools.feature">
       <category name="bndtools"/>
    </feature>
-   <category-def name="sdk" label="ECF SDK for Eclipse"/>
+-->   <category-def name="sdk" label="ECF SDK for Eclipse"/>
    <category-def name="core" label="ECF Core Features"/>
    <category-def name="core sources" label="ECF Core Source Features"/>
    <category-def name="remoteservices" label="ECF Remote Services SDK"/>
    <category-def name="other" label="Other ECF Features"/>
-   <category-def name="bndtools" label="ECF Bndtools Core Support"/>
-</site>
+<!--   <category-def name="bndtools" label="ECF Bndtools Core Support"/>
+--></site>
