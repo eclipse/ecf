@@ -47,7 +47,6 @@
 			<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20230302014618/repository/"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-			<unit id="org.json" version="1.0.0.v201011060100"/>
 			<unit id="org.xbill.dns" version="2.0.8.v201112050911"/>
 			<unit id="org.xbill.dns.source" version="2.0.8.v201112050911"/>
 			<unit id="org.apache.httpcomponents.httpclient.win" version="4.5.13.v20211010-1849"/>
