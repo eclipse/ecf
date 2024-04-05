@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.8"?>
+<target name="Generated from ECF" sequenceNumber="11">
+  <locations>
+    <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+      <unit id="org.eclipse.license.feature.group" version="2.0.2.v20181016-2210"/>
+      <repository location="https://download.eclipse.org/cbi/updates/license"/>
+    </location>
+    <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+      <unit id="org.eclipse.emf.databinding.edit.feature.group" version="1.11.0.v20231208-1346"/>
+      <unit id="org.eclipse.emf.databinding.feature.group" version="1.11.0.v20231208-1346"/>
+      <unit id="org.eclipse.emf.ecore.feature.group" version="2.37.0.v20240203-0859"/>
+      <unit id="org.eclipse.emf.edit.feature.group" version="2.22.0.v20231208-1346"/>
+      <unit id="org.eclipse.emf.edit.ui" version="2.23.0.v20230211-1150"/>
+      <repository location="https://download.eclipse.org/modeling/emf/emf/builds/release/latest"/>
+    </location>
+    <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+      <unit id="bcpg" version="1.77.0"/>
+      <unit id="biz.aQute.resolve" version="7.0.0.202310060912"/>
+      <unit id="com.ibm.icu" version="74.2.0"/>
+      <unit id="com.jcraft.jsch" version="0.1.55.v20230916-1400"/>
+      <unit id="com.sun.jna.platform" version="5.14.0"/>
+      <unit id="jakarta.annotation-api" version="2.1.1"/>
+      <unit id="jakarta.inject.jakarta.inject-api" version="2.0.1"/>
+      <unit id="jakarta.servlet-api" version="5.0.0"/>
+      <unit id="jakarta.servlet-api" version="6.0.0"/>
+      <unit id="jakarta.xml.bind-api" version="4.0.2"/>
+      <unit id="json" version="20230227.0.0"/>
+      <unit id="junit-jupiter-migrationsupport" version="5.10.2"/>
+      <unit id="junit-jupiter-params" version="5.10.2"/>
+      <unit id="junit-platform-runner" version="1.10.2"/>
+      <unit id="junit-platform-suite-engine" version="1.10.2"/>
+      <unit id="junit-vintage-engine" version="5.10.2"/>
+      <unit id="org.apache.ant" version="1.10.14.v20230922-1200"/>
+      <unit id="org.apache.batik.css" version="1.17.0.v20231215-1130"/>
+      <unit id="org.apache.commons.httpclient" version="3.1.0.v20240401-1000"/>
+      <unit id="org.apache.commons.jxpath" version="1.3.0"/>
+      <unit id="org.apache.felix.gogo.runtime" version="1.1.6"/>
+      <unit id="org.apache.httpcomponents.client5.httpclient5" version="5.3.1.v20240126-0900"/>
+      <unit id="org.apache.httpcomponents.httpclient" version="4.5.14"/>
+      <unit id="org.apache.httpcomponents.httpclient.win" version="4.5.14.v20240401-1000"/>
+      <unit id="org.apache.log4j" version="1.2.25"/>
+      <unit id="org.apache.lucene.analysis-smartcn" version="9.10.0.v20240221-0830"/>
+      <unit id="org.apiguardian.api" version="1.1.2"/>
+      <unit id="org.bndtools.headless.build.plugin.gradle" version="7.0.0.202310060912"/>
+      <unit id="org.bndtools.templates.template" version="7.0.0.202310060912"/>
+      <unit id="org.bndtools.templating" version="7.0.0.202310060912"/>
+      <unit id="org.osgi.annotation.bundle" version="2.0.0.202202082230"/>
+      <unit id="org.osgi.annotation.versioning" version="1.1.2.202109301733"/>
+      <unit id="org.osgi.namespace.contract" version="1.0.0.201505202024"/>
+      <unit id="org.osgi.namespace.extender" version="1.0.1.201505202024"/>
+      <unit id="org.osgi.namespace.service" version="1.0.0.201505202024"/>
+      <unit id="org.osgi.service.component.annotations" version="1.5.1.202212101352"/>
+      <unit id="org.osgi.service.device" version="1.1.1.202109301733"/>
+      <unit id="org.osgi.service.event" version="1.4.1.202109301733"/>
+      <unit id="org.osgi.service.http.whiteboard" version="1.1.1.202109301733"/>
+      <unit id="org.osgi.service.metatype.annotations" version="1.4.1.202109301733"/>
+      <unit id="org.osgi.service.prefs" version="1.1.2.202109301733"/>
+      <unit id="org.osgi.service.provisioning" version="1.2.0.201505202024"/>
+      <unit id="org.osgi.service.upnp" version="1.2.1.202109301733"/>
+      <unit id="org.osgi.service.useradmin" version="1.1.1.202109301733"/>
+      <unit id="org.osgi.service.wireadmin" version="1.0.2.202109301733"/>
+      <unit id="org.osgi.util.position" version="1.0.1.201505202026"/>
+      <unit id="org.osgi.util.xml" version="1.0.2.202109301733"/>
+      <unit id="org.sat4j.pb" version="2.3.6.v20201214"/>
+      <unit id="org.tukaani.xz" version="1.9.0"/>
+      <unit id="org.xbill.dns" version="3.5.3"/>
+      <repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/milestone/latest"/>
+    </location>
+    <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+      <unit id="com.sun.syndication" version="0.9.0.v200803061811"/>
+      <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository"/>
+    </location>
+    <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+      <unit id="org.eclipse.sdk.feature.group" version="4.32.0.v20240404-1943"/>
+      <repository location="https://download.eclipse.org/eclipse/updates/4.32-I-builds"/>
+    </location>
+  </locations>
+</target>

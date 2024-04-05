@@ -60,7 +60,7 @@
    <feature id="org.eclipse.ecf.remoteservice.sdk.feature.source" version="0.0.0">
       <category name="remoteservices"/>
    </feature>
-   <iu id="org.json" version="0.0.0">
+   <iu id="json" version="0.0.0">
       <category name="sdk"/>
    </iu>
    <iu id="org.objectweb.asm" version="0.0.0">

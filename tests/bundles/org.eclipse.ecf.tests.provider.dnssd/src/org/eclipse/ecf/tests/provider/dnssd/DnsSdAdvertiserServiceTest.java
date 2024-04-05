@@ -50,7 +50,7 @@ public class DnsSdAdvertiserServiceTest extends DnsSdAbstractDiscoveryTest {
 
 		// purge all SRV records from the test domain
 		ZoneTransferIn xfr = ZoneTransferIn.newAXFR(new Name(DnsSdTestHelper.REG_DOMAIN), DnsSdTestHelper.DNS_SERVER, null);
-		List records  = xfr.run();
+		List records  = run(xfr);
 		for (Iterator itr = records.iterator(); itr.hasNext();) {
 			Record record = (Record) itr.next();
 			String name = record.getName().toString();
@@ -113,6 +113,11 @@ public class DnsSdAdvertiserServiceTest extends DnsSdAbstractDiscoveryTest {
 		assertTrue("", rcode == 0);
 	}
 	
+	private List run(ZoneTransferIn xfr) throws IOException, ZoneTransferException {
+		xfr.run();
+		return xfr.getAXFR() == null ? xfr.getIXFR() : xfr.getAXFR();
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.tests.provider.dnssd.DnsSdDiscoveryServiceTest#testRegisterService()
 	 */
@@ -123,7 +128,7 @@ public class DnsSdAdvertiserServiceTest extends DnsSdAbstractDiscoveryTest {
 		
 		// check postcondition service is registered
 		final ZoneTransferIn xfr = ZoneTransferIn.newAXFR(new Name(DnsSdTestHelper.REG_DOMAIN), DnsSdTestHelper.DNS_SERVER, null);
-		assertTrue("Mismatch between DNS response and IServiceInfo", comparator.compare(serviceInfo, xfr.run()) == 0);
+		assertTrue("Mismatch between DNS response and IServiceInfo", comparator.compare(serviceInfo, run(xfr)) == 0);
 	}
 	
 	/**
@@ -155,7 +160,7 @@ public class DnsSdAdvertiserServiceTest extends DnsSdAbstractDiscoveryTest {
 		
 		// check SRV record is gone
 		final ZoneTransferIn xfr = ZoneTransferIn.newAXFR(new Name(DnsSdTestHelper.REG_DOMAIN), DnsSdTestHelper.DNS_SERVER, null);
-		final List records  = xfr.run();
+		final List records  = run(xfr);
 		for (final Iterator itr = records.iterator(); itr.hasNext();) {
 			final Record record = (Record) itr.next();
 			if(record instanceof SRVRecord) {
@@ -178,7 +183,7 @@ public class DnsSdAdvertiserServiceTest extends DnsSdAbstractDiscoveryTest {
 		
 		// check SRV record is gone
 		final ZoneTransferIn xfr = ZoneTransferIn.newAXFR(new Name(DnsSdTestHelper.REG_DOMAIN), DnsSdTestHelper.DNS_SERVER, null);
-		final List records  = xfr.run();
+		final List records  = run(xfr);
 		for (final Iterator itr = records.iterator(); itr.hasNext();) {
 			final Record record = (Record) itr.next();
 			if(record instanceof SRVRecord) {

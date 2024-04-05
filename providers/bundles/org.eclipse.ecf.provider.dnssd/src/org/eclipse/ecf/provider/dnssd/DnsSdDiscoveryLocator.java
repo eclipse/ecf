@@ -190,10 +190,10 @@ public class DnsSdDiscoveryLocator extends DnsSdDiscoveryContainerAdapter {
 		// fall back to the search path as last resort 
 		if(aTargetID == null || !(aTargetID instanceof DnsSdServiceTypeID)) {
 			ResolverConfig config = new ResolverConfig();
-			Name[] searchPaths = config.searchPath();
-			if(searchPaths != null && searchPaths.length > 0) {
+			List searchPaths = config.searchPath();
+			if(!searchPaths.isEmpty()) {
 				targetID = new DnsSdServiceTypeID();
-				targetID.setSearchPath(searchPaths);
+				targetID.setSearchPath((Name[])searchPaths.toArray(new Name[searchPaths.size()]));
 			} else {
 				throw new ContainerConnectException(Messages.DnsSdDiscoveryLocator_No_Target_ID);
 			}

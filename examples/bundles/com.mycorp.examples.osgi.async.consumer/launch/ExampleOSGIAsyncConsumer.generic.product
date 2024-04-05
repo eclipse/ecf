@@ -28,7 +28,7 @@
    <plugins>
       <plugin id="com.mycorp.examples.osgi.async"/>
       <plugin id="com.mycorp.examples.osgi.async.consumer"/>
-      <plugin id="javax.servlet"/>
+      <plugin id="jakarta.servlet.jsp-api"/>
       <plugin id="org.apache.commons.logging"/>
       <plugin id="org.apache.felix.gogo.command"/>
       <plugin id="org.apache.felix.gogo.runtime"/>

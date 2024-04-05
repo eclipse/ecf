@@ -11,11 +11,11 @@ Require-Bundle: org.eclipse.ecf.remoteservice.rest;bundle-version="1.0.0",
  org.eclipse.ecf;bundle-version="3.0.0",
  org.eclipse.core.runtime;bundle-version="3.5.0",
  org.eclipse.ecf.remoteservice;bundle-version="3.0.0",
- org.eclipse.equinox.concurrent;bundle-version="1.0.0",
- org.json;bundle-version="1.0.0"
+ org.eclipse.equinox.concurrent;bundle-version="1.0.0"
 Import-Package: org.apache.commons.httpclient;version="3.0.1",
  org.apache.commons.httpclient.server,
- org.eclipse.ecf.remoteservice.asyncproxy;version="1.0.0"
+ org.eclipse.ecf.remoteservice.asyncproxy;version="1.0.0",
+ org.json
 Export-Package: org.eclipse.ecf.tests.remoteservice.rest,
  org.eclipse.ecf.tests.remoteservice.rest.service,
  org.eclipse.ecf.tests.remoteservice.rest.twitter
