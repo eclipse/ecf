@@ -8,13 +8,13 @@ Bundle-Vendor: %plugin.provider
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Bundle-Localization: plugin
 Import-Package: javax.naming,
+ javax.servlet,
  javax.servlet.http,
  org.osgi.framework,
  org.osgi.service.http,
  org.osgi.util.tracker
 Eclipse-LazyStart: true
-Require-Bundle: javax.servlet,
- org.eclipse.ecf,
+Require-Bundle: org.eclipse.ecf,
  org.eclipse.ecf.discovery,
  org.eclipse.equinox.app,
  org.eclipse.equinox.common

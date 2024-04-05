@@ -30,7 +30,7 @@
    <plugins>
       <plugin id="com.mycorp.examples.timeservice.async"/>
       <plugin id="com.mycorp.examples.timeservice.consumer.ds.async"/>
-      <plugin id="javax.servlet"/>
+      <plugin id="jakarta.servlet.jsp-api"/>
       <plugin id="org.apache.commons.logging"/>
       <plugin id="org.apache.felix.gogo.command"/>
       <plugin id="org.apache.felix.gogo.runtime"/>

@@ -48,7 +48,7 @@
       <import plugin="org.eclipse.ecf.examples.remoteservices.common"/>
       <import plugin="org.eclipse.ecf.ui"/>
       <import plugin="org.eclipse.equinox.common"/>
-      <import plugin="javax.servlet"/>
+      <import plugin="jakarta.servlet.jsp-api"/>
       <import plugin="org.eclipse.osgi.services"/>
       <import plugin="org.eclipse.ecf.remoteservice.ui"/>
       <import plugin="org.eclipse.equinox.app"/>

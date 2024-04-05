@@ -128,6 +128,7 @@
       xsi:type="setup.targlets:TargletTask">
     <targlet
         name="ECF"
+        includeAllPlatforms="true"
         includeBinaryEquivalents="false">
       <annotation
           source="http:/www.eclipse.org/oomph/targlets/TargetDefinitionGenerator">
@@ -176,7 +177,7 @@
         </detail>
         <detail
             key="extraUnits">
-          <value>org.apache.log4j,jakarta.servlet-api</value>
+          <value>org.apache.log4j,jakarta.servlet-api,org.apache.httpcomponents.httpclient.win</value>
         </detail>
         <detail
             key="generateVersions">
@@ -219,7 +220,7 @@
         </detail>
         <detail
             key="extraUnits">
-          <value>org.apache.log4j,jakarta.servlet-api</value>
+          <value>org.apache.log4j,jakarta.servlet-api,org.apache.httpcomponents.httpclient.win</value>
         </detail>
         <detail
             key="generateVersions">
@@ -282,6 +283,19 @@
           versionRange="[3.2.2.v201511171945,3.2.2.v201511171945]"
           optional="true"
           max="0"/>
+      <requirement
+          name="org.apache.commons.io"
+          versionRange="[1.4.0.v20081110-1000,1.4.0.v20081110-1000]"
+          optional="true"
+          max="0"/>
+      <requirement
+          name="javax.annotation"
+          optional="true"
+          max="0"/>
+      <requirement
+          name="com.ibm.icu.base"
+          optional="true"
+          max="0"/>
       <sourceLocator
           rootFolder="${github.clone.ecf.location}"
           locateNestedProjects="true">
@@ -289,6 +303,9 @@
             xsi:type="predicates:NotPredicate">
           <operand
               xsi:type="predicates:OrPredicate">
+            <operand
+                xsi:type="predicates:NamePredicate"
+                pattern=".*bndtools.*"/>
             <operand
                 xsi:type="predicates:NamePredicate"
                 pattern="com.mycorp.examples.githubservice.*"/>
@@ -349,6 +366,9 @@
             <operand
                 xsi:type="predicates:NamePredicate"
                 pattern="Tutorial.*"/>
+            <operand
+                xsi:type="predicates:NamePredicate"
+                pattern=".*zoo.*"/>
           </operand>
         </predicate>
       </sourceLocator>
@@ -361,6 +381,15 @@
             url="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/milestone/latest"/>
         <repository
             url="http://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository"/>
+      </repositoryList>
+      <repositoryList
+          name="Old">
+        <repository
+            url="https://download.eclipse.org/cbi/updates/license"/>
+        <repository
+            url="https://download.eclipse.org/modeling/emf/emf/builds/release/latest"/>
+        <repository
+            url="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/milestone/latest"/>
         <repository
             url="https://download.eclipse.org/tools/orbit/downloads/drops/R20230531010532/repository"/>
       </repositoryList>

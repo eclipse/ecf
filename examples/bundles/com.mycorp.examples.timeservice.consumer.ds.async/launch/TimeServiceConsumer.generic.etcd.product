@@ -62,7 +62,7 @@
       <plugin id="org.eclipse.osgi.services"/>
       <plugin id="org.eclipse.osgi.services.remoteserviceadmin"/>
       <plugin id="org.eclipse.osgi.util"/>
-      <plugin id="org.json"/>
+      <plugin id="json"/>
    </plugins>
 
    <configurations>
