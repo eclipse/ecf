@@ -134,11 +134,11 @@
           source="http:/www.eclipse.org/oomph/targlets/TargetDefinitionGenerator">
         <detail
             key="location">
-          <value>${github.clone.ecf.location/releng/org.eclipse.ecf.releng.target/ecf-latest-1.target}</value>
+          <value>${github.clone.ecf.location/releng/org.eclipse.ecf.releng.target/}ecf-${eclipse.target.platform}.target</value>
         </detail>
         <detail
             key="extraUnits">
-          <value>org.apache.log4j,jakarta.servlet-api</value>
+          <value>org.apache.log4j,jakarta.servlet-api,org.eclipse.equinox.core.feature.feature.group,org.apache.httpcomponents.httpclient.win</value>
         </detail>
         <detail
             key="singleLocation">
@@ -170,7 +170,46 @@
         </detail>
       </annotation>
       <annotation
-          source="http:/www.eclipse.org/oomph/targlets/TargetDefinitionGenerator">
+          source="http:/www.eclipse.org/oomph/targlets/TargetDefinitionGenerator-x">
+        <detail
+            key="location">
+          <value>${github.clone.ecf.location/releng/org.eclipse.ecf.releng.target/ecf-latest-1.target}</value>
+        </detail>
+        <detail
+            key="extraUnits">
+          <value>org.apache.log4j,jakarta.servlet-api,org.eclipse.equinox.core.feature.feature.group,org.apache.httpcomponents.httpclient.win</value>
+        </detail>
+        <detail
+            key="singleLocation">
+          <value>false</value>
+        </detail>
+        <detail
+            key="sortLocations">
+          <value>false</value>
+        </detail>
+        <detail
+            key="includeAllPlatforms">
+          <value>false</value>
+        </detail>
+        <detail
+            key="includeSource">
+          <value>true</value>
+        </detail>
+        <detail
+            key="ignoreJavaRequirements">
+          <value>false</value>
+        </detail>
+        <detail
+            key="minimizeImplicitUnits">
+          <value>false</value>
+        </detail>
+        <detail
+            key="generateImplicitUnits">
+          <value>false</value>
+        </detail>
+      </annotation>
+      <annotation
+          source="http:/www.eclipse.org/oomph/targlets/TargetDefinitionGenerator-x">
         <detail
             key="location">
           <value>${github.clone.ecf.location/releng/org.eclipse.ecf.releng.target/ecf-latest-2.target}</value>
@@ -213,7 +252,7 @@
         </detail>
       </annotation>
       <annotation
-          source="http:/www.eclipse.org/oomph/targlets/TargetDefinitionGenerator">
+          source="http:/www.eclipse.org/oomph/targlets/TargetDefinitionGenerator-x">
         <detail
             key="location">
           <value>${github.clone.ecf.location/releng/org.eclipse.ecf.releng.target/ecf-latest-3.target}</value>
@@ -305,6 +344,9 @@
               xsi:type="predicates:OrPredicate">
             <operand
                 xsi:type="predicates:NamePredicate"
+                pattern=".*remoteservicesx?.rest.*"/>
+            <operand
+                xsi:type="predicates:NamePredicate"
                 pattern=".*bndtools.*"/>
             <operand
                 xsi:type="predicates:NamePredicate"
@@ -369,6 +411,9 @@
             <operand
                 xsi:type="predicates:NamePredicate"
                 pattern=".*zoo.*"/>
+            <operand
+                xsi:type="predicates:NamePredicate"
+                pattern="org.eclipse.ecf.remoteservice.rest.synd.*"/>
           </operand>
         </predicate>
       </sourceLocator>
@@ -379,8 +424,6 @@
             url="https://download.eclipse.org/modeling/emf/emf/builds/release/latest"/>
         <repository
             url="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/milestone/latest"/>
-        <repository
-            url="http://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository"/>
       </repositoryList>
       <repositoryList
           name="Old">
@@ -392,6 +435,8 @@
             url="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/milestone/latest"/>
         <repository
             url="https://download.eclipse.org/tools/orbit/downloads/drops/R20230531010532/repository"/>
+        <repository
+            url="http://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository"/>
       </repositoryList>
     </targlet>
   </setupTask>

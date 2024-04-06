@@ -47,14 +47,14 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:http://git.eclipse.org/gitroot/ecf/org.eclipse.ecf.git</connection>
-    <developerConnection>scm:git:ssh://git.eclipse.org/gitroot/ecf/org.eclipse.ecf.git</developerConnection>
-    <url>http://git.eclipse.org/c/ecf/org.eclipse.ecf.git</url>
+    <connection>scm:git:https://github.com/eclipse/ecf.git</connection>
+    <developerConnection>scm:git:git@github.com:eclipse/ecf.git</developerConnection>
+    <url>https://github.com/eclipse/ecf.git</url>
   </scm>
 
   <issueManagement>
-    <url>https://bugs.eclipse.org/bugs/buglist.cgi?product=ECF</url>
-    <system>Bugzilla</system>
+    <url>https://github.com/eclipse/ecf/issues</url>
+    <system>GitHub</system>
   </issueManagement>
 
   <distributionManagement>
@@ -72,9 +72,9 @@
   </distributionManagement>
 
   <properties>
-    <tycho-version>2.7.5</tycho-version>
+    <tycho-version>4.0.7</tycho-version>
     <cbi-version>1.4.3</cbi-version>
-    <target-platform>latest-3</target-platform>
+    <target-platform>2024-06</target-platform>
     <execution-environment>JavaSE-17</execution-environment>
     <eclipserun-repo>https://download.eclipse.org/eclipse/updates/latest/</eclipserun-repo>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
@@ -93,8 +93,6 @@
   </pluginRepositories>
 
   <modules>
-    <module>doc/bundles/org.eclipse.ecf.doc</module>
-
     <module>examples/bundles/com.mycorp.examples.timeservice</module>
     <module>examples/bundles/com.mycorp.examples.timeservice.async</module>
     <module>examples/bundles/com.mycorp.examples.timeservice.consumer</module>
@@ -248,6 +246,8 @@
 
     <module>releng/org.eclipse.ecf.releng.target</module>
     <module>releng/org.eclipse.ecf.releng.repository</module>
+
+    <module>doc/bundles/org.eclipse.ecf.doc</module>
   </modules>
 
   <build>
@@ -285,6 +285,9 @@
         <groupId>org.eclipse.tycho</groupId>
         <artifactId>tycho-source-plugin</artifactId>
         <version>${tycho-version}</version>
+        <configuration>
+          <includeBinaryFeature>false</includeBinaryFeature>
+        </configuration>
         <executions>
           <execution>
             <id>plugin-source</id>
@@ -292,21 +295,11 @@
               <goal>plugin-source</goal>
             </goals>
           </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.eclipse.tycho.extras</groupId>
-        <artifactId>tycho-source-feature-plugin</artifactId>
-        <version>${tycho-version}</version>
-        <configuration>
-          <includeBinaryFeature>false</includeBinaryFeature>
-        </configuration>
-        <executions>
           <execution>
-            <id>source-feature</id>
+            <id>feature-source</id>
             <phase>package</phase>
             <goals>
-              <goal>source-feature</goal>
+              <goal>feature-source</goal>
             </goals>
           </execution>
         </executions>
@@ -349,7 +342,7 @@
           <version>${tycho-version}</version>
           <dependencies>
             <dependency>
-              <groupId>org.eclipse.tycho.extras</groupId>
+              <groupId>org.eclipse.tycho</groupId>
               <artifactId>tycho-buildtimestamp-jgit</artifactId>
               <version>${tycho-version}</version>
             </dependency>

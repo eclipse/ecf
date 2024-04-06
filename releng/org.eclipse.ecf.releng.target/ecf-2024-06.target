@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.8"?>
-<target name="Generated from ECF" sequenceNumber="10">
+<target name="Generated from ECF" sequenceNumber="1">
   <locations>
     <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
       <unit id="org.eclipse.license.feature.group" version="0.0.0"/>
@@ -37,6 +37,7 @@
       <unit id="org.apache.felix.gogo.runtime" version="0.0.0"/>
       <unit id="org.apache.httpcomponents.client5.httpclient5" version="0.0.0"/>
       <unit id="org.apache.httpcomponents.httpclient" version="0.0.0"/>
+      <unit id="org.apache.httpcomponents.httpclient.win" version="0.0.0"/>
       <unit id="org.apache.log4j" version="0.0.0"/>
       <unit id="org.apache.lucene.analysis-smartcn" version="0.0.0"/>
       <unit id="org.apiguardian.api" version="0.0.0"/>
@@ -66,10 +67,7 @@
       <repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/milestone/latest"/>
     </location>
     <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-      <unit id="com.sun.syndication" version="0.0.0"/>
-      <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository"/>
-    </location>
-    <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+      <unit id="org.eclipse.equinox.core.feature.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.sdk.feature.group" version="0.0.0"/>
       <repository location="https://download.eclipse.org/eclipse/updates/4.32-I-builds"/>
     </location>
