@@ -22,8 +22,7 @@
 
    <requires>
       <import feature="org.eclipse.ecf.remoteservice.sdk.feature" version="3.8" match="compatible"/>
-      <import feature="org.eclipse.ecf.remoteservice.sdk.examples.feature" version="1.0" match="compatible"/>
-   </requires>
+    </requires>
 
    <plugin
          id="org.eclipse.ecf.doc"

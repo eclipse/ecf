@@ -93,16 +93,6 @@
   </pluginRepositories>
 
   <modules>
-    <module>examples/bundles/com.mycorp.examples.timeservice</module>
-    <module>examples/bundles/com.mycorp.examples.timeservice.async</module>
-    <module>examples/bundles/com.mycorp.examples.timeservice.consumer</module>
-    <module>examples/bundles/com.mycorp.examples.timeservice.consumer.ds</module>
-    <module>examples/bundles/com.mycorp.examples.timeservice.consumer.ds.async</module>
-    <module>examples/bundles/com.mycorp.examples.timeservice.consumer.filediscovery</module>
-    <module>examples/bundles/com.mycorp.examples.timeservice.consumer.filediscovery.rest</module>
-    <module>examples/bundles/com.mycorp.examples.timeservice.host</module>
-    <module>examples/bundles/com.mycorp.examples.timeservice.provider.rest.consumer</module>
-    <module>examples/bundles/com.mycorp.examples.timeservice.provider.rest.host</module>
     <module>examples/bundles/org.eclipse.ecf.example.clients</module>
     <module>examples/bundles/org.eclipse.ecf.example.collab</module>
     <module>examples/bundles/org.eclipse.ecf.examples.eventadmin.app</module>
@@ -230,11 +220,9 @@
     <module>releng/features/org.eclipse.ecf.provider.generic.datashare.feature</module>
     <module>releng/features/org.eclipse.ecf.provider.generic.feature</module>
     <module>releng/features/org.eclipse.ecf.provider.generic.remoteservice.feature</module>
-    <module>releng/features/org.eclipse.ecf.remoteservice.examples.feature</module>
     <module>releng/features/org.eclipse.ecf.remoteservice.feature</module>
     <module>releng/features/org.eclipse.ecf.remoteservice.rest.feature</module>
     <module>releng/features/org.eclipse.ecf.remoteservice.rosgi.feature</module>
-    <module>releng/features/org.eclipse.ecf.remoteservice.sdk.examples.feature</module>
     <module>releng/features/org.eclipse.ecf.remoteservice.sdk.feature</module>
     <module>releng/features/org.eclipse.ecf.remoteservice.servlet.feature</module>
     <module>releng/features/org.eclipse.ecf.remoteservice.soap.feature</module>
