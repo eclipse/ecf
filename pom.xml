@@ -173,7 +173,6 @@
     <module>tests/bundles/org.eclipse.ecf.tests.remoteservice</module>
     <module>tests/bundles/org.eclipse.ecf.tests.sharedobject</module>
     <module>tests/bundles/org.eclipse.ecf.tests.ssl</module>
-    <module>tests/bundles/org.eclipse.ecf.tests.sync</module>
     <module>tests/bundles/org.eclipse.ecf.tests.osgi.services.distribution</module>
     <module>tests/bundles/org.eclipse.ecf.tests.discovery</module>
     <module>tests/bundles/org.eclipse.ecf.tests.remoteservice.generic</module>
