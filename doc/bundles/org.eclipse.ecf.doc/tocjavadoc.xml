@@ -51,8 +51,6 @@
             <topic href="html/reference/api/org/eclipse/ecf/remoteservice/package-summary.html" label="org.eclipse.ecf.remoteservice"/>
             <topic href="html/reference/api/org/eclipse/ecf/remoteservice/asyncproxy/package-summary.html" label="org.eclipse.ecf.remoteservice.asyncproxy"/>
             <topic href="html/reference/api/org/eclipse/ecf/remoteservice/client/package-summary.html" label="org.eclipse.ecf.remoteservice.client"/>
-            <topic href="html/reference/api/org/eclipse/ecf/remoteservice/eventadmin/package-summary.html" label="org.eclipse.ecf.remoteservice.eventadmin"/>
-            <topic href="html/reference/api/org/eclipse/ecf/remoteservice/eventadmin/serialization/package-summary.html" label="org.eclipse.ecf.remoteservice.eventadmin.serialization"/>
             <topic href="html/reference/api/org/eclipse/ecf/remoteservice/events/package-summary.html" label="org.eclipse.ecf.remoteservice.events"/>
             <topic href="html/reference/api/org/eclipse/ecf/remoteservice/provider/package-summary.html" label="org.eclipse.ecf.remoteservice.provider"/>
             <topic href="html/reference/api/org/eclipse/ecf/remoteservice/rest/package-summary.html" label="org.eclipse.ecf.remoteservice.rest"/>

@@ -95,7 +95,6 @@
   <modules>
     <module>examples/bundles/org.eclipse.ecf.example.clients</module>
     <module>examples/bundles/org.eclipse.ecf.example.collab</module>
-    <module>examples/bundles/org.eclipse.ecf.examples.eventadmin.app</module>
 
     <module>framework/bundles/org.eclipse.ecf.console</module>
     <module>framework/bundles/org.eclipse.ecf.datashare</module>
@@ -203,8 +202,6 @@
     <module>releng/features/org.eclipse.ecf.discovery.jmdns.feature</module>
     <module>releng/features/org.eclipse.ecf.discovery.slp.feature</module>
     <module>releng/features/org.eclipse.ecf.docshare.feature</module>
-    <module>releng/features/org.eclipse.ecf.eventadmin.examples.feature</module>
-    <module>releng/features/org.eclipse.ecf.eventadmin.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.httpclient45.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.httpclient5.feature</module>
