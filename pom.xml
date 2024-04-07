@@ -93,9 +93,6 @@
   </pluginRepositories>
 
   <modules>
-    <module>examples/bundles/org.eclipse.ecf.example.clients</module>
-    <module>examples/bundles/org.eclipse.ecf.example.collab</module>
-
     <module>framework/bundles/org.eclipse.ecf.console</module>
     <module>framework/bundles/org.eclipse.ecf.datashare</module>
     <module>framework/bundles/org.eclipse.ecf.discovery</module>

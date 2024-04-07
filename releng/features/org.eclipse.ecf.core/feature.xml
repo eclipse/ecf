@@ -146,20 +146,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.ecf.example.clients"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.example.collab"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.team.ecf.core"
          download-size="0"
          install-size="0"
