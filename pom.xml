@@ -103,7 +103,6 @@
     <module>framework/bundles/org.eclipse.ecf.discovery.ui.properties</module>
     <module>framework/bundles/org.eclipse.ecf.discovery.ui.properties.tabbed</module>
     <module>framework/bundles/org.eclipse.ecf.discovery.ui.userinput</module>
-    <module>framework/bundles/org.eclipse.ecf.docshare</module>
     <module>framework/bundles/org.eclipse.ecf.filetransfer</module>
     <module>framework/bundles/org.eclipse.ecf.filetransfer.ui</module>
     <module>framework/bundles/org.eclipse.ecf.identity</module>
@@ -121,7 +120,6 @@
     <module>framework/bundles/org.eclipse.ecf.remoteservice.ui</module>
     <module>framework/bundles/org.eclipse.ecf.sharedobject</module>
     <module>framework/bundles/org.eclipse.ecf.ssl</module>
-    <module>framework/bundles/org.eclipse.ecf.sync</module>
     <module>framework/bundles/org.eclipse.ecf.ui.capabilities</module>
     <module>framework/bundles/org.eclipse.ecf.ui</module>
     <module>framework/bundles/org.eclipse.team.ecf.core</module>
@@ -198,7 +196,6 @@
     <module>releng/features/org.eclipse.ecf.discovery.feature</module>
     <module>releng/features/org.eclipse.ecf.discovery.jmdns.feature</module>
     <module>releng/features/org.eclipse.ecf.discovery.slp.feature</module>
-    <module>releng/features/org.eclipse.ecf.docshare.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.httpclient45.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.httpclient5.feature</module>
