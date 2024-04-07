@@ -93,12 +93,6 @@
    <feature id="org.eclipse.ecf.discovery.slp.feature.source" version="0.0.0">
       <category name="other"/>
    </feature>
-   <feature id="org.eclipse.ecf.docshare.feature" version="0.0.0">
-      <category name="other"/>
-   </feature>
-   <feature id="org.eclipse.ecf.docshare.feature.source" version="0.0.0">
-      <category name="other"/>
-   </feature>
    <feature id="org.eclipse.ecf.provider.generic.datashare.feature" version="0.0.0">
       <category name="other"/>
    </feature>
