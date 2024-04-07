@@ -96,11 +96,6 @@
     <module>examples/bundles/org.eclipse.ecf.example.clients</module>
     <module>examples/bundles/org.eclipse.ecf.example.collab</module>
     <module>examples/bundles/org.eclipse.ecf.examples.eventadmin.app</module>
-    <module>examples/bundles/org.eclipse.ecf.examples.remoteservices.hello.consumer.edef</module>
-    <module>examples/bundles/org.eclipse.ecf.examples.remoteservices.hello.consumer</module>
-    <module>examples/bundles/org.eclipse.ecf.examples.remoteservices.hello.ds.consumer</module>
-    <module>examples/bundles/org.eclipse.ecf.examples.remoteservices.hello.host</module>
-    <module>examples/bundles/org.eclipse.ecf.examples.remoteservices.hello</module>
 
     <module>framework/bundles/org.eclipse.ecf.console</module>
     <module>framework/bundles/org.eclipse.ecf.datashare</module>
