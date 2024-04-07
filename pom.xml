@@ -116,7 +116,6 @@
     <module>framework/bundles/org.eclipse.ecf.remoteservice</module>
     <module>framework/bundles/org.eclipse.ecf.remoteservice.rest</module>
     <module>framework/bundles/org.eclipse.ecf.remoteservice.servlet</module>
-    <module>framework/bundles/org.eclipse.ecf.remoteservice.soap</module>
     <module>framework/bundles/org.eclipse.ecf.remoteservice.ui</module>
     <module>framework/bundles/org.eclipse.ecf.sharedobject</module>
     <module>framework/bundles/org.eclipse.ecf.ssl</module>
@@ -146,7 +145,6 @@
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient5.win32</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclientjava</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer</module>
-    <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.scp</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.ssl</module>
     <module>providers/bundles/org.eclipse.ecf.provider.irc</module>
     <module>providers/bundles/org.eclipse.ecf.provider.irc.ui</module>
@@ -211,7 +209,6 @@
     <module>releng/features/org.eclipse.ecf.remoteservice.rosgi.feature</module>
     <module>releng/features/org.eclipse.ecf.remoteservice.sdk.feature</module>
     <module>releng/features/org.eclipse.ecf.remoteservice.servlet.feature</module>
-    <module>releng/features/org.eclipse.ecf.remoteservice.soap.feature</module>
     <module>releng/features/org.eclipse.ecf.sharedobject.feature</module>
     <module>releng/features/org.eclipse.ecf.tests.feature</module>
     <module>releng/features/org.eclipse.ecf.tests.filetransfer.feature</module>
