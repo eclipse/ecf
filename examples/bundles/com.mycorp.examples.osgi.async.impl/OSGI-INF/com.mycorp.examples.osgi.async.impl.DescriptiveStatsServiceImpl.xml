@@ -2,6 +2,7 @@
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="com.mycorp.examples.osgi.async.impl.DescriptiveStatsServiceImpl">
    <property name="service.exported.interfaces" value="*"/>
    <property name="service.intents" value="osgi.async"/>
+   <property name="service.exported.configs" value="ecf.generic.server"/>
    <service>
       <provide interface="com.mycorp.examples.osgi.async.DescriptiveStatsService"/>
    </service>

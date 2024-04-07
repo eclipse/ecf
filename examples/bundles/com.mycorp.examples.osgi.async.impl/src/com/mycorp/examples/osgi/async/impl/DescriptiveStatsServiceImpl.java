@@ -20,7 +20,7 @@ import org.osgi.util.promise.Deferred;
 import org.osgi.util.promise.Promise;
 import com.mycorp.examples.osgi.async.DescriptiveStatsService;
 
-@Component(property = { "service.exported.interfaces=*", "service.intents=osgi.async" })
+@Component(property = { "service.exported.interfaces=*", "service.intents=osgi.async", "service.exported.configs=ecf.generic.server" })
 public class DescriptiveStatsServiceImpl implements DescriptiveStatsService {
 
 	@Override

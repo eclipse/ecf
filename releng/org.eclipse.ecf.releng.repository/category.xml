@@ -48,12 +48,6 @@
    <feature id="org.eclipse.ecf.filetransfer.ssl.feature.source" version="0.0.0">
       <category name="core sources"/>
    </feature>
-   <feature id="org.eclipse.ecf.remoteservice.sdk.examples.feature" version="0.0.0">
-      <category name="remoteservices"/>
-   </feature>
-   <feature id="org.eclipse.ecf.remoteservice.sdk.examples.feature.source" version="0.0.0">
-      <category name="remoteservices"/>
-   </feature>
    <feature id="org.eclipse.ecf.remoteservice.sdk.feature" version="0.0.0">
       <category name="remoteservices"/>
    </feature>
@@ -97,12 +91,6 @@
       <category name="other"/>
    </feature>
    <feature id="org.eclipse.ecf.discovery.slp.feature.source" version="0.0.0">
-      <category name="other"/>
-   </feature>
-   <feature id="org.eclipse.ecf.docshare.feature" version="0.0.0">
-      <category name="other"/>
-   </feature>
-   <feature id="org.eclipse.ecf.docshare.feature.source" version="0.0.0">
       <category name="other"/>
    </feature>
    <feature id="org.eclipse.ecf.provider.generic.datashare.feature" version="0.0.0">

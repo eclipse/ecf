@@ -22,8 +22,7 @@
 
    <requires>
       <import feature="org.eclipse.ecf.remoteservice.sdk.feature" version="3.8" match="compatible"/>
-      <import feature="org.eclipse.ecf.remoteservice.sdk.examples.feature" version="1.0" match="compatible"/>
-   </requires>
+    </requires>
 
    <plugin
          id="org.eclipse.ecf.doc"
@@ -96,20 +95,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.ecf.provider.filetransfer.efs"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.provider.filetransfer.scp"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.ecf.remoteservice.ui"
          download-size="0"
          install-size="0"
@@ -144,20 +129,6 @@
          install-size="0"
          version="0.0.0"
          fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.example.clients"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.example.collab"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
          unpack="false"/>
 
    <plugin
@@ -197,13 +168,6 @@
 
    <plugin
          id="org.eclipse.ecf.remoteservices.tooling.pde"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.sync"
          download-size="0"
          install-size="0"
          version="0.0.0"
