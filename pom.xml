@@ -138,7 +138,6 @@
     <module>providers/bundles/org.eclipse.ecf.provider.datashare.nio</module>
     <module>providers/bundles/org.eclipse.ecf.provider.discovery</module>
     <module>providers/bundles/org.eclipse.ecf.provider.dnssd</module>
-    <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.efs</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient45</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient45.win32</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient5</module>
