@@ -26,8 +26,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.ecf.core.security.Callback;
 import org.eclipse.ecf.core.security.CallbackHandler;
 import org.eclipse.ecf.core.security.IConnectContext;
@@ -43,8 +45,11 @@ import org.eclipse.ecf.filetransfer.InvalidFileRangeSpecificationException;
 import org.eclipse.ecf.internal.provider.filetransfer.Activator;
 import org.eclipse.ecf.internal.provider.filetransfer.IURLConnectionModifier;
 import org.eclipse.ecf.internal.provider.filetransfer.Messages;
+import org.eclipse.ecf.provider.filetransfer.preferences.PreferenceConstants;
 import org.eclipse.ecf.provider.filetransfer.util.JREProxyHelper;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.osgi.framework.FrameworkUtil;
 
 public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 
@@ -161,7 +166,12 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 		// See bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=247197
 		// also see http 1.1 rfc section 14-10 in
 		// http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
-		urlConnection.setRequestProperty("Connection", "close"); //$NON-NLS-1$ //$NON-NLS-2$
+		//urlConnection.setRequestProperty("Connection", "close"); //$NON-NLS-1$ //$NON-NLS-2$
+		Map<String, String> map = getRequestConnectionPair();
+		for (Map.Entry<String, String> entry : map.entrySet()) {
+			urlConnection.setRequestProperty(entry.getKey(), entry.getValue());
+		}
+
 		int maxAge = Integer.getInteger("org.eclipse.ecf.http.cache.max-age", 0).intValue(); //$NON-NLS-1$
 		// set max-age for cache control to 0 for bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=249990
 		// fix the fix for bug 249990 with bug 410813
@@ -171,6 +181,35 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 			urlConnection.setRequestProperty("Cache-Control", "max-age=" + maxAge); //$NON-NLS-1$//$NON-NLS-2$
 		}
 		setRequestHeaderValuesFromOptions();
+	}
+
+	private Map getRequestConnectionPair() {
+		HashMap<String, String> map = new HashMap();
+		Optional nameContainer = null;
+		Optional valueContainer = null;
+		String conn = null;
+		String value = null;
+		try {
+			ScopedPreferenceStore store = new ScopedPreferenceStore(InstanceScope.INSTANCE, String.valueOf(FrameworkUtil.getBundle(getClass()).getBundleId()));
+			nameContainer = Optional.ofNullable(store.getDefaultString(PreferenceConstants.REQUEST_CONN_PROPERTY));
+			valueContainer = Optional.ofNullable(store.getDefaultString(PreferenceConstants.REQUEST_VALUE_PROPERTY));
+			if (nameContainer.isEmpty()) {
+				conn = "Connection"; //$NON-NLS-1$
+			} else {
+				conn = (String) nameContainer.get();
+			}
+			if (valueContainer.isEmpty()) {
+				value = "close"; //$NON-NLS-1$
+			} else {
+				value = (String) valueContainer.get();
+			}
+			map.put(conn, value);
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return map;
 	}
 
 	private void setRangeHeader(String value) {
