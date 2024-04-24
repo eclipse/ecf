@@ -36,5 +36,26 @@
             name="ecf.provider.filetransfer">
       </namespace>
    </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipse.ui.net.NetPreferences"
+            class="org.eclipse.ecf.provider.filetransfer.preferences.FileTransferPreferencePage"
+            id="org.eclipse.ecf.provider.filetransfer.preferences.FileTransferPreferencePage"
+            name="FileTransfer Preferences">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.eclipse.ecf.provider.filetransfer.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.core.net.authenticator">
+      <authenticator
+            class="org.eclipse.ecf.provider.filetransfer.Authenticator1">
+      </authenticator>
+   </extension>
 
 </plugin>
