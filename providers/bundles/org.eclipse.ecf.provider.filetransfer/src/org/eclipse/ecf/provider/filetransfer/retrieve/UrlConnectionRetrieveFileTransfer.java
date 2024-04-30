@@ -21,11 +21,13 @@ import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import javax.net.ssl.SSLContext;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ecf.core.security.Callback;
@@ -97,6 +99,12 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 	protected void connect() throws IOException {
 		setupTimeouts();
 		urlConnection = getRemoteFileURL().openConnection();
+		try {
+			SSLContext.getDefault();
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		// set cache to off if using jar protocol
 		// this is for addressing bug
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=235933

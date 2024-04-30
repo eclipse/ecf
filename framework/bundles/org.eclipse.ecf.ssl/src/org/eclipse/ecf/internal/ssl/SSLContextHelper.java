@@ -9,6 +9,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.ssl;
 
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.*;
 import javax.net.ssl.SSLContext;
@@ -21,31 +22,39 @@ public class SSLContextHelper {
 
 	public static SSLContext getSSLContext(String protocols) {
 		SSLContext resultContext = null;
-		if (protocols != null) {
+		try {
+			resultContext = SSLContext.getDefault();
+		} catch (NoSuchAlgorithmException pkiNotAvailableERR) {
+			// TODO Auto-generated catch block
+			// e.printStackTrace();
 
-			String[] httpsProtocols = protocols.split(",");
-			// trim to make sure
-			for (int i = 0; i < httpsProtocols.length; i++)
-				httpsProtocols[i] = httpsProtocols[i].trim();
-			// Now put into defaultProtocolsList in order of jreProtocols
-			List<String> splitProtocolsList = Arrays.asList(httpsProtocols);
-			List<String> defaultProtocolsList = new ArrayList();
-			for (String jreProtocol : jreProtocols) {
-				if (splitProtocolsList.contains(jreProtocol)) {
-					defaultProtocolsList.add(jreProtocol);
-				}
-			}
-			// In order of jre protocols, attempt to create and init SSLContext
-			for (String protocol : defaultProtocolsList) {
-				try {
-					resultContext = SSLContext.getInstance(protocol);
-					resultContext.init(null, new TrustManager[] { new ECFTrustManager() }, new SecureRandom());
-					break;
-				} catch (Exception e) {
-					// just continue to look for SSLContexts with the next
-					// protocolName
-				}
+			if (protocols != null) {
 
+				String[] httpsProtocols = protocols.split(",");
+				// trim to make sure
+				for (int i = 0; i < httpsProtocols.length; i++)
+					httpsProtocols[i] = httpsProtocols[i].trim();
+				// Now put into defaultProtocolsList in order of jreProtocols
+				List<String> splitProtocolsList = Arrays.asList(httpsProtocols);
+				List<String> defaultProtocolsList = new ArrayList();
+				for (String jreProtocol : jreProtocols) {
+					if (splitProtocolsList.contains(jreProtocol)) {
+						defaultProtocolsList.add(jreProtocol);
+					}
+				}
+				// In order of jre protocols, attempt to create and init
+				// SSLContext
+				for (String protocol : defaultProtocolsList) {
+					try {
+						resultContext = SSLContext.getInstance(protocol);
+						resultContext.init(null, new TrustManager[] { new ECFTrustManager() }, new SecureRandom());
+						break;
+					} catch (Exception e) {
+						// just continue to look for SSLContexts with the next
+						// protocolName
+					}
+
+				}
 			}
 		}
 		return resultContext;
