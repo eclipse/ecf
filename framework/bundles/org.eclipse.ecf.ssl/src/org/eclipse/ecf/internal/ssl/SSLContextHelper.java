@@ -25,11 +25,7 @@ public class SSLContextHelper {
 		try {
 			resultContext = SSLContext.getDefault();
 		} catch (NoSuchAlgorithmException pkiNotAvailableERR) {
-			// TODO Auto-generated catch block
-			// e.printStackTrace();
-
 			if (protocols != null) {
-
 				String[] httpsProtocols = protocols.split(",");
 				// trim to make sure
 				for (int i = 0; i < httpsProtocols.length; i++)
@@ -53,7 +49,6 @@ public class SSLContextHelper {
 						// just continue to look for SSLContexts with the next
 						// protocolName
 					}
-
 				}
 			}
 		}
