@@ -36,7 +36,9 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
@@ -1006,11 +1008,26 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		int ticks = 1;
 		monitor.beginTask(getRemoteFileURL().toString() + Messages.HttpClientRetrieveFileTransfer_CONNECTING_TASK_NAME, ticks);
 		try {
-			if (monitor.isCanceled())
-				throw newUserCancelledException();
+			if (monitor.isCanceled()) {
+				setDoneCanceled();
+				return Status.CANCEL_STATUS;
+			}
 			httpResponse = httpClient.sendAsync(httpRequest, BodyHandlers.ofInputStream());
 			responseCode = httpResponse.get(getConnectTimeout(),TimeUnit.MILLISECONDS).statusCode();
-		} catch (final Exception e) {
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			setDoneCanceled();
+			return Status.CANCEL_STATUS;
+		} catch (CancellationException e) {
+			setDoneCanceled();
+			return Status.CANCEL_STATUS;
+		} catch (Exception e) {
+			if (e instanceof ExecutionException) {
+				Throwable cause = ((ExecutionException) e).getCause();
+				if (cause instanceof Exception) {
+					e = (Exception) cause;
+				}
+			}
 			Trace.catching(Activator.PLUGIN_ID, DebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "performConnect", e); //$NON-NLS-1$
 			if (!isDone()) {
 				setDoneException(e);
