@@ -16,6 +16,5 @@ Import-Package: org.apache.felix.service.command;version="[0.10.0,2.0.0)";resolu
 Require-Bundle: org.eclipse.equinox.common;bundle-version="[3.0.0,4.0.0)",
  org.apache.felix.gogo.runtime;bundle-version="[0.10.0,2.0.0)";resolution:=optional,
  org.eclipse.ecf;bundle-version="[3.8.0,4.0.0)"
-Service-Component: OSGI-INF/org.eclipse.ecf.osgi.services.remoteserviceadmin.console.RSACommand.xml
 Automatic-Module-Name: org.eclipse.ecf.osgi.services.remoteserviceadmin.console
 

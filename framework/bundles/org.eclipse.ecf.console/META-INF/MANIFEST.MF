@@ -17,5 +17,4 @@ Import-Package: org.apache.felix.service.command;version="[0.10.0,2.0.0)";resolu
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.equinox.common;bundle-version="[3.0.0,4.0.0)",
  org.apache.felix.gogo.runtime;bundle-version="[0.10.0,2.0.0)";resolution:=optional
-Service-Component: OSGI-INF/org.eclipse.ecf.internal.console.ContainerCommand.xml
 Export-Package: org.eclipse.ecf.console;version="1.0.0"
