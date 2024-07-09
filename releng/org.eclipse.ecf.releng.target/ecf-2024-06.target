@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.8"?>
-<target name="Generated from ECF" sequenceNumber="1">
+<target name="Generated from ECF" sequenceNumber="2">
   <locations>
     <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
       <unit id="org.eclipse.license.feature.group" version="0.0.0"/>
       <repository location="https://download.eclipse.org/cbi/updates/license"/>
     </location>
     <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+      <unit id="org.eclipse.emf.common.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.emf.databinding.edit.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.emf.databinding.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.emf.ecore.feature.group" version="0.0.0"/>
@@ -25,17 +26,14 @@
       <unit id="jakarta.servlet-api" version="0.0.0"/>
       <unit id="jakarta.xml.bind-api" version="0.0.0"/>
       <unit id="json" version="0.0.0"/>
-      <unit id="junit-jupiter-migrationsupport" version="0.0.0"/>
-      <unit id="junit-jupiter-params" version="0.0.0"/>
-      <unit id="junit-platform-runner" version="0.0.0"/>
-      <unit id="junit-platform-suite-engine" version="0.0.0"/>
-      <unit id="junit-vintage-engine" version="0.0.0"/>
       <unit id="org.apache.ant" version="0.0.0"/>
       <unit id="org.apache.batik.css" version="0.0.0"/>
+      <unit id="org.apache.commons.commons-logging" version="0.0.0"/>
       <unit id="org.apache.commons.httpclient" version="0.0.0"/>
       <unit id="org.apache.commons.jxpath" version="0.0.0"/>
       <unit id="org.apache.felix.gogo.runtime" version="0.0.0"/>
       <unit id="org.apache.httpcomponents.client5.httpclient5" version="0.0.0"/>
+      <unit id="org.apache.httpcomponents.client5.httpclient5-win" version="0.0.0"/>
       <unit id="org.apache.httpcomponents.httpclient" version="0.0.0"/>
       <unit id="org.apache.httpcomponents.httpclient.win" version="0.0.0"/>
       <unit id="org.apache.log4j" version="0.0.0"/>
@@ -44,6 +42,8 @@
       <unit id="org.bndtools.headless.build.plugin.gradle" version="0.0.0"/>
       <unit id="org.bndtools.templates.template" version="0.0.0"/>
       <unit id="org.bndtools.templating" version="0.0.0"/>
+      <unit id="org.junit" version="0.0.0"/>
+      <unit id="org.opentest4j" version="0.0.0"/>
       <unit id="org.osgi.annotation.bundle" version="0.0.0"/>
       <unit id="org.osgi.annotation.versioning" version="0.0.0"/>
       <unit id="org.osgi.namespace.contract" version="0.0.0"/>
@@ -64,7 +64,7 @@
       <unit id="org.sat4j.pb" version="0.0.0"/>
       <unit id="org.tukaani.xz" version="0.0.0"/>
       <unit id="org.xbill.dns" version="0.0.0"/>
-      <repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/2024-06"/>
+      <repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/milestone/latest"/>
     </location>
     <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
       <unit id="org.eclipse.equinox.core.feature.feature.group" version="0.0.0"/>

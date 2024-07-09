@@ -29,7 +29,7 @@
       <plugin id="com.mycorp.examples.osgi.async"/>
       <plugin id="com.mycorp.examples.osgi.async.consumer"/>
       <plugin id="jakarta.servlet.jsp-api"/>
-      <plugin id="org.apache.commons.logging"/>
+      <plugin id="org.apache.commons.commons-logging"/>
       <plugin id="org.apache.felix.gogo.command"/>
       <plugin id="org.apache.felix.gogo.runtime"/>
       <plugin id="org.apache.felix.gogo.shell"/>
@@ -61,7 +61,7 @@
 
    <configurations>
       <plugin id="javax.servlet" autoStart="false" startLevel="0" />
-      <plugin id="org.apache.commons.logging" autoStart="false" startLevel="0" />
+      <plugin id="org.apache.commons.commons-logging" autoStart="false" startLevel="0" />
       <plugin id="org.apache.felix.gogo.command" autoStart="false" startLevel="0" />
       <plugin id="org.apache.felix.gogo.runtime" autoStart="false" startLevel="0" />
       <plugin id="org.apache.felix.gogo.shell" autoStart="false" startLevel="0" />
