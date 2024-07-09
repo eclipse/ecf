@@ -45,6 +45,7 @@
          version="0.0.0"
          unpack="false"/>
 
+   <!-- required by org.apache.httpcomponents.httpclient -->
    <plugin
          id="org.apache.commons.logging"
          download-size="0"

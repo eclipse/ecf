@@ -138,7 +138,7 @@
         </detail>
         <detail
             key="extraUnits">
-          <value>org.apache.log4j,jakarta.servlet-api,org.eclipse.equinox.core.feature.feature.group,org.apache.httpcomponents.httpclient.win</value>
+          <value>org.apache.log4j,jakarta.servlet-api,org.eclipse.equinox.core.feature.feature.group,org.apache.httpcomponents.httpclient.win,org.apache.httpcomponents.client5.httpclient5-win,org.apache.commons.commons-logging</value>
         </detail>
         <detail
             key="singleLocation">
@@ -298,6 +298,14 @@
           name="*"/>
       <requirement
           name="org.eclipse.sdk.feature.group"/>
+      <requirement
+          name="org.apache.httpcomponents.httpclient.win"
+          optional="true"/>
+      <requirement
+          name="org.apache.httpcomponents.client5.httpclient5-win"
+          optional="true"/>
+      <requirement
+          name="org.apache.commons.commons-logging"/>
       <requirement
           name="org.apache.commons.jxpath"
           versionRange="[1.3.0.v200911051830,1.3.0.v200911051830]"

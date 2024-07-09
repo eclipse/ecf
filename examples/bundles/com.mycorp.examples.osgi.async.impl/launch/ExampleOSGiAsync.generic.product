@@ -28,7 +28,7 @@
    <plugins>
       <plugin id="com.mycorp.examples.osgi.async"/>
       <plugin id="com.mycorp.examples.osgi.async.impl"/>
-      <plugin id="org.apache.commons.logging"/>
+      <plugin id="org.apache.commons.commons-logging"/>
       <plugin id="org.apache.felix.gogo.command"/>
       <plugin id="org.apache.felix.gogo.runtime"/>
       <plugin id="org.apache.felix.gogo.shell"/>
@@ -78,7 +78,7 @@
 
    <configurations>
       <plugin id="javax.servlet" autoStart="false" startLevel="0" />
-      <plugin id="org.apache.commons.logging" autoStart="false" startLevel="0" />
+      <plugin id="org.apache.commons.commons-logging" autoStart="false" startLevel="0" />
       <plugin id="org.apache.felix.gogo.command" autoStart="true" startLevel="0" />
       <plugin id="org.apache.felix.gogo.runtime" autoStart="true" startLevel="0" />
       <plugin id="org.apache.felix.gogo.shell" autoStart="true" startLevel="0" />
