@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.provider.filetransfer.httpclientjava;singleton:=true
-Bundle-Version: 2.0.200.qualifier
+Bundle-Version: 2.0.300.qualifier
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
 Automatic-Module-Name: org.eclipse.ecf.provider.filetransfer.httpclientjava
@@ -30,3 +30,4 @@ Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipse.ecf.internal.provider.filetransfer.httpclientjava;version="1.0.0",
  org.eclipse.ecf.provider.filetransfer.httpclientjava;version="1.0.0"
 Bundle-Activator: org.eclipse.ecf.internal.provider.filetransfer.httpclientjava.Activator
+Service-Component: OSGI-INF/org.eclipse.ecf.internal.provider.filetransfer.httpclientjava.ECFHttpClientFactory.xml

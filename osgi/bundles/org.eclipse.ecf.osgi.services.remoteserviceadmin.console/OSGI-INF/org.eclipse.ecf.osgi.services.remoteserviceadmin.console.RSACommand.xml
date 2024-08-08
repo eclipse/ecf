@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" deactivate="deactivate" immediate="true" name="org.eclipse.ecf.osgi.services.remoteserviceadmin.console.RSACommand">
+   <property name="osgi.command.scope" value="ecf"/>
+   <property name="osgi.command.function">listexports
+lexps
+listimports
+limps
+unexportservice
+unexpsvc
+unimportservice
+unimpsvc
+rsadebug
+exportservice
+expsvc
+importservice
+impsvc
+updateservice
+updsvc
+   </property>
+   <service>
+      <provide interface="org.eclipse.ecf.osgi.services.remoteserviceadmin.console.RSACommand"/>
+      <provide interface="org.apache.felix.service.command.Converter"/>
+   </service>
+   <reference bind="bindContainerManager" interface="org.eclipse.ecf.core.IContainerManager" name="ContainerManager" unbind="unbindContainerManager"/>
+   <reference bind="bindIDFactory" interface="org.eclipse.ecf.core.identity.IIDFactory" name="IDFactory" unbind="unbindIDFactory"/>
+   <reference bind="bindRSA" interface="org.osgi.service.remoteserviceadmin.RemoteServiceAdmin" name="RSA" unbind="unbindRSA"/>
+   <implementation class="org.eclipse.ecf.osgi.services.remoteserviceadmin.console.RSACommand"/>
+</scr:component>

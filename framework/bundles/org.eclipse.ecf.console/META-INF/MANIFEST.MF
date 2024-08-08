@@ -4,9 +4,9 @@ Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.console
 Automatic-Module-Name: org.eclipse.ecf.console
 Bundle-Vendor: %plugin.provider
-Bundle-Version: 1.4.0.qualifier
+Bundle-Version: 1.4.100.qualifier
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Import-Package: org.apache.felix.service.command;version="[0.10.0,2.0.0)";resolution:=optional,
  org.eclipse.ecf.core;version="[3.0.0,4.0.0)",
  org.eclipse.ecf.core.identity;version="[3.0.0,4.0.0)",
@@ -18,3 +18,4 @@ Bundle-Localization: plugin
 Require-Bundle: org.eclipse.equinox.common;bundle-version="[3.0.0,4.0.0)",
  org.apache.felix.gogo.runtime;bundle-version="[0.10.0,2.0.0)";resolution:=optional
 Export-Package: org.eclipse.ecf.console;version="1.0.0"
+Service-Component: OSGI-INF/org.eclipse.ecf.internal.console.ContainerCommand.xml
