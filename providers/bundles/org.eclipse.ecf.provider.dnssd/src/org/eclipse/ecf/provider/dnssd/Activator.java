@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2009 Markus Alexander Kuppe.
+- * Copyright (c) 2009 Markus Alexander Kuppe.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -14,12 +14,11 @@ package org.eclipse.ecf.provider.dnssd;
 
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
 
 import org.eclipse.core.runtime.SafeRunner;
-import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.Namespace;
@@ -45,6 +44,7 @@ public class Activator implements BundleActivator {
 
 	private static final String DISCOVERY_CONTAINER_NAME_KEY = "org.eclipse.ecf.discovery.containerName"; //$NON-NLS-1$
 	
+	@SuppressWarnings("rawtypes")
 	private final Map serviceRegistrations = new HashMap();
 	private volatile BundleContext context;
 
@@ -52,6 +52,7 @@ public class Activator implements BundleActivator {
 	 * (non-Javadoc)
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void start(final BundleContext context) throws Exception {
 		this.context = context;
 		
@@ -64,23 +65,23 @@ public class Activator implements BundleActivator {
 		});
 		
 		// register a managed factory for the locator service
-		final Properties locCmProps = new Properties();
+		final Hashtable locCmProps = new Hashtable();
 		locCmProps.put(Constants.SERVICE_PID, DISCOVERY_CONTAINER_NAME_VALUE + LOCATOR);
 		context.registerService(ManagedServiceFactory.class.getName(), new DnsSdManagedServiceFactory(DnsSdDiscoveryLocator.class), locCmProps);
 		
 		// register the locator service
-		final Properties locProps = new Properties();
+		final Hashtable locProps = new Hashtable();
 		locProps.put(DISCOVERY_CONTAINER_NAME_KEY, DISCOVERY_CONTAINER_NAME_VALUE + LOCATOR);
 		locProps.put(Constants.SERVICE_RANKING, Integer.valueOf(750));
 		serviceRegistrations.put(null, context.registerService(IDiscoveryLocator.class.getName(), new DnsSdServiceFactory(DnsSdDiscoveryLocator.class), locProps));
 
 		// register a managed factory for the advertiser service
-		final Properties advCmProps = new Properties();
+		final Hashtable advCmProps = new Hashtable();
 		advCmProps.put(Constants.SERVICE_PID, DISCOVERY_CONTAINER_NAME_VALUE + ADVERTISER);
 		context.registerService(ManagedServiceFactory.class.getName(), new DnsSdManagedServiceFactory(DnsSdDiscoveryAdvertiser.class), advCmProps);
 		
 		// register the advertiser service
-		final Properties advProps = new Properties();
+		final Hashtable advProps = new Hashtable();
 		advProps.put(DISCOVERY_CONTAINER_NAME_KEY, DISCOVERY_CONTAINER_NAME_VALUE + ADVERTISER);
 		advProps.put(Constants.SERVICE_RANKING, Integer.valueOf(750));
 		serviceRegistrations.put(null, context.registerService(IDiscoveryAdvertiser.class.getName(), new DnsSdServiceFactory(DnsSdDiscoveryAdvertiser.class), advProps));
@@ -90,6 +91,7 @@ public class Activator implements BundleActivator {
 	 * (non-Javadoc)
 	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
+	@SuppressWarnings("rawtypes")
 	public void stop(BundleContext context) throws Exception {
 		if (serviceRegistrations != null) {
 			for (final Iterator itr = serviceRegistrations.values().iterator(); itr.hasNext();) {
@@ -103,7 +105,9 @@ public class Activator implements BundleActivator {
 	/**
 	 * @param serviceRegistration disconnects the underlying IContainer and unregisters the service
 	 */
-	private void disposeServiceRegistration(ServiceRegistration serviceRegistration) {
+	@SuppressWarnings("unchecked")
+	private void disposeServiceRegistration(@SuppressWarnings("rawtypes") ServiceRegistration serviceRegistration) {
+		@SuppressWarnings("rawtypes")
 		final ServiceReference reference = serviceRegistration.getReference();
 		final IContainer aContainer = (DnsSdDiscoveryContainerAdapter) context.getService(reference);
 		
@@ -117,9 +121,10 @@ public class Activator implements BundleActivator {
 	 * A ManagedServiceFactory capable to handle DnsSdDiscoveryContainerAdapters
 	 */
 	private class DnsSdManagedServiceFactory implements ManagedServiceFactory {
+		@SuppressWarnings("rawtypes")
 		private final Class containerClass;
 
-		public DnsSdManagedServiceFactory(Class aContainerClass) {
+		public DnsSdManagedServiceFactory(@SuppressWarnings("rawtypes") Class aContainerClass) {
 			containerClass = aContainerClass;
 		}
 
@@ -133,6 +138,7 @@ public class Activator implements BundleActivator {
 		/* (non-Javadoc)
 		 * @see org.osgi.service.cm.ManagedServiceFactory#updated(java.lang.String, java.util.Dictionary)
 		 */
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		public void updated(String pid, Dictionary properties)
 				throws ConfigurationException {
 			if(properties != null) {
@@ -145,7 +151,7 @@ public class Activator implements BundleActivator {
 						adapter = (DnsSdDiscoveryContainerAdapter) context.getService(serviceRegistration.getReference());
 						targetID = (DnsSdServiceTypeID) adapter.getConnectedID();
 					} else {
-						adapter = (DnsSdDiscoveryContainerAdapter) containerClass.newInstance();
+						adapter = (DnsSdDiscoveryContainerAdapter) containerClass.getDeclaredConstructor().newInstance();
 						targetID = new DnsSdServiceTypeID();
 					}
 
@@ -168,28 +174,22 @@ public class Activator implements BundleActivator {
 					
 					// finally connect container and keep ser reg for later updates/deletes
 					if(serviceRegistration == null) {
-						final Properties props = new Properties();
+						final Hashtable props = new Hashtable();
 						props.put(Constants.SERVICE_PID, pid);
 						adapter.connect(targetID, null);
 						serviceRegistrations.put(pid, context.registerService(IDiscoveryLocator.class.getName(), adapter, props));
 					}
-				} catch (ContainerConnectException e) {
+				} catch (Exception e) {
 					throw new ConfigurationException("IDnsSdDiscoveryConstants properties", e.getLocalizedMessage(), e); //$NON-NLS-1$
-				} catch (ClassCastException cce) {
-					throw new ConfigurationException("IDnsSdDiscoveryConstants properties", cce.getLocalizedMessage(), cce); //$NON-NLS-1$
-				} catch (InstantiationException e) {
-					// may never happen
-					throw new ConfigurationException("InstantiationException", e.getLocalizedMessage(), e); //$NON-NLS-1$
-				} catch (IllegalAccessException e) {
-					// may never happen
-					throw new ConfigurationException("IllegalAccessException", e.getLocalizedMessage(), e); //$NON-NLS-1$
 				}
+				
 			}
 		}
 
 		/* (non-Javadoc)
 		 * @see org.osgi.service.cm.ManagedServiceFactory#deleted(java.lang.String)
 		 */
+		@SuppressWarnings("rawtypes")
 		public void deleted(String pid) {
 			final ServiceRegistration serviceRegistration = (ServiceRegistration) serviceRegistrations.get(pid);
 			disposeServiceRegistration(serviceRegistration);
@@ -199,6 +199,7 @@ public class Activator implements BundleActivator {
 	/**
 	 * A ServiceFactory capable to handle DnsSdDiscoveryContainerAdapters
 	 */
+	@SuppressWarnings("rawtypes")
 	public class DnsSdServiceFactory implements ServiceFactory {
 		private volatile DnsSdDiscoveryContainerAdapter container;
 		private final Class containerClass;
@@ -210,20 +211,13 @@ public class Activator implements BundleActivator {
 		/* (non-Javadoc)
 		 * @see org.osgi.framework.ServiceFactory#getService(org.osgi.framework.Bundle, org.osgi.framework.ServiceRegistration)
 		 */
+		@SuppressWarnings("unchecked")
 		public Object getService(Bundle bundle, ServiceRegistration registration) {
 			if (container == null) {
 				try {
-					container = (DnsSdDiscoveryContainerAdapter) containerClass.newInstance();
+					container = (DnsSdDiscoveryContainerAdapter) containerClass.getDeclaredConstructor().newInstance();
 					container.connect(null, null);
-				} catch (final ContainerConnectException e) {
-					// may never happen
-					e.printStackTrace();
-					container = null;
-				} catch (InstantiationException e) {
-					// may never happen
-					e.printStackTrace();
-					container = null;
-				} catch (IllegalAccessException e) {
+				} catch (Exception e) {
 					// may never happen
 					e.printStackTrace();
 					container = null;
