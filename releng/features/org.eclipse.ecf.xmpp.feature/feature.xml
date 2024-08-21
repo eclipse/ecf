@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.xmpp.feature"
       label="ECF XMPP Provider"
-      version="1.0.400.qualifier"
+      version="1.0.500.qualifier"
       provider-name="%providerName"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
@@ -29,22 +29,32 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
 
    <plugin
          id="org.eclipse.ecf.provider.xmpp"
-         version="0.0.0"/>
+         download-size="0"
+         install-size="0"
+         version="1.0.300.qualifier"/>
 
    <plugin
          id="org.jivesoftware.smack"
-         version="0.0.0"/>
+         download-size="0"
+         install-size="0"
+         version="1.0.300.qualifier"/>
 
    <plugin
          id="org.eclipse.ecf.provider.xmpp.datashare"
-         version="0.0.0"/>
+         download-size="0"
+         install-size="0"
+         version="1.0.300.qualifier"/>
 
    <plugin
          id="org.eclipse.ecf.provider.xmpp.remoteservice"
-         version="0.0.0"/>
+         download-size="0"
+         install-size="0"
+         version="1.0.300.qualifier"/>
 
    <plugin
          id="org.xbill.dns"
-         version="3.6.0"/>
+         download-size="0"
+         install-size="0"
+         version="3.6.1"/>
 
 </feature>
