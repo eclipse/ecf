@@ -29,32 +29,22 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
 
    <plugin
          id="org.eclipse.ecf.provider.xmpp"
-         download-size="0"
-         install-size="0"
-         version="1.0.300.qualifier"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.jivesoftware.smack"
-         download-size="0"
-         install-size="0"
-         version="1.0.300.qualifier"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.eclipse.ecf.provider.xmpp.datashare"
-         download-size="0"
-         install-size="0"
-         version="1.0.300.qualifier"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.eclipse.ecf.provider.xmpp.remoteservice"
-         download-size="0"
-         install-size="0"
-         version="1.0.300.qualifier"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.xbill.dns"
-         download-size="0"
-         install-size="0"
          version="3.6.1"/>
 
 </feature>
