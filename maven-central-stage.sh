@@ -7,8 +7,8 @@ org.eclipse.ecf.core.feature
 org.eclipse.ecf.core.ssl.feature
 org.eclipse.ecf.filetransfer.feature
 org.eclipse.ecf.filetransfer.ssl.feature
-org.eclipse.ecf.filetransfer.httpclient45.feature
 org.eclipse.ecf.filetransfer.httpclient5.feature
+org.eclipse.ecf.filetransfer.httpclientjava.feature
 org.eclipse.ecf.remoteservice.examples.feature
 org.eclipse.ecf.remoteservices.tooling.bndtools.feature"
 
@@ -211,12 +211,19 @@ check_maven_central() {
 	fi
 }
 
+# set PREVIOUS_JAVA_HOME to $JAVA_HOME
+PREVIOUS_JAVA_HOME=$JAVA_HOME
+PREVIOUS_PATH=$PATH
+export JAVA_HOME="/opt/tools/java/openjdk/jdk-11/latest"
+PATH=$JAVA_HOME/bin:$PATH
 echo
 echo "Parsing the following features:"
 echo "==============================="
 for feature in $features_whose_bundles_we_will_deploy ; do
 	_add_feature_to_list $feature && parse_feature $feature
 done
+export JAVA_HOME=$PREVIOUS_JAVA_HOME
+export PATH=$PREVIOUS_PATH
 
 echo
 echo "Checking the following found bundles against maven central:"
