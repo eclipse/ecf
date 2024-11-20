@@ -11,7 +11,8 @@
  *****************************************************************************/
 package org.eclipse.ecf.core.security;
 
-import java.security.*;
+import java.security.NoSuchAlgorithmException;
+import java.security.Provider;
 import java.util.Map;
 import java.util.Optional;
 import javax.net.ssl.SSLContext;
@@ -37,29 +38,17 @@ public class ECFSSLContextFactory implements SSLContextFactory {
 	}
 
 	@Override
-	public SSLContext getInstance(String protocol) throws NoSuchAlgorithmException, NoSuchProviderException {
-		return getInstance(protocol, null);
-	}
-
-	@Override
-	public SSLContext getInstance(String protocol, String provider) throws NoSuchAlgorithmException, NoSuchProviderException {
+	public SSLContext getInstance(String protocol) throws NoSuchAlgorithmException {
 		if (protocol == null) {
 			return null;
 		}
 		// Filter out Providers that do not have given protocol and (optionally) do not have given provider name
 		Optional<Map.Entry<ServiceReference<Provider>, Provider>> optResult = this.providerTracker.getTracked().entrySet().stream().filter(entry ->
-		// first test that protocol is equal to value of SSLContextFactory.PROTOCOL_PROPERTY_NAME
-		entry.getKey().getProperty(SSLContextFactory.PROTOCOL_PROPERTY_NAME) != null &&
-		// And test that either provder is null, or provider equals the Provider.getName() value
-				provider == null || provider.equals(entry.getValue().getName())).findFirst();
+		// test that protocol is equal to value of SSLContextFactory.PROTOCOL_PROPERTY_NAME
+		protocol.equals(entry.getKey().getProperty(SSLContextFactory.PROTOCOL_PROPERTY_NAME))).findFirst();
 		// If any remaining Providers, use first (highest priority from sorted map) and use to create SSLContext.  
-		// If none, call SSLContext.getInstance(String,String) with given protocol and provider
-		if (optResult.isPresent()) {
-			return SSLContext.getInstance(protocol, optResult.get().getValue());
-		} else if (provider != null) {
-			return SSLContext.getInstance(protocol, provider);
-		}
-		return SSLContext.getInstance(protocol);
+		// If none, call SSLContext.getInstance(String) with given protocol
+		return optResult.isPresent() ? SSLContext.getInstance(protocol, optResult.get().getValue()) : SSLContext.getInstance(protocol);
 	}
 
 	public void close() {

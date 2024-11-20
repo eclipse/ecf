@@ -19,11 +19,11 @@ import junit.framework.TestCase;
 public class SSLContextFactoryTest extends TestCase {
 
 	protected SSLContextFactory sslContextFactory;
-	
+	protected static final String testProtocol = "TLS";
 	protected void registerProviders() throws NoSuchProviderException, NoSuchAlgorithmException {
 		// Register as Provider service
 		Hashtable<String, Object> props = new Hashtable<String, Object>();
-		props.put(SSLContextFactory.PROTOCOL_PROPERTY_NAME, Boolean.TRUE);
+		props.put(SSLContextFactory.PROTOCOL_PROPERTY_NAME, testProtocol);
 		Activator.getContext().registerService(Provider.class, SSLContext.getDefault().getProvider(), props);
 	}
 	/*
@@ -51,12 +51,7 @@ public class SSLContextFactoryTest extends TestCase {
 	}
 
 	public void testSSLContextGetInstance1() throws Exception {
-		SSLContext context = this.sslContextFactory.getInstance("TLS");
-		assertNotNull(context);
-	}
-	
-	public void testSSLContextGetInstance2() throws Exception {
-		SSLContext context = this.sslContextFactory.getInstance("TLS",SSLContext.getDefault().getProvider().getName());
+		SSLContext context = this.sslContextFactory.getInstance(testProtocol);
 		assertNotNull(context);
 	}
 	

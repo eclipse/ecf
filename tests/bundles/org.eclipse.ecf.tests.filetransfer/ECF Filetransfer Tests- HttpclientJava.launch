@@ -7,7 +7,7 @@
     <booleanAttribute key="automaticValidate" value="false"/>
     <stringAttribute key="bad_container_name" value="\org.eclipse.ecf.tests.filetransfer5"/>
     <stringAttribute key="bootstrap" value=""/>
-    <stringAttribute key="checked" value="org.eclipse.ecf.provider.filetransfer.httpclientjava"/>
+    <stringAttribute key="checked" value="[NONE]"/>
     <booleanAttribute key="clearConfig" value="true"/>
     <booleanAttribute key="clearws" value="true"/>
     <booleanAttribute key="clearwslog" value="false"/>
@@ -39,14 +39,19 @@
     <stringAttribute key="product" value="org.eclipse.sdk.ide"/>
     <booleanAttribute key="run_in_ui_thread" value="true"/>
     <setAttribute key="selected_target_bundles">
-        <setEntry value="org.apache.commons.commons-codec*1.16.0@default:default"/>
+        <setEntry value="com.sun.jna.platform@default:default"/>
+        <setEntry value="com.sun.jna@default:default"/>
+        <setEntry value="org.apache.commons.commons-codec@default:default"/>
+        <setEntry value="org.apache.commons.commons-logging@default:default"/>
         <setEntry value="org.apache.commons.httpclient@default:default"/>
-        <setEntry value="org.apache.commons.logging*1.2.0.v20180409-1502@default:default"/>
+        <setEntry value="org.apache.commons.logging@default:default"/>
+        <setEntry value="org.apache.httpcomponents.httpclient.win@default:default"/>
         <setEntry value="org.apache.httpcomponents.httpclient@default:default"/>
-        <setEntry value="org.apache.httpcomponents.httpcore*4.4.16.v20221207-1049@default:default"/>
+        <setEntry value="org.apache.httpcomponents.httpcore@default:default"/>
         <setEntry value="org.eclipse.core.contenttype@default:default"/>
         <setEntry value="org.eclipse.core.jobs@default:default"/>
         <setEntry value="org.eclipse.core.runtime@default:true"/>
+        <setEntry value="org.eclipse.ecf.provider.filetransfer.ssl@default:false"/>
         <setEntry value="org.eclipse.equinox.app@default:default"/>
         <setEntry value="org.eclipse.equinox.common@2:true"/>
         <setEntry value="org.eclipse.equinox.concurrent@default:default"/>
@@ -57,7 +62,9 @@
         <setEntry value="org.eclipse.osgi@-1:true"/>
         <setEntry value="org.eclipse.pde.junit.runtime@default:default"/>
         <setEntry value="org.hamcrest.core@default:default"/>
+        <setEntry value="org.hamcrest@default:default"/>
         <setEntry value="org.junit@default:default"/>
+        <setEntry value="org.osgi.service.cm@default:default"/>
         <setEntry value="org.osgi.service.prefs@default:default"/>
     </setAttribute>
     <setAttribute key="selected_workspace_bundles">
@@ -65,17 +72,16 @@
         <setEntry value="org.eclipse.ecf.identity@default:default"/>
         <setEntry value="org.eclipse.ecf.provider.filetransfer.httpclient45@default:default"/>
         <setEntry value="org.eclipse.ecf.provider.filetransfer.httpclientjava@default:default"/>
-        <setEntry value="org.eclipse.ecf.provider.filetransfer.ssl@default:default"/>
         <setEntry value="org.eclipse.ecf.provider.filetransfer@default:default"/>
-        <setEntry value="org.eclipse.ecf.ssl@default:default"/>
-        <setEntry value="org.eclipse.ecf.tests.filetransfer.httpclient45@default:default"/>
+        <setEntry value="org.eclipse.ecf.ssl@default:false"/>
+        <setEntry value="org.eclipse.ecf.tests.filetransfer.httpclient45@default:false"/>
         <setEntry value="org.eclipse.ecf.tests.filetransfer.httpclientjava@default:false"/>
         <setEntry value="org.eclipse.ecf.tests.filetransfer@default:default"/>
         <setEntry value="org.eclipse.ecf.tests@default:default"/>
         <setEntry value="org.eclipse.ecf@default:true"/>
     </setAttribute>
     <booleanAttribute key="show_selected_only" value="false"/>
-    <booleanAttribute key="tracing" value="true"/>
+    <booleanAttribute key="tracing" value="false"/>
     <mapAttribute key="tracingOptions">
         <mapEntry key="org.eclipse.core.contenttype/debug" value="false"/>
         <mapEntry key="org.eclipse.core.expressions/debug/TypeExtensionManager" value="false"/>

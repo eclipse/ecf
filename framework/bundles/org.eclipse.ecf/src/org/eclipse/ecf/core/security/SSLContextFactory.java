@@ -26,6 +26,4 @@ public interface SSLContextFactory {
 
 	SSLContext getInstance(String protocol) throws NoSuchAlgorithmException, NoSuchProviderException;
 
-	SSLContext getInstance(String protocol, String provider) throws NoSuchAlgorithmException, NoSuchProviderException;
-
 }
