@@ -11,13 +11,10 @@
  *****************************************************************************/
 package org.eclipse.ecf.core.security;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.Provider;
-import java.util.Map;
+import java.security.*;
 import java.util.Optional;
 import javax.net.ssl.SSLContext;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
@@ -26,33 +23,63 @@ import org.osgi.util.tracker.ServiceTracker;
 public class ECFSSLContextFactory implements SSLContextFactory {
 
 	private final ServiceTracker<Provider, Provider> providerTracker;
+	private final String defaultProtocol;
+	private final String defaultProviderName;
 
-	public ECFSSLContextFactory(BundleContext context) {
+	public ECFSSLContextFactory(BundleContext context, String defaultProtocol) {
+		this(context, defaultProtocol, null);
+	}
+
+	public ECFSSLContextFactory(BundleContext context, String defaultProtocol, String defaultProviderName) {
+		this.defaultProtocol = defaultProtocol;
+		this.defaultProviderName = defaultProviderName;
 		this.providerTracker = new ServiceTracker<Provider, Provider>(context, Provider.class, null);
 		this.providerTracker.open();
 	}
 
 	@Override
-	public SSLContext getDefault() throws NoSuchAlgorithmException {
-		return SSLContext.getDefault();
+	public SSLContext getDefault() throws NoSuchAlgorithmException, NoSuchProviderException {
+		return getInstance0(this.defaultProtocol, this.defaultProviderName);
+	}
+
+	protected SSLContext getInstance0(String protocol, String providerName) throws NoSuchAlgorithmException, NoSuchProviderException {
+		if (protocol == null) {
+			return SSLContext.getDefault();
+		}
+		Provider provider = findProvider(providerName);
+		if (provider == null)
+			throw new NoSuchProviderException("No provider registered named '" + providerName + "'"); //$NON-NLS-1$ //$NON-NLS-2$
+		return createSSLContext(protocol, provider);
+	}
+
+	protected SSLContext createSSLContext(String protocol, Provider provider) throws NoSuchAlgorithmException {
+		return SSLContext.getInstance(protocol, provider);
 	}
 
 	@Override
-	public SSLContext getInstance(String protocol) throws NoSuchAlgorithmException {
-		if (protocol == null) {
-			return null;
-		}
-		// Filter out Providers that do not have given protocol and (optionally) do not have given provider name
-		Optional<Map.Entry<ServiceReference<Provider>, Provider>> optResult = this.providerTracker.getTracked().entrySet().stream().filter(entry ->
-		// test that protocol is equal to value of SSLContextFactory.PROTOCOL_PROPERTY_NAME
-		protocol.equals(entry.getKey().getProperty(SSLContextFactory.PROTOCOL_PROPERTY_NAME))).findFirst();
-		// If any remaining Providers, use first (highest priority from sorted map) and use to create SSLContext.  
-		// If none, call SSLContext.getInstance(String) with given protocol
-		return optResult.isPresent() ? SSLContext.getInstance(protocol, optResult.get().getValue()) : SSLContext.getInstance(protocol);
+	public SSLContext getInstance(String protocol) throws NoSuchAlgorithmException, NoSuchProviderException {
+		return getInstance0(protocol, this.defaultProviderName);
 	}
 
 	public void close() {
 		this.providerTracker.close();
+	}
+
+	protected Provider findProvider(String providerName) {
+		if (providerName == null) {
+			return this.providerTracker.getService();
+		}
+		Optional<Provider> optResult = this.providerTracker.getTracked().values().stream().filter(p ->
+		// test that providerName is equal to Provider.getName()
+		providerName.equals(p.getName())).findFirst();
+		// If there are matching Providers, use first (highest priority from sorted map) and use to create SSLContext.  
+		// If none, then throw
+		return optResult.isPresent() ? optResult.get() : null;
+	}
+
+	@Override
+	public SSLContext getInstance(String protocol, String providerName) throws NoSuchAlgorithmException, NoSuchProviderException {
+		return getInstance0(protocol, providerName);
 	}
 
 }

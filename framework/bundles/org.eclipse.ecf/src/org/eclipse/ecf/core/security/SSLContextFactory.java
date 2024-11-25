@@ -20,10 +20,10 @@ import javax.net.ssl.SSLContext;
  */
 public interface SSLContextFactory {
 
-	public static final String PROTOCOL_PROPERTY_NAME = "osgi.sslcontext.protocol"; //$NON-NLS-1$
-
-	SSLContext getDefault() throws NoSuchAlgorithmException;
+	SSLContext getDefault() throws NoSuchAlgorithmException, NoSuchProviderException;
 
 	SSLContext getInstance(String protocol) throws NoSuchAlgorithmException, NoSuchProviderException;
+
+	SSLContext getInstance(String protocol, String providerName) throws NoSuchAlgorithmException, NoSuchProviderException;
 
 }

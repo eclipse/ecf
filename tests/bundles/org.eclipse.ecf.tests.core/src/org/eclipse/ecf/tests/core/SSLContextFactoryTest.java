@@ -22,9 +22,7 @@ public class SSLContextFactoryTest extends TestCase {
 	protected static final String testProtocol = "TLS";
 	protected void registerProviders() throws NoSuchProviderException, NoSuchAlgorithmException {
 		// Register as Provider service
-		Hashtable<String, Object> props = new Hashtable<String, Object>();
-		props.put(SSLContextFactory.PROTOCOL_PROPERTY_NAME, testProtocol);
-		Activator.getContext().registerService(Provider.class, SSLContext.getDefault().getProvider(), props);
+		Activator.getContext().registerService(Provider.class, SSLContext.getDefault().getProvider(), null);
 	}
 	/*
 	 * (non-Javadoc)
