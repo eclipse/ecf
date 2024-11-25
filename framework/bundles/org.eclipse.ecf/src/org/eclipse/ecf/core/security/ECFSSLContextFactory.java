@@ -49,10 +49,6 @@ public class ECFSSLContextFactory implements SSLContextFactory {
 		Provider provider = findProvider(providerName);
 		if (provider == null)
 			throw new NoSuchProviderException("No provider registered named '" + providerName + "'"); //$NON-NLS-1$ //$NON-NLS-2$
-		return createSSLContext(protocol, provider);
-	}
-
-	protected SSLContext createSSLContext(String protocol, Provider provider) throws NoSuchAlgorithmException {
 		return SSLContext.getInstance(protocol, provider);
 	}
 
