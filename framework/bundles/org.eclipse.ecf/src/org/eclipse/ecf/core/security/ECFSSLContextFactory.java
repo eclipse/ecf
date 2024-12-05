@@ -14,6 +14,9 @@ package org.eclipse.ecf.core.security;
 import java.security.*;
 import java.util.Optional;
 import javax.net.ssl.SSLContext;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.internal.core.identity.Activator;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -64,6 +67,16 @@ public class ECFSSLContextFactory implements SSLContextFactory {
 	protected Provider findProvider(String providerName) {
 		if (providerName == null) {
 			return this.providerTracker.getService();
+		}
+		// If providerName is same as current default SSLContext then use it
+		SSLContext defaultContext = null;
+		try {
+			defaultContext = SSLContext.getDefault();
+		} catch (NoSuchAlgorithmException e) {
+			Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Could not get SSLContext.getDefault()", e)); //$NON-NLS-1$
+		}
+		if (defaultContext != null && providerName.equals(defaultContext.getProvider().getName())) {
+			return defaultContext.getProvider();
 		}
 		Optional<Provider> optResult = this.providerTracker.getTracked().values().stream().filter(p ->
 		// test that providerName is equal to Provider.getName()
