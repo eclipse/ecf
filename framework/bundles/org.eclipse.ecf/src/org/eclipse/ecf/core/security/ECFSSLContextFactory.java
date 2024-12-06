@@ -68,22 +68,24 @@ public class ECFSSLContextFactory implements SSLContextFactory {
 		if (providerName == null) {
 			return this.providerTracker.getService();
 		}
-		// If providerName is same as current default SSLContext then use it
-		SSLContext defaultContext = null;
-		try {
-			defaultContext = SSLContext.getDefault();
-		} catch (NoSuchAlgorithmException e) {
-			Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Could not get SSLContext.getDefault()", e)); //$NON-NLS-1$
-		}
-		if (defaultContext != null && providerName.equals(defaultContext.getProvider().getName())) {
-			return defaultContext.getProvider();
-		}
 		Optional<Provider> optResult = this.providerTracker.getTracked().values().stream().filter(p ->
 		// test that providerName is equal to Provider.getName()
 		providerName.equals(p.getName())).findFirst();
 		// If there are matching Providers, use first (highest priority from sorted map) and use to create SSLContext.  
 		// If none, then throw
-		return optResult.isPresent() ? optResult.get() : null;
+		if (optResult.isPresent()) {
+			return optResult.get();
+		}
+		// If providerName is same as current default SSLContext then use it
+		try {
+			SSLContext defaultContext = SSLContext.getDefault();
+			if (providerName.equals(defaultContext.getProvider().getName())) {
+				return defaultContext.getProvider();
+			}
+		} catch (NoSuchAlgorithmException e) {
+			Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Could not get SSLContext.getDefault()", e)); //$NON-NLS-1$
+		}
+		return null;
 	}
 
 	@Override
