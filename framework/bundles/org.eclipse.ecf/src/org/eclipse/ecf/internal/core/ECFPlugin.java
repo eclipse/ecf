@@ -12,10 +12,13 @@
 package org.eclipse.ecf.internal.core;
 
 import java.util.*;
+import javax.net.ssl.SSLContext;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
+import org.eclipse.ecf.core.security.ECFSSLContextFactory;
+import org.eclipse.ecf.core.security.SSLContextFactory;
 import org.eclipse.ecf.core.start.ECFStartJob;
 import org.eclipse.ecf.core.start.IECFStart;
 import org.eclipse.ecf.core.util.*;
@@ -91,6 +94,10 @@ public class ECFPlugin implements BundleActivator {
 	private AdapterManagerTracker adapterManagerTracker = null;
 
 	private BundleActivator ecfTrustManager;
+
+	private ServiceRegistration sslContextFactoryRegistration;
+
+	private ECFSSLContextFactory ecfSSLContextFactory;
 
 	/**
 	 * Returns the shared instance.
@@ -221,6 +228,11 @@ public class ECFPlugin implements BundleActivator {
 		containerFactoryServiceRegistration = ctxt.registerService(IContainerFactory.class.getName(), sf, null);
 		containerManagerServiceRegistration = ctxt.registerService(IContainerManager.class.getName(), sf, null);
 
+		// Register SSLContextFactory
+		SSLContext defaultContext = SSLContext.getDefault();
+		ecfSSLContextFactory = new ECFSSLContextFactory(ctxt, defaultContext.getProtocol(), defaultContext.getProvider().getName());
+		sslContextFactoryRegistration = ctxt.registerService(SSLContextFactory.class, ecfSSLContextFactory, null);
+
 		SafeRunner.run(new ExtensionRegistryRunnable(this.context) {
 			protected void runWithRegistry(IExtensionRegistry registry) throws Exception {
 				if (registry != null) {
@@ -316,6 +328,14 @@ public class ECFPlugin implements BundleActivator {
 		if (containerManagerServiceRegistration != null) {
 			containerManagerServiceRegistration.unregister();
 			containerManagerServiceRegistration = null;
+		}
+		if (sslContextFactoryRegistration != null) {
+			sslContextFactoryRegistration.unregister();
+			sslContextFactoryRegistration = null;
+			if (ecfSSLContextFactory != null) {
+				ecfSSLContextFactory.close();
+				ecfSSLContextFactory = null;
+			}
 		}
 		if (adapterManagerTracker != null) {
 			adapterManagerTracker.close();

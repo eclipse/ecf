@@ -27,10 +27,9 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.net.ssl.SSLSocketFactory;
-
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.core.security.SSLContextFactory;
 import org.eclipse.ecf.core.util.ECFRuntimeException;
 import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.core.util.Trace;
@@ -118,7 +117,7 @@ public class Activator implements BundleActivator {
 
 	private ServiceTracker<LogService, LogService> logServiceTracker = null;
 
-	private ServiceTracker<SSLSocketFactory, SSLSocketFactory> sslSocketFactoryTracker;
+	private ServiceTracker<SSLContextFactory, SSLContextFactory> sslContextFactoryTracker;
 
 	private ServiceTracker<INTLMProxyHandler, INTLMProxyHandler> ntlmProxyHandlerTracker;
 
@@ -181,8 +180,8 @@ public class Activator implements BundleActivator {
 
 	@Override
 	public synchronized void stop(BundleContext ctxt) throws Exception {
-		if (sslSocketFactoryTracker != null) {
-			sslSocketFactoryTracker.close();
+		if (sslContextFactoryTracker != null) {
+			sslContextFactoryTracker.close();
 		}
 
 		if (logServiceTracker != null) {
@@ -247,12 +246,15 @@ public class Activator implements BundleActivator {
 		}
 	}
 
-	public synchronized SSLSocketFactory getSSLSocketFactory() {
-		if (sslSocketFactoryTracker == null) {
-			sslSocketFactoryTracker = new ServiceTracker<SSLSocketFactory, SSLSocketFactory>(this.context, SSLSocketFactory.class, null);
-			sslSocketFactoryTracker.open();
+	/**
+	 * @since 2.0
+	 */
+	public synchronized SSLContextFactory getSSLContextFactory() {
+		if (sslContextFactoryTracker == null) {
+			sslContextFactoryTracker = new ServiceTracker<SSLContextFactory, SSLContextFactory>(this.context, SSLContextFactory.class, null);
+			sslContextFactoryTracker.open();
 		}
-		SSLSocketFactory service = sslSocketFactoryTracker.getService();
+		SSLContextFactory service = sslContextFactoryTracker.getService();
 		return service;
 	}
 

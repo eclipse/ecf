@@ -17,12 +17,16 @@ import java.net.Authenticator;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpRequest;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.provider.filetransfer.DebugOptions;
 import org.eclipse.ecf.provider.filetransfer.httpclientjava.HttpClientOptions;
@@ -48,6 +52,11 @@ public class ECFHttpClientFactory implements IHttpClientFactory {
 	public HttpClient.Builder newClient() {
 
 		HttpClient.Builder builder = HttpClient.newBuilder().followRedirects(Redirect.NORMAL);
+		try {
+			builder.sslContext(Activator.getDefault().getSSLContextFactory().getDefault());
+		} catch (NoSuchAlgorithmException | NoSuchProviderException e) {
+			Activator.getDefault().log(new Status(IStatus.ERROR,Activator.PLUGIN_ID,"Could not set SSLContext when creating jre HttpClient", e));
+		}
 		builder = Activator.getDefault().runModifiers(builder, new ModifierRunner<HttpClient.Builder>() {
 			@Override
 			public HttpClient.Builder run(IHttpClientModifier modifier, HttpClient.Builder value) {
