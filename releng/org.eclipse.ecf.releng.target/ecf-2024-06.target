@@ -37,7 +37,6 @@
       <unit id="org.apache.httpcomponents.httpclient" version="0.0.0"/>
       <unit id="org.apache.httpcomponents.httpclient.win" version="0.0.0"/>
       <unit id="org.apache.log4j" version="0.0.0"/>
-      <unit id="org.apache.lucene.analysis-smartcn" version="0.0.0"/>
       <unit id="org.apiguardian.api" version="0.0.0"/>
       <unit id="org.bndtools.headless.build.plugin.gradle" version="0.0.0"/>
       <unit id="org.bndtools.templates.template" version="0.0.0"/>

@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.core.security.SSLContextFactory;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.provider.filetransfer.DebugOptions;
 import org.eclipse.ecf.provider.filetransfer.httpclientjava.HttpClientOptions;
@@ -50,12 +51,25 @@ public class ECFHttpClientFactory implements IHttpClientFactory {
 
 	@Override
 	public HttpClient.Builder newClient() {
-
 		HttpClient.Builder builder = HttpClient.newBuilder().followRedirects(Redirect.NORMAL);
+		String sslContextProvider = HttpClientOptions.HTTPCLIENT_SSLCONTEXT_PROVIDER;
+		String sslContextProtocol = HttpClientOptions.HTTPCLIENT_SSLCONTEXT_PROTOCOL;
+		SSLContextFactory sslContextFactory = Activator.getDefault().getSSLContextFactory();
 		try {
-			builder.sslContext(Activator.getDefault().getSSLContextFactory().getDefault());
+			if (sslContextProvider == null) {
+				if (sslContextProtocol == null) {
+					builder.sslContext(sslContextFactory.getDefault());
+				} else {
+					builder.sslContext(sslContextFactory.getInstance(sslContextProtocol));
+				}
+			} else {
+				if (sslContextProtocol == null)
+					throw new NoSuchProviderException("Null protocol not supported for provider=" + sslContextProvider);
+				builder.sslContext(sslContextFactory.getInstance(sslContextProtocol, sslContextProvider));
+			}
 		} catch (NoSuchAlgorithmException | NoSuchProviderException e) {
-			Activator.getDefault().log(new Status(IStatus.ERROR,Activator.PLUGIN_ID,"Could not set SSLContext when creating jre HttpClient", e));
+			Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+					"Could not set SSLContext when creating jre HttpClient", e));
 		}
 		builder = Activator.getDefault().runModifiers(builder, new ModifierRunner<HttpClient.Builder>() {
 			@Override

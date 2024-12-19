@@ -33,4 +33,13 @@ public interface HttpClientOptions {
 	int NTLM_PROXY_RESPONSE_CODE = 477;
 	String FORCE_NTLM_PROP = "org.eclipse.ecf.provider.filetransfer.httpclient4.options.ForceNTLMProxy"; //$NON-NLS-1$
 
+	/**
+	 * @since 2.0
+	 */
+	String HTTPCLIENT_SSLCONTEXT_PROTOCOL = System.getProperty("org.eclipse.ecf.provider.filetransfer.httpclient.sslcontext.protocol"); //$NON-NLS-1$
+
+	/**
+	 * @since 2.0
+	 */
+	String HTTPCLIENT_SSLCONTEXT_PROVIDER = System.getProperty("org.eclipse.ecf.provider.filetransfer.httpclient.sslcontext.provider"); //$NON-NLS-1$
 }
