@@ -34,12 +34,12 @@ public interface HttpClientOptions {
 	String FORCE_NTLM_PROP = "org.eclipse.ecf.provider.filetransfer.httpclient4.options.ForceNTLMProxy"; //$NON-NLS-1$
 
 	/**
-	 * @since 2.0
+	 * @since 2.1
 	 */
 	String HTTPCLIENT_SSLCONTEXT_PROTOCOL = System.getProperty("org.eclipse.ecf.provider.filetransfer.httpclient.sslcontext.protocol"); //$NON-NLS-1$
 
 	/**
-	 * @since 2.0
+	 * @since 2.1
 	 */
 	String HTTPCLIENT_SSLCONTEXT_PROVIDER = System.getProperty("org.eclipse.ecf.provider.filetransfer.httpclient.sslcontext.provider"); //$NON-NLS-1$
 }
