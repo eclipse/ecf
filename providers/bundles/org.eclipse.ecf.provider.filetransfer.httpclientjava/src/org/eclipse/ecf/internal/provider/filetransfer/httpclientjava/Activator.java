@@ -105,7 +105,7 @@ public class Activator implements BundleActivator {
 	private static final String USE_SHARED_CLIENT_DEFAULT = "true"; //$NON-NLS-1$
 
 	/**
-	 * @since 2.0
+	 * @since 2.1
 	 */
 	public static final String USE_COOKIE_STORE = PLUGIN_ID + ".cookieStore"; //$NON-NLS-1$
 
@@ -220,7 +220,7 @@ public class Activator implements BundleActivator {
 	}
 
 	/**
-	 * @since 2.0
+	 * @since 2.1
 	 */
 	public boolean isUseCookieStore() {
 		return useCookieStore;
@@ -247,7 +247,7 @@ public class Activator implements BundleActivator {
 	}
 
 	/**
-	 * @since 2.0
+	 * @since 2.1
 	 */
 	public synchronized SSLContextFactory getSSLContextFactory() {
 		if (sslContextFactoryTracker == null) {
