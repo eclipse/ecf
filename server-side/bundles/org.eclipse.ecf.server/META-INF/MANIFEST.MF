@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name 
 Bundle-SymbolicName: org.eclipse.ecf.server
 Automatic-Module-Name: org.eclipse.ecf.server
-Bundle-Version: 2.1.301.qualifier
+Bundle-Version: 2.2.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.server.Activator
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
@@ -15,7 +15,6 @@ Import-Package: org.eclipse.ecf.core;version="3.0.0",
  org.osgi.framework;version="1.3.0"
 Export-Package: org.eclipse.ecf.internal.server;x-internal:=true,
  org.eclipse.ecf.server;version="2.1.0"
-Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
- J2SE-1.4
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.equinox.common
