@@ -8,8 +8,8 @@
     <version>1.0.0-SNAPSHOT</version>
     <relativePath>../../../</relativePath>
   </parent>
-  <groupId>org.eclipse.ecf</groupId>
+  
   <artifactId>org.eclipse.ecf.remoteservice</artifactId>
-  <version>8.14.0-SNAPSHOT</version>
+  <version>8.15.0-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>

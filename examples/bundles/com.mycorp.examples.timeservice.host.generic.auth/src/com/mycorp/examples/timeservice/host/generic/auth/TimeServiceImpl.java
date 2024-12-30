@@ -24,7 +24,7 @@ public class TimeServiceImpl implements ITimeService {
 		// Eventually, this should (e.g.) contact NIST time server and return more
 		// accurate time.  For the time being, we will return the System time for
 		// this host.
-		return new Long(System.currentTimeMillis());
+		return Long.valueOf(System.currentTimeMillis());
 	}
 
 }

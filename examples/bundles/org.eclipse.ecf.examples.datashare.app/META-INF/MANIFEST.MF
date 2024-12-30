@@ -3,10 +3,10 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %bundleName
 Bundle-SymbolicName: org.eclipse.ecf.examples.datashare.app;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.examples.datashare.app
-Bundle-Version: 1.0.101.qualifier
+Bundle-Version: 1.2.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.examples.datashare.app.Activator
 Bundle-Vendor: %bundleProvider
-Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: org.eclipse.ecf.provider.datashare,
  org.eclipse.ecf.provider.generic,
  org.osgi.framework;version="1.3.0",

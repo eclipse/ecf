@@ -377,7 +377,7 @@ public abstract class AbstractRemoteService extends AbstractAsyncProxyRemoteServ
 			if (args == null || args.length == 0)
 				return Boolean.FALSE;
 			try {
-				return new Boolean(Proxy.getInvocationHandler(args[0]).equals(this));
+				return Boolean.valueOf(Proxy.getInvocationHandler(args[0]).equals(this));
 			} catch (IllegalArgumentException e) {
 				return Boolean.FALSE;
 			}

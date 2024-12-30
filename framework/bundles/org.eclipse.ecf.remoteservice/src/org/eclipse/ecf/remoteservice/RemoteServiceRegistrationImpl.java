@@ -149,7 +149,7 @@ public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration
 
 		resultProps.setProperty(RemoteServiceRegistryImpl.REMOTEOBJECTCLASS, clazzes);
 
-		resultProps.setProperty(RemoteServiceRegistryImpl.REMOTESERVICE_ID, new Long(getID().getContainerRelativeID()));
+		resultProps.setProperty(RemoteServiceRegistryImpl.REMOTESERVICE_ID, Long.valueOf(getID().getContainerRelativeID()));
 
 		final Object ranking = (props == null) ? null : props.get(RemoteServiceRegistryImpl.REMOTESERVICE_RANKING);
 

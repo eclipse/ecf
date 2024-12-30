@@ -3,8 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: ECF RS Example Timeservice API
 Bundle-SymbolicName: com.mycorp.examples.timeservice
 Automatic-Module-Name: com.mycorp.examples.timeservice
-Bundle-Version: 1.1.201.qualifier
+Bundle-Version: 1.2.0.qualifier
 Bundle-Vendor: Eclipse.org - ECF
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: com.mycorp.examples.timeservice;version="1.0.0"
