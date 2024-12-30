@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.provider.datashare;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.provider.datashare
-Bundle-Version: 1.6.1.qualifier
+Bundle-Version: 1.7.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.provider.datashare.Activator
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
@@ -12,7 +12,7 @@ Eclipse-RegisterBuddy: org.eclipse.ecf
 Eclipse-BuddyPolicy: global
 Export-Package: org.eclipse.ecf.internal.provider.datashare;x-internal:=true,
  org.eclipse.ecf.provider.datashare;version="1.4.0"
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.ecf,
  org.eclipse.ecf.sharedobject,

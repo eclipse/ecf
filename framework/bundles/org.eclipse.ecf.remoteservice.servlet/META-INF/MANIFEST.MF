@@ -3,9 +3,9 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.remoteservice.servlet
 Automatic-Module-Name: org.eclipse.ecf.remoteservice.servlet
-Bundle-Version: 1.0.201.qualifier
+Bundle-Version: 1.1.0.qualifier
 Bundle-Vendor: %plugin.provider
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: javax.servlet,
  javax.servlet.http,
  org.eclipse.ecf.core.sharedobject;version="2.2.100",

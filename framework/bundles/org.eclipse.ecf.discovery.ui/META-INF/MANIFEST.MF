@@ -3,13 +3,12 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.discovery.ui;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.discovery.ui
-Bundle-Version: 3.0.301.qualifier
+Bundle-Version: 3.1.0.qualifier
 Bundle-ClassPath: .
 Bundle-Activator: org.eclipse.ecf.internal.discovery.ui.DiscoveryUIPlugin$Implementation
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
- J2SE-1.4
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.3.0,4.0.0)",
  org.eclipse.ecf.discovery.ui.edit;bundle-version="3.0.0",
  org.eclipse.emf.edit.ui;bundle-version="[2.2.0,3.0.0)",

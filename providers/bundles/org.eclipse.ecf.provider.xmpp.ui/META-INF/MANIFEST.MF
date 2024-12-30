@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.provider.xmpp.ui;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.provider.xmpp.ui
-Bundle-Version: 2.2.301.qualifier
+Bundle-Version: 2.3.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.provider.xmpp.ui.Activator
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
@@ -20,5 +20,5 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jface.text
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.internal.provider.xmpp.ui;x-internal:=true
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
