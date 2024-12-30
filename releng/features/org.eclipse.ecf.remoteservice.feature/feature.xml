@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.remoteservice.feature"
       label="ECF Remote Services"
-      version="2.6.1.qualifier"
+      version="2.7.0.qualifier"
       provider-name="%providerName"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
@@ -35,16 +35,10 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
 
    <plugin
          id="org.eclipse.ecf.remoteservice"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.eclipse.ecf.remoteservice.asyncproxy"
-         download-size="0"
-         install-size="0"
-         version="2.1.200.qualifier"
-         unpack="false"/>
+         version="2.1.200.qualifier"/>
 
 </feature>

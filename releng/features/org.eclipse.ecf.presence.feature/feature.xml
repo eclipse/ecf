@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.presence.feature"
       label="ECF Presence API Feature"
-      version="1.0.202.qualifier"
+      version="1.1.0.qualifier"
       provider-name="%providerName"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
@@ -27,9 +27,6 @@ allows distribution of user presence and instant messaging using common Instant 
 
    <plugin
          id="org.eclipse.ecf.presence"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
 </feature>

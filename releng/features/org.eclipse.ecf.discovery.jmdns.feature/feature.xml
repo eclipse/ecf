@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.discovery.jmdns.feature"
       label="ECF Discovery Zeroconf Provider"
-      version="1.0.103.qualifier"
+      version="1.1.0.qualifier"
       provider-name="%providerName"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
@@ -25,9 +25,6 @@
 
    <plugin
          id="org.eclipse.ecf.provider.jmdns"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
 </feature>
