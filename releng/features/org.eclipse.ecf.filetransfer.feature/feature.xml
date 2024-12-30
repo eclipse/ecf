@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.filetransfer.feature"
       label="%featureName"
-      version="3.14.1900.qualifier"
+      version="3.15.0.qualifier"
       provider-name="%providerName"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
@@ -27,16 +27,10 @@ by the Eclipse platform to support P2 filetransfer and is required for any of th
 
    <plugin
          id="org.eclipse.ecf.filetransfer"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.eclipse.ecf.provider.filetransfer"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
 </feature>

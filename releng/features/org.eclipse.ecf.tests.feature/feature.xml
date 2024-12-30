@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.tests.feature"
       label="Used to build and execute tests (should never appear in a product)"
-      version="3.2.0.qualifier"
+      version="3.3.0.qualifier"
       provider-name="%providerName"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">

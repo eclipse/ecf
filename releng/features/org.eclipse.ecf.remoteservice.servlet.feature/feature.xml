@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.remoteservice.servlet.feature"
       label="ECF Remote Services Servlet API Feature"
-      version="1.0.500.qualifier"
+      version="1.1.0.qualifier"
       provider-name="%providerName"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
@@ -37,16 +37,10 @@ https://wiki.eclipse.org/ECF#OSGi_Remote_Services
 
    <plugin
          id="org.eclipse.ecf.remoteservice.servlet"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="jakarta.servlet-api"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
 </feature>
