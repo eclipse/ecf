@@ -35,10 +35,14 @@ public class ColaReplacementTransformationStategy implements ColaTransformationS
 		return INSTANCE;
 	}
 
-	public ColaDocumentChangeMessage getOperationalTransform(ColaDocumentChangeMessage remoteMsg, ColaDocumentChangeMessage appliedLocalMsg, boolean localMsgHighPrio) {
-		Trace.entering(Activator.PLUGIN_ID, SyncDebugOptions.METHODS_ENTERING, this.getClass(), "getOperationalTransform", new Object[] {remoteMsg, appliedLocalMsg, new Boolean(localMsgHighPrio)}); //$NON-NLS-1$
+	public ColaDocumentChangeMessage getOperationalTransform(ColaDocumentChangeMessage remoteMsg,
+			ColaDocumentChangeMessage appliedLocalMsg, boolean localMsgHighPrio) {
+		Trace.entering(Activator.PLUGIN_ID, SyncDebugOptions.METHODS_ENTERING, this.getClass(),
+				"getOperationalTransform", //$NON-NLS-1$
+				new Object[] { remoteMsg, appliedLocalMsg, Boolean.valueOf(localMsgHighPrio) });
 
-		Trace.exiting(Activator.PLUGIN_ID, SyncDebugOptions.METHODS_EXITING, this.getClass(), "getOperationalTransform", null); //$NON-NLS-1$
+		Trace.exiting(Activator.PLUGIN_ID, SyncDebugOptions.METHODS_EXITING, this.getClass(), "getOperationalTransform", //$NON-NLS-1$
+				null);
 
 		return null;
 	}

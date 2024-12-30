@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.provider.discovery;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.provider.discovery
-Bundle-Version: 3.0.102.qualifier
+Bundle-Version: 3.1.0.qualifier
 Bundle-Vendor: %pluginProvider
 Import-Package: org.eclipse.equinox.concurrent.future;version="1.0.0",
  org.osgi.framework,
@@ -12,7 +12,7 @@ Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ecf,
  org.eclipse.ecf.discovery,
  org.eclipse.equinox.common
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Activator: org.eclipse.ecf.internal.provider.discovery.Activator
 Export-Package: org.eclipse.ecf.provider.discovery;x-friends:="org.eclipse.ecf.tests.provider.discovery"
 Bundle-ActivationPolicy: lazy

@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.provider.irc; singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.provider.irc
-Bundle-Version: 1.3.401.qualifier
+Bundle-Version: 1.4.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.provider.irc.Activator
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
@@ -14,8 +14,7 @@ Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.ecf.provider.datashare.nio;resolution:=optional
 Eclipse-LazyStart: true
 Bundle-ClassPath: ., lib/irclib.jar
-Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
- J2SE-1.4
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.eclipse.ecf.internal.provider.irc;x-internal:=true,
  org.eclipse.ecf.internal.provider.irc.container;x-internal:=true,
  org.eclipse.ecf.internal.provider.irc.identity;x-friends:=org.eclipse.ecf.provider.irc.ui,

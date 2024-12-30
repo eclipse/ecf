@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.team.ecf.ui;singleton:=true
 Automatic-Module-Name: org.eclipse.team.ecf.ui
-Bundle-Version: 1.0.201.qualifier
+Bundle-Version: 1.1.0.qualifier
 Bundle-Vendor: %plugin.provider
 Bundle-Activator: org.eclipse.team.internal.ecf.core.TeamSynchronization
 Require-Bundle: org.eclipse.core.runtime,
@@ -19,5 +19,5 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.ide,
  org.eclipse.team.ecf.core
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Localization: plugin

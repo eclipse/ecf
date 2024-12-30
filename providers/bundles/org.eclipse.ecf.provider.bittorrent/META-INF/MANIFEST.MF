@@ -3,14 +3,13 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.provider.bittorrent;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.provider.bittorrent
-Bundle-Version: 0.3.401.qualifier
+Bundle-Version: 0.4.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.provider.bittorrent.BitTorrentProviderPlugin
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.internal.provider.bittorrent;x-internal:=true
-Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
- J2SE-1.4
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.ecf,
  org.eclipse.ecf.filetransfer,
  org.eclipse.ecf.protocol.bittorrent,

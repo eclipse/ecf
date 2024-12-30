@@ -3,11 +3,10 @@ Bundle-ManifestVersion: 2
 Bundle-Name: ECF Local Remote Service Provider
 Bundle-SymbolicName: org.eclipse.ecf.provider.local;singleton:=true
 Automatic-Module-Name: org.eclipse.ecf.provider.local
-Bundle-Version: 1.3.100.qualifier
+Bundle-Version: 1.4.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.provider.local.Activator
 Bundle-Vendor: Eclipse.org - ECF
-Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
- J2SE-1.4
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: org.eclipse.ecf.core,
  org.eclipse.ecf.core.identity,
  org.eclipse.ecf.core.provider,
