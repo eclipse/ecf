@@ -26,7 +26,7 @@ public interface IRemoteCall {
 	 * property not set, the default is set to 30000ms (30s).
 	 * @since 4.0
 	 */
-	public static final long DEFAULT_TIMEOUT = new Long(System.getProperty("ecf.remotecall.timeout", "30000")).longValue(); //$NON-NLS-1$ //$NON-NLS-2$
+	public static final long DEFAULT_TIMEOUT = Long.valueOf(System.getProperty("ecf.remotecall.timeout", "30000")).longValue(); //$NON-NLS-1$ //$NON-NLS-2$
 
 	/**
 	 * Get the method name to call on the remote. Must return a non-null and
