@@ -72,7 +72,7 @@
   </distributionManagement>
 
   <properties>
-    <tycho-version>4.0.7</tycho-version>
+    <tycho-version>4.0.10</tycho-version>
     <cbi-version>1.4.3</cbi-version>
     <target-platform>2024-06</target-platform>
     <execution-environment>JavaSE-17</execution-environment>
