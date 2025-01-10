@@ -12,7 +12,6 @@
 package org.eclipse.ecf.internal.core;
 
 import java.util.*;
-import javax.net.ssl.SSLContext;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.identity.ID;
@@ -229,8 +228,7 @@ public class ECFPlugin implements BundleActivator {
 		containerManagerServiceRegistration = ctxt.registerService(IContainerManager.class.getName(), sf, null);
 
 		// Register SSLContextFactory
-		SSLContext defaultContext = SSLContext.getDefault();
-		ecfSSLContextFactory = new ECFSSLContextFactory(ctxt, defaultContext.getProtocol(), defaultContext.getProvider().getName());
+		ecfSSLContextFactory = new ECFSSLContextFactory(ctxt);
 		sslContextFactoryRegistration = ctxt.registerService(SSLContextFactory.class, ecfSSLContextFactory, null);
 
 		SafeRunner.run(new ExtensionRegistryRunnable(this.context) {
