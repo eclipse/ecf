@@ -25,15 +25,27 @@ import org.osgi.util.tracker.ServiceTracker;
  */
 public class ECFSSLContextFactory implements SSLContextFactory {
 
-	private final ServiceTracker<Provider, Provider> providerTracker;
+	private ServiceTracker<Provider, Provider> providerTracker;
 	private final String defaultProtocol;
 	private final String defaultProviderName;
 
-	public ECFSSLContextFactory(BundleContext context, String defaultProtocol) {
+	public ECFSSLContextFactory(BundleContext context) throws NoSuchAlgorithmException {
+		this(context, null);
+	}
+
+	public ECFSSLContextFactory(BundleContext context, String defaultProtocol) throws NoSuchAlgorithmException {
 		this(context, defaultProtocol, null);
 	}
 
-	public ECFSSLContextFactory(BundleContext context, String defaultProtocol, String defaultProviderName) {
+	public ECFSSLContextFactory(BundleContext context, String defaultProtocol, String defaultProviderName) throws NoSuchAlgorithmException {
+		if (context == null)
+			throw new NullPointerException("context must not be null"); //$NON-NLS-1$
+		if (defaultProviderName == null) {
+			defaultProviderName = SSLContext.getDefault().getProvider().getName();
+		}
+		if (defaultProtocol == null) {
+			defaultProtocol = SSLContext.getDefault().getProtocol();
+		}
 		this.defaultProtocol = defaultProtocol;
 		this.defaultProviderName = defaultProviderName;
 		this.providerTracker = new ServiceTracker<Provider, Provider>(context, Provider.class, null);
@@ -60,8 +72,11 @@ public class ECFSSLContextFactory implements SSLContextFactory {
 		return getInstance0(protocol, this.defaultProviderName);
 	}
 
-	public void close() {
-		this.providerTracker.close();
+	public synchronized void close() {
+		if (this.providerTracker != null) {
+			this.providerTracker.close();
+			this.providerTracker = null;
+		}
 	}
 
 	protected Provider findProvider(String providerName) {
