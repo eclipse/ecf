@@ -181,7 +181,7 @@
     <module>tests/bundles/org.eclipse.ecf.tests.osgi.services.distribution.r-osgi</module>
 
     <module>tooling/plugins/org.eclipse.ecf.remoteservices.tooling.pde</module>
-<!--    <module>tooling/plugins/org.eclipse.ecf.remoteservices.tooling.bndtools</module>-->
+    <module>tooling/plugins/org.eclipse.ecf.remoteservices.tooling.bndtools</module>
 
     <module>releng/features/org.eclipse.ecf.console.feature</module>
     <module>releng/features/org.eclipse.ecf.core</module>
@@ -211,7 +211,7 @@
     <module>releng/features/org.eclipse.ecf.tests.feature</module>
     <module>releng/features/org.eclipse.ecf.tests.filetransfer.feature</module>
     <module>releng/features/org.eclipse.ecf.xmpp.feature</module>
-<!--    <module>releng/features/org.eclipse.ecf.remoteservices.tooling.bndtools.feature</module>-->
+    <module>releng/features/org.eclipse.ecf.remoteservices.tooling.bndtools.feature</module>
 
     <module>releng/org.eclipse.ecf.releng.target</module>
     <module>releng/org.eclipse.ecf.releng.repository</module>
