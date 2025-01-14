@@ -54,21 +54,6 @@
    <feature id="org.eclipse.ecf.remoteservice.sdk.feature.source" version="0.0.0">
       <category name="remoteservices"/>
    </feature>
-   <iu id="json" version="0.0.0">
-      <category name="sdk"/>
-   </iu>
-   <iu id="org.objectweb.asm" version="0.0.0">
-      <category name="sdk"/>
-   </iu>
-   <iu id="org.xbill.dns" version="0.0.0">
-      <category name="sdk"/>
-   </iu>
-   <iu id="org.apache.httpcomponents.httpclient" version="0.0.0">
-      <category name="core"/>
-   </iu>
-   <iu id="org.apache.httpcomponents.httpcore" version="0.0.0">
-      <category name="core"/>
-   </iu>
    <feature id="org.eclipse.ecf.console.feature" version="0.0.0">
       <category name="other"/>
    </feature>
@@ -117,13 +102,12 @@
    <feature id="org.eclipse.ecf.xmpp.feature.source" version="0.0.0">
       <category name="other"/>
    </feature>
-<!--   <feature id="org.eclipse.ecf.remoteservices.tooling.bndtools.feature">
-      <category name="bndtools"/>
+   <feature id="org.eclipse.ecf.remoteservices.tooling.bndtools.feature">
+      <category name="other"/>
    </feature>
--->   <category-def name="sdk" label="ECF SDK for Eclipse"/>
+   <category-def name="sdk" label="ECF SDK for Eclipse"/>
    <category-def name="core" label="ECF Core Features"/>
    <category-def name="core sources" label="ECF Core Source Features"/>
    <category-def name="remoteservices" label="ECF Remote Services SDK"/>
    <category-def name="other" label="Other ECF Features"/>
-<!--   <category-def name="bndtools" label="ECF Bndtools Core Support"/>
---></site>
+</site>
