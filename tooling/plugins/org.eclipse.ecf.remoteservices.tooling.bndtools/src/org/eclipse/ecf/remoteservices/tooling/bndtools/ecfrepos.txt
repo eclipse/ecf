@@ -1,1 +1,0 @@
-ECF/bndtools.workspace;name=ECF Remote Services Workspace Template;branch=main
