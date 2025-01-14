@@ -69,6 +69,12 @@
       <unit id="org.eclipse.sdk.feature.group" version="0.0.0"/>
       <repository location="https://download.eclipse.org/eclipse/updates/4.32/R-4.32-202406010610"/>
     </location>
+	  <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+		  <repository location="https://bndtools.org/bndtools.p2.repo/7.1.0/"/>
+		  <unit id="bndtools.main.feature.feature.group" version="7.1.0.REL-202411251545-g47e504d"/>
+		  <unit id="bndtools.m2e.feature.feature.group" version="7.1.0.REL-202411251545-g47e504d"/>
+		  <unit id="bndtools.pde.feature.feature.group" version="7.1.0.REL-202411251545-g47e504d"/>
+	  </location>
 	  <location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
 		  <dependencies>
 			  <dependency>
