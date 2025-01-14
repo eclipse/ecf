@@ -206,6 +206,8 @@
     <module>releng/features/org.eclipse.ecf.remoteservice.rest.feature</module>
     <module>releng/features/org.eclipse.ecf.remoteservice.rosgi.feature</module>
     <module>releng/features/org.eclipse.ecf.remoteservice.sdk.feature</module>
+    <module>releng/features/org.eclipse.ecf.remoteservice.sdk.eclipse.feature</module>
+    <module>releng/features/org.eclipse.ecf.remoteservice.sdk.bndtools.feature</module>
     <module>releng/features/org.eclipse.ecf.remoteservice.servlet.feature</module>
     <module>releng/features/org.eclipse.ecf.sharedobject.feature</module>
     <module>releng/features/org.eclipse.ecf.tests.feature</module>

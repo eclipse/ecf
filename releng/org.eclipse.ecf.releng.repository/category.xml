@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature id="org.eclipse.ecf.core" version="0.0.0">
-      <category name="sdk"/>
-   </feature>
-   <feature id="org.eclipse.ecf.core.source" version="0.0.0">
-      <category name="sdk"/>
-   </feature>
    <feature id="org.eclipse.ecf.core.feature" version="0.0.0">
       <category name="core"/>
    </feature>
@@ -49,10 +43,10 @@
       <category name="core sources"/>
    </feature>
    <feature id="org.eclipse.ecf.remoteservice.sdk.feature" version="0.0.0">
-      <category name="remoteservices"/>
+      <category name="sdk.osgi"/>
    </feature>
    <feature id="org.eclipse.ecf.remoteservice.sdk.feature.source" version="0.0.0">
-      <category name="remoteservices"/>
+      <category name="sdk.osgi"/>
    </feature>
    <feature id="org.eclipse.ecf.console.feature" version="0.0.0">
       <category name="other"/>
@@ -105,9 +99,23 @@
    <feature id="org.eclipse.ecf.remoteservices.tooling.bndtools.feature">
       <category name="other"/>
    </feature>
-   <category-def name="sdk" label="ECF SDK for Eclipse"/>
+   <feature id="org.eclipse.ecf.remoteservice.sdk.eclipse.feature">
+      <category name="sdk.eclipse"/>
+   </feature>
+   <feature id="org.eclipse.ecf.remoteservice.sdk.bndtools.feature">
+      <category name="sdk.bndtools"/>
+   </feature>
    <category-def name="core" label="ECF Core Features"/>
    <category-def name="core sources" label="ECF Core Source Features"/>
-   <category-def name="remoteservices" label="ECF Remote Services SDK"/>
+   <category-def name="remoteservices" label="ECF Remote Services SDKs"/>
    <category-def name="other" label="Other ECF Features"/>
+   <category-def name="sdk.osgi" label="SDK for OSGi-based Clients and Servers (e.g. Apache Karaf)">
+      <category name="remoteservices"/>
+   </category-def>
+   <category-def name="sdk.eclipse" label="SDK for Eclipse">
+      <category name="remoteservices"/>
+   </category-def>
+   <category-def name="sdk.bndtools" label="SDK for Bndtools 7.1+">
+      <category name="remoteservices"/>
+   </category-def>
 </site>
