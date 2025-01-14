@@ -99,10 +99,10 @@
    <feature id="org.eclipse.ecf.remoteservices.tooling.bndtools.feature">
       <category name="other"/>
    </feature>
-   <feature id="org.eclipse.ecf.remoteservice.eclipse.sdk.feature">
+   <feature id="org.eclipse.ecf.remoteservice.sdk.eclipse.feature">
       <category name="sdk.eclipse"/>
    </feature>
-   <feature id="org.eclipse.ecf.remoteservice..sdk.bndtools.feature">
+   <feature id="org.eclipse.ecf.remoteservice.sdk.bndtools.feature">
       <category name="sdk.bndtools"/>
    </feature>
    <category-def name="core" label="ECF Core Features"/>
