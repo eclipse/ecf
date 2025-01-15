@@ -21,6 +21,7 @@ import org.eclipse.core.net.proxy.IProxyData;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ecf.core.security.IConnectContext;
@@ -147,8 +148,11 @@ public abstract class AbstractFileSystemBrowser {
 
 		IRemoteFileSystemRequest request = createRemoteFileSystemRequest();
 		job.setRequest(request);
-
-		job.schedule();
+		if (Job.getJobManager().isSuspended()) {
+			job.run(new NullProgressMonitor());
+		} else {
+			job.schedule();
+		}
 		return request;
 	}
 
