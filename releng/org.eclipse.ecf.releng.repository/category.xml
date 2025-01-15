@@ -102,7 +102,13 @@
    <feature id="org.eclipse.ecf.remoteservice.sdk.eclipse.feature">
       <category name="sdk.eclipse"/>
    </feature>
+   <feature id="org.eclipse.ecf.remoteservice.sdk.eclipse.feature.source" version="0.0.0">
+      <category name="sdk.eclipse"/>
+   </feature>
    <feature id="org.eclipse.ecf.remoteservice.sdk.bndtools.feature">
+      <category name="sdk.bndtools"/>
+   </feature>
+   <feature id="org.eclipse.ecf.remoteservice.sdk.bndtools.feature.source">
       <category name="sdk.bndtools"/>
    </feature>
    <category-def name="core" label="ECF Core Features"/>

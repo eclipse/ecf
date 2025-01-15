@@ -44,5 +44,22 @@
       
    </extension>
 
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.eclipse.ecf.remoteservices.tooling.bndtools.editors.Editor"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            extensions="proto"
+            icon="icons/grpc16x16.gif"
+            id="org.eclipse.ecf.bndtools.grpc.ui.editors.Editor"
+            name="gRPC/proto File Editor">
+      </editor>
+   </extension>
 
+  <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.eclipse.ecf.remoteservices.tooling.bndtools.editors.EditorPreferenceInitializer">
+      </initializer>
+  </extension>
 </plugin>
