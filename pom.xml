@@ -118,7 +118,6 @@
     <module>framework/bundles/org.eclipse.ecf.remoteservice.servlet</module>
     <module>framework/bundles/org.eclipse.ecf.remoteservice.ui</module>
     <module>framework/bundles/org.eclipse.ecf.sharedobject</module>
-    <module>framework/bundles/org.eclipse.ecf.ssl</module>
     <module>framework/bundles/org.eclipse.ecf.ui.capabilities</module>
     <module>framework/bundles/org.eclipse.ecf.ui</module>
     <module>framework/bundles/org.eclipse.team.ecf.core</module>
@@ -144,7 +143,6 @@
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient5.win32</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclientjava</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer</module>
-    <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.ssl</module>
     <module>providers/bundles/org.eclipse.ecf.provider.irc</module>
     <module>providers/bundles/org.eclipse.ecf.provider.irc.ui</module>
     <module>providers/bundles/org.eclipse.ecf.provider.jmdns</module>
@@ -172,7 +170,6 @@
     <module>tests/bundles/org.eclipse.ecf.tests.provider.xmpp</module>
     <module>tests/bundles/org.eclipse.ecf.tests.remoteservice</module>
     <module>tests/bundles/org.eclipse.ecf.tests.sharedobject</module>
-    <module>tests/bundles/org.eclipse.ecf.tests.ssl</module>
     <module>tests/bundles/org.eclipse.ecf.tests.osgi.services.distribution</module>
     <module>tests/bundles/org.eclipse.ecf.tests.discovery</module>
     <module>tests/bundles/org.eclipse.ecf.tests.remoteservice.generic</module>
@@ -186,7 +183,6 @@
     <module>releng/features/org.eclipse.ecf.console.feature</module>
     <module>releng/features/org.eclipse.ecf.core</module>
     <module>releng/features/org.eclipse.ecf.core.feature</module>
-    <module>releng/features/org.eclipse.ecf.core.ssl.feature</module>
     <module>releng/features/org.eclipse.ecf.datashare.feature</module>
     <module>releng/features/org.eclipse.ecf.discovery.dnssd.feature</module>
     <module>releng/features/org.eclipse.ecf.discovery.feature</module>
@@ -196,7 +192,6 @@
     <module>releng/features/org.eclipse.ecf.filetransfer.httpclient45.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.httpclient5.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.httpclientjava.feature</module>
-    <module>releng/features/org.eclipse.ecf.filetransfer.ssl.feature</module>
     <module>releng/features/org.eclipse.ecf.osgi.services.feature</module>
     <module>releng/features/org.eclipse.ecf.presence.feature</module>
     <module>releng/features/org.eclipse.ecf.provider.generic.datashare.feature</module>

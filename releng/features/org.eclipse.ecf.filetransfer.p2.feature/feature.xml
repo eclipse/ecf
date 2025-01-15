@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.filetransfer.p2.feature"
       label="ECF P2 FileTransfer"
-      version="1.0.301.qualifier"
+      version="2.0.0.qualifier"
       provider-name="%providerName"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
@@ -20,15 +20,7 @@
    </license>
 
    <includes
-         id="org.eclipse.ecf.core.ssl.feature"
-         version="0.0.0"/>
-
-   <includes
          id="org.eclipse.ecf.filetransfer.feature"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.ecf.filetransfer.ssl.feature"
          version="0.0.0"/>
 
    <includes
