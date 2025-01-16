@@ -5,7 +5,7 @@ ECF is a set of frameworks supporting multiple types of inter-process communicat
 Current version: 3.15.3
 
 ### via P2 Repository/Update Site for Install into Eclipse):  
-NEW: There is a new Feature for Remote Services development on Bndtools 7.1+ project, workspace, service templates, wizards for remote services project creation).  This feature Requires Bndtools 7.1+ be [installed](https://bndtools.org/installation.html) into a recent version of Eclipse
+NEW: There is a new Feature for Remote Services development on Bndtools 7.1+ project, workspace, service templates, wizards for remote services project creation).  The feature, however, requires that Bndtools be previously [installed](https://bndtools.org/installation.html) into a recent version of Eclipse
 
 Name:  ECF 3.15.2
 Download p2 URL:  [https://download.eclipse.org/rt/ecf/latest/site.p2](https://download.eclipse.org/rt/ecf/latest/site.p2)
