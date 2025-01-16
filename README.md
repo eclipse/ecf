@@ -4,13 +4,13 @@ ECF is a set of frameworks supporting multiple types of inter-process communicat
 ## Download/Install
 Current version: 3.15.3
 
-### via P2 Repository/Update Site for Install into Eclipse):  
+### via P2 Repository/Update Site for Install into Eclipse  
 NEW: There is a new Feature for Remote Services development on [Bndtools](https://bndtools.org/) 7.1+ using project, workspace, service templates, and wizards for remote services project creation)  The feature requires that Bndtools be  [installed](https://bndtools.org/installation.html) into a recent version of Eclipse before installing the ECF Bndtools SDK feature.
 
 Name:  ECF 3.15.2
 Download p2 URL:  [https://download.eclipse.org/rt/ecf/latest/site.p2](https://download.eclipse.org/rt/ecf/latest/site.p2)
 
-## Features for install into Apache Karaf
+## Features for install into [Apache Karaf 4.4+](https://karaf.apache.org/)
 https://download.eclipse.org/rt/ecf/latest/karaf-features.xml
 
 ### OSGi Remote Services
