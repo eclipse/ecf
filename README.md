@@ -1,5 +1,5 @@
 ## Eclipse Communication Framework
-ECF is a set of frameworks supporting inter-process communication
+ECF is a set of frameworks supporting multiple types of inter-process communication
 
 ## Download/Install
 Current version: 3.15.3
