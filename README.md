@@ -30,7 +30,7 @@ See the [ECF Wiki](https://wiki.eclipse.org/Eclipse_Communication_Framework_Proj
 To contribute or find out what's going on right now, please join the [ecf-dev mailing list](https://accounts.eclipse.org/mailing-list/ecf-dev) or contact project lead Scott Lewis at github username: scottslewis
 
 ### Services, Training and Support
-For Remote Services training, support, or expert OSGi or Eclipse development please contact slewis@composent.com via email or bring it up on the ECF dev mailing list. 
+For Remote Services training, support, or expert OSGi or Eclipse development please contact slewis at composent.com, github: scottslewis via email or bring it up on the ECF dev mailing list. 
 
 ### Contributing to ECF
 Contributions are always welcome!
