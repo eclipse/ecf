@@ -9,7 +9,7 @@ NEW in 3.15.3: Feature for Remote Services tooling that depends upon on [Bndtool
 <b>Name</b>:  ECF 3.15.2
 <b>Update Site URL</b>:  [https://download.eclipse.org/rt/ecf/latest/site.p2](https://download.eclipse.org/rt/ecf/latest/site.p2)
 
-Update Site as Zip:  [https://www.eclipse.org/downloads/download.php?file=/rt/ecf/3.15.3/org.eclipse.ecf.sdk_3.15.3.v20250115-0413.zip](https://www.eclipse.org/downloads/download.php?file=/rt/ecf/3.15.3/org.eclipse.ecf.sdk_3.15.3.v20250115-0413.zip)
+Update Site as Zip:  [org.eclipse.ecf.sdk_3.15.3.v20250115-0413.zip](https://www.eclipse.org/downloads/download.php?file=/rt/ecf/3.15.3/org.eclipse.ecf.sdk_3.15.3.v20250115-0413.zip)
 
 ## Install into [Apache Karaf 4.4+](https://karaf.apache.org/)
 https://download.eclipse.org/rt/ecf/latest/karaf-features.xml
