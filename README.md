@@ -12,8 +12,10 @@ NEW in 3.15.3: Feature for Remote Services tooling that depends upon on [Bndtool
 
 Update Site as Zip:  [org.eclipse.ecf.sdk_3.15.3.v20250115-0413.zip](https://www.eclipse.org/downloads/download.php?file=/rt/ecf/3.15.3/org.eclipse.ecf.sdk_3.15.3.v20250115-0413.zip)
 
-## Download/Install into [Apache Karaf 4.4+](https://karaf.apache.org/)
+### Download/Install into [Apache Karaf 4.4+](https://karaf.apache.org/)
 https://download.eclipse.org/rt/ecf/latest/karaf-features.xml
+
+##Key ECF APIs
 
 ### OSGi Remote Services
 ECF provides a fully-compliant and multi-provider implementation of the [OSGi Remote Services](https://docs.osgi.org/specification/osgi.cmpn/7.0.0/service.remoteservices.html) and [Remote Services Admin/RSA](https://docs.osgi.org/specification/osgi.cmpn/7.0.0/service.remoteserviceadmin.html).  A number of providers are available in this repo, but there are also many providers available at the [ECF github organization](https://github.com/ECF).
