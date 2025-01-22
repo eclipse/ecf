@@ -1,16 +1,16 @@
 ## Eclipse Communication Framework
 ECF is a set of frameworks supporting multiple types of inter-process communication
 
-Current version: 3.15.3
+Current version: 3.15.4
 
 ### Download/Install into Bndtools/Eclipse
 NEW in 3.15.3: Feature for Remote Services tooling that depends upon on [Bndtools](https://bndtools.org/) 7.1+.  The ECF tools use bndtools project, workspace, service templates, along with wizards for remote services project creation and configuration.  The feature requires that Bndtools be [installed](https://bndtools.org/installation.html) into a recent version of Eclipse before installing the ECF Bndtools SDK feature.
 
-<b>Name</b>:  ECF 3.15.2
+<b>Name</b>:  ECF 3.15.4
 
 <b>Update Site URL</b>:  [https://download.eclipse.org/rt/ecf/latest/site.p2](https://download.eclipse.org/rt/ecf/latest/site.p2)
 
-Update Site as Zip:  [org.eclipse.ecf.sdk_3.15.3.v20250115-0413.zip](https://www.eclipse.org/downloads/download.php?file=/rt/ecf/3.15.3/org.eclipse.ecf.sdk_3.15.3.v20250115-0413.zip)
+Update Site as Zip:  [org.eclipse.ecf.sdk_3.15.4.v20250122-1953.zip](https://www.eclipse.org/downloads/download.php?file=/rt/ecf/latest/org.eclipse.ecf.sdk_3.15.4.v20250122-1953.zip)
 
 ### Download/Install into [Apache Karaf 4.4+](https://karaf.apache.org/)
 https://download.eclipse.org/rt/ecf/latest/karaf-features.xml
