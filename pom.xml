@@ -137,8 +137,6 @@
     <module>providers/bundles/org.eclipse.ecf.provider.datashare.nio</module>
     <module>providers/bundles/org.eclipse.ecf.provider.discovery</module>
     <module>providers/bundles/org.eclipse.ecf.provider.dnssd</module>
-    <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient45</module>
-    <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient45.win32</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient5</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclient5.win32</module>
     <module>providers/bundles/org.eclipse.ecf.provider.filetransfer.httpclientjava</module>
@@ -189,7 +187,6 @@
     <module>releng/features/org.eclipse.ecf.discovery.jmdns.feature</module>
     <module>releng/features/org.eclipse.ecf.discovery.slp.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.feature</module>
-    <module>releng/features/org.eclipse.ecf.filetransfer.httpclient45.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.httpclient5.feature</module>
     <module>releng/features/org.eclipse.ecf.filetransfer.httpclientjava.feature</module>
     <module>releng/features/org.eclipse.ecf.osgi.services.feature</module>
