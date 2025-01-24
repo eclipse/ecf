@@ -12,7 +12,7 @@ NEW: Feature for Remote Services tooling that depends upon on [Bndtools](https:/
 
 Update Site as Zip:  [org.eclipse.ecf.sdk_3.15.5.v20250124-1843.zip](https://www.eclipse.org/downloads/download.php?file=/rt/ecf/3.15.5/org.eclipse.ecf.sdk_3.15.5.v20250124-1843.zip)
 
-[Javadocs](https://download.eclipse.org/rt/ecf/latest/javadocs)
+[Javadocs](https://download.eclipse.org/rt/ecf/snapshot/javadoc/)
 
 ### Download/Install into [Apache Karaf 4.4+](https://karaf.apache.org/)
 https://download.eclipse.org/rt/ecf/latest/karaf-features.xml
