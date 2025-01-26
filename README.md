@@ -28,7 +28,7 @@ ECF is currently the RS/RSA implementation used by the [OSGi Test Compatibilty K
 ECF has an API called 'filetransfer' that is depended upon by the [Eclipse platform](https://github.com/eclipse-platform)
 
 ## ECF Github Organization
-In addition to this repo, ECF also has an [ECF Organization with a number of other repos](https://github.com/ECF) containing Remote Services distribution and discovery providers (e.g. grpc, etcd discovery, hazelcast, others). Most of these repos provide distribution or discovery providers that depend upon the core implementation provided by this repo.  
+ECF  has an [organization with a number of other repos](https://github.com/ECF) containing Remote Services distribution and discovery providers (e.g. grpc, etcd discovery, hazelcast, JMS, JGroups, xmlrpc-based distribution providers, examples, others). Most of these repos provide distribution or discovery providers that depend upon the core remote services/RSA implementation provided by this repo.  
 
 ## Wiki
 See the [ECF Wiki](https://wiki.eclipse.org/Eclipse_Communication_Framework_Project) for examples, tutorials, other documentation, as well as plans for future releases.
