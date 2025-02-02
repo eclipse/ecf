@@ -14,6 +14,10 @@ Update Site as Zip:  [org.eclipse.ecf.sdk_3.15.5.v20250124-1843.zip](https://www
 
 [Javadocs](https://download.eclipse.org/rt/ecf/snapshot/javadoc/)
 
+### Install into [Bndtools 7.1](https://bndtools.org/)
+
+There are now [Oomph](https://projects.eclipse.org/projects/tools.oomph) Setups that will automatically install and configure Eclipse, Bndtools 7.1 and ECF 3.15.5 [see here](https://github.com/bndtools/bndtools.p2.repo/tree/master/setup/ecf)
+
 ### Download/Install into [Apache Karaf 4.4+](https://karaf.apache.org/)
 https://download.eclipse.org/rt/ecf/latest/karaf-features.xml
 
