@@ -3,8 +3,8 @@ ECF is a set of APIs/frameworks/types for inter-process communication
 
 Current version: 3.15.5
 
-### Download/Install into Bndtools or Eclipse for Remote Services development
-NEW: Feature for Remote Services tooling that enhances [Bndtools](https://bndtools.org/) 7.1 or higher.  Theses tools use bndtools project, workspace, service templates, and OSGi services wizards for simplifying the creation of OSGi remote services.  Also present are Eclipse view for debugging remote service endpoint description discovery and remote service export/import.  The feature requires that Bndtools 7.1+ be [installed](https://bndtools.org/installation.html) into a recent version of Eclipse.  Also see the Install into Bndtools 7.1 section below for automated install.
+### Install into Bndtools for Remote Services development
+NEW: Feature for Remote Services tooling that enhances [Bndtools](https://bndtools.org/) 7.1 or higher.  Theses tools use bndtools project, workspace, service templates, and OSGi services wizards for simplifying the creation of OSGi remote services.  Also present are Eclipse view for debugging remote service endpoint description discovery and remote service export/import.  The feature requires that Bndtools 7.1+ be [installed](https://bndtools.org/installation.html) into a recent version of Eclipse.  Also see the Install into Bndtools 7.1 via Oomph section below for automated install.
 
 <b>Name</b>:  ECF 3.15.5
 
@@ -14,7 +14,7 @@ Update Site as Zip:  [org.eclipse.ecf.sdk_3.15.5.v20250124-1843.zip](https://www
 
 [Javadocs](https://download.eclipse.org/rt/ecf/snapshot/javadoc/)
 
-### Install into [Bndtools 7.1](https://bndtools.org/)
+### Install into [Bndtools 7.1](https://bndtools.org/) via Oomph
 
 There are now [Oomph](https://projects.eclipse.org/projects/tools.oomph) Setups that will automatically install and configure Eclipse, Bndtools 7.1 and ECF 3.15.5 [see here](https://github.com/bndtools/bndtools.p2.repo/tree/master/setup/ecf)
 
