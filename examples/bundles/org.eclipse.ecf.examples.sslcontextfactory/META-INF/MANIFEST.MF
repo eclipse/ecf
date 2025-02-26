@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Sslcontextfactory
+Bundle-SymbolicName: org.eclipse.ecf.examples.sslcontextfactory
+Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: org.eclipse.ecf.examples.sslcontextfactory
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-17
+Import-Package: org.eclipse.ecf.core.security;version="[3.2.0,4.0.0)",
+ org.osgi.service.component.annotations;version="[1.3.0,2.0.0)";resolution:=optional
+Service-Component: OSGI-INF/org.eclipse.ecf.examples.sslcontextfactory.ContextFactoryConsumer.xml,
+ OSGI-INF/org.eclipse.ecf.examples.sslcontextfactory.ExampleProvider.xml
