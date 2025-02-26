@@ -25,19 +25,19 @@ import javax.net.ssl.SSLContext;
 public interface SSLContextFactory {
 
 	/**
-	 * See javadocs for {@link <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/javax/net/ssl/SSLContext.html#getDefault()">SSLContext.getDefault()</a>}<br>
+	 * See <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/javax/net/ssl/SSLContext.html#getDefault()">SSLContext.getDefault()</a><br>
 	 * NOTE: Rather than the using the {@link #SSLContext.setDefault SSLContext.setDefault(SSLContext)}
 	 * to set the default SSLContext as described in the SSLContext.getDefault() javadocs, the default for the implementer is set upon construction of the service instance.
 	 */
 	SSLContext getDefault() throws NoSuchAlgorithmException, NoSuchProviderException;
 
 	/**
-	 * See javadocs for {@link <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/javax/net/ssl/SSLContext.html#getInstance(java.lang.String)">SSLContext.getInstance(String protocol)</a>}<br>
+	 * See <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/javax/net/ssl/SSLContext.html#getInstance(java.lang.String)">SSLContext.getInstance(String protocol)</a><br>
 	 */
 	SSLContext getInstance(String protocol) throws NoSuchAlgorithmException, NoSuchProviderException;
 
 	/**
-	 * See javadocs for {@link <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/javax/net/ssl/SSLContext.html#getInstance(java.lang.String,java.security.Provider)">SSLContext.getInstance(String protocol, String provider)</a>}<br>
+	 * See <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/javax/net/ssl/SSLContext.html#getInstance(java.lang.String,java.security.Provider)">SSLContext.getInstance(String protocol, String provider)</a><br>
 	 */
 	SSLContext getInstance(String protocol, String providerName) throws NoSuchAlgorithmException, NoSuchProviderException;
 
