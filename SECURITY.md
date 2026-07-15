@@ -43,10 +43,6 @@ This information will help us triage your report more quickly.
 
 ## Supported Versions
 
-<!--
-    Which releases of the project's software are actively maintained and receive security updates?
--->
 Supported versions are:
 
-* Version 1
-* ...
+* 3.16.8+
